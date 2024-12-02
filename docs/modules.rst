@@ -1,45 +1,45 @@
 Modules
 =================
 
-ReLU Variations
+All Available Functions
 ------------------------------
 
-.. automodule:: torch_activation.relus
+.. automodule:: torch_activation
    :members:
    :undoc-members:
 
-GLU Variations
+Ridge Functions
+------------------------------
+
+.. automodule:: torch_activation.ridge
+   :members:
+   :undoc-members:
+
+Radial Functions
 -----------------------------
 
-.. automodule:: torch_activation.glus
+.. automodule:: torch_activation.radial
    :members:
    :undoc-members:
 
-Piece-wise functions
+Periodic Functions
 ----------------------------------
 
-.. automodule:: torch_activation.piece_wise
+.. automodule:: torch_activation.periodic
    :members:
    :undoc-members:
 
-Trigonometry-based Functions
+Other Functions
 -----------------------------
 
-.. automodule:: torch_activation.trig
+.. automodule:: torch_activation.other
    :members:
    :undoc-members: 
 
-Smooth curve Functions
+Layers
 ------------------------------------
 
-.. automodule:: torch_activation.curves
-   :members:
-   :undoc-members:
-
-Linear Combination
---------------------------------
-
-.. automodule:: torch_activation.lincomb
+.. automodule:: torch_activation.layer
    :members:
    :undoc-members:
 
@@ -50,11 +50,4 @@ Utilities
    :members:
    :undoc-members:
    :exclude-members: test_inplace
-
-All Available Functions
-------------------------------
-
-.. automodule:: torch_activation
-   :members:
-   :undoc-members:
    
