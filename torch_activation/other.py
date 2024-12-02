@@ -55,59 +55,6 @@ class DELU(nn.Module):
         return x
 
 
-class StarReLU(nn.Module):
-    r"""
-    Applies the element-wise function:
-
-    :math:`\text{StarReLU}(x) = s \cdot \text{ReLU}(x)^2 + b`
-
-     See: https://doi.org/10.48550/arXiv.2210.13452
-
-    Args:
-        s (float, optional): Scaled factor for StarReLU, shared across channel. Default: 0.8944
-        b (float, optional): Bias term for StarReLU, shared across channel. Default: -0.4472
-        learnable (bool, optional): optionally make ``s`` and ``b`` trainable. Default: ``False``
-        inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
-
-    Shape:
-        - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
-        - Output: :math:`(*)`, same shape as the input.
-
-    .. image:: ../images/activation_images/StarReLU.png
-
-    Examples::
-
-        >>> m = torch_activation.StarReLU(s=1.0, b=0.0)
-        >>> x = torch.randn(3, 384, 384)
-        >>> output = m(x)
-
-        >>> m = torch_activation.StarReLU(learnable=True, inplace=True)
-        >>> x = torch.randn(3, 384, 384)
-        >>> m(x)
-    """
-
-    def __init__(
-        self,
-        s: float = 0.8944,
-        b: float = -0.4472,
-        learnable: bool = False,
-        inplace: bool = False,
-    ):
-        super().__init__()
-        self.inplace = inplace
-        if learnable:
-            self.s = nn.Parameter(Tensor([s]))
-            self.b = nn.Parameter(Tensor([b]))
-        else:
-            self.s = Tensor([s])
-            self.b = Tensor([b])
-
-    def forward(self, x) -> Tensor:
-        if self.inplace:
-            return F.relu_(x).pow_(2).mul_(self.s).add_(self.b)
-        else:
-            return self.s * F.relu(x).pow(2) + self.b
-
 
 class Phish(torch.nn.Module):
     r"""
