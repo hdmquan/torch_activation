@@ -2,7 +2,6 @@
 
 PyTorch Activations is a collection of activation functions for the PyTorch library. This project aims to provide an easy-to-use solution for experimenting with different activation functions or simply adding variety to your models.
 
-
 ## Installation
 
 You can install PyTorch Activations using pip:
@@ -54,11 +53,10 @@ We hope you find PyTorch Activations useful for your experimentation and model d
 
 ## Contact
 
-Alan Huynh - [LinkedIn](https://www.linkedin.com/in/alan-huynh-64b357194/) - [hdmquan@outlook.com](mailto:hdmquan@outlook.com)
+Alan Huynh - [LinkedIn](https://www.linkedin.com/in/hdmquan/) - [hdmquan@outlook.com](mailto:hdmquan@outlook.com)
 
-Project Link: [https://github.com/alan191006/torch_activation](https://github.com/alan191006/torch_activation)
+Project Link: [https://github.com/hdmquan/torch_activation](https://github.com/hdmquan/torch_activation)
 
 Documentation Link: [https://torch-activation.readthedocs.io](https://torch-activation.readthedocs.io)
 
 PyPI Link: [https://pypi.org/project/torch-activation/](https://pypi.org/project/torch-activation/)
-
