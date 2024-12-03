@@ -1,7 +1,6 @@
 import os
 import math
 import torch
-import psutil
 import plotly
 import plotly.io as pio
 import plotly.graph_objects as go
@@ -51,7 +50,7 @@ def plot_activation(
     num_plots = max(len(v) for v in params.values()) if params else 0
 
     # Color for each param
-    colors = plotly.colors.qualitative.D3[:max(1, num_plots)]
+    colors = plotly.colors.qualitative.D3[: max(1, num_plots)]
 
     if num_plots == 0:
         # Add default plot with no parameter variations
@@ -74,9 +73,7 @@ def plot_activation(
         )
 
         if plot_derivative:
-            d = torch.autograd.grad(
-                y, x, torch.ones_like(y), create_graph=True
-            )[0]
+            d = torch.autograd.grad(y, x, torch.ones_like(y), create_graph=True)[0]
             fig.add_trace(
                 go.Scatter(
                     x=x.detach().numpy(),
@@ -87,7 +84,9 @@ def plot_activation(
             )
 
     else:
-        param_combinations = torch.tensor([[v for v in params[key]] for key in params.keys()]).T
+        param_combinations = torch.tensor(
+            [[v for v in params[key]] for key in params.keys()]
+        ).T
 
         y_ = []
         for i, combination in enumerate(param_combinations):
@@ -97,7 +96,11 @@ def plot_activation(
             y = m(x)
             y_.append(y)
 
-            label = f"{activation.__name__}(" + ", ".join([f"{key}={value}" for key, value in kwargs.items()]) + ")"
+            label = (
+                f"{activation.__name__}("
+                + ", ".join([f"{key}={value}" for key, value in kwargs.items()])
+                + ")"
+            )
 
             fig.add_trace(
                 go.Scatter(
@@ -109,9 +112,7 @@ def plot_activation(
             )
 
             if plot_derivative:
-                d = torch.autograd.grad(
-                    y, x, torch.ones_like(y), create_graph=True
-                )[0]
+                d = torch.autograd.grad(y, x, torch.ones_like(y), create_graph=True)[0]
                 fig.add_trace(
                     go.Scatter(
                         x=x.detach().numpy(),
@@ -120,9 +121,9 @@ def plot_activation(
                         line=dict(color=colors[i % len(colors)], dash="dot"),
                     )
                 )
-        
+
         y_ = torch.stack(y_)
-        
+
         if y_range is None:
             y_min = torch.min(y_).item()
             y_max = torch.max(y_).item()
@@ -133,12 +134,32 @@ def plot_activation(
     if y_range[1] - y_range[0] > 3:
         y_range[0] = math.floor(y_range[0])
         y_range[1] = math.ceil(y_range[1])
-    
+
     fig.update_layout(
-        paper_bgcolor='rgba(0,0,0,0)',
+        paper_bgcolor="rgba(0,0,0,0)",
         xaxis=dict(range=x_range),
         yaxis=dict(range=y_range),
         legend=dict(orientation="h", yanchor="top", y=-0.2, xanchor="center", x=0.5),
+        shapes=[
+            dict(
+                type="line",
+                x0=0,
+                x1=0,
+                y0=y_range[0],
+                y1=y_range[1],
+                line=dict(color="black", width=1),
+            ),
+            dict(
+                type="line",
+                x0=x_range[0],
+                x1=x_range[1],
+                y0=0,
+                y1=0,
+                line=dict(color="black", width=1),
+            ),
+        ],
+        xaxis_tickvals=list(range(math.floor(x_range[0]), math.ceil(x_range[1]) + 1)),
+        yaxis_tickvals=list(range(math.floor(y_range[0]), math.ceil(y_range[1]) + 1)),
     )
 
     if preview:
