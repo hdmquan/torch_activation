@@ -1,49 +1,50 @@
 import torch
+from loguru import logger
 
 
-def check_forward_pass(activation_fn, input_tensor, device="cpu"):
-    """Check if the forward pass runs without errors"""
+def check_forward_pass(act_fn, device="cpu"):
     try:
-        input_tensor = input_tensor.to(device)
-        output = activation_fn(input_tensor)
+        inp = torch.rand(3, 3).to(device)
+        _ = act_fn(inp)
+
+        logger.debug(_.shape)
+
         return True
     except Exception as e:
-        print(f"Forward pass failed: {e}")
+        logger.error(f"Forward pass failed: {e}")
         return False
 
 
-def check_backward_pass(activation_fn, input_tensor, device="cpu"):
-    """Check if backward pass runs without errors"""
+def check_backward_pass(act_fn, device="cpu"):
     try:
-        input_tensor = input_tensor.to(device)
-        input_tensor.requires_grad = True
-        output = activation_fn(input_tensor)
+        inp = torch.rand(3, 3).to(device)
+        inp.requires_grad = True
+        output = act_fn(inp)
         output.sum().backward()
-        return input_tensor.grad is not None
+        return inp.grad is not None
     except Exception as e:
-        print(f"Backward pass failed: {e}")
+        logger.error(f"Backward pass failed: {e}")
         return False
 
 
-def check_gradient(activation_fn, input_tensor, epsilon=1e-5, device="cpu"):
-    """Gradient check using finite difference method for testing"""
-    input_tensor = input_tensor.to(device)
-    input_tensor.requires_grad = True
+def check_gradient(act_fn, epsilon=1e-5, device="cpu"):
+    inp = inp.to(device)
+    inp.requires_grad = True
 
     # Compute gradient using autograd
-    output = activation_fn(input_tensor)
+    output = act_fn(inp)
     output.sum().backward()
-    grad_autograd = input_tensor.grad.clone()
+    grad_autograd = inp.grad.clone()
 
     # Compute gradient using finite differences
-    input_tensor_1 = input_tensor.clone().detach().requires_grad_(False)
-    input_tensor_2 = input_tensor_1.clone()
+    inp_1 = inp.clone().detach().requires_grad_(False)
+    inp_2 = inp_1.clone()
 
-    input_tensor_1.data += epsilon
-    output_1 = activation_fn(input_tensor_1)
+    inp_1.data += epsilon
+    output_1 = act_fn(inp_1)
 
-    input_tensor_2.data -= epsilon
-    output_2 = activation_fn(input_tensor_2)
+    inp_2.data -= epsilon
+    output_2 = act_fn(inp_2)
 
     grad_fd = (output_1 - output_2).sum() / (2 * epsilon)
 

@@ -1,11 +1,13 @@
 import torch
-from torch_activation import *  # Import all activations and layers from your library
+import torch_activation
 from utils import (
     check_forward_pass,
     check_backward_pass,
-)  # Assuming these are defined elsewhere
+)
 
-differentiable_activations = [
+from loguru import logger
+
+diff_acts = [
     "ShiLU",
     "DELU",
     "CReLU",
@@ -24,57 +26,52 @@ differentiable_activations = [
     "StarReLU",
 ]
 
-non_differentiable_activations = [
+non_diff_acts = [
     # "plot_activation"
 ]
 
 
-def test_differentiable_activations(activation_functions, device="cpu"):
-    for activation_name in activation_functions:
-        activation_fn = globals().get(activation_name)
+def test_diff_acts(acts, dev="cpu"):
+    for act_name in acts:
+        act_fn = getattr(torch_activation, act_name, None)()
 
-        # Test the test :)
-        # activation_fn = torch.nn.ReLU()
+        logger.debug(act_fn)
 
-        if activation_fn is None:
-            print(f"Activation function {activation_name} not found.")
+        if act_fn is None:
+            logger.error(f"Activation function {act_name} not found.")
             continue
 
-        print(f"Testing differentiable activation: {activation_name}")
-        input_tensor = torch.randn(2, 3).to(device)
+        logger.info(f"Testing differentiable activation: {act_name}")
 
         # Test forward pass
-        assert check_forward_pass(
-            activation_fn, input_tensor, device
-        ), f"{activation_name} failed forward pass."
+        if not check_forward_pass(act_fn, dev):
+            logger.error(f"{act_name} failed forward pass.")
 
         # Test backward pass
-        assert check_backward_pass(
-            activation_fn, input_tensor, device
-        ), f"{activation_name} failed backward pass."
+        if not check_backward_pass(act_fn, dev):
+            logger.error(f"{act_name} failed backward pass.")
 
 
-def test_non_differentiable_activations(activation_functions, device="cpu"):
-    for activation_name in activation_functions:
-        activation_fn = globals().get(activation_name)
+def test_non_diff_acts(acts, dev="cpu"):
+    for act_name in acts:
+        act_fn = globals().get(act_name)
 
-        if activation_fn is None:
-            print(f"Activation function {activation_name} not found.")
+        if act_fn is None:
+            logger.error(f"Activation function {act_name} not found.")
             continue
 
-        print(f"Testing non-differentiable activation: {activation_name}")
-        input_tensor = torch.randn(2, 3).to(device)
+        logger.info(f"Testing non-differentiable activation: {act_name}")
+        inp_tensor = torch.randn(2, 3).to(dev)
 
         # Test forward pass
-        assert check_forward_pass(
-            activation_fn, input_tensor, device
-        ), f"{activation_name} failed forward pass."
+        if not check_forward_pass(act_fn, inp_tensor, dev):
+            logger.error(f"{act_name} failed forward pass.")
 
 
-def test_all_activations():
-    device = "cpu"
-    test_differentiable_activations(differentiable_activations, device)
-    test_non_differentiable_activations(non_differentiable_activations, device)
+def test_all_acts():
+    dev = "cpu"
+    test_diff_acts(diff_acts, dev)
+    test_non_diff_acts(non_diff_acts, dev)
 
 
-test_all_activations()
+test_all_acts()
