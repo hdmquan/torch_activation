@@ -7,7 +7,7 @@ def check_forward_pass(act_fn, device="cpu"):
         inp = torch.rand(3, 3).to(device)
         _ = act_fn(inp)
 
-        logger.debug(_.shape)
+        # logger.debug(_.shape)
 
         return True
     except Exception as e:
