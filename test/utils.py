@@ -28,7 +28,7 @@ def check_backward_pass(act_fn, device="cpu"):
 
 
 def check_gradient(act_fn, epsilon=1e-5, device="cpu"):
-    inp = inp.to(device)
+    inp = torch.rand(3, 3).to(device)
     inp.requires_grad = True
 
     # Compute gradient using autograd

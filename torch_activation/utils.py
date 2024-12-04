@@ -172,4 +172,6 @@ def plot_activation(
 
 
 if __name__ == "__main__":
-    pass
+    from relu import SoftsignRReLU
+
+    plot_activation(SoftsignRReLU, preview=True)

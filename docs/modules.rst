@@ -8,6 +8,13 @@ All Available Functions
    :members:
    :undoc-members:
 
+Rectified Linear Function
+------------------------------
+
+.. automodule:: torch_activation.relu
+   :members:
+   :undoc-members:
+
 Ridge Functions
 ------------------------------
 
