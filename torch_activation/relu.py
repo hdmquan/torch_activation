@@ -5,53 +5,124 @@ import torch.nn.functional as F
 from torch import Tensor
 
 
-class ShiLU(nn.Module):
+class ShiftedReLU(nn.Module):
     r"""
-    Applies the ShiLU activation function:
+    A Shifted ReLU is a simple translation of a ReLU and is defined as:
 
-    :math:`\text{ShiLU}(x) = \alpha \cdot \text{ReLU}(x) + \beta`
-    
-     See: https://doi.org/10.20944/preprints202301.0463.v1
-   
+
+    :math:`\text{ShiftedReLU}(x) = \text{max}(-1, x)`
+
+    See: http://arxiv.org/abs/1511.07289
+
     Args:
-        alpha (float, optional): Scaling factor for the positive part of the input. Default: 1.0.
-        beta (float, optional): Bias term added to the output. Default: 0.0.
         inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
+
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/ShiftedReLU.png
+    """
+
+    def __init__(self, inplace: bool = False):
+        super().__init__()
+        self.inplace = inplace
+
+    def forward(self, x: Tensor) -> Tensor:
+        # TODO: Inplace with max? C++?
+        if self.inplace:
+            return F.relu_(x - 1.0)
+        else:
+            return F.relu(x - 1.0)
+
+
+class SoftsignRReLU(nn.Module):
+    r"""
+    The Softsign Randomized Leaky ReLU (S-RReLU) is defined as:
+
+    .. math::
+        `\text{S-RReLU}(z_i) = 
+        \begin{cases} 
+        \frac{1}{(1+z_i)^2} + z_i, &  z_i \geq 0, \\
+        \frac{1}{(1+z_i)^2} + a_i z_i, & z_i < 0,
+        \end{cases}`
+
+    where :math:`a_i` is sampled for each epoch and neuron i from the uniform distribution
+    :math:`a_i \sim U(l, u)` where :math:`l < u` and :math:`l, u \in (0, \infty)`.
+
+    See: http://dx.doi.org/10.1007/s00521-023-08565-2
+    
+    Shape:
+        - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
+        - Output: :math:`(*)`, same shape as the input.
+    
+    Args:
+        l (float, optional): Lower bound of the uniform distribution (default: 1/8).
+        u (float, optional): Upper bound of the uniform distribution (default: 1/3).
+    """
+
+    def __init__(self, l: float = 1 / 8, u: float = 1 / 3):
+        super().__init__()
+        assert 0 < l < u, "Ensure 0 < l < u for the uniform distribution bounds."
+        self.l = l
+        self.u = u
+
+    # TODO: There should be a better way to implement this
+    def forward(self, x: Tensor) -> Tensor:
+        # Sample a_i from U(l, u)
+        a = torch.empty_like(x).uniform_(self.l, self.u)
+
+        common_term = 1 / (1 + x).pow(2)
+
+        # Compute f(z_i)
+        positive = common_term + x
+        negative = common_term + a * x
+
+        # Apply the activation function
+        return torch.where(x >= 0, positive, negative)
+
+
+class SlReLU(nn.Module):
+    r"""
+    A Sloped ReLU (SlReLU) [242] is similar to the LReLU — whereas the LReLU parameterizes the slope for negative
+    inputs, the SlReLU parameterizes the slope of ReLU for positive inputs. It is, therefore, defined as:
+
+    .. math::
+        `\text{SlReLU}(z) = 
+        \begin{cases} 
+        a \cdot z, & z \geq 0, \\
+        0, & z < 0,
+        \end{cases}` 
+        
+    a is recommended to be from 1 to 10.
+    
+    See: https://doi.org/10.1109/pimrc.2017.8292678
+    
+    Args:
+        a (float, optional): The slope for positive inputs. Default: 10.0
+        inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
+        
+    Shape:
+        - Input: :math:`(*, C, *)` where :math:`*` means any number of additional dimensions
+        - Output: :math:`(*, 2C, *)`
         
     Here is a plot of the function and its derivative:
 
-    .. image:: ../images/activation_images/ShiLU.png
-
-    Examples::
-
-        >>> m = torch_activation.ShiLU(alpha=2.0, beta=1.0)
-        >>> x = torch.randn(2)
-        >>> output = m(x)
-
-        >>> m = torch_activation.ShiLU(inplace=True)
-        >>> x = torch.randn(2, 3, 4)
-        >>> m(x)
+    .. image:: ../images/activation_images/SlReLU.png
     """
 
-    def __init__(self, alpha: float = 1.0, beta: float = 0.0, 
-                 inplace: bool = False):
-        super().__init__()
-        self.alpha = nn.Parameter(Tensor([alpha]))
-        self.beta = nn.Parameter(Tensor([beta]))
+    def __init__(self, a=10.0, inplace: bool = False):
+        super(SlReLU, self).__init__()
+        self.a = a
         self.inplace = inplace
 
-    def forward(self, x) -> Tensor:
+    def forward(self, x):
         if self.inplace:
-            F.relu_(x)
-            x.mul_(self.alpha)
-            x.add_(self.beta)
-            return x
+            return F.relu_(self.a * x)
         else:
-            return self.alpha * F.relu(x) + self.beta
+            return F.relu(self.a * x)
 
 
 class CReLU(nn.Module):
@@ -59,9 +130,9 @@ class CReLU(nn.Module):
     Applies the Concatenated Rectified Linear Unit activation function.
 
     :math:`\text{CReLU}(x) = \text{ReLU}(x) \oplus \text{ReLU}(-x)`
-    
+
      See: https://doi.org/10.48550/arXiv.1603.05201
-   
+
     Args:
         dim (int, optional): Dimension along which to concatenate in the output tensor. Default: 1
         inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
@@ -93,9 +164,9 @@ class ReLUN(nn.Module):
     r"""Applies the element-wise function:
 
     :math:`\text{ReLUN}(x) = \min(\text{ReLU}(x), n)`
-    
+
      See: https://doi.org/10.20944/preprints202301.0463.v1
-   
+
     Args:
         n (float, optional): Upper bound for the function's output. Default is 1.0.
         inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
@@ -103,9 +174,9 @@ class ReLUN(nn.Module):
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
-        
+
     Here is a plot of the function and its derivative:
-        
+
     .. image:: ../images/activation_images/ReLUN.png
 
     Examples::
@@ -120,6 +191,7 @@ class ReLUN(nn.Module):
 
     """
 
+    # TODO: Default to RELU6
     def __init__(self, n: float = 1.0, inplace: bool = False):
         super(ReLUN, self).__init__()
         self.n = nn.Parameter(Tensor([n]))
@@ -142,13 +214,13 @@ class SquaredReLU(nn.Module):
         inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
      See: https://arxiv.org/pdf/2109.08668.pdf
-     
+
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
-        
+
     Here is a plot of the function and its derivative:
-        
+
     .. image:: ../images/activation_images/SquaredReLU.png
 
     Examples::
@@ -171,54 +243,3 @@ class SquaredReLU(nn.Module):
             return F.relu_(x).pow_(2)
         else:
             return F.relu(x).pow(2)
-
-
-class StarReLU(nn.Module):
-    r"""
-    Applies the element-wise function:
-
-    :math:`\text{StarReLU}(x) = s \cdot \text{ReLU}(x)^2 + b`
-
-     See: https://doi.org/10.48550/arXiv.2210.13452
-
-    Args:
-        s (float, optional): Scaled factor for StarReLU, shared across channel. Default: 0.8944
-        b (float, optional): Bias term for StarReLU, shared across channel. Default: -0.4472
-        learnable (bool, optional): optionally make ``s`` and ``b`` trainable. Default: ``False``
-        inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
-
-    Shape:
-        - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
-        - Output: :math:`(*)`, same shape as the input.
-        
-    .. image:: ../images/activation_images/StarReLU.png
-
-    Examples::
-
-        >>> m = torch_activation.StarReLU(s=1.0, b=0.0)
-        >>> x = torch.randn(3, 384, 384)
-        >>> output = m(x)
-
-        >>> m = torch_activation.StarReLU(learnable=True, inplace=True)
-        >>> x = torch.randn(3, 384, 384)
-        >>> m(x)
-    """
-
-    def __init__(self, s: float = 0.8944, b: float = -0.4472, 
-                 learnable: bool = False, inplace: bool = False):
-        super().__init__()
-        self.inplace = inplace
-        if learnable: 
-            self.s = nn.Parameter(Tensor([s]))
-            self.b = nn.Parameter(Tensor([b]))
-        else:
-            self.s = Tensor([s])
-            self.b = Tensor([b])
-
-    def forward(self, x) -> Tensor:
-        if self.inplace:
-            return F.relu_(x).pow_(2) \
-                             .mul_(self.s) \
-                             .add_(self.b)
-        else:
-            return self.s * F.relu(x).pow(2) + self.b

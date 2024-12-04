@@ -6,5 +6,5 @@ imagesize
 jinja2
 readme-renderer
 Sphinx
-sphinx-rtd-theme
+sphinx_rtd_theme
 sphinxcontrib-napoleon

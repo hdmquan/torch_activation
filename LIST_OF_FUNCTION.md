@@ -2,45 +2,46 @@
 
 ---
 
-| **ReLU Variations** ||
-|-|-|
-| ShiLU [[1]](#1) | $\alpha \cdot \text{ReLU}(x) + \beta$ |
-| ReLUN [[1]](#1) | $\min(\text{ReLU}(x), n)$ |
-| CReLU [[2]](#2) | $\text{ReLU}(x) \oplus \text{ReLU}(-x)$ |
-| SquaredReLU [[5]](#5) | $\text{ReLU}(x)^2$ |
-| StarReLU [[8]](#8) | $s \cdot \text{ReLU}(x)^2 + b$ |
+| **ReLU Variations**   |                                         |
+| --------------------- | --------------------------------------- |
+| ShiLU [[1]](#1)       | $\alpha \cdot \text{ReLU}(x) + \beta$   |
+| ReLUN [[1]](#1)       | $\min(\text{ReLU}(x), n)$               |
+| CReLU [[2]](#2)       | $\text{ReLU}(x) \oplus \text{ReLU}(-x)$ |
+| SquaredReLU [[5]](#5) | $\text{ReLU}(x)^2$                      |
+| StarReLU [[8]](#8)    | $s \cdot \text{ReLU}(x)^2 + b$          |
 
-| **GLU Variations** ||
-|-|-|
-| ReGLU [[6]](#6) | $\text{ReLU} (xW + b) \odot (xV + c)$ |
-| GeGLU [[6]](#6) | $\text{GeLU} (xW + b) \odot (xV + c)$ |
-| SwiGLU [[6]](#6) | $\sigma (xW + b) \odot (xV + c)$ |
-| SeGLU [[11]](#11) | $\text{SELU} (xW + b) \odot (xV + c)$ |
+| **GLU Variations** |                                       |
+| ------------------ | ------------------------------------- |
+| ReGLU [[6]](#6)    | $\text{ReLU} (xW + b) \odot (xV + c)$ |
+| GeGLU [[6]](#6)    | $\text{GeLU} (xW + b) \odot (xV + c)$ |
+| SwiGLU [[6]](#6)   | $\sigma (xW + b) \odot (xV + c)$      |
+| SeGLU [[11]](#11)  | $\text{SELU} (xW + b) \odot (xV + c)$ |
 
-| **Composite Functions** ||
-|-|-|
-| DELU [[1]](#1) | $\text{if }  x \leqslant 0 \text{, SiLU}(x); \text{ else, } x(n-1)$ |
-| DReLUs [[10]](#10) | $\text{if }  x \leqslant 0 \text{, } \alpha (e ^ x -1); \text{ else, }  x$ |
+| **Composite Functions** |                                                                            |
+| ----------------------- | -------------------------------------------------------------------------- |
+| DELU [[1]](#1)          | $\text{if }  x \leqslant 0 \text{, SiLU}(x); \text{ else, } x(n-1)$        |
+| DReLUs [[10]](#10)      | $\text{if }  x \leqslant 0 \text{, } \alpha (e ^ x -1); \text{ else, }  x$ |
 
-| **Trigonometry Based** ||
-|-|-|
-| GCU [[3]](#3) | $x \cdot \cos(x)$ |
-| CosLU [[1]](#1) | $(x + \alpha \cdot \cos(\beta x)) \cdot \sigma(x)$ |
-| SinLU [[9]](#9)| $(x + \alpha \cdot \sin (\beta x)) \cdot \sigma (x)$ |
+| **Trigonometry Based** |                                                      |
+| ---------------------- | ---------------------------------------------------- |
+| GCU [[3]](#3)          | $x \cdot \cos(x)$                                    |
+| CosLU [[1]](#1)        | $(x + \alpha \cdot \cos(\beta x)) \cdot \sigma(x)$   |
+| SinLU [[9]](#9)        | $(x + \alpha \cdot \sin (\beta x)) \cdot \sigma (x)$ |
 
-| **Others** ||
-|-|-|
+| **Others**               |                                        |
+| ------------------------ | -------------------------------------- |
 | ScaledSoftSign [[1]](#1) | $\frac{\alpha \cdot x}{\beta + \|x\|}$ |
-| CoLU [[4]](#4) | $\frac{x}{1-x \cdot e^{-(x + e^x)}}$ |
+| CoLU [[4]](#4)           | $\frac{x}{1-x \cdot e^{-(x + e^x)}}$   |
 
-| **Linear Combination** ||
-|-|-|
-| LinComb [[7]](#7) | $\sum_{i=1}^{n} w_i \cdot F_i(x)$ |
-| NormLinComb [[7]](#7) | $\frac{\sum_{i=1}^{n} w_i \cdot F_i(x)}{\|\|W\|\|}$ |
+| **Linear Combination** |                                                     |
+| ---------------------- | --------------------------------------------------- |
+| LinComb [[7]](#7)      | $\sum_{i=1}^{n} w_i \cdot F_i(x)$                   |
+| NormLinComb [[7]](#7)  | $\frac{\sum_{i=1}^{n} w_i \cdot F_i(x)}{\|\|W\|\|}$ |
 
 ---
 
 ## References
+
 <a id="1">[1]</a>
 Pishchik, E. (2023). Trainable Activations for Image Classification. Preprints.org, 2023010463. DOI: 10.20944/preprints202301.0463.v1.
 

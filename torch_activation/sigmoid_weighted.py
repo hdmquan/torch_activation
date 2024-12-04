@@ -4,16 +4,14 @@ import torch.nn.functional as F
 
 from torch import Tensor
 
-from torch_activation.utils import plot_activation
 
-
-class GCU(nn.Module):
+class CoLU(nn.Module):
     r"""
-    Applies the Growing Cosine Unit activation function:
+    Applies the Collapsing Linear Unit activation function:
 
-    :math:`\text{GCU}(x) = x \cos (x)`
-    
-     See: https://doi.org/10.48550/arXiv.2108.12943
+    :math:`\text{CoLU}(x) = \frac{x}{1-x \cdot e^{-(x + e^x)}}`
+
+     See: https://doi.org/10.48550/arXiv.2112.12078
 
     Args:
         inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
@@ -21,85 +19,66 @@ class GCU(nn.Module):
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
-        
+
     Here is a plot of the function and its derivative:
-        
-    .. image:: ../images/activation_images/GCU.png
-        
+
+    .. image:: ../images/activation_images/CoLU.png
+
     Examples::
 
-        >>> m = nn.GCU()
+        >>> m = nn.CoLU()
         >>> x = torch.randn(2)
         >>> output = m(x)
 
-        >>> m = nn.GCU(inplace=True)
+        >>> m = nn.CoLU(inplace=True)
         >>> x = torch.randn(2)
         >>> m(x)
     """
 
-    def __init__(self, inplace: bool = False):
-        super(GCU, self).__init__()
+    def __init__(self, inplace=False):
+        super(CoLU, self).__init__()
         self.inplace = inplace
 
     def forward(self, x) -> Tensor:
         if self.inplace:
-            return x.mul_(torch.cos(x))
+            return x.div_(1 - x * torch.exp(-1 * (x + torch.exp(x))))
         else:
-            return x * torch.cos(x)
+            return x / (1 - x * torch.exp(-1 * (x + torch.exp(x))))
 
 
-class CosLU(nn.Module):
+class Phish(torch.nn.Module):
     r"""
-    Applies the Cosine Linear Unit function:
+    Applies the Phish activation function:
 
-    :math:`\text{CosLU}(x) = (x + a \cdot \cos(b \cdot x)) \cdot \sigma(x)`
-    
-     See: https://doi.org/10.20944/preprints202301.0463.v1
-   
-    Args:
-        a (float, optional): Scaling factor for the cosine term. Default is 1.0.
-        b (float, optional): Frequency factor for the cosine term. Default is 1.0.
-        inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
+    :math:`\text{Phish}(x) = x \cdot \tanh (\text{GELU} (x))`
+
+     See: `Phish: A Novel Hyper-Optimizable Activation Function`_.
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
-        
+
     Here is a plot of the function and its derivative:
-        
-    .. image:: ../images/activation_images/CosLU.png
 
-    Examples::
+    .. image:: ../images/activation_images/Phish.png
 
-        >>> m = CosLU(alpha=2.0, beta=1.0)
-        >>> x = torch.randn(2)
+    Examples:
+        >>> m = Phish()
+        >>> x = torch.randn(2, 3)
         >>> output = m(x)
 
-        >>> m = CosLU(inplace=True)
-        >>> x = torch.randn(2, 3, 4)
-        >>> m(x) 
+    .. _`Phish: A Novel Hyper-Optimizable Activation Function`:
+        https://www.semanticscholar.org/paper/Phish%3A-A-Novel-Hyper-Optimizable-Activation-Naveen/43eb5e22da6092d28f0e842fec53ec1a76e1ba6b
     """
 
-    def __init__(self, a: float = 1.0, b: float = 1.0, 
-                 inplace: bool = False):
-        super(CosLU, self).__init__()
-        self.alpha = nn.Parameter(Tensor([a]))
-        self.beta = nn.Parameter(Tensor([b]))
-        self.inplace = inplace
+    def __init__(self):
+        super(Phish, self).__init__()
 
     def forward(self, x) -> Tensor:
-        return self._forward_inplace(x) if self.inplace else self._forward(x)
-
-    def _forward(self, x):
-        result = x + self.alpha * torch.cos(self.beta * x)
-        result *= torch.sigmoid(x)
-        return result
-
-    def _forward_inplace(self, x):
-        s_x = torch.sigmoid(x)
-        x.add_(self.alpha * torch.cos(self.beta * x))
-        x.mul_(s_x)
-        return x
+        output = F.gelu(x)
+        output = F.tanh(output)
+        output = x * output
+        return output
 
 
 class SinLU(nn.Module):
@@ -107,9 +86,9 @@ class SinLU(nn.Module):
     Applies the Sinu-sigmoidal Linear Unit activation function:
 
     :math:`\text{SinLU}(x) = (x + a \cdot \sin (b \cdot x)) \sigma (x)`
-    
+
      See: https://doi.org/10.3390/math10030337
-    
+
     Args:
         a (float, optional): Initial value for sine function magnitude. Default: 1.0.
         b (float, optional): Initial value for sine function period. Default: 1.0.
@@ -118,9 +97,9 @@ class SinLU(nn.Module):
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
-        
+
     Here is a plot of the function and its derivative:
-        
+
     .. image:: ../images/activation_images/SinLU.png
 
     Examples::
@@ -129,8 +108,8 @@ class SinLU(nn.Module):
         >>> x = torch.randn(2)
         >>> output = m(x)
     """
-    def __init__(self, a: float = 1.0, b: float = 1.0, 
-                 inplace: bool = False):
+
+    def __init__(self, a: float = 1.0, b: float = 1.0, inplace: bool = False):
         super(SinLU, self).__init__()
         self.alpha = nn.Parameter(Tensor([a]))
         self.beta = nn.Parameter(Tensor([b]))

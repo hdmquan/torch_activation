@@ -1,45 +1,52 @@
 Modules
 =================
 
-ReLU Variations
+All Available Functions
 ------------------------------
 
-.. automodule:: torch_activation.relus
+.. automodule:: torch_activation
    :members:
    :undoc-members:
 
-GLU Variations
+Rectified Linear Function
+------------------------------
+
+.. automodule:: torch_activation.relu
+   :members:
+   :undoc-members:
+
+ReLU-based Family of Adaptive Functions
+------------------------------
+
+.. automodule:: torch_activation.adaptive_relu
+   :members:
+   :undoc-members:
+
+Adaptive Sigmoid-weighted Linear Units
 -----------------------------
 
-.. automodule:: torch_activation.glus
+.. automodule:: torch_activation.sigmoid_weighted
    :members:
    :undoc-members:
 
-Piece-wise functions
+ Locally Adaptive Activation Function
 ----------------------------------
 
-.. automodule:: torch_activation.piece_wise
+.. automodule:: torch_activation.laaf
    :members:
    :undoc-members:
 
-Trigonometry-based Functions
+Other Functions
 -----------------------------
 
-.. automodule:: torch_activation.trig
+.. automodule:: torch_activation.other
    :members:
    :undoc-members: 
 
-Smooth curve Functions
+Linear Combination and GLUs
 ------------------------------------
 
-.. automodule:: torch_activation.curves
-   :members:
-   :undoc-members:
-
-Linear Combination
---------------------------------
-
-.. automodule:: torch_activation.lincomb
+.. automodule:: torch_activation.layer
    :members:
    :undoc-members:
 
@@ -50,11 +57,4 @@ Utilities
    :members:
    :undoc-members:
    :exclude-members: test_inplace
-
-All Available Functions
-------------------------------
-
-.. automodule:: torch_activation
-   :members:
-   :undoc-members:
    
