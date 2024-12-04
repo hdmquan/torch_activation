@@ -5,10 +5,10 @@ sys.path.insert(0, os.path.abspath("../"))
 
 # Configuration file for the Sphinx documentation builder.
 
-project = "Torch activation"
+project = "Torch Activation"
 copyright = "2024, Alan Huynh"
 author = "Alan Huynh"
-release = "1.0.0"
+release = "0.2.0"
 
 extensions = [
     "sphinx.ext.autodoc",

@@ -15,24 +15,24 @@ Rectified Linear Function
    :members:
    :undoc-members:
 
-Ridge Functions
+ReLU-based Family of Adaptive Functions
 ------------------------------
 
-.. automodule:: torch_activation.ridge
+.. automodule:: torch_activation.adaptive_relu
    :members:
    :undoc-members:
 
-Radial Functions
+Adaptive Sigmoid-weighted Linear Units
 -----------------------------
 
-.. automodule:: torch_activation.radial
+.. automodule:: torch_activation.sigmoid_weighted
    :members:
    :undoc-members:
 
-Periodic Functions
+ Locally Adaptive Activation Function
 ----------------------------------
 
-.. automodule:: torch_activation.periodic
+.. automodule:: torch_activation.laaf
    :members:
    :undoc-members:
 
@@ -43,7 +43,7 @@ Other Functions
    :members:
    :undoc-members: 
 
-Layers
+Linear Combination and GLUs
 ------------------------------------
 
 .. automodule:: torch_activation.layer
