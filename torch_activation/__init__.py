@@ -1,7 +1,6 @@
 from .other import Phish, DELU
 from .layer import ReGLU, GeGLU, SeGLU, SwiGLU, LinComb, NormLinComb
-from .radial import ScaledSoftSign
-from .ridge import ShiLU, SquaredReLU, StarReLU, CoLU
+from .adaptive_relu import ShiLU, SquaredReLU, StarReLU, CoLU
 from .relu import ReLUN, CReLU, SlReLU, ShiftedReLU, SoftsignRReLU
 from .periodic import SinLU, CosLU, GCU
 from .utils import plot_activation

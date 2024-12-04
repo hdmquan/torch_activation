@@ -53,47 +53,6 @@ class ShiLU(nn.Module):
             return self.alpha * F.relu(x) + self.beta
 
 
-class SquaredReLU(nn.Module):
-    r"""
-    Applies the element-wise function:
-
-    :math:`\text{SquaredReLU}(x) = \text{ReLU}(x)^2`
-
-    Args:
-        inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
-
-     See: https://arxiv.org/pdf/2109.08668.pdf
-
-    Shape:
-        - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
-        - Output: :math:`(*)`, same shape as the input.
-
-    Here is a plot of the function and its derivative:
-
-    .. image:: ../images/activation_images/SquaredReLU.png
-
-    Examples::
-
-        >>> m = torch_activation.SquaredReLU()
-        >>> x = torch.randn(2)
-        >>> output = m(x)
-
-        >>> m = torch_activation.SquaredReLU(inplace=True)
-        >>> x = torch.randn(2)
-        >>> m(x)
-    """
-
-    def __init__(self, inplace: bool = False):
-        super().__init__()
-        self.inplace = inplace
-
-    def forward(self, x) -> Tensor:
-        if self.inplace:
-            return F.relu_(x).pow_(2)
-        else:
-            return F.relu(x).pow(2)
-
-
 class StarReLU(nn.Module):
     r"""
     Applies the element-wise function:
@@ -148,15 +107,17 @@ class StarReLU(nn.Module):
             return self.s * F.relu(x).pow(2) + self.b
 
 
-class CoLU(nn.Module):
+class DELU(nn.Module):
     r"""
-    Applies the Collapsing Linear Unit activation function:
+    Applies the DELU activation function:
 
-    :math:`\text{CoLU}(x) = \frac{x}{1-x \cdot e^{-(x + e^x)}}`
+    :math:`\text{DELU}(x) = \begin{cases} \text{SiLU}(x), x \leqslant 0 \\x(n-1), \text{otherwise} \end{cases}`
 
-     See: https://doi.org/10.48550/arXiv.2112.12078
+
+     See: https://doi.org/10.20944/preprints202301.0463.v1
 
     Args:
+        n (float, optional): Scaling factor for the positive part of the input. Default: 1.0.
         inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
@@ -165,25 +126,32 @@ class CoLU(nn.Module):
 
     Here is a plot of the function and its derivative:
 
-    .. image:: ../images/activation_images/CoLU.png
+    .. image:: ../images/activation_images/DELU.png
 
-    Examples::
-
-        >>> m = nn.CoLU()
+    Examples:
+        >>> m = nn.DELU()
         >>> x = torch.randn(2)
         >>> output = m(x)
 
-        >>> m = nn.CoLU(inplace=True)
+        >>> m = nn.DELU(inplace=True)
         >>> x = torch.randn(2)
         >>> m(x)
     """
 
-    def __init__(self, inplace=False):
-        super(CoLU, self).__init__()
+    def __init__(self, n: float = 1.0, inplace: bool = False):
+        super(DELU, self).__init__()
+        self.n = torch.nn.Parameter(Tensor([n]))
         self.inplace = inplace
 
     def forward(self, x) -> Tensor:
-        if self.inplace:
-            return x.div_(1 - x * torch.exp(-1 * (x + torch.exp(x))))
-        else:
-            return x / (1 - x * torch.exp(-1 * (x + torch.exp(x))))
+        return self._forward_inplace(x) if self.inplace else self._forward(x)
+
+    def _forward(self, x):
+        return torch.where(
+            x <= 0, F.silu(x), (self.n + 0.5) * x + torch.abs(torch.exp(-x) - 1)
+        )
+
+    def _forward_inplace(self, x):
+        x[x <= 0] = F.silu(x[x <= 0])
+        x[x > 0] = (self.n + 0.5) * x[x > 0] + torch.abs(torch.exp(-x[x > 0]) - 1)
+        return x

@@ -5,17 +5,60 @@ import torch.nn.functional as F
 from torch import Tensor
 
 
-class DELU(nn.Module):
+class ScaledSoftSign(torch.nn.Module):
     r"""
-    Applies the DELU activation function:
+    Applies the ScaledSoftSign activation function:
 
-    :math:`\text{DELU}(x) = \begin{cases} \text{SiLU}(x), x \leqslant 0 \\x(n-1), \text{otherwise} \end{cases}`
-
+    :math:`\text{ScaledSoftSign}(x) = \frac{\alpha \cdot x}{\beta + \|x\|}`
 
      See: https://doi.org/10.20944/preprints202301.0463.v1
 
     Args:
-        n (float, optional): Scaling factor for the positive part of the input. Default: 1.0.
+        alpha (float, optional): The initial value of the alpha parameter. Default: 1.0
+        beta (float, optional): The initial value of the beta parameter. Default: 1.0
+
+    Shape:
+        - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
+        - Output: :math:`(*)`, same shape as the input.
+
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/ScaledSoftSign.png
+
+    Examples:
+        >>> m = ScaledSoftSign(alpha=0.5, beta=1.0)
+        >>> x = torch.randn(2, 3)
+        >>> output = m(x)
+
+        >>> m = ScaledSoftSign(inplace=True)
+        >>> x = torch.randn(2, 3)
+        >>> m(x)
+    """
+
+    def __init__(self, alpha: float = 1.0, beta: float = 1.0):
+
+        super(ScaledSoftSign, self).__init__()
+
+        self.alpha = torch.nn.Parameter(Tensor([alpha]))
+        self.beta = torch.nn.Parameter(Tensor([beta]))
+
+    def forward(self, x) -> Tensor:
+        abs_x = x.abs()
+        alpha_x = self.alpha * x
+        denom = self.beta + abs_x
+        result = alpha_x / denom
+        return result
+
+
+class GCU(nn.Module):
+    r"""
+    Applies the Growing Cosine Unit activation function:
+
+    :math:`\text{GCU}(x) = x \cos (x)`
+
+     See: https://doi.org/10.48550/arXiv.2108.12943
+
+    Args:
         inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
@@ -24,71 +67,28 @@ class DELU(nn.Module):
 
     Here is a plot of the function and its derivative:
 
-    .. image:: ../images/activation_images/DELU.png
+    .. image:: ../images/activation_images/GCU.png
 
-    Examples:
-        >>> m = nn.DELU()
+    Examples::
+
+        >>> m = nn.GCU()
         >>> x = torch.randn(2)
         >>> output = m(x)
 
-        >>> m = nn.DELU(inplace=True)
+        >>> m = nn.GCU(inplace=True)
         >>> x = torch.randn(2)
         >>> m(x)
     """
 
-    def __init__(self, n: float = 1.0, inplace: bool = False):
-        super(DELU, self).__init__()
-        self.n = torch.nn.Parameter(Tensor([n]))
+    def __init__(self, inplace: bool = False):
+        super(GCU, self).__init__()
         self.inplace = inplace
 
     def forward(self, x) -> Tensor:
-        return self._forward_inplace(x) if self.inplace else self._forward(x)
-
-    def _forward(self, x):
-        return torch.where(
-            x <= 0, F.silu(x), (self.n + 0.5) * x + torch.abs(torch.exp(-x) - 1)
-        )
-
-    def _forward_inplace(self, x):
-        x[x <= 0] = F.silu(x[x <= 0])
-        x[x > 0] = (self.n + 0.5) * x[x > 0] + torch.abs(torch.exp(-x[x > 0]) - 1)
-        return x
-
-
-
-class Phish(torch.nn.Module):
-    r"""
-    Applies the Phish activation function:
-
-    :math:`\text{Phish}(x) = x \cdot \tanh (\text{GELU} (x))`
-
-     See: `Phish: A Novel Hyper-Optimizable Activation Function`_.
-
-    Shape:
-        - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
-        - Output: :math:`(*)`, same shape as the input.
-
-    Here is a plot of the function and its derivative:
-
-    .. image:: ../images/activation_images/Phish.png
-
-    Examples:
-        >>> m = Phish()
-        >>> x = torch.randn(2, 3)
-        >>> output = m(x)
-
-    .. _`Phish: A Novel Hyper-Optimizable Activation Function`:
-        https://www.semanticscholar.org/paper/Phish%3A-A-Novel-Hyper-Optimizable-Activation-Naveen/43eb5e22da6092d28f0e842fec53ec1a76e1ba6b
-    """
-
-    def __init__(self):
-        super(Phish, self).__init__()
-
-    def forward(self, x) -> Tensor:
-        output = F.gelu(x)
-        output = F.tanh(output)
-        output = x * output
-        return output
+        if self.inplace:
+            return x.mul_(torch.cos(x))
+        else:
+            return x * torch.cos(x)
 
 
 """

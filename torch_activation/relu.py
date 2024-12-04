@@ -202,3 +202,44 @@ class ReLUN(nn.Module):
             return x.clamp_(0, self.n.item())
         else:
             return torch.clamp(x, 0, self.n.item())
+
+
+class SquaredReLU(nn.Module):
+    r"""
+    Applies the element-wise function:
+
+    :math:`\text{SquaredReLU}(x) = \text{ReLU}(x)^2`
+
+    Args:
+        inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
+
+     See: https://arxiv.org/pdf/2109.08668.pdf
+
+    Shape:
+        - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
+        - Output: :math:`(*)`, same shape as the input.
+
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/SquaredReLU.png
+
+    Examples::
+
+        >>> m = torch_activation.SquaredReLU()
+        >>> x = torch.randn(2)
+        >>> output = m(x)
+
+        >>> m = torch_activation.SquaredReLU(inplace=True)
+        >>> x = torch.randn(2)
+        >>> m(x)
+    """
+
+    def __init__(self, inplace: bool = False):
+        super().__init__()
+        self.inplace = inplace
+
+    def forward(self, x) -> Tensor:
+        if self.inplace:
+            return F.relu_(x).pow_(2)
+        else:
+            return F.relu(x).pow(2)
