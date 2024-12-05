@@ -1,4 +1,6 @@
 torch
+pustil
+plotly
 Babel
 imagesize
 jinja2
