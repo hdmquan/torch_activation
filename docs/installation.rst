@@ -13,7 +13,7 @@ Alternatively, you can install directly from GitHub:
 
 .. code-block:: bash
 
-    $ git clone https://github.com/alan191006/torch_activation.git
+    $ git clone https://github.com/hdmquan/torch_activation.git
 
 2. Change into the cloned repository's directory:
 
