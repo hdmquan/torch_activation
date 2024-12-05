@@ -1,6 +1,3 @@
-torch
-psutil
-plotly
 Babel
 imagesize
 jinja2
