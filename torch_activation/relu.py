@@ -291,7 +291,7 @@ class Minsin(nn.Module):
     r"""
     Applies the element-wise function:
 
-    :math:`\text{Minsin}(x) =
+    .. math::`\text{Minsin}(x) =
         \begin{cases} 
         \sin(x), & \text{if } x \geq 0 \\
         x, & \text{if } x < 0 
