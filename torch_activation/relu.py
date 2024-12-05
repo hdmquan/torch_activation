@@ -338,6 +338,11 @@ class VLU(nn.Module):
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    Here is a plot of the function:
+
+    .. image:: ../images/activation_images/VLU.png
+
+
     Examples::
 
         >>> m = VLU(a=1.0, b=1.0)
