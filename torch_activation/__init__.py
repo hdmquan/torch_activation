@@ -23,4 +23,4 @@ for file_name in os.listdir(current_dir):
                 # Enable access to the module from the global scope :(
                 globals()[name] = obj
 
-__version__ = "0.2.0"
+__version__ = "0.2.1"
