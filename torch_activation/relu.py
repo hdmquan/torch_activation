@@ -76,12 +76,8 @@ class SoftsignRReLU(nn.Module):
 
         common_term = 1 / (1 + x).pow(2)
 
-        # Compute f(z_i)
-        positive = common_term + x
-        negative = common_term + a * x
-
-        # Apply the activation function
-        return torch.where(x >= 0, positive, negative)
+        # Apply the activation function using torch.where
+        return torch.where(x >= 0, common_term + x, common_term + a * x)
 
 
 class SlReLU(nn.Module):
@@ -243,3 +239,121 @@ class SquaredReLU(nn.Module):
             return F.relu_(x).pow_(2)
         else:
             return F.relu(x).pow(2)
+
+
+class SineReLU(nn.Module):
+    r"""
+    Applies the element-wise function:
+
+    .. math::
+        \text{SineReLU}(z) = 
+        \begin{cases} 
+        z, & \text{if } z \geq 0 \\
+        a (\sin(z) - \cos(z)), & \text{if } z < 0
+        \end{cases}
+
+    Args:
+        a (float, optional): The scaling parameter for the negative inputs. Default: ``1.0``
+        inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
+
+    Shape:
+        - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
+        - Output: :math:`(*)`, same shape as the input.
+
+    Here is a plot of the function:
+
+    .. image:: ../images/activation_images/SineReLU.png
+
+    Examples::
+
+        >>> m = torch_activation.SineReLU()
+        >>> x = torch.randn(2)
+        >>> output = m(x)
+
+        >>> m = torch_activation.SineReLU(a=0.5)
+        >>> x = torch.randn(2)
+        >>> m(x)
+    """
+
+    def __init__(self, a: float = 1.0, inplace: bool = False):
+        super().__init__()
+        self.a = a
+        self.inplace = inplace
+
+    def forward(self, x: Tensor) -> Tensor:
+        if self.inplace:
+            return x.where(x >= 0, x.mul_(self.a * (torch.sin(x) - torch.cos(x))))
+        else:
+            return torch.where(x >= 0, x, self.a * (torch.sin(x) - torch.cos(x)))
+
+
+class Minsin(nn.Module):
+    r"""
+    Applies the element-wise function:
+
+    :math:`\text{Minsin}(x) =
+        \begin{cases} 
+        \sin(x), & \text{if } x \geq 0 \\
+        x, & \text{if } x < 0 
+        \end{cases}`
+
+    Shape:
+        - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
+        - Output: :math:`(*)`, same shape as the input.
+        
+    Here is a plot of the function:
+
+    .. image:: ../images/activation_images/Minsin.png
+
+    Examples::
+
+        >>> m = Minsin()
+        >>> x = torch.randn(2)
+        >>> output = m(x)
+    """
+
+    def __init__(self, inplace: bool = False):
+        super(Minsin, self).__init__()
+        self.inplace = inplace
+
+    def forward(self, x: Tensor) -> Tensor:
+        if self.inplace:
+            return x.where(x >= 0, x.sin_())
+        else:
+            return torch.where(x >= 0, torch.sin(x), x)
+
+
+class VLU(nn.Module):
+    r"""
+    Applies the element-wise function:
+
+    :math:`\text{VLU}(x) = \text{ReLU}(x) + a \sin(bx) = \max(0, x) + a \sin(bx)`
+
+    Args:
+        a (float): Scaling factor for the sine component. Default: ``1.0``
+        b (float): Frequency multiplier for the sine component. Default: ``1.0``
+        inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
+
+    Shape:
+        - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
+        - Output: :math:`(*)`, same shape as the input.
+
+    Examples::
+
+        >>> m = VLU(a=1.0, b=1.0)
+        >>> x = torch.randn(2)
+        >>> output = m(x)
+    """
+
+    def __init__(self, a: float = 1.0, b: float = 1.0, inplace: bool = False):
+        super().__init__()
+        self.a = a
+        self.b = b
+        self.inplace = inplace
+
+    def forward(self, x: Tensor) -> Tensor:
+        if self.inplace:
+            # TODO: Is this correct?
+            return torch.relu_(x) + self.a * torch.sin(self.b * x)
+        else:
+            return torch.relu(x) + self.a * torch.sin(self.b * x)

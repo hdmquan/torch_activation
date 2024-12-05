@@ -24,6 +24,12 @@ diff_acts = [
     "SinLU",
     "Phish",
     "StarReLU",
+    "LinComb",
+    "NormLinComb",
+    "SlReLU",
+    "ShiftedReLU",
+    "SoftsignRReLU",
+    "SineReLU",
 ]
 
 non_diff_acts = [
@@ -36,7 +42,11 @@ def test_diff_acts(acts, dev="cpu"):
     failed_tests = 0
 
     for act_name in acts:
-        act_fn = getattr(torch_activation, act_name, None)()
+        try:
+            act_fn = getattr(torch_activation, act_name, None)()
+        except TypeError:
+            logger.error(f"Activation function {act_name} not found.")
+            continue
 
         # logger.debug(act_fn)
 

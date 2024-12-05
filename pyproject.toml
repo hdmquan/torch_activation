@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "torch-activation"
-version = "0.2.0"
+version = "0.2.1"
 description = "A library of new activation function implement in PyTorch to save time in experiment and have fun"
 authors = ["Alan Huynh <hdmquan@outlook.com>"]
 license = "MIT"

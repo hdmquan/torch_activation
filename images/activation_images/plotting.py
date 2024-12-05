@@ -1,4 +1,5 @@
 from torch_activation import *
+from torch_activation.utils import plot_activation
 
 # ReLUs
 relun_p = {"n": [1, 3]}
@@ -10,8 +11,10 @@ plot_activation(SquaredReLU)
 plot_activation(StarReLU)
 plot_activation(ShiftedReLU)
 plot_activation(SlReLU)
-plot_activation(SoftsignRReLU)
-
+# plot_activation(SoftsignRReLU)
+plot_activation(SineReLU)
+plot_activation(Minsin)
+plot_activation(VLU)
 
 # Piece-wise
 
