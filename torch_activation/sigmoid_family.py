@@ -1202,6 +1202,7 @@ class Rootsig(nn.Module):
 
 class UnnamedSigmoid1(nn.Module):
     r"""
+    :note: The name "UnnamesSigmoid1" derived from "3.2.25 Rootsig and others" entry, particularly the first from from "others" part. Leave it here until I find a better name.
     Applies the Unnamed Sigmoid 1 activation function:
 
     :math:`\text{UnnamedSigmoid1}(z) = z \cdot \text{sgn}(z) \sqrt{z^{-a} - a^{-2}}`
@@ -1245,6 +1246,7 @@ class UnnamedSigmoid1(nn.Module):
 
 class UnnamedSigmoid2(nn.Module):
     r"""
+    :note: The name "UnnamesSigmoid2" derived from "3.2.25 Rootsig and others" entry, particularly the second from from "others" part. Leave it here until I find a better name.
     Applies the Unnamed Sigmoid 2 activation function:
 
     :math:`\text{UnnamedSigmoid2}(z) = \frac{az}{1 + |az|}`
@@ -1274,6 +1276,7 @@ class UnnamedSigmoid2(nn.Module):
 
 class UnnamedSigmoid3(nn.Module):
     r"""
+    :note: The name "UnnamedSigmoid3" derived from "3.2.25 Rootsig and others" entry, particularly the third from from "others" part. Leave it here until I find a better name.
     Applies the Unnamed Sigmoid 3 activation function:
 
     :math:`\text{UnnamedSigmoid3}(z) = \frac{az}{\sqrt{1 + a^2z^2}}`
