@@ -6,7 +6,6 @@ from typing import Tuple
 
 from . import register_activation
 
-@register_activation
 class GatedLinearUnit(nn.Module):
     r"""
     Applies the Gated Linear Unit function:
@@ -37,7 +36,6 @@ class GatedLinearUnit(nn.Module):
         return F.glu(x, dim=self.dim)
 
 
-@register_activation
 class GatedTanhUnit(nn.Module):
     r"""
     Applies the Gated Tanh Unit function:
@@ -76,7 +74,6 @@ class GatedTanhUnit(nn.Module):
         return torch.split(x, split_size, dim=self.dim)
 
 
-@register_activation
 class GatedReLU(nn.Module):
     r"""
     Applies the Gated ReLU function:
@@ -115,7 +112,6 @@ class GatedReLU(nn.Module):
         return torch.split(x, split_size, dim=self.dim)
 
 
-@register_activation
 class GatedGELU(nn.Module):
     r"""
     Applies the Gated GELU function:
@@ -154,7 +150,6 @@ class GatedGELU(nn.Module):
         return torch.split(x, split_size, dim=self.dim)
 
 
-@register_activation
 class SwishGELU(nn.Module):
     r"""
     Applies the Swish-GELU function:

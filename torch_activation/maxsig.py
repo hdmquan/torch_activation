@@ -42,7 +42,6 @@ class TanhLinearUnit(nn.Module):
         return result
 
 
-@register_activation
 class DualELU(nn.Module):
     r"""
     Applies the Dual ELU activation function:
