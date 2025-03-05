@@ -23,6 +23,7 @@ def register_activation(cls=None, *, differentiable=True):
         _ACTIVATIONS[name] = {"class": cls, "differentiable": differentiable}
         # Also make the class available at module level
         globals()[name] = cls
+        __all__.append(name)
         return cls
         
     if cls is None:
@@ -47,20 +48,32 @@ def get_all_activations(differentiable_only=None):
     return [name for name, info in _ACTIVATIONS.items() 
             if info["differentiable"] == differentiable_only]
 
+# Import and register classes from Python files in the main directory
 for file_name in os.listdir(current_dir):
     if file_name.endswith(".py") and file_name != "__init__.py":
-
         # .py
         module_name = file_name[:-3]
-
         module = importlib.import_module(f".{module_name}", package=__package__)
-
+        
         for name, obj in inspect.getmembers(module, inspect.isclass):
             if obj.__module__ == module.__name__:
+                # Register the class with the activation registry
+                register_activation(obj)
 
-                __all__.append(name)
-
-                # Enable access to the module from the global scope :(
-                globals()[name] = obj
+# Import classes from the classical subdirectory without registering
+try:
+    # Import the classical module
+    classical_module = importlib.import_module(".classical", package=__package__)
+    
+    # Get all classes from the classical module
+    for name in getattr(classical_module, "__all__", []):
+        # Get the class object
+        cls = getattr(classical_module, name)
+        
+        # Make it available at the top level without registering
+        globals()[name] = cls
+        __all__.append(name)
+except ImportError:
+    pass
 
 __version__ = "0.2.1"

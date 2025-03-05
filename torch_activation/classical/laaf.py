@@ -4,7 +4,7 @@ import torch.nn.functional as F
 
 from torch import Tensor
 
-from . import register_activation
+from torch_activation import register_activation
 
 @register_activation
 class CosLU(nn.Module):

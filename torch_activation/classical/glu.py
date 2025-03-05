@@ -4,7 +4,7 @@ import torch.nn.functional as F
 from torch import Tensor
 from typing import Tuple
 
-from . import register_activation
+from torch_activation import register_activation
 
 class GLU(nn.Module):
     r"""
