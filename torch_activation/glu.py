@@ -6,7 +6,7 @@ from typing import Tuple
 
 from . import register_activation
 
-class GatedLinearUnit(nn.Module):
+class GLU(nn.Module):
     r"""
     Applies the Gated Linear Unit function:
 
@@ -23,20 +23,20 @@ class GatedLinearUnit(nn.Module):
 
     Examples::
 
-        >>> m = GatedLinearUnit()
+        >>> m = GLU()
         >>> x = torch.randn(4, 2)
         >>> output = m(x)
     """
 
     def __init__(self, dim: int = -1):
-        super(GatedLinearUnit, self).__init__()
+        super(GLU, self).__init__()
         self.dim = dim
 
     def forward(self, x: Tensor) -> Tensor:
         return F.glu(x, dim=self.dim)
 
 
-class GatedTanhUnit(nn.Module):
+class GTU(nn.Module):
     r"""
     Applies the Gated Tanh Unit function:
 
@@ -53,13 +53,13 @@ class GatedTanhUnit(nn.Module):
 
     Examples::
 
-        >>> m = GatedTanhUnit()
+        >>> m = GTU()
         >>> x = torch.randn(4, 2)
         >>> output = m(x)
     """
 
     def __init__(self, dim: int = -1):
-        super(GatedTanhUnit, self).__init__()
+        super(GTU, self).__init__()
         self.dim = dim
 
     def forward(self, x: Tensor) -> Tensor:
@@ -74,7 +74,7 @@ class GatedTanhUnit(nn.Module):
         return torch.split(x, split_size, dim=self.dim)
 
 
-class GatedReLU(nn.Module):
+class GReLU(nn.Module):
     r"""
     Applies the Gated ReLU function:
 
@@ -91,13 +91,13 @@ class GatedReLU(nn.Module):
 
     Examples::
 
-        >>> m = GatedReLU()
+        >>> m = GReLU()
         >>> x = torch.randn(4, 2)
         >>> output = m(x)
     """
 
     def __init__(self, dim: int = -1):
-        super(GatedReLU, self).__init__()
+        super(GReLU, self).__init__()
         self.dim = dim
 
     def forward(self, x: Tensor) -> Tensor:
@@ -112,7 +112,7 @@ class GatedReLU(nn.Module):
         return torch.split(x, split_size, dim=self.dim)
 
 
-class GatedGELU(nn.Module):
+class GEGLU(nn.Module):
     r"""
     Applies the Gated GELU function:
 
@@ -129,13 +129,13 @@ class GatedGELU(nn.Module):
 
     Examples::
 
-        >>> m = GatedGELU()
+        >>> m = GEGLU()
         >>> x = torch.randn(4, 2)
         >>> output = m(x)
     """
 
     def __init__(self, dim: int = -1):
-        super(GatedGELU, self).__init__()
+        super(GEGLU, self).__init__()
         self.dim = dim
 
     def forward(self, x: Tensor) -> Tensor:
@@ -150,11 +150,11 @@ class GatedGELU(nn.Module):
         return torch.split(x, split_size, dim=self.dim)
 
 
-class SwishGELU(nn.Module):
+class SwiGLU(nn.Module):
     r"""
     Applies the Swish-GELU function:
 
-    :math:`\text{SwishGELU}(z, z') = z \otimes \text{swish}(z')`
+    :math:`\text{SwiGLU}(z, z') = z \otimes \text{swish}(z')`
 
     where :math:`\text{swish}(x) = x \cdot \sigma(x)` and :math:`\otimes` is element-wise multiplication.
 
@@ -167,13 +167,13 @@ class SwishGELU(nn.Module):
 
     Examples::
 
-        >>> m = SwishGELU()
+        >>> m = SwiGLU()
         >>> x = torch.randn(4, 2)
         >>> output = m(x)
     """
 
     def __init__(self, dim: int = -1):
-        super(SwishGELU, self).__init__()
+        super(SwiGLU, self).__init__()
         self.dim = dim
 
     def forward(self, x: Tensor) -> Tensor:
