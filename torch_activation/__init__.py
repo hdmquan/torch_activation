@@ -60,10 +60,10 @@ for file_name in os.listdir(current_dir):
                 # Register the class with the activation registry
                 register_activation(obj)
 
-# Import classes from the classical subdirectory without registering
+# Import and conditionally register classes from the classical subdirectory
 try:
-    # Import the classical module
     classical_module = importlib.import_module(".classical", package=__package__)
+    adaptive_module = importlib.import_module(".adaptive", package=__package__)
     
     # Get all classes from the classical module
     for name in getattr(classical_module, "__all__", []):
@@ -73,6 +73,13 @@ try:
         # Make it available at the top level without registering
         globals()[name] = cls
         __all__.append(name)
+
+    # Get all classes from the adaptive module
+    for name in getattr(adaptive_module, "__all__", []):
+        # Get the class object
+        cls = getattr(adaptive_module, name)
+        
+
 except ImportError:
     pass
 

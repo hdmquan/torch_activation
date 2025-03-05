@@ -1232,6 +1232,7 @@ class Rootsig(nn.Module):
 
 @register_activation
 class UnnamedSigmoid1(nn.Module):
+    # TODO: Naming
     r"""
     :note: The name "UnnamesSigmoid1" derived from "3.2.25 Rootsig and others" entry, particularly the first from from "others" part. Leave it here until I find a better name.
     Applies the Unnamed Sigmoid 1 activation function:
@@ -1277,6 +1278,7 @@ class UnnamedSigmoid1(nn.Module):
 
 @register_activation
 class UnnamedSigmoid2(nn.Module):
+    # TODO: Naming
     r"""
     :note: The name "UnnamesSigmoid2" derived from "3.2.25 Rootsig and others" entry, particularly the second from from "others" part. Leave it here until I find a better name.
     Applies the Unnamed Sigmoid 2 activation function:
@@ -1308,6 +1310,7 @@ class UnnamedSigmoid2(nn.Module):
 
 @register_activation
 class UnnamedSigmoid3(nn.Module):
+    # TODO: Naming
     r"""
     :note: The name "UnnamedSigmoid3" derived from "3.2.25 Rootsig and others" entry, particularly the third from from "others" part. Leave it here until I find a better name.
     Applies the Unnamed Sigmoid 3 activation function:
