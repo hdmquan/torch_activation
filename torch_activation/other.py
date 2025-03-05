@@ -3,8 +3,9 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 from torch import Tensor
+from . import register_activation
 
-
+@register_activation
 class ScaledSoftSign(torch.nn.Module):
     r"""
     Applies the ScaledSoftSign activation function:
@@ -50,6 +51,7 @@ class ScaledSoftSign(torch.nn.Module):
         return result
 
 
+@register_activation
 class GCU(nn.Module):
     r"""
     Applies the Growing Cosine Unit activation function:

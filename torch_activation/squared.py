@@ -1,8 +1,10 @@
 import torch
 import torch.nn as nn
 from torch import Tensor
+from . import register_activation
 
 
+@register_activation
 class SQNL(nn.Module):
     r"""
     Applies the SQNL (Square Non-Linear) activation function:
@@ -67,6 +69,7 @@ class SQNL(nn.Module):
         return z
 
 
+@register_activation
 class SQLU(nn.Module):
     r"""
     Applies the SQLU (Square Linear Unit) activation function:
@@ -126,6 +129,7 @@ class SQLU(nn.Module):
         return z
 
 
+@register_activation
 class Squish(nn.Module):
     r"""
     Applies the Squish activation function:
@@ -185,6 +189,7 @@ class Squish(nn.Module):
         return z
 
 
+@register_activation
 class SqREU(nn.Module):
     r"""
     Applies the SqREU (Square Rectified Exponential Unit) activation function:
@@ -244,6 +249,7 @@ class SqREU(nn.Module):
         return z
 
 
+@register_activation
 class SqSoftplus(nn.Module):
     r"""
     Applies the SqSoftplus (Square Softplus) activation function:
@@ -303,6 +309,7 @@ class SqSoftplus(nn.Module):
         return z
 
 
+@register_activation
 class LogSQNL(nn.Module):
     r"""
     Applies the LogSQNL (Logarithmic Square Non-Linear) activation function:
@@ -367,6 +374,7 @@ class LogSQNL(nn.Module):
         return z
 
 
+@register_activation
 class SQMAX(nn.Module):
     r"""
     Applies the SQMAX (Square Maximum) activation function:
@@ -404,6 +412,7 @@ class SQMAX(nn.Module):
         return squared / sum_squared
 
 
+@register_activation
 class LinQ(nn.Module):
     r"""
     Applies the LinQ (Linear Quadratic) activation function:
@@ -471,6 +480,7 @@ class LinQ(nn.Module):
         return z
 
 
+@register_activation
 class ISRLU(nn.Module):
     r"""
     Applies the ISRLU (Inverse Square Root Linear Unit) activation function:
@@ -522,7 +532,7 @@ class ISRLU(nn.Module):
         z[neg] = z[neg] / torch.sqrt(1 + self.a * z[neg] ** 2)
         return z
 
-
+@register_activation
 class ISRU(nn.Module):
     r"""
     Applies the ISRU (Inverse Square Root Unit) activation function:
@@ -563,7 +573,7 @@ class ISRU(nn.Module):
         z.div_(torch.sqrt(1 + self.a * z ** 2))
         return z
 
-
+@register_activation
 class MEF(nn.Module):
     r"""
     Applies the MEF (Modified Error Function) activation function:
@@ -600,4 +610,55 @@ class MEF(nn.Module):
 
     def _forward_inplace(self, z):
         z.div_(torch.sqrt(1 + z ** 2) + 2)
+        return z
+
+
+@register_activation
+class SquaredReLU(nn.Module):
+    r"""
+    Applies the SquaredReLU activation function:
+
+    :math:`\text{SquaredReLU}(z) = \begin{cases} 
+    z^2, & z > 0 \\ 
+    0, & z \leq 0 
+    \end{cases}`
+
+    Args:
+        inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
+
+    Shape:
+        - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
+        - Output: :math:`(*)`, same shape as the input.
+
+    Examples::
+
+        >>> m = nn.SquaredReLU()
+        >>> x = torch.randn(2)
+        >>> output = m(x)
+
+        >>> m = nn.SquaredReLU(inplace=True)
+        >>> x = torch.randn(2)
+        >>> m(x)
+    """
+
+    def __init__(self, inplace: bool = False):
+        super(SquaredReLU, self).__init__()
+        self.inplace = inplace
+
+    def forward(self, z) -> Tensor:
+        return self._forward_inplace(z) if self.inplace else self._forward(z)
+
+    def _forward(self, z):
+        result = torch.empty_like(z)
+        pos = z > 0
+        neg = z <= 0
+        
+        result[pos] = z[pos] ** 2
+        result[neg] = 0
+        
+        return result
+
+    def _forward_inplace(self, z):
+        pos = z > 0
+        z[pos] = z[pos] ** 2
         return z

@@ -4,8 +4,10 @@ import torch.nn.functional as F
 import math
 
 from torch import Tensor
+from . import register_activation
 
 
+@register_activation
 class CoLU(nn.Module):
     r"""
     Applies the Collapsing Linear Unit activation function:
@@ -47,6 +49,7 @@ class CoLU(nn.Module):
             return x / (1 - x * torch.exp(-1 * (x + torch.exp(x))))
 
 
+@register_activation
 class Phish(torch.nn.Module):
     r"""
     Applies the Phish activation function:
@@ -82,6 +85,7 @@ class Phish(torch.nn.Module):
         return output
 
 
+@register_activation
 class SinLU(nn.Module):
     r"""
     Applies the Sinu-sigmoidal Linear Unit activation function:
@@ -131,6 +135,7 @@ class SinLU(nn.Module):
         return x
 
 
+@register_activation
 class GaussianErrorLinearUnit(nn.Module):
     r"""
     Applies the Gaussian Error Linear Unit activation function:
@@ -157,6 +162,7 @@ class GaussianErrorLinearUnit(nn.Module):
         return F.gelu(x)
 
 
+@register_activation
 class SymmetricalGaussianErrorLinearUnit(nn.Module):
     r"""
     Applies the Symmetrical Gaussian Error Linear Unit activation function:
@@ -185,6 +191,7 @@ class SymmetricalGaussianErrorLinearUnit(nn.Module):
         return self.a * x * torch.erf(x / math.sqrt(2))
 
 
+@register_activation
 class CauchyLinearUnit(nn.Module):
     r"""
     Applies the Cauchy Linear Unit activation function:
@@ -209,6 +216,7 @@ class CauchyLinearUnit(nn.Module):
         return x * (torch.arctan(x) / math.pi + 0.5)
 
 
+@register_activation
 class LaplaceLinearUnit(nn.Module):
     r"""
     Applies the Laplace Linear Unit activation function:
@@ -243,6 +251,7 @@ class LaplaceLinearUnit(nn.Module):
         return result
 
 
+@register_activation
 class CollapsingLinearUnit(nn.Module):
     r"""
     Applies the Collapsing Linear Unit activation function:
@@ -280,6 +289,7 @@ class CollapsingLinearUnit(nn.Module):
             return x / denom
 
 
+@register_activation
 class TripleStateSwish(nn.Module):
     r"""
     Applies the Triple State Swish activation function:
@@ -323,6 +333,7 @@ class TripleStateSwish(nn.Module):
         return x
 
 
+@register_activation
 class GeneralizedSwish(nn.Module):
     r"""
     Applies the Generalized Swish activation function:
@@ -348,6 +359,8 @@ class GeneralizedSwish(nn.Module):
     def forward(self, x) -> Tensor:
         return x * torch.sigmoid(torch.exp(-x))
 
+
+@register_activation
 class ExponentialSwish(nn.Module):
     r"""
     Applies the Exponential Swish activation function:
@@ -374,6 +387,7 @@ class ExponentialSwish(nn.Module):
         return torch.exp(-x) * torch.sigmoid(x)
 
 
+@register_activation
 class DerivativeOfSigmoidFunction(nn.Module):
     r"""
     Applies the Derivative of Sigmoid Function activation:
@@ -401,6 +415,7 @@ class DerivativeOfSigmoidFunction(nn.Module):
         return torch.exp(-x) * sigmoid_x * sigmoid_x
 
 
+@register_activation
 class Gish(nn.Module):
     r"""
     Applies the Gish activation function:
@@ -425,6 +440,7 @@ class Gish(nn.Module):
         return x * torch.log(2 - torch.exp(-torch.exp(x)))
 
 
+@register_activation
 class Logish(nn.Module):
     r"""
     Applies the Logish activation function:
@@ -451,6 +467,7 @@ class Logish(nn.Module):
         return x * torch.log(1 + torch.sigmoid(x))
 
 
+@register_activation
 class LogLogish(nn.Module):
     r"""
     Applies the LogLogish activation function:
@@ -475,6 +492,7 @@ class LogLogish(nn.Module):
         return x * (1 - torch.exp(-torch.exp(x)))
 
 
+@register_activation
 class ExpExpish(nn.Module):
     r"""
     Applies the ExpExpish activation function:
@@ -499,6 +517,7 @@ class ExpExpish(nn.Module):
         return x * torch.exp(-torch.exp(-x))
 
 
+@register_activation
 class SelfArctan(nn.Module):
     r"""
     Applies the SelfArctan activation function:
@@ -523,6 +542,7 @@ class SelfArctan(nn.Module):
         return x * torch.arctan(x)
 
 
+@register_activation
 class ParametricLogish(nn.Module):
     r"""
     Applies the Parametric Logish activation function:
@@ -555,6 +575,7 @@ class ParametricLogish(nn.Module):
         return self.a * x * torch.log(1 + torch.sigmoid(self.b * x))
 
 
+@register_activation
 class Phish(nn.Module):
     r"""
     Applies the Phish activation function:
@@ -579,6 +600,7 @@ class Phish(nn.Module):
         return x * torch.tanh(F.gelu(x))
 
 
+@register_activation
 class Suish(nn.Module):
     r"""
     Applies the Suish activation function:
@@ -603,6 +625,7 @@ class Suish(nn.Module):
         return torch.maximum(x, x * torch.exp(-torch.abs(x)))
 
 
+@register_activation
 class TangentSigmoidReLU(nn.Module):
     r"""
     Applies the Tangent Sigmoid ReLU activation function:
@@ -629,6 +652,7 @@ class TangentSigmoidReLU(nn.Module):
         return x * torch.tanh(torch.sigmoid(x))
 
 
+@register_activation
 class TangentBipolarSigmoidReLU(nn.Module):
     r"""
     Applies the Tangent Bipolar Sigmoid ReLU activation function:
@@ -655,6 +679,7 @@ class TangentBipolarSigmoidReLU(nn.Module):
         return x * torch.tanh(bipolar_sigmoid)
 
 
+@register_activation
 class LogSigmoid(nn.Module):
     r"""
     Applies the LogSigmoid activation function:
@@ -681,6 +706,7 @@ class LogSigmoid(nn.Module):
         return F.logsigmoid(x)
 
 
+@register_activation
 class DerivativeOfSiLU(nn.Module):
     r"""
     Applies the Derivative of SiLU activation function:
@@ -708,6 +734,7 @@ class DerivativeOfSiLU(nn.Module):
         return sigmoid_x * (1 + x * (1 - sigmoid_x))
 
 
+@register_activation
 class DoubleSiLU(nn.Module):
     r"""
     Applies the Double SiLU activation function:
@@ -733,6 +760,7 @@ class DoubleSiLU(nn.Module):
         return x * torch.sigmoid(silu_x)
 
 
+@register_activation
 class ModifiedSiLU(nn.Module):
     r"""
     Applies the Modified SiLU activation function:
@@ -759,6 +787,7 @@ class ModifiedSiLU(nn.Module):
         return x * torch.sigmoid(x) + torch.exp(-x.pow(2) / 4)
 
 
+@register_activation
 class HyperbolicTangentSiLU(nn.Module):
     r"""
     Applies the Hyperbolic Tangent SiLU activation function:
@@ -783,6 +812,7 @@ class HyperbolicTangentSiLU(nn.Module):
         silu_x = x * torch.sigmoid(x)
         return torch.tanh(silu_x)
 
+@register_activation
 class ArctanSiLU(nn.Module):
     r"""
     Applies the Arctan SiLU activation function:
@@ -807,6 +837,7 @@ class ArctanSiLU(nn.Module):
         return torch.arctan(x) * torch.sigmoid(x)
 
 
+@register_activation
 class SwAT(nn.Module):
     r"""
     Applies the SwAT activation function:
@@ -831,6 +862,7 @@ class SwAT(nn.Module):
         return x * torch.sigmoid(torch.arctan(torch.abs(x)))
 
 
+@register_activation
 class RectifiedHyperbolicSecant(nn.Module):
     r"""
     Applies the Rectified Hyperbolic Secant activation function:
@@ -857,6 +889,7 @@ class RectifiedHyperbolicSecant(nn.Module):
         return x * (2 / (torch.exp(x) + torch.exp(-x)))
 
 
+@register_activation
 class LinearlyScaledHyperbolicTangent(nn.Module):
     r"""
     Applies the Linearly Scaled Hyperbolic Tangent activation function:
@@ -881,6 +914,7 @@ class LinearlyScaledHyperbolicTangent(nn.Module):
         return x * torch.tanh(x)
 
 
+@register_activation
 class Mish(nn.Module):
     r"""
     Applies the Mish activation function:
@@ -905,6 +939,7 @@ class Mish(nn.Module):
         return x * torch.tanh(F.softplus(x))
 
 
+@register_activation
 class Smish(nn.Module):
     r"""
     Applies the Smish activation function:
@@ -937,6 +972,7 @@ class Smish(nn.Module):
         return self.a * x * torch.tanh(torch.log(1 + torch.sigmoid(self.b * x)))
 
 
+@register_activation
 class TanhExp(nn.Module):
     r"""
     Applies the TanhExp activation function:
@@ -961,6 +997,7 @@ class TanhExp(nn.Module):
         return x * torch.tanh(torch.exp(x))
 
 
+@register_activation
 class Serf(nn.Module):
     r"""
     Applies the Serf activation function:
@@ -985,6 +1022,7 @@ class Serf(nn.Module):
         return x * torch.erf(F.softplus(x))
 
 
+@register_activation
 class EfficientAsymmetricNonlinearActivationFunction(nn.Module):
     r"""
     Applies the Efficient Asymmetric Nonlinear Activation Function:
@@ -1010,6 +1048,7 @@ class EfficientAsymmetricNonlinearActivationFunction(nn.Module):
         return x * (exp_x / (exp_x + 2))
 
 
+@register_activation
 class SinSig(nn.Module):
     r"""
     Applies the SinSig activation function:
@@ -1036,6 +1075,7 @@ class SinSig(nn.Module):
         return x * torch.sin((math.pi / 2) * torch.sigmoid(x))
 
 
+@register_activation
 class SiELU(nn.Module):
     r"""
     Applies the SiELU activation function:

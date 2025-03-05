@@ -3,8 +3,9 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 from torch import Tensor
+from . import register_activation
 
-
+@register_activation    
 class ShiftedReLU(nn.Module):
     r"""
     A Shifted ReLU is a simple translation of a ReLU and is defined as:
@@ -38,6 +39,7 @@ class ShiftedReLU(nn.Module):
             return F.relu(x - 1.0)
 
 
+@register_activation
 class SoftsignRReLU(nn.Module):
     r"""
     The Softsign Randomized Leaky ReLU (S-RReLU) is defined as:
@@ -80,6 +82,7 @@ class SoftsignRReLU(nn.Module):
         return torch.where(x >= 0, common_term + x, common_term + a * x)
 
 
+@register_activation
 class SlReLU(nn.Module):
     r"""
     A Sloped ReLU (SlReLU) [242] is similar to the LReLU — whereas the LReLU parameterizes the slope for negative
@@ -121,6 +124,7 @@ class SlReLU(nn.Module):
             return F.relu(self.a * x)
 
 
+@register_activation
 class CReLU(nn.Module):
     r"""
     Applies the Concatenated Rectified Linear Unit activation function.
@@ -156,6 +160,7 @@ class CReLU(nn.Module):
         return F.relu(torch.cat((x, -x), dim=self.dim))
 
 
+@register_activation
 class ReLUN(nn.Module):
     r"""Applies the element-wise function:
 
@@ -200,6 +205,7 @@ class ReLUN(nn.Module):
             return torch.clamp(x, 0, self.n.item())
 
 
+@register_activation
 class SquaredReLU(nn.Module):
     r"""
     Applies the element-wise function:
@@ -241,6 +247,7 @@ class SquaredReLU(nn.Module):
             return F.relu(x).pow(2)
 
 
+@register_activation
 class SineReLU(nn.Module):
     r"""
     Applies the element-wise function:
@@ -287,6 +294,7 @@ class SineReLU(nn.Module):
             return torch.where(x >= 0, x, self.a * (torch.sin(x) - torch.cos(x)))
 
 
+@register_activation
 class Minsin(nn.Module):
     r"""
     Applies the element-wise function:
@@ -323,6 +331,7 @@ class Minsin(nn.Module):
             return torch.where(x >= 0, torch.sin(x), x)
 
 
+@register_activation
 class VLU(nn.Module):
     r"""
     Applies the element-wise function:

@@ -4,7 +4,9 @@ import torch.nn.functional as F
 
 from torch import Tensor
 
+from . import register_activation
 
+@register_activation
 class ShiLU(nn.Module):
     r"""
     Applies the ShiLU activation function:
@@ -53,6 +55,7 @@ class ShiLU(nn.Module):
             return self.alpha * F.relu(x) + self.beta
 
 
+@register_activation
 class StarReLU(nn.Module):
     r"""
     Applies the element-wise function:
@@ -107,6 +110,7 @@ class StarReLU(nn.Module):
             return self.s * F.relu(x).pow(2) + self.b
 
 
+@register_activation
 class DELU(nn.Module):
     r"""
     Applies the DELU activation function:

@@ -2,9 +2,10 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from torch import Tensor
-import math
+from . import register_activation
 
 
+@register_activation
 class TanhLinearUnit(nn.Module):
     r"""
     Applies the Tanh Linear Unit activation function:
@@ -41,6 +42,7 @@ class TanhLinearUnit(nn.Module):
         return result
 
 
+@register_activation
 class DualELU(nn.Module):
     r"""
     Applies the Dual ELU activation function:
@@ -77,6 +79,7 @@ class DualELU(nn.Module):
         return F.elu(z, alpha=self.alpha) - F.elu(z_prime, alpha=self.alpha)
 
 
+@register_activation
 class DifferenceELU(nn.Module):
     r"""
     Applies the Difference ELU activation function:
@@ -117,6 +120,7 @@ class DifferenceELU(nn.Module):
         return result
 
 
+@register_activation
 class PolynomialLinearUnit(nn.Module):
     r"""
     Applies the Polynomial Linear Unit activation function:
@@ -154,6 +158,7 @@ class PolynomialLinearUnit(nn.Module):
         return result
 
 
+@register_activation
 class InversePolynomialLinearUnit(nn.Module):
     r"""
     Applies the Inverse Polynomial Linear Unit activation function:
@@ -192,6 +197,7 @@ class InversePolynomialLinearUnit(nn.Module):
         return result
 
 
+@register_activation
 class PowerLinearUnit(nn.Module):
     r"""
     Applies the Power Linear Unit activation function:
@@ -233,6 +239,7 @@ class PowerLinearUnit(nn.Module):
         return result
 
 
+@register_activation
 class PowerFunctionLinearUnit(nn.Module):
     r"""
     Applies the Power Function Linear Unit activation function:
@@ -257,6 +264,7 @@ class PowerFunctionLinearUnit(nn.Module):
         return x * 0.5 * (1 + x / torch.sqrt(1 + x.pow(2)))
 
 
+@register_activation
 class FasterPowerFunctionLinearUnit(nn.Module):
     r"""
     Applies the Faster Power Function Linear Unit activation function:
@@ -291,6 +299,7 @@ class FasterPowerFunctionLinearUnit(nn.Module):
         return result
 
 
+@register_activation
 class ElasticAdaptivelyParametricCompoundedUnit(nn.Module):
     r"""
     Applies the Elastic Adaptively Parametric Compounded Unit activation function:
@@ -368,6 +377,7 @@ class ElasticAdaptivelyParametricCompoundedUnit(nn.Module):
             return result
 
 
+@register_activation
 class LipschitzReLU(nn.Module):
     r"""
     Applies the Lipschitz ReLU activation function:
@@ -413,6 +423,7 @@ class LipschitzReLU(nn.Module):
         return result
 
 
+@register_activation
 class ScaledExponentialLinearUnit(nn.Module):
     r"""
     Applies the Scaled Exponential Linear Unit activation function:
@@ -446,6 +457,7 @@ class ScaledExponentialLinearUnit(nn.Module):
         return F.selu(x)
 
 
+@register_activation
 class LeakyScaledExponentialLinearUnit(nn.Module):
     r"""
     Applies the Leaky Scaled Exponential Linear Unit activation function:
@@ -490,6 +502,7 @@ class LeakyScaledExponentialLinearUnit(nn.Module):
         return result
 
 
+@register_activation
 class ScaledExponentiallyRegularizedLinearUnit(nn.Module):
     r"""
     Applies the Scaled Exponentially Regularized Linear Unit activation function:
@@ -532,6 +545,7 @@ class ScaledExponentiallyRegularizedLinearUnit(nn.Module):
         return result
 
 
+@register_activation
 class ScaledScaledExponentialLinearUnit(nn.Module):
     r"""
     Applies the Scaled Scaled Exponential Linear Unit activation function:
@@ -576,6 +590,7 @@ class ScaledScaledExponentialLinearUnit(nn.Module):
         return result
 
 
+@register_activation
 class RSigELU(nn.Module):
     r"""
     Applies the RSigELU activation function:
@@ -622,6 +637,7 @@ class RSigELU(nn.Module):
         return result
 
 
+@register_activation
 class HardSReLUE(nn.Module):
     r"""
     Applies the Hard SReLUE activation function:
@@ -667,6 +683,7 @@ class HardSReLUE(nn.Module):
         return result
 
 
+@register_activation
 class ExponentialLinearSigmoidSquashing(nn.Module):
     r"""
     Applies the Exponential Linear Sigmoid Squashing activation function:
@@ -707,6 +724,7 @@ class ExponentialLinearSigmoidSquashing(nn.Module):
         return result
 
 
+@register_activation
 class HardExponentialLinearSigmoidSquashing(nn.Module):
     r"""
     Applies the Hard Exponential Linear Sigmoid Squashing activation function:
@@ -747,6 +765,7 @@ class HardExponentialLinearSigmoidSquashing(nn.Module):
         return result
 
 
+@register_activation
 class RSigELUD(nn.Module):
     r"""
     Applies the RSigELUD activation function:
@@ -795,6 +814,7 @@ class RSigELUD(nn.Module):
         return result
 
 
+@register_activation 
 class LSReLU(nn.Module):
     r"""
     Applies the LSReLU activation function:

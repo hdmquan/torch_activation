@@ -7,35 +7,9 @@ from utils import (
 
 from loguru import logger
 
-diff_acts = [
-    "ShiLU",
-    "DELU",
-    "CReLU",
-    "GCU",
-    "CosLU",
-    "CoLU",
-    "ReLUN",
-    "SquaredReLU",
-    "ScaledSoftSign",
-    "ReGLU",
-    "GeGLU",
-    "SeGLU",
-    "SwiGLU",
-    "SinLU",
-    "Phish",
-    "StarReLU",
-    "LinComb",
-    "NormLinComb",
-    "SlReLU",
-    "ShiftedReLU",
-    "SoftsignRReLU",
-    "SineReLU",
-]
-
-non_diff_acts = [
-    # "plot_activation"
-]
-
+# Get all registered activations
+diff_acts = torch_activation.get_all_activations(differentiable_only=True)
+non_diff_acts = torch_activation.get_all_activations(differentiable_only=False)
 
 def test_diff_acts(acts, dev="cpu"):
     passed_tests = 0
@@ -43,9 +17,11 @@ def test_diff_acts(acts, dev="cpu"):
 
     for act_name in acts:
         try:
-            act_fn = getattr(torch_activation, act_name, None)()
-        except TypeError:
-            logger.error(f"Activation function {act_name} not found.")
+            # Get the class from the registry
+            act_class = torch_activation._ACTIVATIONS[act_name]["class"]
+            act_fn = act_class()
+        except (KeyError, TypeError):
+            logger.error(f"Activation function {act_name} not found or couldn't be instantiated.")
             continue
 
         # logger.debug(act_fn)
@@ -78,10 +54,12 @@ def test_non_diff_acts(acts, dev="cpu"):
     failed_tests = 0
 
     for act_name in acts:
-        act_fn = globals().get(act_name)
-
-        if act_fn is None:
-            logger.error(f"Activation function {act_name} not found.")
+        try:
+            # Get the class from the registry
+            act_class = torch_activation._ACTIVATIONS[act_name]["class"]
+            act_fn = act_class()
+        except (KeyError, TypeError):
+            logger.error(f"Activation function {act_name} not found or couldn't be instantiated.")
             continue
 
         logger.info(f"Testing non-differentiable activation: {act_name}")

@@ -4,7 +4,9 @@ import torch.nn.functional as F
 
 from torch import Tensor
 
+from . import register_activation
 
+@register_activation
 class ShiftedScaledSigmoid(nn.Module):
     r"""
     Applies the Shifted Scaled Sigmoid activation function:
@@ -49,6 +51,7 @@ class ShiftedScaledSigmoid(nn.Module):
         return z
 
 
+@register_activation
 class VariantSigmoidFunction(nn.Module):
     r"""
     Applies the Variant Sigmoid Function activation:
@@ -96,6 +99,7 @@ class VariantSigmoidFunction(nn.Module):
         return z
 
 
+@register_activation
 class ScaledHyperbolicTangent(nn.Module):
     r"""
     Applies the Scaled Hyperbolic Tangent activation function:
@@ -139,6 +143,7 @@ class ScaledHyperbolicTangent(nn.Module):
         return z
 
 
+@register_activation
 class BiModalDerivativeSigmoid(nn.Module):
     r"""
     Applies the Bi-Modal Derivative Sigmoid activation function:
@@ -191,6 +196,7 @@ class BiModalDerivativeSigmoid(nn.Module):
         return z
 
 
+@register_activation
 class Arctan(nn.Module):
     r"""
     Applies the Arctan activation function:
@@ -215,6 +221,7 @@ class Arctan(nn.Module):
         return torch.atan(z)
 
 
+@register_activation
 class ArctanGR(nn.Module):
     r"""
     Applies the ArctanGR activation function:
@@ -239,7 +246,7 @@ class ArctanGR(nn.Module):
     def forward(self, z) -> Tensor:
         return torch.atan(z) * self.scale_factor
 
-
+@register_activation
 class SigmoidAlgebraic(nn.Module):
     r"""
     Applies the Sigmoid Algebraic activation function:
@@ -290,6 +297,7 @@ class SigmoidAlgebraic(nn.Module):
         return z
 
 
+@register_activation
 class TripleStateSigmoid(nn.Module):
     r"""
     Applies the Triple State Sigmoid activation function:
@@ -337,6 +345,7 @@ class TripleStateSigmoid(nn.Module):
         return z
 
 
+@register_activation
 class ImprovedLogisticSigmoid(nn.Module):
     r"""
     Applies the Improved Logistic Sigmoid activation function:
@@ -409,6 +418,7 @@ class ImprovedLogisticSigmoid(nn.Module):
         return z
 
 
+@register_activation
 class SigLin(nn.Module):
     r"""
     Applies the SigLin activation function:
@@ -452,6 +462,7 @@ class SigLin(nn.Module):
         return z
 
 
+@register_activation
 class PenalizedHyperbolicTangent(nn.Module):
     r"""
     Applies the Penalized Hyperbolic Tangent activation function:
@@ -500,6 +511,7 @@ class PenalizedHyperbolicTangent(nn.Module):
         return z
 
 
+@register_activation
 class SoftRootSign(nn.Module):
     r"""
     Applies the Soft Root Sign activation function:
@@ -547,6 +559,7 @@ class SoftRootSign(nn.Module):
         return z
 
 
+@register_activation
 class SoftClipping(nn.Module):
     r"""
     Applies the Soft Clipping activation function:
@@ -593,6 +606,7 @@ class SoftClipping(nn.Module):
         return z
 
 
+@register_activation
 class Hexpo(nn.Module):
     r"""
     Applies the Hexpo activation function:
@@ -660,6 +674,7 @@ class Hexpo(nn.Module):
         return z
 
 
+@register_activation
 class Softsign(nn.Module):
     r"""
     Applies the Softsign activation function:
@@ -684,6 +699,7 @@ class Softsign(nn.Module):
         return z / (1 + torch.abs(z))
 
 
+@register_activation
 class SmoothStep(nn.Module):
     r"""
     Applies the Smooth Step activation function:
@@ -765,6 +781,7 @@ class SmoothStep(nn.Module):
         return z
 
 
+@register_activation
 class ElliottActivationFunction(nn.Module):
     r"""
     Applies the Elliott Activation Function:
@@ -789,6 +806,7 @@ class ElliottActivationFunction(nn.Module):
         return (0.5 * z) / (1 + torch.abs(z)) + 0.5
 
 
+@register_activation
 class SincSigmoid(nn.Module):
     r"""
     Applies the Sinc Sigmoid activation function:
@@ -824,6 +842,7 @@ class SincSigmoid(nn.Module):
         return result
 
 
+@register_activation
 class SigmoidGumbel(nn.Module):
     r"""
     Applies the Sigmoid Gumbel activation function:
@@ -848,7 +867,7 @@ class SigmoidGumbel(nn.Module):
         neg_z = -z
         return 1 / (1 + torch.exp(neg_z) * torch.exp(-torch.exp(neg_z)))
 
-
+@register_activation
 class NewSigmoid(nn.Module):
     r"""
     Applies the New Sigmoid activation function:
@@ -881,6 +900,7 @@ class NewSigmoid(nn.Module):
         return numerator / denominator
 
 
+@register_activation
 class Root2sigmoid(nn.Module):
     r"""
     Applies the Root2sigmoid activation function:
@@ -913,6 +933,7 @@ class Root2sigmoid(nn.Module):
         return sqrt2_z / denominator
 
 
+@register_activation
 class LogLog(nn.Module):
     r"""
     Applies the LogLog activation function:
@@ -937,6 +958,7 @@ class LogLog(nn.Module):
         return torch.exp(-torch.exp(-z))
 
 
+@register_activation
 class ComplementaryLogLog(nn.Module):
     r"""
     Applies the Complementary LogLog activation function:
@@ -961,6 +983,7 @@ class ComplementaryLogLog(nn.Module):
         return 1 - torch.exp(-torch.exp(-z))
 
 
+@register_activation
 class ModifiedComplementaryLogLog(nn.Module):
     r"""
     Applies the Modified Complementary LogLog activation function:
@@ -985,6 +1008,7 @@ class ModifiedComplementaryLogLog(nn.Module):
         return 1 - 2 * torch.exp(-0.7 * torch.exp(-z))
 
 
+@register_activation
 class SechSig(nn.Module):
     r"""
     Applies the SechSig activation function:
@@ -1016,6 +1040,7 @@ class SechSig(nn.Module):
         return (z + sech_z) * torch.sigmoid(z)
 
 
+@register_activation
 class ParametricSechSig(nn.Module):
     r"""
     Applies the Parametric SechSig activation function:
@@ -1054,6 +1079,7 @@ class ParametricSechSig(nn.Module):
         return (z + self.a * sech_z_plus_a) * torch.sigmoid(z)
 
 
+@register_activation
 class TanhSig(nn.Module):
     r"""
     Applies the TanhSig activation function:
@@ -1078,6 +1104,7 @@ class TanhSig(nn.Module):
         return (z + torch.tanh(z)) * torch.sigmoid(z)
 
 
+@register_activation
 class ParametricTanhSig(nn.Module):
     r"""
     Applies the Parametric TanhSig activation function:
@@ -1106,6 +1133,7 @@ class ParametricTanhSig(nn.Module):
         return (z + self.a * torch.tanh(z + self.a)) * torch.sigmoid(z)
 
 
+@register_activation
 class MultistateActivationFunction(nn.Module):
     r"""
     Applies the Multistate Activation Function:
@@ -1143,6 +1171,7 @@ class MultistateActivationFunction(nn.Module):
         return result
 
 
+@register_activation
 class SymmetricalMSAF(nn.Module):
     r"""
     Applies the Symmetrical Multistate Activation Function:
@@ -1171,6 +1200,7 @@ class SymmetricalMSAF(nn.Module):
         return -1 + torch.sigmoid(z) + torch.sigmoid(z - self.a)
 
 
+@register_activation
 class Rootsig(nn.Module):
     r"""
     Applies the Rootsig activation function:
@@ -1200,6 +1230,7 @@ class Rootsig(nn.Module):
         return a_z / torch.sqrt(1 + a_z * a_z)
 
 
+@register_activation
 class UnnamedSigmoid1(nn.Module):
     r"""
     :note: The name "UnnamesSigmoid1" derived from "3.2.25 Rootsig and others" entry, particularly the first from from "others" part. Leave it here until I find a better name.
@@ -1244,6 +1275,7 @@ class UnnamedSigmoid1(nn.Module):
         return z * sign_z * sqrt_term
 
 
+@register_activation
 class UnnamedSigmoid2(nn.Module):
     r"""
     :note: The name "UnnamesSigmoid2" derived from "3.2.25 Rootsig and others" entry, particularly the second from from "others" part. Leave it here until I find a better name.
@@ -1274,6 +1306,7 @@ class UnnamedSigmoid2(nn.Module):
         return a_z / (1 + torch.abs(a_z))
 
 
+@register_activation
 class UnnamedSigmoid3(nn.Module):
     r"""
     :note: The name "UnnamedSigmoid3" derived from "3.2.25 Rootsig and others" entry, particularly the third from from "others" part. Leave it here until I find a better name.
@@ -1304,6 +1337,7 @@ class UnnamedSigmoid3(nn.Module):
         return a_z / torch.sqrt(1 + a_z * a_z)
 
 
+@register_activation
 class SigmoidTanhCombinations(nn.Module):
     r"""
     Applies the Sigmoid-Tanh Combinations activation function:
