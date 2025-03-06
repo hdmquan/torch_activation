@@ -7,6 +7,79 @@ from torch import Tensor
 from torch_activation import register_activation
 
 @register_activation
+class Sigmoid(nn.Module):
+    r"""
+    Applies the Sigmoid activation function:
+
+    :math:`\text{Sigmoid}(z) = \frac{1}{1 + \exp(-z)}`
+
+    Args:
+        inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
+
+    Shape:
+        - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
+        - Output: :math:`(*)`, same shape as the input. 
+
+    Examples::
+
+        >>> m = nn.Sigmoid()
+        >>> x = torch.randn(2)
+        >>> output = m(x)
+
+        >>> m = nn.Sigmoid(inplace=True)
+        >>> x = torch.randn(2)
+        >>> m(x)
+    """
+
+    def __init__(self, inplace: bool = False):
+        super(Sigmoid, self).__init__()
+
+    def forward(self, z) -> Tensor:
+        if self.inplace:
+            z.sigmoid_()
+            return z
+        else:
+            return torch.sigmoid(z)
+        
+@register_activation
+class Tanh(nn.Module):
+    r"""
+    Applies the Tanh activation function:
+
+    :math:`\text{Tanh}(z) = \tanh(z)`
+
+    Args:
+        inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
+
+    Shape:
+        - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
+        - Output: :math:`(*)`, same shape as the input.
+
+    Examples::
+
+        >>> m = nn.Tanh()
+        >>> x = torch.randn(2)
+        >>> output = m(x)
+
+        >>> m = nn.Tanh(inplace=True)
+        >>> x = torch.randn(2)
+        >>> m(x)
+    """
+
+    def __init__(self, inplace: bool = False):
+        super(Tanh, self).__init__()
+        self.inplace = inplace
+
+    def forward(self, z) -> Tensor:
+        if self.inplace:
+            z.tanh_()
+            return z
+        else:
+            return torch.tanh(z)
+        
+        
+
+@register_activation
 class ShiftedScaledSigmoid(nn.Module):
     r"""
     Applies the Shifted Scaled Sigmoid activation function:
@@ -100,11 +173,11 @@ class VariantSigmoidFunction(nn.Module):
 
 
 @register_activation
-class ScaledHyperbolicTangent(nn.Module):
+class STanh(nn.Module):
     r"""
     Applies the Scaled Hyperbolic Tangent activation function:
 
-    :math:`\text{ScaledHyperbolicTangent}(z) = a \tanh(bz)`
+    :math:`\text{STanh}(z) = a \tanh(bz)`
 
     Args:
         a (float, optional): Scale parameter. Default: 1.0
@@ -117,17 +190,17 @@ class ScaledHyperbolicTangent(nn.Module):
 
     Examples::
 
-        >>> m = nn.ScaledHyperbolicTangent(a=1.7, b=0.5)
+        >>> m = nn.STanh(a=1.7, b=0.5)
         >>> x = torch.randn(2)
         >>> output = m(x)
 
-        >>> m = nn.ScaledHyperbolicTangent(inplace=True)
+        >>> m = nn.STanh(inplace=True)
         >>> x = torch.randn(2)
         >>> m(x)
     """
 
     def __init__(self, a: float = 1.0, b: float = 1.0, inplace: bool = False):
-        super(ScaledHyperbolicTangent, self).__init__()
+        super(STanh, self).__init__()
         self.a = nn.Parameter(torch.tensor([a]))
         self.b = nn.Parameter(torch.tensor([b]))
         self.inplace = inplace
@@ -142,58 +215,36 @@ class ScaledHyperbolicTangent(nn.Module):
         z.mul_(self.b).tanh_().mul_(self.a)
         return z
 
+# FIXME: Revise this
+# @register_activation
+# class BiModalDerivativeSigmoid(nn.Module):
+#     r"""
+#     Applies the Bi-Modal Derivative Sigmoid activation function:
 
-@register_activation
-class BiModalDerivativeSigmoid(nn.Module):
-    r"""
-    Applies the Bi-Modal Derivative Sigmoid activation function:
+#     :math:`\text{BiModalDerivativeSigmoid}(z) = \frac{a}{1 + \exp(-bz)} - \frac{1}{2} \left( \frac{1}{1 + \exp(-z)} + \frac{1}{1 + \exp(-z-b)} \right)`
 
-    :math:`\text{BiModalDerivativeSigmoid}(z) = \frac{a}{1 + \exp(-bz)} - \frac{1}{2} \left( \frac{1}{1 + \exp(-z)} + \frac{1}{1 + \exp(-z-b)} \right)`
+#     Args:
+#         b (float, optional): Shift parameter. Default: 1.0
 
-    Args:
-        a (float, optional): Scale parameter. Default: 1.0
-        b (float, optional): Shift parameter. Default: 1.0
-        inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
+#     Shape:
+#         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
+#         - Output: :math:`(*)`, same shape as the input.
 
-    Shape:
-        - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
-        - Output: :math:`(*)`, same shape as the input.
+#     Examples::
 
-    Examples::
+#         >>> m = nn.BiModalDerivativeSigmoid(b=2.0)
+#         >>> x = torch.randn(2)
+#         >>> output = m(x)
+#     """
 
-        >>> m = nn.BiModalDerivativeSigmoid(a=1.5, b=2.0)
-        >>> x = torch.randn(2)
-        >>> output = m(x)
+#     def __init__(self, b: float = 1.0):
+#         super(BiModalDerivativeSigmoid, self).__init__()
+#         self.b = nn.Parameter(torch.tensor([b]))
 
-        >>> m = nn.BiModalDerivativeSigmoid(inplace=True)
-        >>> x = torch.randn(2)
-        >>> m(x)
-    """
-
-    def __init__(self, a: float = 1.0, b: float = 1.0, inplace: bool = False):
-        super(BiModalDerivativeSigmoid, self).__init__()
-        self.a = nn.Parameter(torch.tensor([a]))
-        self.b = nn.Parameter(torch.tensor([b]))
-        self.inplace = inplace
-
-    def forward(self, z) -> Tensor:
-        if self.inplace:
-            return self._forward_inplace(z)
-        else:
-            return self._forward(z)
-
-    def _forward(self, z):
-        first_term = self.a * torch.sigmoid(self.b * z)
-        second_term = 0.5 * (torch.sigmoid(z) + torch.sigmoid(z + self.b))
-        return first_term - second_term
-
-    def _forward_inplace(self, z):
-        # Cannot be done fully in-place due to the need for the original z value
-        z_copy = z.clone()
-        first_term = self.a * torch.sigmoid(self.b * z)
-        second_term = 0.5 * (torch.sigmoid(z_copy) + torch.sigmoid(z_copy + self.b))
-        z.copy_(first_term - second_term)
-        return z
+#     def forward(self, z):
+#         first_term = self.a * torch.sigmoid(self.b * z)
+#         second_term = torch.sigmoid(z) + torch.sigmoid(z + self.b)
+#         return 0.5 * (first_term - second_term)
 
 
 @register_activation
