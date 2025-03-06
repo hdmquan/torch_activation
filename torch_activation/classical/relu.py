@@ -110,6 +110,16 @@ class SlReLU(nn.Module):
     Here is a plot of the function and its derivative:
 
     .. image:: ../images/activation_images/SlReLU.png
+
+    Examples::
+
+        >>> m = nn.SlReLU(a=2.0)
+        >>> x = torch.randn(2)
+        >>> output = m(x)
+
+        >>> m = nn.SlReLU(a=2.0, inplace=True)
+        >>> x = torch.randn(2)
+        >>> m(x)
     """
 
     def __init__(self, a=10.0, inplace: bool = False):
@@ -140,6 +150,10 @@ class CReLU(nn.Module):
     Shape:
         - Input: :math:`(*, C, *)` where :math:`*` means any number of additional dimensions
         - Output: :math:`(*, 2C, *)`
+
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/CReLU.png
 
     Examples::
 
@@ -550,6 +564,20 @@ class SRReLU(nn.Module):
         l (float, optional): Lower bound of the uniform distribution (default: 1/8).
         u (float, optional): Upper bound of the uniform distribution (default: 1/3).
         inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
+
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/SRReLU.png
+
+    Examples::
+
+        >>> m = nn.SRReLU()
+        >>> x = torch.randn(2)
+        >>> output = m(x)
+
+        >>> m = nn.SRReLU(l=1/4, u=1/2, inplace=True)
+        >>> x = torch.randn(2)
+        >>> m(x)
     """
 
     def __init__(self, l: float = 1/8, u: float = 1/3, inplace: bool = False):
@@ -680,6 +708,10 @@ class RTReLU(nn.Module):
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/RTReLU.png
+
     Examples::
 
         >>> m = torch_activation.RTReLU()
@@ -721,6 +753,10 @@ class NLReLU(nn.Module):
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
+
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/NLReLU.png
 
     Examples::
 
@@ -777,6 +813,10 @@ class SLU(nn.Module):
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/SLU.png
+
     Examples::
 
         >>> m = torch_activation.SLU()
@@ -825,6 +865,10 @@ class ReSP(nn.Module):
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
+
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/ReSP.png
 
     Examples::
 
@@ -877,6 +921,10 @@ class PReNU(nn.Module):
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/PReNU.png
+
     Examples::
 
         >>> m = torch_activation.PReNU()
@@ -923,6 +971,10 @@ class BReLU(nn.Module):
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
+
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/BReLU.png
 
     Examples::
 
@@ -1020,6 +1072,10 @@ class HardTanh(nn.Module):
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/HardTanh.png
+
     Examples::
 
         >>> m = torch_activation.HardTanh()
@@ -1065,6 +1121,10 @@ class SvHardTanh(nn.Module):
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/SvHardTanh.png
+
     Examples::
 
         >>> m = torch_activation.SvHardTanh()
@@ -1109,6 +1169,10 @@ class ShHardTanh(nn.Module):
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/ShHardTanh.png
+
     Examples::
 
         >>> m = torch_activation.ShHardTanh()
@@ -1151,6 +1215,10 @@ class HardSwish(nn.Module):
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
+
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/HardSwish.png
 
     Examples::
 
@@ -1197,6 +1265,10 @@ class TRec(nn.Module):
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/TRec.png
+
     Examples::
 
         >>> m = torch_activation.TRec()
@@ -1242,6 +1314,10 @@ class Hardshrink(nn.Module):
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
+
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/Hardshrink.png
 
     Examples::
 
@@ -1291,6 +1367,10 @@ class Softshrink(nn.Module):
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
+
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/Softshrink.png
 
     Examples::
 
@@ -1355,6 +1435,10 @@ class BLReLU(nn.Module):
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/BLReLU.png
+
     Examples::
 
         >>> m = torch_activation.BLReLU()
@@ -1413,6 +1497,10 @@ class VReLU(nn.Module):
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/VReLU.png
+
     Examples::
 
         >>> m = torch_activation.VReLU()
@@ -1456,6 +1544,10 @@ class PanFunction(nn.Module):
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
+
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/PanFunction.png
 
     Examples::
 
@@ -1517,6 +1609,10 @@ class AbsLU(nn.Module):
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/AbsLU.png
+
     Examples::
 
         >>> m = torch_activation.AbsLU()
@@ -1563,6 +1659,10 @@ class MReLU(nn.Module):
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/MReLU.png
+
     Examples::
 
         >>> m = torch_activation.MReLU()
@@ -1608,6 +1708,10 @@ class LSPTLU(nn.Module):
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/LSPTLU.png
+
     Examples::
 
         >>> m = torch_activation.LSPTLU()
@@ -1650,3 +1754,77 @@ class LSPTLU(nn.Module):
                     )
                 )
             )
+        
+if __name__ == "__main__":
+    from torch_activation.utils import plot_activation
+
+    shifted_relu_p = {}
+    softsign_rrelu_p = {"l": [1/8, 1/4], "u": [1/5, 1/2]}
+    slrelu_p = {"a": [2, 10]}
+    crelu_p = {}
+    relun_p = {"n": [1, 6]}
+    squared_relu_p = {}
+    sine_relu_p = {"a": [0.5, 2]}
+    minsin_p = {}
+    vlu_p = {"a": [0.5, 2], "b": [0.5, 2]}
+    lrelu_p = {"a": [50, 100]}
+    rrelu_p = {"l": [2, 3], "u": [6, 8]}
+    srrelu_p = {"l": [1/8, 1/4], "u": [1/5, 1/2]}
+    nrelu_p = {"sigma": [0.05, 0.2]}
+    rtrelu_p = {"sigma": [0.5, 1.0]}
+    nlrelu_p = {"a": [0.5, 1, 2]}
+    slu_p = {}
+    resp_p = {"a": [1.5, 2.0]}
+    prenu_p = {"a": [0.1, 0.5]}
+    brelu_p = {"a": [1, 3, 6]}
+    hard_sigmoid_p = {"version": ["v1", "v2"]}
+    hard_tanh_p = {"a": [-2, -1], "b": [1, 2]}
+    sv_hard_tanh_p = {"a": [0, 0.5, 1]}
+    sh_hard_tanh_p = {"a": [0, 0.5, 1]}
+    hard_swish_p = {}
+    trec_p = {"a": [0.5, 1, 2]}
+    hardshrink_p = {"a": [0.5, 1, 2]}
+    softshrink_p = {"a": [0.5, 1, 2]}
+    blrelu_p = {"a": [0.1, 0.2], "b": [1, 2]}
+    vrelu_p = {}
+    pan_function_p = {"a": [0.5, 2]}
+    abslu_p = {"a": [0.2, 0.8]}
+    mrelu_p = {}
+    lsptlu_p = {"a": [0.5, 1, 2]}
+    
+    plot_activation(ShiftedReLU, shifted_relu_p)
+    # plot_activation(SoftsignRReLU, softsign_rrelu_p)
+    plot_activation(SlReLU, slrelu_p)
+    plot_activation(CReLU, crelu_p)
+    plot_activation(ReLUN, relun_p)
+    plot_activation(SquaredReLU, squared_relu_p)
+    plot_activation(SineReLU, sine_relu_p)
+    plot_activation(Minsin, minsin_p)
+    plot_activation(VLU, vlu_p)
+    plot_activation(LReLU, lrelu_p)
+    plot_activation(RReLU, rrelu_p)
+    plot_activation(SRReLU, srrelu_p)
+    plot_activation(NReLU, nrelu_p)
+    plot_activation(RTReLU, rtrelu_p)
+    plot_activation(NLReLU, nlrelu_p)
+    plot_activation(SLU, slu_p)
+    plot_activation(ReSP, resp_p)
+    plot_activation(PReNU, prenu_p)
+    plot_activation(BReLU, brelu_p)
+    # plot_activation(HardSigmoid, hard_sigmoid_p)
+    plot_activation(HardTanh, hard_tanh_p)
+    plot_activation(SvHardTanh, sv_hard_tanh_p)
+    plot_activation(ShHardTanh, sh_hard_tanh_p)
+    plot_activation(HardSwish, hard_swish_p)
+    plot_activation(TRec, trec_p)
+    plot_activation(Hardshrink, hardshrink_p)
+    plot_activation(Softshrink, softshrink_p)
+    plot_activation(BLReLU, blrelu_p)
+    plot_activation(VReLU, vrelu_p)
+    plot_activation(PanFunction, pan_function_p)
+    plot_activation(AbsLU, abslu_p)
+    plot_activation(MReLU, mrelu_p)
+    plot_activation(LSPTLU, lsptlu_p)
+    
+    # NOTE: SCAA is not included as it's not a one-to-one function
+    # and requires specific input dimensions
