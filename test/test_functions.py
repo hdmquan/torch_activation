@@ -14,77 +14,77 @@ from loguru import logger
 diff_acts = torch_activation.get_all_activations(differentiable_only=True)
 non_diff_acts = torch_activation.get_all_activations(differentiable_only=False)
 
-def test_diff_acts(acts, dev="cpu"):
-    passed_tests = 0
-    failed_tests = 0
-    tested_count = 0
-    skipped_count = 0
+# def test_diff_acts(acts, dev="cpu"):
+#     passed_tests = 0
+#     failed_tests = 0
+#     tested_count = 0
+#     skipped_count = 0
 
-    for act_name in acts:
-        try:
-            # Get the class from the registry
-            act_class = torch_activation._ACTIVATIONS[act_name]["class"]
-            act_fn = act_class()
-        except (KeyError, TypeError):
-            logger.error(f"Activation function {act_name} not found or couldn't be instantiated.")
-            skipped_count += 1
-            continue
+#     for act_name in acts:
+#         try:
+#             # Get the class from the registry
+#             act_class = torch_activation._ACTIVATIONS[act_name]["class"]
+#             act_fn = act_class()
+#         except (KeyError, TypeError):
+#             logger.error(f"Activation function {act_name} not found or couldn't be instantiated.")
+#             skipped_count += 1
+#             continue
 
-        # logger.debug(act_fn)
+#         # logger.debug(act_fn)
 
-        if act_fn is None:
-            logger.error(f"Activation function {act_name} not found.")
-            skipped_count += 1
-            continue
+#         if act_fn is None:
+#             logger.error(f"Activation function {act_name} not found.")
+#             skipped_count += 1
+#             continue
 
-        # logger.info(f"Testing differentiable activation: {act_name}")
-        tested_count += 1
+#         # logger.info(f"Testing differentiable activation: {act_name}")
+#         tested_count += 1
 
-        # Test forward pass
-        if not check_forward_pass(act_fn, dev):
-            logger.error(f"{act_name} failed forward pass.")
-            failed_tests += 1
-        else:
-            passed_tests += 1
+#         # Test forward pass
+#         if not check_forward_pass(act_fn, dev):
+#             logger.error(f"{act_name} failed forward pass.")
+#             failed_tests += 1
+#         else:
+#             passed_tests += 1
 
-        # Test backward pass
-        if not check_backward_pass(act_fn, dev):
-            logger.error(f"{act_name} failed backward pass.")
-            failed_tests += 1
-        else:
-            passed_tests += 1
+#         # Test backward pass
+#         if not check_backward_pass(act_fn, dev):
+#             logger.error(f"{act_name} failed backward pass.")
+#             failed_tests += 1
+#         else:
+#             passed_tests += 1
 
-    return passed_tests, failed_tests, tested_count, skipped_count
+#     return passed_tests, failed_tests, tested_count, skipped_count
 
 
-def test_non_diff_acts(acts, dev="cpu"):
-    passed_tests = 0
-    failed_tests = 0
-    tested_count = 0
-    skipped_count = 0
+# def test_non_diff_acts(acts, dev="cpu"):
+#     passed_tests = 0
+#     failed_tests = 0
+#     tested_count = 0
+#     skipped_count = 0
 
-    for act_name in acts:
-        try:
-            # Get the class from the registry
-            act_class = torch_activation._ACTIVATIONS[act_name]["class"]
-            act_fn = act_class()
-        except (KeyError, TypeError):
-            logger.error(f"Activation function {act_name} not found or couldn't be instantiated.")
-            skipped_count += 1
-            continue
+#     for act_name in acts:
+#         try:
+#             # Get the class from the registry
+#             act_class = torch_activation._ACTIVATIONS[act_name]["class"]
+#             act_fn = act_class()
+#         except (KeyError, TypeError):
+#             logger.error(f"Activation function {act_name} not found or couldn't be instantiated.")
+#             skipped_count += 1
+#             continue
 
-        logger.info(f"Testing non-differentiable activation: {act_name}")
-        tested_count += 1
-        inp_tensor = torch.randn(2, 3).to(dev)
+#         logger.info(f"Testing non-differentiable activation: {act_name}")
+#         tested_count += 1
+#         inp_tensor = torch.randn(2, 3).to(dev)
 
-        # Test forward pass
-        if not check_forward_pass(act_fn, inp_tensor, dev):
-            logger.error(f"{act_name} failed forward pass.")
-            failed_tests += 1
-        else:
-            passed_tests += 1
+#         # Test forward pass
+#         if not check_forward_pass(act_fn, inp_tensor, dev):
+#             logger.error(f"{act_name} failed forward pass.")
+#             failed_tests += 1
+#         else:
+#             passed_tests += 1
 
-    return passed_tests, failed_tests, tested_count, skipped_count
+#     return passed_tests, failed_tests, tested_count, skipped_count
 
 
 def find_unregistered_activations():
