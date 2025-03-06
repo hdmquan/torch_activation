@@ -8,47 +8,58 @@ All Available Functions
    :members:
    :undoc-members:
 
-Rectified Linear Function
+Classical Activation Functions
 -----------------------------------------------------------
 
-.. automodule:: torch_activation.relu
+.. automodule:: torch_activation.classical
+   :noindex:
+   :members: 
+   :undoc-members:
+   :imported-members:
+   :show-inheritance:
+
+ReLU-based
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.. automodule:: torch_activation.classical.relu
    :members:
    :undoc-members:
 
-ReLU-based Family of Adaptive Functions
------------------------------------------------------------
-
-.. automodule:: torch_activation.adaptive_relu
+Sigmoid-based
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.. automodule:: torch_activation.classical.sigmoid_family
    :members:
    :undoc-members:
 
-Adaptive Sigmoid-weighted Linear Units
-----------------------------------------------------------
-
-.. automodule:: torch_activation.sigmoid_weighted
+Sigmoid-weighted
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.. automodule:: torch_activation.classical.sigmoid_weighted
    :members:
    :undoc-members:
 
-Locally Adaptive Activation Function
----------------------------------------------------------------
-
-.. automodule:: torch_activation.laaf
+Max Sigmoid-based
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.. automodule:: torch_activation.classical.maxsig
    :members:
    :undoc-members:
 
-Other Functions
-----------------------------------------------------------
-
-.. automodule:: torch_activation.other
-   :members:
-   :undoc-members: 
-
-Linear Combination and GLUs
------------------------------------------------------------------
-
-.. automodule:: torch_activation.layer
+Chaotic Activation Functions
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.. automodule:: torch_activation.classical.caf
    :members:
    :undoc-members:
+
+Gated Linear Units
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.. automodule:: torch_activation.classical.glus
+   :members:
+   :undoc-members:
+
+Squared Linear Units
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.. automodule:: torch_activation.classical.squared
+   :members:
+   :undoc-members:
+   
 
 Utilities
 -----------------------------------------------------------

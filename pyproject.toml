@@ -15,6 +15,7 @@ plotly = "^6.0.0"
 pytest = "^8.3.5"
 scipy = "^1.15.2"
 kaleido = "0.2"
+sphinx = "8.0"
 
 [build-system]
 requires = ["poetry-core"]
