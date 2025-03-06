@@ -29,8 +29,9 @@ jobs:
         
     - name: Run tests
       run: |
-        poetry run pytest test/test_*.py -v --no-header --collect-only  # Debug step to see what tests are collected
-        poetry run pytest test/test_functions.py::test_all_acts -v  # Run the test that's working
-        poetry run python -c "import sys; print(sys.path)"  # Debug Python path
-        poetry run pytest --fixtures test/test_functions.py  # List available fixtures
-        poetry run pytest test/test_*.py -v
+        poetry run pytest test/test_*.py::test_all_acts -v  # Only run the test_all_acts function
+        # Remove or comment out the following lines:
+        # poetry run pytest test/test_*.py -v --no-header --collect-only
+        # poetry run python -c "import sys; print(sys.path)"
+        # poetry run pytest --fixtures test/test_functions.py
+        # poetry run pytest test/test_*.py -v
