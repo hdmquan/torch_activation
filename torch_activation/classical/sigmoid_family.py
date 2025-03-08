@@ -468,15 +468,20 @@ class ImprovedLogisticSigmoid(nn.Module):
 
     def forward(self, z) -> Tensor:
         sig_b = torch.sigmoid(self.b)
+        
+        upper_mask = z >= self.b
+        lower_mask = z <= -self.b
+        
+        result = torch.sigmoid(z)
 
-        # Intuitive naming, don't bully me :D
-        upper_region = self.a * (z - self.b) + sig_b
-        middle_region = torch.sigmoid(z)
-        lower_region = self.a * (z + self.b) + sig_b
-
-        result = torch.where(z >= self.b, upper_region, middle_region)
-        result = torch.where(z <= -self.b, lower_region, result)
-
+        if self.a != 0:  # To not compute linear extensions where not needed -_-
+            upper_region = self.a * (z - self.b) + sig_b
+            lower_region = self.a * (z + self.b) + sig_b
+            
+            # Implace for memory
+            result.masked_scatter_(upper_mask, upper_region[upper_mask])
+            result.masked_scatter_(lower_mask, lower_region[lower_mask])
+        
         return result
 
 
@@ -544,8 +549,20 @@ class PTanh(nn.Module):
         self.a = nn.Parameter(torch.tensor([a]), requires_grad=False)
 
     def forward(self, z) -> Tensor:
+        # Turned the thing from 1 line to 10 just to not use where :D
         tanh_z = torch.tanh(z)
-        return torch.where(z >= 0, tanh_z, tanh_z / self.a)
+        
+        neg_mask = z < 0
+        
+        result = tanh_z.clone()
+
+        if neg_mask.any():
+            if self.a != 0:
+                result[neg_mask] = tanh_z[neg_mask] / self.a
+            else:
+                result[neg_mask] = float('inf') * torch.sign(tanh_z[neg_mask])
+        
+        return result
 
 
 
@@ -673,9 +690,18 @@ class Hexpo(nn.Module):
             self.d.requires_grad = False
 
     def forward(self, z) -> Tensor:
-        pos_part = -self.a * torch.exp(-z / self.b) - 1
-        neg_part = self.c * torch.exp(-z / self.d) - 1
-        return torch.where(z >= 0, pos_part, neg_part)
+        pos_mask = z >= 0
+        
+        result = torch.empty_like(z)
+        
+        if pos_mask.any():
+            result[pos_mask] = -self.a * torch.exp(-z[pos_mask] / self.b) - 1
+        
+        neg_mask = ~pos_mask
+        if neg_mask.any():
+            result[neg_mask] = self.c * torch.exp(-z[neg_mask] / self.d) - 1
+        
+        return result
 
 
 @register_activation
@@ -734,19 +760,26 @@ class SmoothStep(nn.Module):
 
     def forward(self, z) -> Tensor:
         half_a = self.a / 2
-
-        cubic_term = (2 / (self.a**3)) * (z**3)
-        linear_term = (3 / (2 * self.a)) * z
-        constant_term = 0.5
-        middle_region = cubic_term - linear_term + constant_term
-
+        
         result = torch.ones_like(z)
+        
         middle_mask = (z > -half_a) & (z < half_a)
         lower_mask = z <= -half_a
 
-        result[middle_mask] = middle_region[middle_mask]
-        result[lower_mask] = 0.0
-
+        if middle_mask.any(): 
+            # Compute polynomial using Horner
+            # Original: cubic_term - linear_term + constant_term
+            # = (2 / (a^3)) * z^3 - (3 / (2 * a)) * z + 0.5
+            # Horner: 0.5 + z*(-3/(2*a) + z*z*(2/(a^3)))
+            z_middle = z[middle_mask]
+            inv_a = 1.0 / self.a
+            
+            middle_result = 0.5 + z_middle * (-1.5 * inv_a + torch.square(z_middle) * (2.0 * torch.pow(inv_a, 3)))
+            result[middle_mask] = middle_result
+        
+        if lower_mask.any():
+            result[lower_mask] = 0.0
+        
         return result
 
 
