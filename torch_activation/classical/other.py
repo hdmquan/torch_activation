@@ -394,3 +394,138 @@ class KDAC(nn.Module):
         # Calculate final output
         h = self._h_max(p, r)
         return p * (1 - h) + r * h + self.c * h * (1 - h)
+
+
+@register_activation
+class KWTA(nn.Module):
+    r"""
+    Applies the k-Winner-Takes-All (k-WTA) activation function:
+
+    :math:`\text{k-WTA}(z)_j = \begin{cases}
+    z_j, & z_j \in \{\text{k largest elements of } z\} \\
+    0, & \text{otherwise}
+    \end{cases}`
+
+    This activation function keeps the k largest elements of the input unchanged and sets all other elements to zero.
+    It was introduced to improve adversarial robustness.
+
+    Args:
+        k (int or float, optional): If int, specifies the exact number of elements to keep.
+                                   If float between 0 and 1, specifies the fraction of elements to keep.
+                                   Default: ``0.2``
+        dim (int, optional): The dimension along which to find the k largest elements.
+                            If None, the operation is applied to the flattened tensor.
+                            Default: ``None``
+        inplace (bool, optional): parameter kept for API consistency, but k-WTA operation 
+                                 cannot be done in-place. Default: ``False``
+
+    Shape:
+        - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
+        - Output: :math:`(*)`, same shape as the input.
+    """
+
+    def __init__(self, k: float = 0.2, dim: int = None, inplace: bool = False):
+        super(KWTA, self).__init__()
+        self.k = k
+        self.dim = dim
+        self.inplace = inplace  # Unused
+
+    def forward(self, z) -> Tensor:
+        if self.dim is None:
+            # Operate on flattened tensor
+            original_shape = z.shape
+            z_flat = z.view(-1)
+            
+            # Calculate k if it's a fraction
+            k = self.k
+            if isinstance(k, float) and 0 < k < 1:
+                k = max(1, int(k * z_flat.numel()))
+            
+            # Get indices of k largest elements
+            _, indices = torch.topk(z_flat, k)
+            
+            # Create output tensor with zeros
+            result = torch.zeros_like(z_flat)
+            
+            # Set values at indices to original values
+            result[indices] = z_flat[indices]
+            
+            # Reshape back to original shape
+            return result.view(original_shape)
+        else:
+            # Operate along specified dimension
+            dim_size = z.size(self.dim)
+            
+            # Calculate k if it's a fraction
+            k = self.k
+            if isinstance(k, float) and 0 < k < 1:
+                k = max(1, int(k * dim_size))
+            
+            # Get indices of k largest elements along dimension
+            _, indices = torch.topk(z, k, dim=self.dim)
+            
+            # Create a mask of zeros with ones at the indices of the k largest elements
+            mask = torch.zeros_like(z, dtype=torch.bool)
+            
+            # Use scatter to set the mask
+            scatter_dim = self.dim
+            expand_dims = [1] * len(z.shape)
+            expand_dims[scatter_dim] = k
+            dim_indices = torch.arange(k).view(expand_dims).expand_as(indices)
+            mask.scatter_(scatter_dim, indices, torch.ones_like(indices, dtype=torch.bool))
+            
+            # Apply the mask to get the result
+            return z * mask.float()
+        
+
+# TODO: Verify this implementation
+@register_activation
+class VBAF(nn.Module):
+    r"""
+    :note: The implementation of this activation function is based on limited information from the literature.
+           The original papers don't provide complete details on how this function should be applied in neural networks.
+    
+    :todo: Verify this implementation against more detailed descriptions if they become available.
+           Currently unclear whether VBAF should be applied only to inputs or also to intermediate representations.
+    
+    Applies the Volatility-Based Activation Function (VBAF):
+
+    :math:`\text{VBAF}(z_1, \ldots, z_n) = \frac{\sum_{j=1}^{n} (z_j - \bar{z})}{\bar{z}}`
+
+    where:
+    
+    :math:`\bar{z} = \frac{\sum_{j=1}^{n} z_j}{n}`
+    
+    This activation function was designed for time-series forecasting and was used in LSTM neural networks.
+    It takes multiple inputs (a sequence of values) and produces a single output based on their volatility.
+
+    Args:
+        dim (int, optional): The dimension along which to compute the mean and volatility.
+                            Default: ``-1`` (last dimension)
+        inplace (bool, optional): parameter kept for API consistency, but VBAF operation 
+                                 cannot be done in-place. Default: ``False``
+
+    Shape:
+        - Input: :math:`(*, N)`, where :math:`*` means any number of dimensions and N is the sequence length.
+        - Output: :math:`(*, 1)`, with the last dimension reduced to size 1.
+    """
+
+    def __init__(self, dim: int = -1, inplace: bool = False):
+        super(VBAF, self).__init__()
+        self.dim = dim
+        self.inplace = inplace  # Unused
+
+    def forward(self, z) -> Tensor:
+        # Compute mean along the specified dimension
+        z_mean = torch.mean(z, dim=self.dim, keepdim=True)
+        
+        # Compute the sum of deviations from the mean
+        deviations_sum = torch.sum(z - z_mean, dim=self.dim, keepdim=True)
+        
+        # Compute the volatility measure (sum of deviations divided by mean)
+        # Add small epsilon to avoid division by zero
+        eps = 1e-10
+        result = deviations_sum / (z_mean + eps)
+        
+        return result
+        
