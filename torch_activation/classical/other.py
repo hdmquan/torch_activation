@@ -39,6 +39,8 @@ class _Binary(torch.autograd.Function):
     @staticmethod
     def forward(ctx, input, a, b):
         ctx.save_for_backward(input)
+        ctx.a = a
+        ctx.b = b
         return (input >= a).float() * (input <= b).float()
 
     @staticmethod
@@ -46,7 +48,8 @@ class _Binary(torch.autograd.Function):
         # Straight-through estimator
         # Pass the gradient through unchanged
         # That's why we don't use it :D
-        return grad_output
+        # Return gradients for input, a, and b
+        return grad_output, None, None
 
 
 @register_activation

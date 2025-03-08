@@ -474,13 +474,13 @@ class ImprovedLogisticSigmoid(nn.Module):
         
         result = torch.sigmoid(z)
 
-        if self.a != 0:  # To not compute linear extensions where not needed -_-
+        if self.a != 0:  # To not compute linear extensions where not needed
             upper_region = self.a * (z - self.b) + sig_b
-            lower_region = self.a * (z + self.b) + sig_b
+            lower_region = self.a * (z + self.b) + (1 - sig_b)
             
-            # Implace for memory
-            result.masked_scatter_(upper_mask, upper_region[upper_mask])
-            result.masked_scatter_(lower_mask, lower_region[lower_mask])
+            # Apply masks
+            result = torch.where(upper_mask, upper_region, result)
+            result = torch.where(lower_mask, lower_region, result)
         
         return result
 
@@ -1150,10 +1150,10 @@ class MSAF(nn.Module):
         self.b = nn.Parameter(torch.tensor(b), requires_grad=False)
 
     def forward(self, z) -> Tensor:
-        result = self.a.clone()
+        result = self.a.expand_as(z)
 
         for k in range(len(self.b)):
-            result += torch.sigmoid(z - self.b[k])
+            result = result + torch.sigmoid(z - self.b[k])
 
         return result
 
