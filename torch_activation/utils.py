@@ -6,6 +6,12 @@ import plotly.io as pio
 import plotly.graph_objects as go
 
 
+def sech(z):
+    """
+    Credit: `https://discuss.pytorch.org/t/implementing-sech/66862`
+    """
+    return 1 / torch.cosh(z)
+
 def plot_activation(
     activation: torch.nn.Module,
     params: dict = {},
