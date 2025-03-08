@@ -256,6 +256,12 @@ class Arctan(nn.Module):
 
     :math:`\text{Arctan}(z) = \arctan(z)`
 
+    The arctangent function resembles a logistic sigmoid activation but covers a wider range 
+    :math:`[-\frac{\pi}{2}, \frac{\pi}{2}]`. It was initially used as an activation function 
+    over twenty years ago and was rediscovered in more recent research where it showed 
+    competitive performance compared to tanh, ReLU, leaky ReLU, logistic sigmoid, and swish 
+    activation functions.
+
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
@@ -281,6 +287,16 @@ class ArctanGR(nn.Module):
 
     :math:`\text{ArctanGR}(z) = \frac{\arctan(z)}{1 + \sqrt{2}}`
 
+    ArctanGR is a scaled version of the Arctan activation function. The scaling factor 
+    :math:`\frac{1}{1 + \sqrt{2}}` was found to be particularly effective in experiments, 
+    outperforming other activation functions including the standard Arctan. Other scaling 
+    variants such as division by :math:`\pi`, :math:`\frac{1 + \sqrt{5}}{2}` (golden ratio), 
+    or the Euler number have also been explored in the literature.
+
+    Args:
+        scale_factor (float): The scaling factor for the arctangent output.
+            Default: :math:`\frac{1}{1 + \sqrt{2}} \approx 0.2929`
+
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
@@ -290,11 +306,15 @@ class ArctanGR(nn.Module):
         >>> m = nn.ArctanGR()
         >>> x = torch.randn(2)
         >>> output = m(x)
+        
+        >>> # With custom scale factor
+        >>> m = nn.ArctanGR(scale_factor=1/math.pi)
+        >>> output = m(x)
     """
 
-    def __init__(self):
+    def __init__(self, scale_factor: float = 1.0 / (1.0 + torch.sqrt(torch.tensor(2.0)))):
         super(ArctanGR, self).__init__()
-        self.scale_factor = 1.0 / (1.0 + torch.sqrt(torch.tensor(2.0)))
+        self.scale_factor = scale_factor
 
     def forward(self, z) -> Tensor:
         return torch.atan(z) * self.scale_factor
