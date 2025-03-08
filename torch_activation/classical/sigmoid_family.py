@@ -34,6 +34,8 @@ class Sigmoid(nn.Module):
     def __init__(self, inplace: bool = False):
         super(Sigmoid, self).__init__()
 
+        self.inplace = inplace
+
     def forward(self, z) -> Tensor:
         if self.inplace:
             z.sigmoid_()
