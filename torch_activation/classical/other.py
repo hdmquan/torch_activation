@@ -28,12 +28,21 @@ class Binary(nn.Module):
         self.inplace = inplace
 
     def forward(self, z) -> Tensor:
-        if self.inplace:
-            z.where(z < 0, torch.zeros_like(z), torch.ones_like(z))
-            return z
-        else:
-            return torch.where(z < 0, torch.zeros_like(z), torch.ones_like(z))
-    
+        return _Binary.apply(z)
+
+
+class _Binary(torch.autograd.Function):
+    @staticmethod
+    def forward(ctx, input):
+        ctx.save_for_backward(input)
+        return (input >= 0).float()
+
+    @staticmethod
+    def backward(ctx, grad_output):
+        # Straight-through estimator
+        # Pass the gradient through unchanged
+        return grad_output
+
 
 @register_activation
 class Sine(nn.Module):
