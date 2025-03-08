@@ -162,32 +162,6 @@ class Logarithmic(nn.Module):
 
 
 @register_activation
-class Symexp(nn.Module):
-    r"""
-    Applies the Symexp activation function:
-
-    :math:`\text{Symexp}(z) = \text{sgn}(z) \cdot (\exp(|z|) - 1)`
-
-    Inverse of the logmoid activation unit (LAU).
-
-    Args:
-        inplace (bool, optional): parameter kept for API consistency, but symexp operation 
-                                 cannot be done in-place. Default: ``False``
-
-    Shape:
-        - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
-        - Output: :math:`(*)`, same shape as the input.
-    """
-
-    def __init__(self, inplace: bool = False):
-        super(Symexp, self).__init__()
-        self.inplace = inplace  # Unused
-
-    def forward(self, z) -> Tensor:
-        return torch.sign(z) * (torch.exp(torch.abs(z)) - 1)
-
-
-@register_activation
 class SPOCU(nn.Module):
     r"""
     Applies the Scaled Polynomial Constant Unit (SPOCU) activation function:
