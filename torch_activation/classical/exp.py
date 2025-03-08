@@ -86,3 +86,30 @@ class Symexp(nn.Module):
 
     def forward(self, z) -> Tensor:
         return torch.sign(z) * (torch.exp(torch.abs(z)) - 1)
+
+@register_activation
+class Wave(nn.Module):
+    r"""
+    Applies the Wave activation function:
+
+    :math:`\text{Wave}(z) = 1 - z^2 \cdot \exp(-a \cdot z^2)`
+
+    An activation function combining quadratic function and an exponential function.
+
+    Args:
+        a (float, optional): Parameter for the exponential decay. Default: ``1.0``
+        inplace (bool, optional): parameter kept for API consistency, but wave operation 
+                                 cannot be done in-place. Default: ``False``
+
+    Shape:
+        - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
+        - Output: :math:`(*)`, same shape as the input.
+    """
+
+    def __init__(self, a: float = 1.0, inplace: bool = False):
+        super(Wave, self).__init__()
+        self.a = a
+        self.inplace = inplace  # Unused
+
+    def forward(self, z) -> Tensor:
+        return 1 - z**2 * torch.exp(-self.a * z**2)
