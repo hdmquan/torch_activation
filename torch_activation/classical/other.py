@@ -16,6 +16,8 @@ class Binary(nn.Module):
     \end{cases}`
 
     Args:
+        a (float, optional): parameter. Default: ``0.0``
+        b (float, optional): parameter. Default: ``1.0``
         inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
@@ -23,24 +25,27 @@ class Binary(nn.Module):
         - Output: :math:`(*)`, same shape as the input.
     """
 
-    def __init__(self, inplace: bool = False):
+    def __init__(self, a: float = 0.0, b: float = 1.0, inplace: bool = False):
         super(Binary, self).__init__()
+        self.a = a
+        self.b = b
         self.inplace = inplace
 
     def forward(self, z) -> Tensor:
-        return _Binary.apply(z)
+        return _Binary.apply(z, self.a, self.b)
 
 
 class _Binary(torch.autograd.Function):
     @staticmethod
-    def forward(ctx, input):
+    def forward(ctx, input, a, b):
         ctx.save_for_backward(input)
-        return (input >= 0).float()
+        return (input >= a).float() * (input <= b).float()
 
     @staticmethod
     def backward(ctx, grad_output):
         # Straight-through estimator
         # Pass the gradient through unchanged
+        # That's why we don't use it :D
         return grad_output
 
 

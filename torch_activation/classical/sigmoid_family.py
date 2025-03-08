@@ -6,6 +6,8 @@ from torch import Tensor
 
 from torch_activation import register_activation
 
+# TODO: Optimize any functions that use where
+
 @register_activation
 class Sigmoid(nn.Module):
     r"""
@@ -18,7 +20,7 @@ class Sigmoid(nn.Module):
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
-        - Output: :math:`(*)`, same shape as the input. 
+        - Output: :math:`(*)`, same shape as the input.
 
     Examples::
 
@@ -42,7 +44,8 @@ class Sigmoid(nn.Module):
             return z
         else:
             return torch.sigmoid(z)
-        
+
+
 @register_activation
 class Tanh(nn.Module):
     r"""
@@ -78,8 +81,7 @@ class Tanh(nn.Module):
             return z
         else:
             return torch.tanh(z)
-        
-        
+
 
 @register_activation
 class ShiftedScaledSigmoid(nn.Module):
@@ -181,9 +183,11 @@ class STanh(nn.Module):
 
     :math:`\text{STanh}(z) = a \tanh(bz)`
 
+    :note: Lecun et al. (1998) suggested that the scaling factor \( a \) should be 1.7159 and the slope parameter \( b \) should be 2/3.
+
     Args:
-        a (float, optional): Scale parameter. Default: 1.0
-        b (float, optional): Slope parameter. Default: 1.0
+        a (float, optional): Scale parameter. Default: 1.7159
+        b (float, optional): Slope parameter. Default: 2/3
         inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
@@ -201,7 +205,7 @@ class STanh(nn.Module):
         >>> m(x)
     """
 
-    def __init__(self, a: float = 1.0, b: float = 1.0, inplace: bool = False):
+    def __init__(self, a: float = 1.7159, b: float = 2 / 3, inplace: bool = False):
         super(STanh, self).__init__()
         self.a = nn.Parameter(torch.tensor([a]))
         self.b = nn.Parameter(torch.tensor([b]))
@@ -216,6 +220,7 @@ class STanh(nn.Module):
     def _forward_inplace(self, z):
         z.mul_(self.b).tanh_().mul_(self.a)
         return z
+
 
 # FIXME: Revise this
 # @register_activation
@@ -256,10 +261,10 @@ class Arctan(nn.Module):
 
     :math:`\text{Arctan}(z) = \arctan(z)`
 
-    The arctangent function resembles a logistic sigmoid activation but covers a wider range 
-    :math:`[-\frac{\pi}{2}, \frac{\pi}{2}]`. It was initially used as an activation function 
-    over twenty years ago and was rediscovered in more recent research where it showed 
-    competitive performance compared to tanh, ReLU, leaky ReLU, logistic sigmoid, and swish 
+    The arctangent function resembles a logistic sigmoid activation but covers a wider range
+    :math:`[-\frac{\pi}{2}, \frac{\pi}{2}]`. It was initially used as an activation function
+    over twenty years ago and was rediscovered in more recent research where it showed
+    competitive performance compared to tanh, ReLU, leaky ReLU, logistic sigmoid, and swish
     activation functions.
 
     Shape:
@@ -287,10 +292,10 @@ class ArctanGR(nn.Module):
 
     :math:`\text{ArctanGR}(z) = \frac{\arctan(z)}{1 + \sqrt{2}}`
 
-    ArctanGR is a scaled version of the Arctan activation function. The scaling factor 
-    :math:`\frac{1}{1 + \sqrt{2}}` was found to be particularly effective in experiments, 
-    outperforming other activation functions including the standard Arctan. Other scaling 
-    variants such as division by :math:`\pi`, :math:`\frac{1 + \sqrt{5}}{2}` (golden ratio), 
+    ArctanGR is a scaled version of the Arctan activation function. The scaling factor
+    :math:`\frac{1}{1 + \sqrt{2}}` was found to be particularly effective in experiments,
+    outperforming other activation functions including the standard Arctan. Other scaling
+    variants such as division by :math:`\pi`, :math:`\frac{1 + \sqrt{5}}{2}` (golden ratio),
     or the Euler number have also been explored in the literature.
 
     Args:
@@ -306,18 +311,21 @@ class ArctanGR(nn.Module):
         >>> m = nn.ArctanGR()
         >>> x = torch.randn(2)
         >>> output = m(x)
-        
+
         >>> # With custom scale factor
         >>> m = nn.ArctanGR(scale_factor=1/math.pi)
         >>> output = m(x)
     """
 
-    def __init__(self, scale_factor: float = 1.0 / (1.0 + torch.sqrt(torch.tensor(2.0)))):
+    def __init__(
+        self, scale_factor: float = 1.0 / (1.0 + torch.sqrt(torch.tensor(2.0)))
+    ):
         super(ArctanGR, self).__init__()
         self.scale_factor = scale_factor
 
     def forward(self, z) -> Tensor:
         return torch.atan(z) * self.scale_factor
+
 
 @register_activation
 class SigmoidAlgebraic(nn.Module):
@@ -325,10 +333,9 @@ class SigmoidAlgebraic(nn.Module):
     Applies the Sigmoid Algebraic activation function:
 
     :math:`\text{SigmoidAlgebraic}(z) = \frac{1}{1 + \exp\left(-\frac{z(1 + a|z|)}{1 + |z|(1 + a|z|)}\right)}`
-
+    :note: \( a > 0 \).
     Args:
         a (float, optional): Shape parameter. Default: 1.0
-        inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
@@ -345,29 +352,18 @@ class SigmoidAlgebraic(nn.Module):
         >>> m(x)
     """
 
-    def __init__(self, a: float = 1.0, inplace: bool = False):
+    def __init__(self, a: float = 1.0):
         super(SigmoidAlgebraic, self).__init__()
+        assert a > 0, "a must be greater than 0"
         self.a = nn.Parameter(torch.tensor([a]))
-        self.inplace = inplace
 
     def forward(self, z) -> Tensor:
-        return self._forward_inplace(z) if self.inplace else self._forward(z)
-
-    def _forward(self, z):
         abs_z = torch.abs(z)
         a_abs_z = self.a * abs_z
         numerator = z * (1 + a_abs_z)
         denominator = 1 + abs_z * (1 + a_abs_z)
+        # Sigmoid is 1 on (1 plus e to the power of -z) :(
         return torch.sigmoid(numerator / denominator)
-
-    def _forward_inplace(self, z):
-        # Cannot be done fully in-place due to the complex calculation
-        abs_z = torch.abs(z)
-        a_abs_z = self.a * abs_z
-        numerator = z.clone() * (1 + a_abs_z)
-        denominator = 1 + abs_z * (1 + a_abs_z)
-        z.copy_(numerator / denominator).sigmoid_()
-        return z
 
 
 @register_activation
@@ -377,10 +373,12 @@ class TripleStateSigmoid(nn.Module):
 
     :math:`\text{TripleStateSigmoid}(z) = \frac{1}{1 + \exp(-z)} + \frac{1}{1 + \exp(-z+a)} + \frac{1}{1 + \exp(-z+b)}`
 
+    :note: The default values of \( a \) and \( b \) are 20.0 and 40.0, respectively, as suggested in the paper.
+    (https://www.sciencedirect.com/science/article/abs/pii/S0957417420307557).
+
     Args:
-        a (float, optional): First shift parameter. Default: 1.0
-        b (float, optional): Second shift parameter. Default: 2.0
-        inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
+        a (float, optional): First shift parameter. Default: 20.0
+        b (float, optional): Second shift parameter. Default: 40.0
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
@@ -388,34 +386,23 @@ class TripleStateSigmoid(nn.Module):
 
     Examples::
 
-        >>> m = nn.TripleStateSigmoid(a=1.5, b=2.5)
+        >>> m = nn.TripleStateSigmoid()  # Uses default values a=20.0, b=40.0 from the paper
         >>> x = torch.randn(2)
         >>> output = m(x)
 
-        >>> m = nn.TripleStateSigmoid(inplace=True)
+        >>> m = nn.TripleStateSigmoid(a=15.0, b=30.0)  # Custom parameters
         >>> x = torch.randn(2)
-        >>> m(x)
+        >>> output = m(x)
     """
 
-    def __init__(self, a: float = 1.0, b: float = 2.0, inplace: bool = False):
+    def __init__(self, a: float = 20.0, b: float = 40.0, inplace: bool = False):
         super(TripleStateSigmoid, self).__init__()
         self.a = nn.Parameter(torch.tensor([a]))
         self.b = nn.Parameter(torch.tensor([b]))
         self.inplace = inplace
 
     def forward(self, z) -> Tensor:
-        return self._forward_inplace(z) if self.inplace else self._forward(z)
-
-    def _forward(self, z):
         return torch.sigmoid(z) + torch.sigmoid(z - self.a) + torch.sigmoid(z - self.b)
-
-    def _forward_inplace(self, z):
-        # Cannot be done fully in-place due to the need for the original z value
-        result = torch.sigmoid(z.clone())
-        result.add_(torch.sigmoid(z - self.a))
-        result.add_(torch.sigmoid(z - self.b))
-        z.copy_(result)
-        return z
 
 
 @register_activation
@@ -429,10 +416,24 @@ class ImprovedLogisticSigmoid(nn.Module):
     a(z+b) + \sigma(-b), & z \leq -b 
     \end{cases}`
 
+    This activation function was designed to address the vanishing gradient problem 
+    of the standard logistic sigmoid. It behaves like the standard sigmoid in the middle region 
+    but has a linear response in the saturation regions, allowing for non-zero gradients 
+    even for large input magnitudes.
+
+    The parameter 'a' controls the slope of the linear regions and should satisfy:
+    :math:`a > a_{min} = \frac{\exp(-b)}{(1 + \exp(-b))^2}`
+
+    This ensures the function remains smooth at the transition points.
+
+    The output range is :math:`(-\infty, \infty)`, unlike the standard sigmoid which is bounded 
+    to :math:`(0, 1)`. Research has shown this activation function has higher convergence speed 
+    than the standard logistic sigmoid.
+
     Args:
-        a (float, optional): Slope parameter. Default: 0.2
-        b (float, optional): Threshold parameter. Default: 2.0
-        inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
+        a (float, optional): Slope parameter for the linear regions. Default: 0.2
+        b (float, optional): Threshold parameter defining the transition points. Default: 2.0
+        trainable (bool, optional): Whether parameters a and b should be trainable. Default: False
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
@@ -444,51 +445,39 @@ class ImprovedLogisticSigmoid(nn.Module):
         >>> x = torch.randn(2)
         >>> output = m(x)
 
-        >>> m = nn.ImprovedLogisticSigmoid(inplace=True)
+        >>> # With trainable parameters
+        >>> m = nn.ImprovedLogisticSigmoid(trainable=True)
         >>> x = torch.randn(2)
-        >>> m(x)
+        >>> output = m(x)
     """
 
-    def __init__(self, a: float = 0.2, b: float = 2.0, inplace: bool = False):
+    def __init__(self, a: float = 0.2, b: float = 2.0, trainable: bool = False):
         super(ImprovedLogisticSigmoid, self).__init__()
-        self.a = nn.Parameter(torch.tensor([a]))
-        self.b = nn.Parameter(torch.tensor([b]))
-        self.inplace = inplace
+
+        b_tensor = torch.tensor([b])
+        a_min = torch.exp(-b_tensor) / (1 + torch.exp(-b_tensor)) ** 2
+
+        a = max(a, a_min.item() * 1.01)  # Add 1% margin
+
+        if trainable:
+            self.a = nn.Parameter(torch.tensor([a]))
+            self.b = nn.Parameter(torch.tensor([b]))
+        else:
+            self.register_buffer("a", torch.tensor([a]))
+            self.register_buffer("b", torch.tensor([b]))
 
     def forward(self, z) -> Tensor:
-        return self._forward_inplace(z) if self.inplace else self._forward(z)
-
-    def _forward(self, z):
         sig_b = torch.sigmoid(self.b)
-        sig_neg_b = torch.sigmoid(-self.b)
 
+        # Intuitive naming, don't bully me :D
         upper_region = self.a * (z - self.b) + sig_b
         middle_region = torch.sigmoid(z)
-        lower_region = self.a * (z + self.b) + sig_neg_b
+        lower_region = self.a * (z + self.b) + sig_b
 
         result = torch.where(z >= self.b, upper_region, middle_region)
         result = torch.where(z <= -self.b, lower_region, result)
 
         return result
-
-    def _forward_inplace(self, z):
-        # Cannot be done fully in-place due to the conditional nature
-        sig_b = torch.sigmoid(self.b)
-        sig_neg_b = torch.sigmoid(-self.b)
-
-        upper_mask = z >= self.b
-        lower_mask = z <= -self.b
-        middle_mask = ~(upper_mask | lower_mask)
-
-        result = z.clone()
-
-        # Apply each region's transformation
-        result[upper_mask] = self.a * (z[upper_mask] - self.b) + sig_b
-        result[middle_mask] = torch.sigmoid(z[middle_mask])
-        result[lower_mask] = self.a * (z[lower_mask] + self.b) + sig_neg_b
-
-        z.copy_(result)
-        return z
 
 
 @register_activation
@@ -498,9 +487,10 @@ class SigLin(nn.Module):
 
     :math:`\text{SigLin}(z) = \sigma(z) + az`
 
+    :note: The authors of the study (https://link.springer.com/article/10.1007/s13748-020-00218-y) evaluated the SigLin activation function using linear coefficients of 0, 0.05, 0.1, and 0.15.
+
     Args:
-        a (float, optional): Linear coefficient. Default: 0.2
-        inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
+        a (float, optional): Linear coefficient. Default: 0.1
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
@@ -512,42 +502,30 @@ class SigLin(nn.Module):
         >>> x = torch.randn(2)
         >>> output = m(x)
 
-        >>> m = nn.SigLin(inplace=True)
-        >>> x = torch.randn(2)
-        >>> m(x)
     """
 
-    def __init__(self, a: float = 0.2, inplace: bool = False):
+    def __init__(self, a: float = 0.1):
         super(SigLin, self).__init__()
         self.a = nn.Parameter(torch.tensor([a]))
-        self.inplace = inplace
 
     def forward(self, z) -> Tensor:
-        return self._forward_inplace(z) if self.inplace else self._forward(z)
-
-    def _forward(self, z):
         return torch.sigmoid(z) + self.a * z
-
-    def _forward_inplace(self, z):
-        # Cannot be done fully in-place
-        z_copy = z.clone()
-        z.sigmoid_().add_(self.a * z_copy)
-        return z
 
 
 @register_activation
-class PenalizedHyperbolicTangent(nn.Module):
+class PTanh(nn.Module):
     r"""
     Applies the Penalized Hyperbolic Tangent activation function:
 
-    :math:`\text{PenalizedHyperbolicTangent}(z) = \begin{cases} 
+    :math:`\text{PTanh}(z) = \begin{cases} 
     \tanh(z), & z \geq 0 \\ 
     \frac{\tanh(z)}{a}, & z < 0 
     \end{cases}`
 
+    :note: a must be greater than 1.0
+
     Args:
         a (float, optional): Penalty factor for negative inputs. Default: 2.0
-        inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
@@ -555,46 +533,33 @@ class PenalizedHyperbolicTangent(nn.Module):
 
     Examples::
 
-        >>> m = nn.PenalizedHyperbolicTangent(a=3.0)
+        >>> m = nn.PTanh(a=3.0)
         >>> x = torch.randn(2)
         >>> output = m(x)
-
-        >>> m = nn.PenalizedHyperbolicTangent(inplace=True)
-        >>> x = torch.randn(2)
-        >>> m(x)
     """
 
-    def __init__(self, a: float = 2.0, inplace: bool = False):
-        super(PenalizedHyperbolicTangent, self).__init__()
+    def __init__(self, a: float = 2.0):
+        super(PTanh, self).__init__()
+        assert a > 1.0, "a must be greater than 1.0"
         self.a = nn.Parameter(torch.tensor([a]))
-        self.inplace = inplace
 
     def forward(self, z) -> Tensor:
-        return self._forward_inplace(z) if self.inplace else self._forward(z)
-
-    def _forward(self, z):
         tanh_z = torch.tanh(z)
         return torch.where(z >= 0, tanh_z, tanh_z / self.a)
 
-    def _forward_inplace(self, z):
-        # Cannot be done fully in-place due to the conditional nature
-        neg_mask = z < 0
-        z.tanh_()
-        z[neg_mask].div_(self.a)
-        return z
 
 
 @register_activation
-class SoftRootSign(nn.Module):
+class SRS(nn.Module):
     r"""
     Applies the Soft Root Sign activation function:
 
-    :math:`\text{SoftRootSign}(z) = \frac{z}{\sqrt[a]{1 + \exp\left(-\frac{z}{b}\right)}}`
+    :math:`\text{SRS}(z) = \frac{z}{\sqrt[a]{1 + \exp\left(-\frac{z}{b}\right)}}`
 
     Args:
         a (float, optional): Root parameter. Default: 2.0
-        b (float, optional): Scale parameter. Default: 1.0
-        inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
+        b (float, optional): Scale parameter. Default: 3.0
+        learnable (bool, optional): If True, the parameters are learnable. Default: False
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
@@ -602,46 +567,37 @@ class SoftRootSign(nn.Module):
 
     Examples::
 
-        >>> m = nn.SoftRootSign(a=3.0, b=0.5)
+        >>> m = nn.SRS(a=3.0, b=0.5, learnable=True)
         >>> x = torch.randn(2)
         >>> output = m(x)
-
-        >>> m = nn.SoftRootSign(inplace=True)
-        >>> x = torch.randn(2)
-        >>> m(x)
     """
 
-    def __init__(self, a: float = 2.0, b: float = 1.0, inplace: bool = False):
-        super(SoftRootSign, self).__init__()
+    def __init__(self, a: float = 2.0, b: float = 3.0, learnable: bool = False):
+        super(SRS, self).__init__()
         self.a = nn.Parameter(torch.tensor([a]))
         self.b = nn.Parameter(torch.tensor([b]))
-        self.inplace = inplace
+        self.learnable = learnable
+
+        if not learnable:
+            self.a.requires_grad = False
+            self.b.requires_grad = False
 
     def forward(self, z) -> Tensor:
-        return self._forward_inplace(z) if self.inplace else self._forward(z)
-
-    def _forward(self, z):
         denominator = torch.pow(1 + torch.exp(-z / self.b), 1 / self.a)
         return z / denominator
 
-    def _forward_inplace(self, z):
-        # Cannot be done fully in-place
-        z_copy = z.clone()
-        denominator = torch.pow(1 + torch.exp(-z / self.b), 1 / self.a)
-        z.copy_(z_copy / denominator)
-        return z
 
 
 @register_activation
-class SoftClipping(nn.Module):
+class SC(nn.Module):
     r"""
     Applies the Soft Clipping activation function:
 
-    :math:`\text{SoftClipping}(z) = \frac{1}{a} \ln\left(\frac{1 + \exp(az)}{1 + \exp(a(z-1))}\right)`
+    :math:`\text{SC}(z) = \frac{1}{a} \ln\left(\frac{1 + \exp(az)}{1 + \exp(a(z-1))}\right)`
+    :note: ReLU1 but soft edges
 
     Args:
-        a (float, optional): Sharpness parameter. Default: 1.0
-        inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
+        a (float, optional): Sharpness parameter. Default: 50.0
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
@@ -649,34 +605,20 @@ class SoftClipping(nn.Module):
 
     Examples::
 
-        >>> m = nn.SoftClipping(a=2.0)
+        >>> m = nn.SC(a=2.0)
         >>> x = torch.randn(2)
         >>> output = m(x)
-
-        >>> m = nn.SoftClipping(inplace=True)
-        >>> x = torch.randn(2)
-        >>> m(x)
     """
 
-    def __init__(self, a: float = 1.0, inplace: bool = False):
-        super(SoftClipping, self).__init__()
+    def __init__(self, a: float = 50.0):
+        super(SC, self).__init__()
         self.a = nn.Parameter(torch.tensor([a]))
-        self.inplace = inplace
 
     def forward(self, z) -> Tensor:
-        return self._forward_inplace(z) if self.inplace else self._forward(z)
-
-    def _forward(self, z):
         numerator = 1 + torch.exp(self.a * z)
         denominator = 1 + torch.exp(self.a * (z - 1))
         return torch.log(numerator / denominator) / self.a
 
-    def _forward_inplace(self, z):
-        # Cannot be done fully in-place
-        numerator = 1 + torch.exp(self.a * z)
-        denominator = 1 + torch.exp(self.a * (z - 1))
-        z.copy_(torch.log(numerator / denominator) / self.a)
-        return z
 
 
 @register_activation
@@ -939,6 +881,7 @@ class SigmoidGumbel(nn.Module):
     def forward(self, z) -> Tensor:
         neg_z = -z
         return 1 / (1 + torch.exp(neg_z) * torch.exp(-torch.exp(neg_z)))
+
 
 @register_activation
 class NewSigmoid(nn.Module):
