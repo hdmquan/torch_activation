@@ -1,8 +1,9 @@
+from torch_activation import __version__
 from setuptools import setup, find_packages
 
 setup(
     name="torch_activation",
-    version="0.2.1",
+    version=__version__,
     author="Alan Huynh",
     author_email="hdmquan@gmail.com",
     description="A collection of new activation functions for PyTorch",

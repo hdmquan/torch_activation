@@ -1,7 +1,10 @@
 name: Publish to PyPI.org
 on:
-  release:
-    types: [published]
+  push:
+    paths:
+      - 'torch_activation/__init__.py'
+    branches:
+      - main
 jobs:
   pypi:
     runs-on: ubuntu-latest
@@ -10,7 +13,31 @@ jobs:
         uses: actions/checkout@v3
         with:
           fetch-depth: 0
-      - run: python3 -m pip install --upgrade build && python3 -m build
+          
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+          
+      - name: Extract version from __init__.py
+        id: get_version
+        run: |
+          VERSION=$(python -c "import re; f=open('torch_activation/__init__.py', 'r'); content=f.read(); f.close(); match=re.search(r'__version__ = \"(.*?)\"', content); print(match.group(1) if match else '0.0.0')")
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          
+      - name: Update version in pyproject.toml
+        run: |
+          VERSION=${{ steps.get_version.outputs.version }}
+          sed -i "s/version = \"[^\"]*\"/version = \"$VERSION\"/" pyproject.toml
+          
+      - name: Update version in CITATION.cff
+        run: |
+          VERSION=${{ steps.get_version.outputs.version }}
+          sed -i "s/version: [^\n]*/version: $VERSION/" CITATION.cff
+          
+      - name: Build package
+        run: python -m pip install --upgrade build && python -m build
+        
       - name: Publish package
         uses: pypa/gh-action-pypi-publish@release/v1
         with:

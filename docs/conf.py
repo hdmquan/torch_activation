@@ -1,6 +1,6 @@
 import os
 import sys
-
+from torch_activation import __version__
 sys.path.insert(0, os.path.abspath("../"))
 
 # Configuration file for the Sphinx documentation builder.
@@ -8,7 +8,7 @@ sys.path.insert(0, os.path.abspath("../"))
 project = "Torch Activation"
 copyright = "2024, Alan Huynh"
 author = "Alan Huynh"
-release = "0.2.1"
+release = __version__
 
 extensions = [
     "sphinx.ext.autodoc",
