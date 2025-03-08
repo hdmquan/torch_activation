@@ -310,3 +310,87 @@ class ArandaOrdaz(nn.Module):
 
     def forward(self, z) -> Tensor:
         return 1 - (1 + self.a * torch.exp(z))**(-1)
+
+
+@register_activation
+class KDAC(nn.Module):
+    r"""
+    :note: Adapted from `https://github.com/pyy-copyto/KDAC/blob/4541ffed1a964dfff9b8243a89c38a61e85860f5/KDAC.py`
+    Applies the Knowledge Discovery Activation Function (KDAC):
+
+    :math:`\text{KDAC}(z) = p \cdot (1 - h_{max}(p, r)) + r \cdot h_{max}(p, r) + k \cdot h_{max}(p, r) \cdot (1 - h_{max}(p, r))`
+
+    where:
+    
+    :math:`h_{max}(x, y) = \text{clip}\left(\frac{1}{2} - \frac{1}{2} \frac{x - y}{c}\right)`
+    
+    :math:`\text{clip}(x) = \begin{cases}
+    0, & x \leq 0 \\
+    x, & 0 < x < 1 \\
+    1, & x \geq 1
+    \end{cases}`
+    
+    :math:`p = az`
+    
+    :math:`q = h_{min}(bz, s)`
+    
+    :math:`r = \begin{cases}
+    p, & z > 0 \\
+    bz \cdot (1 - q) + s \cdot h_{min}(q, s) + k \cdot q \cdot (1 - q), & z \leq 0
+    \end{cases}`
+    
+    :math:`s = \tanh(z)`
+    
+    :math:`h_{min}(x, y) = \text{clip}\left(\frac{1}{2} + \frac{1}{2} \frac{x - y}{c}\right)`
+
+    Args:
+        a (float, optional): trainable parameter, must be positive. Default: ``0.1``
+        b (float, optional): trainable parameter, must be positive. Default: ``0.1``
+        c (float, optional): fixed parameter. Default: ``0.01``
+        inplace (bool, optional): parameter kept for API consistency, but KDAC operation 
+                                 cannot be done in-place. Default: ``False``
+
+    Shape:
+        - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
+        - Output: :math:`(*)`, same shape as the input.
+    """
+
+    def __init__(self, a: float = 0.1, b: float = 0.1, c: float = 0.01, inplace: bool = False):
+        super(KDAC, self).__init__()
+        assert a > 0, "Parameter a must be positive"
+        assert b > 0, "Parameter b must be positive"
+        
+        self.a = nn.Parameter(torch.tensor(a))
+        self.b = nn.Parameter(torch.tensor(b))
+        self.c = c  # Fixed parameter
+        self.inplace = inplace  # Unused
+
+    def _clip(self, x):
+        return torch.clamp(x, 0.0, 1.0)
+
+    def _h_min(self, x, y):
+        return self._clip(0.5 + 0.5 * (x - y) / self.c)
+
+    def _h_max(self, x, y):
+        return self._clip(0.5 - 0.5 * (x - y) / self.c)
+
+    def _negative_region(self, z):
+        s = torch.tanh(z)
+        q = self._h_min(self.b * z, s)
+        return self.b * z * (1 - q) + s * self._h_min(q, s) + self.c * q * (1 - q)
+
+    def _positive_region(self, z):
+        return self.a * z
+
+    def forward(self, z) -> Tensor:
+        p = self.a * z
+        
+        # Calculate r based on condition z > 0
+        pos_mask = z > 0
+        r = torch.zeros_like(z)
+        r[pos_mask] = p[pos_mask]
+        r[~pos_mask] = self._negative_region(z[~pos_mask])
+        
+        # Calculate final output
+        h = self._h_max(p, r)
+        return p * (1 - h) + r * h + self.c * h * (1 - h)
