@@ -335,3 +335,30 @@ class PUAF(nn.Module):
         # z < -c is already set to 0 by initialization
         
         return result
+
+
+@register_activation
+class ArandaOrdaz(nn.Module):
+    r"""
+    Applies the Aranda-Ordaz activation function:
+
+    :math:`\text{ArandaOrdaz}(z) = 1 - (1 + a \cdot \exp(z))^{-1}`
+
+    Args:
+        a (float, optional): fixed parameter. Default: ``2.0``
+        inplace (bool, optional): parameter kept for API consistency, but Aranda-Ordaz operation 
+                                 cannot be done in-place. Default: ``False``
+
+    Shape:
+        - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
+        - Output: :math:`(*)`, same shape as the input.
+    """
+
+    def __init__(self, a: float = 2.0, inplace: bool = False):
+        super(ArandaOrdaz, self).__init__()
+        assert a > 0, "Parameter a must be positive"
+        self.a = a
+        self.inplace = inplace  # Unused
+
+    def forward(self, z) -> Tensor:
+        return 1 - (1 + self.a * torch.exp(z))**(-1)
