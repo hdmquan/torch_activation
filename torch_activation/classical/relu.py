@@ -5,13 +5,44 @@ import torch.nn.functional as F
 from torch import Tensor
 from torch_activation import register_activation
 
+@register_activation
+class ReLU(nn.Module):
+    r"""
+    Applies the Rectified Linear Unit activation function.
+
+    .. math::
+        \text{ReLU}(x) = \max(0, x)
+
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/ReLU.png
+
+    Examples::
+
+        >>> m = torch_activation.ReLU()
+        >>> x = torch.randn(2)
+        >>> output = m(x)
+
+        >>> m = torch_activation.ReLU(inplace=True)
+        >>> x = torch.randn(2)
+        >>> m(x)
+    """
+    def __init__(self, inplace: bool = False):
+        super().__init__()
+        self.inplace = inplace
+    def forward(self, x: Tensor) -> Tensor:
+        if self.inplace:
+            return F.relu_(x)
+        else:
+            return F.relu(x)
+
 @register_activation    
-class ShiftedReLU(nn.Module):
+class SReLU(nn.Module):
     r"""
     A Shifted ReLU is a simple translation of a ReLU and is defined as:
 
 
-    :math:`\text{ShiftedReLU}(x) = \text{max}(-1, x)`
+    :math:`\text{SReLU}(x) = \text{max}(-1, x)`
 
     See: http://arxiv.org/abs/1511.07289
 
@@ -24,7 +55,7 @@ class ShiftedReLU(nn.Module):
 
     Here is a plot of the function and its derivative:
 
-    .. image:: ../images/activation_images/ShiftedReLU.png
+    .. image:: ../images/activation_images/SReLU.png
     """
 
     def __init__(self, inplace: bool = False):
@@ -32,12 +63,189 @@ class ShiftedReLU(nn.Module):
         self.inplace = inplace
 
     def forward(self, x: Tensor) -> Tensor:
-        # TODO: Inplace with max? C++?
         if self.inplace:
             return F.relu_(x - 1.0)
         else:
             return F.relu(x - 1.0)
 
+@register_activation
+class LReLU(nn.Module):
+    r"""
+    Applies the Leaky ReLU activation function.
+
+    .. math::
+        \text{LReLU}(x) = \max(0, x) + \alpha \min(0, x)
+
+    Args:
+        alpha (float, optional): The slope for negative inputs. Default: ``0.01``
+        inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
+
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/LReLU.png
+
+    Examples::
+
+        >>> m = torch_activation.LReLU()
+        >>> x = torch.randn(2)
+        >>> output = m(x)
+
+        >>> m = torch_activation.LReLU(inplace=True)
+        >>> x = torch.randn(2)
+        >>> m(x)
+    """
+    def __init__(self, inplace: bool = False, alpha: float = 0.01):
+        super().__init__()
+        self.inplace = inplace
+        self.alpha = alpha
+
+    def forward(self, x: Tensor) -> Tensor:
+        if self.inplace:
+            return F.leaky_relu_(x, negative_slope=self.alpha)
+        else:
+            return F.leaky_relu(x, negative_slope=self.alpha)
+        
+@register_activation
+class VLReLU(nn.Module):
+    r"""
+    Applies the Very Leaky ReLU activation function.
+
+    .. math::
+        \text{VLReLU}(x) = \max(0, x) + \alpha \min(0, x)
+
+    :note: This is a variant of the LReLU activation function where the slope is fixed at 3.0. While almost identical to the LReLU, but some researchers consider it to be a separate case.
+
+    Args:
+        alpha (float, optional): The slope for negative inputs. Default: ``3.0``
+        inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
+
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/VLReLU.png
+
+    Examples::
+
+        >>> m = torch_activation.VLReLU()
+        >>> x = torch.randn(2)
+        >>> output = m(x)
+
+        >>> m = torch_activation.VLReLU(inplace=True)
+        >>> x = torch.randn(2)
+        >>> m(x)
+    """
+    def __init__(self, inplace: bool = False, alpha: float = 3.0):
+        super().__init__()
+        self.inplace = inplace
+        self.alpha = alpha
+
+    def forward(self, x: Tensor) -> Tensor:
+        if self.inplace:
+            return F.leaky_relu_(x, negative_slope=self.alpha)
+        else:
+            return F.leaky_relu(x, negative_slope=self.alpha)
+        
+
+@register_activation
+class RReLU(nn.Module):
+    r"""
+    Applies the Randomized Leaky ReLU activation function:
+
+    .. math::
+        \text{RReLU}(z_i) = 
+        \begin{cases} 
+        z_i, & z_i \geq 0, \\
+        z_i a_i, & z_i < 0,
+        \end{cases}
+
+    where :math:`a_i` is sampled for each neuron i from the uniform distribution
+    :math:`a_i \sim U(l, u)` where :math:`l < u` and :math:`l, u \in (0, \infty)`.
+
+    See: https://arxiv.org/abs/2303.01360
+    
+    Shape:
+        - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
+        - Output: :math:`(*)`, same shape as the input.
+    
+    Args:
+        lower (float, optional): Lower bound of the uniform distribution (default: 0.125).
+        upper (float, optional): Upper bound of the uniform distribution (default: 1/3).
+        inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
+
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/RReLU.png
+
+    Examples::
+
+        >>> m = torch_activation.RReLU()
+        >>> x = torch.randn(2)
+        >>> output = m(x)
+
+        >>> m = torch_activation.RReLU(inplace=True)
+        >>> x = torch.randn(2)
+        >>> m(x)
+    """
+    def __init__(self, inplace: bool = False, lower: float = 0.125, upper: float = 0.333):
+        self.inplace = inplace
+        self.lower = lower
+        self.upper = upper
+
+    def forward(self, x: Tensor) -> Tensor:
+        if self.inplace:
+            return F.leaky_relu_(x, negative_slope=torch.rand(x.shape).uniform_(self.lower, self.upper))
+        else:
+            return F.leaky_relu(x, negative_slope=torch.rand(x.shape).uniform_(self.lower, self.upper))
+        
+
+@register_activation
+class OLReLU(nn.Module):
+    r"""
+    Applies the Optimized Leaky ReLU (OLReLU) activation function:
+
+    .. math::
+        f(z) = 
+        \begin{cases} 
+        z, & z \geq 0, \\
+        z \cdot \exp(-\alpha), & z < 0,
+        \end{cases}
+
+    where :math:`\alpha = \frac{u + l}{u - l}` and :math:`u` and :math:`l` are hyperparameters 
+    of the bounds of the RReLU.
+    
+    Shape:
+        - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
+        - Output: :math:`(*)`, same shape as the input.
+    
+    Args:
+        lower (float, optional): Lower bound parameter l (default: 0.125).
+        upper (float, optional): Upper bound parameter u (default: 1/3).
+        inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
+
+    Examples::
+
+        >>> m = torch_activation.OLReLU()
+        >>> x = torch.randn(2)
+        >>> output = m(x)
+
+        >>> m = torch_activation.OLReLU(lower=0.1, upper=0.5, inplace=True)
+        >>> x = torch.randn(2)
+        >>> m(x)
+    """
+    def __init__(self, lower: float = 0.125, upper: float = 0.333, inplace: bool = False):
+        super(OLReLU, self).__init__()
+        self.lower = lower
+        self.upper = upper
+        self.inplace = inplace
+        
+        # Calculate alpha according to the formula in the paper
+        self.alpha = (upper + lower) / (upper - lower)
+        self.negative_slope = torch.exp(-self.alpha)
+
+    def forward(self, x: Tensor) -> Tensor:
+        if self.inplace:
+            return F.leaky_relu_(x, negative_slope=self.negative_slope)
+        else:
+            return F.leaky_relu(x, negative_slope=self.negative_slope)
 
 @register_activation
 class SoftsignRReLU(nn.Module):
@@ -85,53 +293,42 @@ class SoftsignRReLU(nn.Module):
 @register_activation
 class SlReLU(nn.Module):
     r"""
-    A Sloped ReLU (SlReLU) [242] is similar to the LReLU — whereas the LReLU parameterizes the slope for negative
-    inputs, the SlReLU parameterizes the slope of ReLU for positive inputs. It is, therefore, defined as:
+    The Sloped ReLU (SlReLU) is defined as:
 
     .. math::
-        `\text{SlReLU}(z) = 
+        \text{SlReLU}(z_i) = 
         \begin{cases} 
-        a \cdot z, & z \geq 0, \\
-        0, & z < 0,
-        \end{cases}` 
-        
-    a is recommended to be from 1 to 10.
-    
-    See: https://doi.org/10.1109/pimrc.2017.8292678
-    
-    Args:
-        a (float, optional): The slope for positive inputs. Default: 10.0
-        inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
-        
-    Shape:
-        - Input: :math:`(*, C, *)` where :math:`*` means any number of additional dimensions
-        - Output: :math:`(*, 2C, *)`
-        
-    Here is a plot of the function and its derivative:
+        \alpha \cdot z_i, & z_i \geq 0, \\
+        0, & z_i < 0,
+        \end{cases}
 
-    .. image:: ../images/activation_images/SlReLU.png
+    where :math:`z_i` is the input to the activation function and :math:`\alpha` is a scaling factor.
+    This is essentially a scaled ReLU that multiplies positive inputs by alpha.
+
+    Args:
+        alpha (float, optional): The scaling factor for positive inputs. Default: ``10.0``
+        inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
+                                  (Currently not implemented for inplace operations)
 
     Examples::
 
-        >>> m = nn.SlReLU(a=2.0)
+        >>> m = torch_activation.SlReLU()
         >>> x = torch.randn(2)
         >>> output = m(x)
 
-        >>> m = nn.SlReLU(a=2.0, inplace=True)
-        >>> x = torch.randn(2)
-        >>> m(x)
     """
 
-    def __init__(self, a=10.0, inplace: bool = False):
-        super(SlReLU, self).__init__()
-        self.a = a
+    def __init__(self, alpha: float = 10.0, inplace: bool = False):
+        super().__init__()
         self.inplace = inplace
+        self.alpha = alpha
 
-    def forward(self, x):
-        if self.inplace:
-            return F.relu_(self.a * x)
-        else:
-            return F.relu(self.a * x)
+        if inplace:
+            raise NotImplementedError
+
+    def forward(self, x: Tensor) -> Tensor:
+        # TODO: Performance
+        return torch.clamp(self.alpha * x, min=0)
 
 
 @register_activation
@@ -379,12 +576,11 @@ class VLU(nn.Module):
         self.b = b
         self.inplace = inplace
 
+        if inplace:
+            raise NotImplementedError
+
     def forward(self, x: Tensor) -> Tensor:
-        if self.inplace:
-            # TODO: Is this correct?
-            return torch.relu_(x) + self.a * torch.sin(self.b * x)
-        else:
-            return torch.relu(x) + self.a * torch.sin(self.b * x)
+        return torch.relu(x) + self.a * torch.sin(self.b * x)
 
 @register_activation
 class LReLU(nn.Module):
@@ -585,30 +781,33 @@ class SRReLU(nn.Module):
         assert 0 < l < u, "Ensure 0 < l < u for the uniform distribution bounds."
         self.l = l
         self.u = u
-        self.inplace = inplace
+
+        if inplace:
+            raise NotImplementedError
 
     def forward(self, x: Tensor) -> Tensor:
-        # Sample a_i from U(l, u)
         a = torch.empty_like(x).uniform_(self.l, self.u)
+
+        frac = 1 / torch.square(1 + x)
         
-        if self.inplace:
-            return x.where(x >= 0, x.div_(a))
-        else:
-            return torch.where(x >= 0, x, x / a)
-
-
+        return torch.where(x >= 0, frac + x, frac + (a * x))
+    
+    
 @register_activation
 class NReLU(nn.Module):
     r"""
-    Applies the Noisy ReLU activation function.
+    Applies the Noisy ReLU (NReLU) activation function as proposed in [221].
 
     .. math::
         \text{NReLU}(z) = \max(0, z + a)
 
-    where :math:`a \sim N(0, \sigma(z))` is sampled from a Gaussian distribution.
+    where :math:`a \sim N(0, \sigma(z))` is a stochastic parameter sampled from a Gaussian 
+    distribution with zero mean and variance :math:`\sigma(z)^2`, and :math:`\sigma(z)` is 
+    the standard deviation of the inputs :math:`z`.
+
+    NReLU was designed for use with Restricted Boltzmann machines.
 
     Args:
-        sigma (float, optional): Standard deviation for the noise. Default: ``0.1``
         inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
@@ -625,19 +824,21 @@ class NReLU(nn.Module):
         >>> x = torch.randn(2)
         >>> output = m(x)
 
-        >>> m = torch_activation.NReLU(sigma=0.2, inplace=True)
+        >>> m = torch_activation.NReLU(inplace=True)
         >>> x = torch.randn(2)
         >>> m(x)
     """
 
-    def __init__(self, sigma: float = 0.1, inplace: bool = False):
+    def __init__(self, inplace: bool = False):
         super().__init__()
-        self.sigma = sigma
         self.inplace = inplace
 
     def forward(self, x: Tensor) -> Tensor:
-        # Generate noise from a normal distribution
-        noise = torch.randn_like(x) * self.sigma
+        with torch.no_grad():
+            std = torch.std(x)
+        
+        # Sample noise from Gaussian distribution with mean 0 and std = std(x)
+        noise = torch.randn_like(x) * std
         
         if self.inplace:
             x.add_(noise)
@@ -645,6 +846,8 @@ class NReLU(nn.Module):
         else:
             return F.relu(x + noise)
         
+
+# TODO: Really really check this again. Should be correct, but I'm not sure.
 class SCAA(nn.Module):
     r"""
     Applies the Spatial Context-Aware Activation function:
@@ -774,13 +977,11 @@ class NLReLU(nn.Module):
         self.a = a
         self.inplace = inplace
 
+        if inplace:
+            raise NotImplementedError
+
     def forward(self, x: Tensor) -> Tensor:
-        if self.inplace:
-            x = F.relu_(x)
-            x.mul_(self.a).add_(1.0).log_()
-            return x
-        else:
-            return torch.log(self.a * F.relu(x) + 1.0)
+        return torch.log(self.a * F.relu(x) + 1.0)
 
 
 @register_activation
@@ -805,6 +1006,8 @@ class SLU(nn.Module):
         \end{cases}
 
     where :math:`a=1, b=2, c=2\ln(2)`.
+
+    :note: Parameter is fixed to ensure that the function is continuous, differentiable at 0 and avoid vanishing or exploding gradients.
 
     Args:
         inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
@@ -839,6 +1042,7 @@ class SLU(nn.Module):
             x[neg_mask] = 2 * torch.log((torch.exp(x[neg_mask]) + 1) / 2)
             return x
         else:
+            # TODO: Performance
             return torch.where(
                 x >= 0,
                 x,
@@ -857,6 +1061,8 @@ class ReSP(nn.Module):
         az + \ln(2), & z \geq 0, \\
         \ln(1 + \exp(z)), & z < 0,
         \end{cases}
+
+    :note: Value of :math:`a` between 1.4 and 2.0 is recommended.
 
     Args:
         a (float, optional): Scaling factor for positive inputs. Default: ``1.7``
@@ -941,14 +1147,13 @@ class PReNU(nn.Module):
         self.a = a
         self.inplace = inplace
 
+        if inplace:
+            raise NotImplementedError
+
     def forward(self, x: Tensor) -> Tensor:
-        if self.inplace:
-            x = F.relu_(x)
-            x.sub_(self.a * torch.log(x + 1))
-            return x
-        else:
-            relu_x = F.relu(x)
-            return relu_x - self.a * torch.log(relu_x + 1)
+        # TODO: The mathematical definition does not have this step.
+        pos_x = F.relu(x)  # Un-negative first
+        return pos_x - self.a * torch.log(pos_x + 1)
 
 
 @register_activation
@@ -963,6 +1168,8 @@ class BReLU(nn.Module):
         z, & 0 < z < a, \\
         a, & z \geq a,
         \end{cases}
+
+    :note: This is RELUN, just with a different name.
 
     Args:
         a (float, optional): Upper bound for the function's output. Default: ``1.0``
@@ -999,6 +1206,7 @@ class BReLU(nn.Module):
             return torch.clamp(x, 0, self.a)
 
 
+# NOTE: Hm... version? 
 @register_activation
 class HardSigmoid(nn.Module):
     r"""
@@ -1011,12 +1219,16 @@ class HardSigmoid(nn.Module):
     :math:`\text{HardSigmoid}(z) = \max(0, \min(0.2z + 0.5, 1))`
 
     Args:
-        version (str, optional): Version of hard sigmoid to use ('v1' or 'v2'). Default: ``'v1'``
+        version (str, optional): Version of hard sigmoid to use (1 or 2). Default: ``1``
         inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
+
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/HardSigmoid.png
 
     Examples::
 
@@ -1029,20 +1241,20 @@ class HardSigmoid(nn.Module):
         >>> m(x)
     """
 
-    def __init__(self, version: str = 'v1', inplace: bool = False):
+    def __init__(self, version: int = 1, inplace: bool = False):
         super().__init__()
-        assert version in ['v1', 'v2'], "version must be 'v1' or 'v2'"
+        assert version in [1, 2], "version must be 1 or 2"
         self.version = version
         self.inplace = inplace
 
     def forward(self, x: Tensor) -> Tensor:
-        if self.version == 'v1':
+        if self.version == 1:
             if self.inplace:
                 x.add_(1).div_(2).clamp_(0, 1)
                 return x
             else:
                 return torch.clamp((x + 1) / 2, 0, 1)
-        else:  # v2
+        else:  # 2
             if self.inplace:
                 x.mul_(0.2).add_(0.5).clamp_(0, 1)
                 return x
@@ -1062,6 +1274,8 @@ class HardTanh(nn.Module):
         z, & a \leq z \leq b, \\
         b, & z > b,
         \end{cases}
+
+    :note: This is suppose to approximate the Tanh function. But still, another name for SRELUN11
 
     Args:
         a (float, optional): Lower bound of the linear region. Default: ``-1.0``
@@ -1087,7 +1301,7 @@ class HardTanh(nn.Module):
         >>> m(x)
     """
 
-    def __init__(self, a: float = -1.0, b: float = 1.0, inplace: bool = False):
+    def __init__(self, a: float = -1.0, b: float = 11.0, inplace: bool = False):
         super().__init__()
         self.a = a
         self.b = b
@@ -1237,11 +1451,11 @@ class HardSwish(nn.Module):
 
     def forward(self, x: Tensor) -> Tensor:
         if self.inplace:
-            inner = x.add_(3).clamp_(0, 6).div_(6)
+            inner = x.add_(3).clamp_(-18, 18).div_(6)
             x.mul_(inner)
             return x
         else:
-            inner = torch.clamp(x + 3, 0, 6) / 6
+            inner = torch.clamp(x + 3, -18, 18) / 6
             return x * inner
 
 
@@ -1757,74 +1971,45 @@ class LSPTLU(nn.Module):
         
 if __name__ == "__main__":
     from torch_activation.utils import plot_activation
+    activation_params = {
+        "ReLU": {},
+        "SReLU": {},
+        # "SoftsignRReLU": {"l": [1/8, 1/4], "u": [1/5, 1/2]},
+        "SlReLU": {},
+        "CReLU": {},
+        "ReLUN": {"n": [1, 6]},
+        "SquaredReLU": {},
+        "SineReLU": {"a": [0.5, 2]},
+        "Minsin": {},
+        "VLU": {"a": [0.5, 2], "b": [0.5, 2]},
+        "LReLU": {"a": [50, 100]},
+        "RReLU": {"l": [2, 3], "u": [6, 8]},
+        # "SRReLU": {"l": [1/8, 1/4], "u": [1/5, 1/2]},
+        "NReLU": {},
+        "RTReLU": {"sigma": [0.5, 1.0]},
+        "NLReLU": {"a": [0.5, 1, 2]},
+        "SLU": {},
+        "ReSP": {"a": [1.5, 2.0]},
+        "PReNU": {"a": [0.1, 0.5]},
+        "BReLU": {"a": [1, 3, 6]},
+        "HardSigmoid": {"version": [1, 2]},
+        "HardTanh": {"a": [-2, -1], "b": [1, 2]},
+        "SvHardTanh": {"a": [0, 0.5, 1]},
+        "ShHardTanh": {"a": [0, 0.5, 1]},
+        "HardSwish": {},
+        "TRec": {"a": [0.5, 1, 2]},
+        "Hardshrink": {"a": [0.5, 1, 2]},
+        "Softshrink": {"a": [0.5, 1, 2]},
+        "BLReLU": {"a": [0.1, 0.2], "b": [1, 2]},
+        "VReLU": {},
+        "PanFunction": {"a": [0.5, 2]},
+        "AbsLU": {"a": [0.2, 0.8]},
+        "MReLU": {},
+        "LSPTLU": {"a": [0.5, 1, 2]},
+        # "SCAA": {}  # NOTE: SCAA is not one-to-one.
+    }
 
-    shifted_relu_p = {}
-    softsign_rrelu_p = {"l": [1/8, 1/4], "u": [1/5, 1/2]}
-    slrelu_p = {"a": [2, 10]}
-    crelu_p = {}
-    relun_p = {"n": [1, 6]}
-    squared_relu_p = {}
-    sine_relu_p = {"a": [0.5, 2]}
-    minsin_p = {}
-    vlu_p = {"a": [0.5, 2], "b": [0.5, 2]}
-    lrelu_p = {"a": [50, 100]}
-    rrelu_p = {"l": [2, 3], "u": [6, 8]}
-    srrelu_p = {"l": [1/8, 1/4], "u": [1/5, 1/2]}
-    nrelu_p = {"sigma": [0.05, 0.2]}
-    rtrelu_p = {"sigma": [0.5, 1.0]}
-    nlrelu_p = {"a": [0.5, 1, 2]}
-    slu_p = {}
-    resp_p = {"a": [1.5, 2.0]}
-    prenu_p = {"a": [0.1, 0.5]}
-    brelu_p = {"a": [1, 3, 6]}
-    hard_sigmoid_p = {"version": ["v1", "v2"]}
-    hard_tanh_p = {"a": [-2, -1], "b": [1, 2]}
-    sv_hard_tanh_p = {"a": [0, 0.5, 1]}
-    sh_hard_tanh_p = {"a": [0, 0.5, 1]}
-    hard_swish_p = {}
-    trec_p = {"a": [0.5, 1, 2]}
-    hardshrink_p = {"a": [0.5, 1, 2]}
-    softshrink_p = {"a": [0.5, 1, 2]}
-    blrelu_p = {"a": [0.1, 0.2], "b": [1, 2]}
-    vrelu_p = {}
-    pan_function_p = {"a": [0.5, 2]}
-    abslu_p = {"a": [0.2, 0.8]}
-    mrelu_p = {}
-    lsptlu_p = {"a": [0.5, 1, 2]}
-    
-    plot_activation(ShiftedReLU, shifted_relu_p)
-    # plot_activation(SoftsignRReLU, softsign_rrelu_p)
-    plot_activation(SlReLU, slrelu_p)
-    plot_activation(CReLU, crelu_p)
-    plot_activation(ReLUN, relun_p)
-    plot_activation(SquaredReLU, squared_relu_p)
-    plot_activation(SineReLU, sine_relu_p)
-    plot_activation(Minsin, minsin_p)
-    plot_activation(VLU, vlu_p)
-    plot_activation(LReLU, lrelu_p)
-    plot_activation(RReLU, rrelu_p)
-    plot_activation(SRReLU, srrelu_p)
-    plot_activation(NReLU, nrelu_p)
-    plot_activation(RTReLU, rtrelu_p)
-    plot_activation(NLReLU, nlrelu_p)
-    plot_activation(SLU, slu_p)
-    plot_activation(ReSP, resp_p)
-    plot_activation(PReNU, prenu_p)
-    plot_activation(BReLU, brelu_p)
-    # plot_activation(HardSigmoid, hard_sigmoid_p)
-    plot_activation(HardTanh, hard_tanh_p)
-    plot_activation(SvHardTanh, sv_hard_tanh_p)
-    plot_activation(ShHardTanh, sh_hard_tanh_p)
-    plot_activation(HardSwish, hard_swish_p)
-    plot_activation(TRec, trec_p)
-    plot_activation(Hardshrink, hardshrink_p)
-    plot_activation(Softshrink, softshrink_p)
-    plot_activation(BLReLU, blrelu_p)
-    plot_activation(VReLU, vrelu_p)
-    plot_activation(PanFunction, pan_function_p)
-    plot_activation(AbsLU, abslu_p)
-    plot_activation(MReLU, mrelu_p)
-    plot_activation(LSPTLU, lsptlu_p)
-    
-    # NOTE: SCAA is not included as it's not a one-to-one function
-    # and requires specific input dimensions
+    for activation_name, params in activation_params.items():
+        # Get the class from its name
+        activation_class = globals()[activation_name]
+        plot_activation(activation_class, params)
