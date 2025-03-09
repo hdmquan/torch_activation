@@ -4,8 +4,34 @@ import torch.nn.functional as F
 import math
 
 from torch import Tensor
+from torch_activation.utils import sech
 from torch_activation import register_activation
 
+
+# TODO: There are mentioned of WiG - a gated unit. Investigate it later..
+@register_activation
+class SiLU(nn.Module):
+    r"""
+    Applies the Sigmoid Linear Unit activation function:
+
+    :math:`\text{SiLU}(x) = x \cdot \sigma(x)`
+
+    Shape:
+        - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
+        - Output: :math:`(*)`, same shape as the input.
+
+    Examples::
+
+        >>> m = SiLU()
+        >>> x = torch.randn(2)
+        >>> output = m(x)
+    """
+    def __init__(self):
+        super(SiLU, self).__init__()
+
+    def forward(self, x) -> Tensor:
+        return F.silu(x)
+    
 
 @register_activation
 class CoLU(nn.Module):
@@ -136,7 +162,7 @@ class SinLU(nn.Module):
 
 
 @register_activation
-class GaussianErrorLinearUnit(nn.Module):
+class GELU(nn.Module):
     r"""
     Applies the Gaussian Error Linear Unit activation function:
 
@@ -156,14 +182,14 @@ class GaussianErrorLinearUnit(nn.Module):
     """
 
     def __init__(self):
-        super(GaussianErrorLinearUnit, self).__init__()
+        super(GELU, self).__init__()
 
     def forward(self, x) -> Tensor:
         return F.gelu(x)
 
 
 @register_activation
-class SymmetricalGaussianErrorLinearUnit(nn.Module):
+class SGELU(nn.Module):
     r"""
     Applies the Symmetrical Gaussian Error Linear Unit activation function:
 
@@ -178,21 +204,21 @@ class SymmetricalGaussianErrorLinearUnit(nn.Module):
 
     Examples::
 
-        >>> m = SymmetricalGaussianErrorLinearUnit(a=1.5)
+        >>> m = SGELU(a=1.5)
         >>> x = torch.randn(2)
         >>> output = m(x)
     """
 
     def __init__(self, a: float = 1.0):
-        super(SymmetricalGaussianErrorLinearUnit, self).__init__()
-        self.a = nn.Parameter(Tensor([a]))
+        super(SGELU, self).__init__()
+        self.a = nn.Parameter(Tensor([a]), requires_grad=False)
 
     def forward(self, x) -> Tensor:
         return self.a * x * torch.erf(x / math.sqrt(2))
 
 
 @register_activation
-class CauchyLinearUnit(nn.Module):
+class CaLU(nn.Module):
     r"""
     Applies the Cauchy Linear Unit activation function:
 
@@ -204,20 +230,20 @@ class CauchyLinearUnit(nn.Module):
 
     Examples::
 
-        >>> m = CauchyLinearUnit()
+        >>> m = CaLU()
         >>> x = torch.randn(2)
         >>> output = m(x)
     """
 
     def __init__(self):
-        super(CauchyLinearUnit, self).__init__()
+        super(CaLU, self).__init__()
 
     def forward(self, x) -> Tensor:
         return x * (torch.arctan(x) / math.pi + 0.5)
 
 
 @register_activation
-class LaplaceLinearUnit(nn.Module):
+class LaLU(nn.Module):
     r"""
     Applies the Laplace Linear Unit activation function:
 
@@ -232,13 +258,13 @@ class LaplaceLinearUnit(nn.Module):
 
     Examples::
 
-        >>> m = LaplaceLinearUnit()
+        >>> m = LaLU()
         >>> x = torch.randn(2)
         >>> output = m(x)
     """
 
     def __init__(self):
-        super(LaplaceLinearUnit, self).__init__()
+        super(LaLU, self).__init__()
 
     def forward(self, x) -> Tensor:
         pos_mask = x >= 0
@@ -251,8 +277,9 @@ class LaplaceLinearUnit(nn.Module):
         return result
 
 
+# TODO: The paper mis-typed it as LaLU. Contact the author about it.
 @register_activation
-class CollapsingLinearUnit(nn.Module):
+class CoLU(nn.Module):
     r"""
     Applies the Collapsing Linear Unit activation function:
 
@@ -267,30 +294,26 @@ class CollapsingLinearUnit(nn.Module):
 
     Examples::
 
-        >>> m = CollapsingLinearUnit()
+        >>> m = CoLU()
         >>> x = torch.randn(2)
         >>> output = m(x)
 
-        >>> m = CollapsingLinearUnit(inplace=True)
+        >>> m = CoLU(inplace=True)
         >>> x = torch.randn(2)
         >>> m(x)
     """
 
     def __init__(self, inplace=False):
-        super(CollapsingLinearUnit, self).__init__()
+        super(CoLU, self).__init__()
         self.inplace = inplace
 
     def forward(self, x) -> Tensor:
-        if self.inplace:
-            denom = 1 - x * torch.exp(-(x + torch.exp(x)))
-            return x.div_(denom)
-        else:
-            denom = 1 - x * torch.exp(-(x + torch.exp(x)))
-            return x / denom
+        denominator = 1 - x * torch.exp(-(x + torch.exp(x)))
+        return x.div_(denominator) if self.inplace else x / denominator
 
 
 @register_activation
-class TripleStateSwish(nn.Module):
+class TSSwish(nn.Module):
     r"""
     Applies the Triple State Swish activation function:
 
@@ -299,7 +322,6 @@ class TripleStateSwish(nn.Module):
     Args:
         a (float, optional): First shift parameter. Default: 1.0
         b (float, optional): Second shift parameter. Default: 2.0
-        inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
@@ -307,34 +329,26 @@ class TripleStateSwish(nn.Module):
 
     Examples::
 
-        >>> m = TripleStateSwish(a=1.5, b=2.5)
+        >>> m = TSSwish(a=1.5, b=2.5)
         >>> x = torch.randn(2)
         >>> output = m(x)
     """
 
-    def __init__(self, a: float = 1.0, b: float = 2.0, inplace: bool = False):
-        super(TripleStateSwish, self).__init__()
+    def __init__(self, a: float = 1.0, b: float = 2.0):
+        super(TSSwish, self).__init__()
         self.a = nn.Parameter(Tensor([a]))
         self.b = nn.Parameter(Tensor([b]))
-        self.inplace = inplace
 
     def forward(self, x) -> Tensor:
-        return self._forward_inplace(x) if self.inplace else self._forward(x)
-
-    def _forward(self, x):
+        # TODO: Memory
         sigmoid_x = torch.sigmoid(x)
         triple_term = sigmoid_x + torch.sigmoid(x - self.a) + torch.sigmoid(x - self.b)
         return x * sigmoid_x * triple_term
 
-    def _forward_inplace(self, x):
-        sigmoid_x = torch.sigmoid(x)
-        triple_term = sigmoid_x + torch.sigmoid(x - self.a) + torch.sigmoid(x - self.b)
-        x.mul_(sigmoid_x * triple_term)
-        return x
 
 
 @register_activation
-class GeneralizedSwish(nn.Module):
+class GSwish(nn.Module):
     r"""
     Applies the Generalized Swish activation function:
 
@@ -348,24 +362,24 @@ class GeneralizedSwish(nn.Module):
 
     Examples::
 
-        >>> m = GeneralizedSwish()
+        >>> m = GSwish()
         >>> x = torch.randn(2)
         >>> output = m(x)
     """
 
     def __init__(self):
-        super(GeneralizedSwish, self).__init__()
+        super(GSwish, self).__init__()
 
     def forward(self, x) -> Tensor:
         return x * torch.sigmoid(torch.exp(-x))
 
 
 @register_activation
-class ExponentialSwish(nn.Module):
+class ESwish(nn.Module):
     r"""
     Applies the Exponential Swish activation function:
 
-    :math:`\text{ExponentialSwish}(z) = \exp(-z) \cdot \sigma(z)`
+    :math:`\text{ESwish}(z) = \exp(-z) \cdot \sigma(z)`
 
     where :math:`\sigma` is the sigmoid function.
 
@@ -375,24 +389,24 @@ class ExponentialSwish(nn.Module):
 
     Examples::
 
-        >>> m = ExponentialSwish()
+        >>> m = ESwish()
         >>> x = torch.randn(2)
         >>> output = m(x)
     """
 
     def __init__(self):
-        super(ExponentialSwish, self).__init__()
+        super(ESwish, self).__init__()
 
     def forward(self, x) -> Tensor:
         return torch.exp(-x) * torch.sigmoid(x)
 
 
 @register_activation
-class DerivativeOfSigmoidFunction(nn.Module):
+class dSigmoid(nn.Module):
     r"""
     Applies the Derivative of Sigmoid Function activation:
 
-    :math:`\text{DerivativeOfSigmoidFunction}(z) = \exp(-z) \cdot (\sigma(z))^2`
+    :math:`\text{dSigmoid}(z) = \exp(-z) \cdot (\sigma(z))^2`
 
     where :math:`\sigma` is the sigmoid function.
 
@@ -402,13 +416,13 @@ class DerivativeOfSigmoidFunction(nn.Module):
 
     Examples::
 
-        >>> m = DerivativeOfSigmoidFunction()
+        >>> m = dSigmoid()
         >>> x = torch.randn(2)
         >>> output = m(x)
     """
 
     def __init__(self):
-        super(DerivativeOfSigmoidFunction, self).__init__()
+        super(dSigmoid, self).__init__()
 
     def forward(self, x) -> Tensor:
         sigmoid_x = torch.sigmoid(x)
@@ -543,17 +557,17 @@ class SelfArctan(nn.Module):
 
 
 @register_activation
-class ParametricLogish(nn.Module):
+class pLogish(nn.Module):
     r"""
     Applies the Parametric Logish activation function:
 
-    :math:`\text{ParametricLogish}(z_i) = a \cdot z_i \cdot \ln(1 + \sigma(b \cdot z_i))`
+    :math:`\text{pLogish}(z_i) = a \cdot z_i \cdot \ln(1 + \sigma(b \cdot z_i))`
 
     where :math:`\sigma` is the sigmoid function.
 
     Args:
         a (float, optional): Scale parameter. Default: 1.0
-        b (float, optional): Sigmoid scale parameter. Default: 1.0
+        b (float, optional): Sigmoid scale parameter. Default: 10.0
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
@@ -561,15 +575,15 @@ class ParametricLogish(nn.Module):
 
     Examples::
 
-        >>> m = ParametricLogish(a=1.5, b=2.0)
+        >>> m = pLogish(a=1.5, b=2.0)
         >>> x = torch.randn(2)
         >>> output = m(x)
     """
 
-    def __init__(self, a: float = 1.0, b: float = 1.0):
-        super(ParametricLogish, self).__init__()
-        self.a = nn.Parameter(Tensor([a]))
-        self.b = nn.Parameter(Tensor([b]))
+    def __init__(self, a: float = 1.0, b: float = 10.0):
+        super(pLogish, self).__init__()
+        self.a = nn.Parameter(Tensor([a]), requires_grad=False)
+        self.b = nn.Parameter(Tensor([b]), requires_grad=False)
 
     def forward(self, x) -> Tensor:
         return self.a * x * torch.log(1 + torch.sigmoid(self.b * x))
@@ -626,11 +640,11 @@ class Suish(nn.Module):
 
 
 @register_activation
-class TangentSigmoidReLU(nn.Module):
+class TSReLU(nn.Module):
     r"""
     Applies the Tangent Sigmoid ReLU activation function:
 
-    :math:`\text{TangentSigmoidReLU}(z) = z \cdot \tanh(\sigma(z))`
+    :math:`\text{TSReLU}(z) = z \cdot \tanh(\sigma(z))`
 
     where :math:`\sigma` is the sigmoid function.
 
@@ -640,24 +654,24 @@ class TangentSigmoidReLU(nn.Module):
 
     Examples::
 
-        >>> m = TangentSigmoidReLU()
+        >>> m = TSReLU()
         >>> x = torch.randn(2)
         >>> output = m(x)
     """
 
     def __init__(self):
-        super(TangentSigmoidReLU, self).__init__()
+        super(TSReLU, self).__init__()
 
     def forward(self, x) -> Tensor:
         return x * torch.tanh(torch.sigmoid(x))
 
 
 @register_activation
-class TangentBipolarSigmoidReLU(nn.Module):
+class TBSReLU(nn.Module):
     r"""
     Applies the Tangent Bipolar Sigmoid ReLU activation function:
 
-    :math:`\text{TangentBipolarSigmoidReLU}(z) = z \cdot \tanh\left(\frac{1 - \exp(-z)}{1 + \exp(-z)}\right)`
+    :math:`\text{TBSReLU}(z) = z \cdot \tanh\left(\frac{1 - \exp(-z)}{1 + \exp(-z)}\right)`
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
@@ -665,13 +679,13 @@ class TangentBipolarSigmoidReLU(nn.Module):
 
     Examples::
 
-        >>> m = TangentBipolarSigmoidReLU()
+        >>> m = TBSReLU()
         >>> x = torch.randn(2)
         >>> output = m(x)
     """
 
     def __init__(self):
-        super(TangentBipolarSigmoidReLU, self).__init__()
+        super(TBSReLU, self).__init__()
 
     def forward(self, x) -> Tensor:
         exp_neg_x = torch.exp(-x)
@@ -707,11 +721,11 @@ class LogSigmoid(nn.Module):
 
 
 @register_activation
-class DerivativeOfSiLU(nn.Module):
+class dSiLU(nn.Module):
     r"""
     Applies the Derivative of SiLU activation function:
 
-    :math:`\text{DerivativeOfSiLU}(z) = \sigma(z) \cdot (1 + z \cdot (1 - \sigma(z)))`
+    :math:`\text{dSiLU}(z) = \sigma(z) \cdot (1 + z \cdot (1 - \sigma(z)))`
 
     where :math:`\sigma` is the sigmoid function.
 
@@ -721,13 +735,13 @@ class DerivativeOfSiLU(nn.Module):
 
     Examples::
 
-        >>> m = DerivativeOfSiLU()
+        >>> m = dSiLU()
         >>> x = torch.randn(2)
         >>> output = m(x)
     """
 
     def __init__(self):
-        super(DerivativeOfSiLU, self).__init__()
+        super(dSiLU, self).__init__()
 
     def forward(self, x) -> Tensor:
         sigmoid_x = torch.sigmoid(x)
@@ -756,16 +770,15 @@ class DoubleSiLU(nn.Module):
         super(DoubleSiLU, self).__init__()
 
     def forward(self, x) -> Tensor:
-        silu_x = x * torch.sigmoid(x)
-        return x * torch.sigmoid(silu_x)
+        return F.silu(F.silu(x))
 
 
 @register_activation
-class ModifiedSiLU(nn.Module):
+class MSiLU(nn.Module):
     r"""
     Applies the Modified SiLU activation function:
 
-    :math:`\text{ModifiedSiLU}(z) = z \cdot \sigma(z) + \exp\left(-\frac{z^2}{4}\right)`
+    :math:`\text{MSiLU}(z) = z \cdot \sigma(z) + \exp\left(-\frac{z^2}{4}\right)`
 
     where :math:`\sigma` is the sigmoid function.
 
@@ -775,24 +788,24 @@ class ModifiedSiLU(nn.Module):
 
     Examples::
 
-        >>> m = ModifiedSiLU()
+        >>> m = MSiLU()
         >>> x = torch.randn(2)
         >>> output = m(x)
     """
 
     def __init__(self):
-        super(ModifiedSiLU, self).__init__()
+        super(MSiLU, self).__init__()
 
     def forward(self, x) -> Tensor:
-        return x * torch.sigmoid(x) + torch.exp(-x.pow(2) / 4)
+        return x * torch.sigmoid(x) + torch.exp((-x.pow(2) - 1) / 4)
 
 
 @register_activation
-class HyperbolicTangentSiLU(nn.Module):
+class TSiLU(nn.Module):
     r"""
-    Applies the Hyperbolic Tangent SiLU activation function:
+    Applies the Hyperbolic Tangent Sigmoid-Weighted Linear Unit activation function:
 
-    :math:`\text{HyperbolicTangentSiLU}(z) = \frac{\exp\left(\frac{z}{1 + \exp(-z)}\right) - \exp\left(-\frac{z}{1 + \exp(-z)}\right)}{\exp\left(\frac{z}{1 + \exp(-z)}\right) + \exp\left(\frac{z}{1 + \exp(-z)}\right)}`
+    :math:`\text{TSiLU}(z) = \frac{\exp\left(\frac{z}{1 + \exp(-z)}\right) - \exp\left(-\frac{z}{1 + \exp(-z)}\right)}{\exp\left(\frac{z}{1 + \exp(-z)}\right) + \exp\left(\frac{z}{1 + \exp(-z)}\right)}`
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
@@ -800,24 +813,25 @@ class HyperbolicTangentSiLU(nn.Module):
 
     Examples::
 
-        >>> m = HyperbolicTangentSiLU()
+        >>> m = TSiLU()
         >>> x = torch.randn(2)
         >>> output = m(x)
     """
 
     def __init__(self):
-        super(HyperbolicTangentSiLU, self).__init__()
+        super(TSiLU, self).__init__()
 
     def forward(self, x) -> Tensor:
+        # The paper wrote this in tanh exp form
         silu_x = x * torch.sigmoid(x)
         return torch.tanh(silu_x)
 
 @register_activation
-class ArctanSiLU(nn.Module):
+class ASiLU(nn.Module):
     r"""
     Applies the Arctan SiLU activation function:
 
-    :math:`\text{ArctanSiLU}(z) = \arctan(z) \cdot \frac{1}{1 + \exp(-z)}`
+    :math:`\text{ASiLU}(z) = \arctan(z) \cdot \frac{1}{1 + \exp(-z)}`
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
@@ -825,49 +839,50 @@ class ArctanSiLU(nn.Module):
 
     Examples::
 
-        >>> m = ArctanSiLU()
+        >>> m = ASiLU()
         >>> x = torch.randn(2)
         >>> output = m(x)
     """
 
     def __init__(self):
-        super(ArctanSiLU, self).__init__()
+        super(ASiLU, self).__init__()
 
     def forward(self, x) -> Tensor:
-        return torch.arctan(x) * torch.sigmoid(x)
+        return torch.arctan(x * torch.sigmoid(x))
+
+# FIXME: Notation in paper is not clear, requires verification
+# Should be done in a few days. Contact author when done.
+# @register_activation
+# class SwAT(nn.Module):
+#     r"""
+#     Applies the SwAT activation function:
+
+#     :math:`\text{SwAT}(z) = z \cdot \frac{1}{1 + \exp(-\arctan(|z|))}`
+
+#     Shape:
+#         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
+#         - Output: :math:`(*)`, same shape as the input.
+
+#     Examples::
+
+#         >>> m = SwAT()
+#         >>> x = torch.randn(2)
+#         >>> output = m(x)
+#     """
+
+#     def __init__(self):
+#         super(SwAT, self).__init__()
+
+#     def forward(self, x) -> Tensor:
+#         return x * torch.sigmoid(torch.arctan(torch.abs(x)))
 
 
 @register_activation
-class SwAT(nn.Module):
-    r"""
-    Applies the SwAT activation function:
-
-    :math:`\text{SwAT}(z) = z \cdot \frac{1}{1 + \exp(-\arctan(|z|))}`
-
-    Shape:
-        - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
-        - Output: :math:`(*)`, same shape as the input.
-
-    Examples::
-
-        >>> m = SwAT()
-        >>> x = torch.randn(2)
-        >>> output = m(x)
-    """
-
-    def __init__(self):
-        super(SwAT, self).__init__()
-
-    def forward(self, x) -> Tensor:
-        return x * torch.sigmoid(torch.arctan(torch.abs(x)))
-
-
-@register_activation
-class RectifiedHyperbolicSecant(nn.Module):
+class ReHSec(nn.Module):
     r"""
     Applies the Rectified Hyperbolic Secant activation function:
 
-    :math:`\text{RectifiedHyperbolicSecant}(z) = z \cdot \text{sech}(z)`
+    :math:`\text{ReHSec}(z) = z \cdot \text{sech}(z)`
 
     where sech is the hyperbolic secant function.
 
@@ -877,24 +892,24 @@ class RectifiedHyperbolicSecant(nn.Module):
 
     Examples::
 
-        >>> m = RectifiedHyperbolicSecant()
+        >>> m = ReHSec()
         >>> x = torch.randn(2)
         >>> output = m(x)
     """
 
     def __init__(self):
-        super(RectifiedHyperbolicSecant, self).__init__()
+        super(ReHSec, self).__init__()
 
     def forward(self, x) -> Tensor:
-        return x * (2 / (torch.exp(x) + torch.exp(-x)))
+        return x * sech(x)
 
 
 @register_activation
-class LinearlyScaledHyperbolicTangent(nn.Module):
+class LiSHT(nn.Module):
     r"""
     Applies the Linearly Scaled Hyperbolic Tangent activation function:
 
-    :math:`\text{LinearlyScaledHyperbolicTangent}(z) = z \cdot \tanh(z)`
+    :math:`\text{LiSHT}(z) = z \cdot \tanh(z)`
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
@@ -902,13 +917,13 @@ class LinearlyScaledHyperbolicTangent(nn.Module):
 
     Examples::
 
-        >>> m = LinearlyScaledHyperbolicTangent()
+        >>> m = LiSHT()
         >>> x = torch.randn(2)
         >>> output = m(x)
     """
 
     def __init__(self):
-        super(LinearlyScaledHyperbolicTangent, self).__init__()
+        super(LiSHT, self).__init__()
 
     def forward(self, x) -> Tensor:
         return x * torch.tanh(x)
@@ -948,9 +963,12 @@ class Smish(nn.Module):
 
     where :math:`\sigma` is the sigmoid function.
 
+    :note: a = 1.0, b = 1.0 is the recommended through a parameter search. [need citation]
+
     Args:
         a (float, optional): Scale parameter. Default: 1.0
         b (float, optional): Sigmoid scale parameter. Default: 1.0
+        learnable (bool, optional): If True, the parameters are learnable. Default: False
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
@@ -963,10 +981,14 @@ class Smish(nn.Module):
         >>> output = m(x)
     """
 
-    def __init__(self, a: float = 1.0, b: float = 1.0):
+    def __init__(self, a: float = 1.0, b: float = 1.0, learnable: bool = False):
         super(Smish, self).__init__()
         self.a = nn.Parameter(Tensor([a]))
         self.b = nn.Parameter(Tensor([b]))
+
+        if not learnable:
+            self.a.requires_grad = False
+            self.b.requires_grad = False
 
     def forward(self, x) -> Tensor:
         return self.a * x * torch.tanh(torch.log(1 + torch.sigmoid(self.b * x)))
@@ -1022,12 +1044,14 @@ class Serf(nn.Module):
         return x * torch.erf(F.softplus(x))
 
 
+# NOTE: This can be a whole family my itself in the z * g(h(z)) form.
+# In fact the functions should be customizable, but we just use the simplified version.
 @register_activation
-class EfficientAsymmetricNonlinearActivationFunction(nn.Module):
+class EANAF(nn.Module):
     r"""
     Applies the Efficient Asymmetric Nonlinear Activation Function:
 
-    :math:`\text{EfficientAsymmetricNonlinearActivationFunction}(z) = z \cdot \frac{\exp(z)}{\exp(z) + 2}`
+    :math:`\text{EANAF}(z) = z \cdot \frac{\exp(z)}{\exp(z) + 2}`
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
@@ -1035,13 +1059,13 @@ class EfficientAsymmetricNonlinearActivationFunction(nn.Module):
 
     Examples::
 
-        >>> m = EfficientAsymmetricNonlinearActivationFunction()
+        >>> m = EANAF()
         >>> x = torch.randn(2)
         >>> output = m(x)
     """
 
     def __init__(self):
-        super(EfficientAsymmetricNonlinearActivationFunction, self).__init__()
+        super(EANAF, self).__init__()
 
     def forward(self, x) -> Tensor:
         exp_x = torch.exp(x)
@@ -1078,7 +1102,7 @@ class SinSig(nn.Module):
 @register_activation
 class SiELU(nn.Module):
     r"""
-    Applies the SiELU activation function:
+    Applies the Gaussian Error Linear Unit with Sigmoid Activation Functions:
 
     :math:`\text{SiELU}(z) = z \cdot \sigma\left(\sqrt{\frac{2}{\pi}} z + 0.044715 z^3\right)`
 
@@ -1099,5 +1123,5 @@ class SiELU(nn.Module):
         super(SiELU, self).__init__()
 
     def forward(self, x) -> Tensor:
-        inner = math.sqrt(2/math.pi) * x + 0.044715 * x.pow(3)
+        inner = 2 * math.sqrt(2/math.pi) * (x + 0.044715 * x.pow(3))
         return x * torch.sigmoid(inner)
