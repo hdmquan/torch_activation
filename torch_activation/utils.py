@@ -4,6 +4,8 @@ import torch
 import plotly
 import plotly.io as pio
 import plotly.graph_objects as go
+from torch import Tensor
+from typing import Tuple
 
 
 def sech(z):
@@ -11,6 +13,13 @@ def sech(z):
     Credit: `https://discuss.pytorch.org/t/implementing-sech/66862`
     """
     return 1 / torch.cosh(z)
+
+def split(x: Tensor, dim: int) -> Tuple[Tensor, Tensor]:
+    dim_size = x.size(dim)
+    assert dim_size % 2 == 0, f"Dimension {dim} must be divisible by 2"
+    
+    split_size = dim_size // 2
+    return torch.split(x, split_size, dim=dim)
 
 def plot_activation(
     activation: torch.nn.Module,
@@ -178,6 +187,6 @@ def plot_activation(
 
 
 if __name__ == "__main__":
-    from relu import SoftsignRReLU
+    from torch_activation import SoftsignRReLU
 
     plot_activation(SoftsignRReLU, preview=True)

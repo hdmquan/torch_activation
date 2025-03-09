@@ -4,7 +4,9 @@ import torch.nn.functional as F
 from torch import Tensor
 from typing import Tuple
 
+import torch_activation as tac
 from torch_activation import register_activation
+from torch_activation.utils import split
 
 class GLU(nn.Module):
     r"""
@@ -63,15 +65,8 @@ class GTU(nn.Module):
         self.dim = dim
 
     def forward(self, x: Tensor) -> Tensor:
-        a, b = self._split(x)
+        a, b = split(x, self.dim)
         return torch.tanh(a) * torch.sigmoid(b)
-
-    def _split(self, x: Tensor) -> Tuple[Tensor, Tensor]:
-        dim_size = x.size(self.dim)
-        assert dim_size % 2 == 0, f"Dimension {self.dim} must be divisible by 2"
-        
-        split_size = dim_size // 2
-        return torch.split(x, split_size, dim=self.dim)
 
 
 class GReLU(nn.Module):
@@ -101,15 +96,8 @@ class GReLU(nn.Module):
         self.dim = dim
 
     def forward(self, x: Tensor) -> Tensor:
-        a, b = self._split(x)
+        a, b = split(x, self.dim)
         return a * F.relu(b)
-
-    def _split(self, x: Tensor) -> Tuple[Tensor, Tensor]:
-        dim_size = x.size(self.dim)
-        assert dim_size % 2 == 0, f"Dimension {self.dim} must be divisible by 2"
-        
-        split_size = dim_size // 2
-        return torch.split(x, split_size, dim=self.dim)
 
 
 class GEGLU(nn.Module):
@@ -139,15 +127,8 @@ class GEGLU(nn.Module):
         self.dim = dim
 
     def forward(self, x: Tensor) -> Tensor:
-        a, b = self._split(x)
+        a, b = split(x, self.dim)
         return a * F.gelu(b)
-
-    def _split(self, x: Tensor) -> Tuple[Tensor, Tensor]:
-        dim_size = x.size(self.dim)
-        assert dim_size % 2 == 0, f"Dimension {self.dim} must be divisible by 2"
-        
-        split_size = dim_size // 2
-        return torch.split(x, split_size, dim=self.dim)
 
 
 class SwiGLU(nn.Module):
@@ -177,12 +158,6 @@ class SwiGLU(nn.Module):
         self.dim = dim
 
     def forward(self, x: Tensor) -> Tensor:
-        a, b = self._split(x)
-        return a * (b * torch.sigmoid(b))  # swish(x) = x * sigmoid(x)
+        a, b = split(x, self.dim)
+        return a * tac.Swish()(b)
 
-    def _split(self, x: Tensor) -> Tuple[Tensor, Tensor]:
-        dim_size = x.size(self.dim)
-        assert dim_size % 2 == 0, f"Dimension {self.dim} must be divisible by 2"
-        
-        split_size = dim_size // 2
-        return torch.split(x, split_size, dim=self.dim)
