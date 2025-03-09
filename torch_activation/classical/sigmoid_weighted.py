@@ -4,6 +4,7 @@ import torch.nn.functional as F
 import math
 
 from torch import Tensor
+from torch_activation.utils import sech
 from torch_activation import register_activation
 
 
@@ -900,7 +901,7 @@ class ReHSec(nn.Module):
         super(ReHSec, self).__init__()
 
     def forward(self, x) -> Tensor:
-        return x * F.sech(x)
+        return x * sech(x)
 
 
 @register_activation
