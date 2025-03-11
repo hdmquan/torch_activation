@@ -1,12 +1,13 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+from torch_activation.base import BaseActivation
 from torch import Tensor
 
 from torch_activation import register_activation
 
 @register_activation
-class Softmax(nn.Module):
+class Softmax(BaseActivation):
     r"""
     Applies the Softmax function:
 
@@ -27,12 +28,12 @@ class Softmax(nn.Module):
         >>> input = torch.randn(2, 3)
         >>> output = m(input)
     """
-    def __init__(self, dim=-1, inplace=False):
-        super(Softmax, self).__init__()
+    def __init__(self, dim=-1, inplace=False, **kwargs):
+        super().__init__(**kwargs)
         self.dim = dim
-        self.inplace = inplace
+        
 
-    def forward(self, x: Tensor) -> Tensor:
+    def _forward(self, x: Tensor) -> Tensor:
         if self.inplace:
             x.softmax_(dim=self.dim)
             return x
@@ -43,7 +44,7 @@ class Softmax(nn.Module):
 # FIXME: Implement BetaSoftmax. Current contributor does not have the knowledge and mathematical background to implement this.
 # Link to un-paywalled paper: https://annas-archive.org/scidb/10.1109/iccmc51019.2021.9418022
 # @register_activation
-# class BetaSoftmax(nn.Module):
+# class BetaSoftmax(BaseActivation):
 #     r"""
 #     Applies the β-Softmax function:
 
@@ -68,16 +69,16 @@ class Softmax(nn.Module):
 #         >>> output = m(input)
 #     """
 #     def __init__(self, beta=1.0, trainable=False, dim=-1, inplace=False):
-#         super(BetaSoftmax, self).__init__()
+#         super().__init__(**kwargs)
 #         self.dim = dim
-#         self.inplace = inplace
+#         
         
 #         self.beta = nn.Parameter(torch.tensor(beta))
 
 #         if not trainable:
 #             self.beta.requires_grad = False
 
-#     def forward(self, x: Tensor) -> Tensor:
+#     def _forward(self, x: Tensor) -> Tensor:
 #         if self.inplace:
 #             x = x.mul_(self.beta)
 #             x.softmax_(dim=self.dim)

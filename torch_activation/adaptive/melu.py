@@ -1,13 +1,14 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+from torch_activation.base import BaseActivation
 import math
 from torch import Tensor
 
 from torch_activation import register_activation
 
 @register_activation
-class MeLU(nn.Module):
+class MeLU(BaseActivation):
     r"""
     Applies the Mexican ReLU (MeLU) function:
 
@@ -34,8 +35,8 @@ class MeLU(nn.Module):
         >>> output = m(x)
     """
 
-    def __init__(self, k: int = 4, init_negative_slope: float = 0.01, init_a: float = 0.0):
-        super(MeLU, self).__init__()
+    def __init__(self, k: int = 4, init_negative_slope: float = 0.01, init_a: float = 0.0, **kwargs):
+        super().__init__(**kwargs)
         self.k = k
         
         # PReLU parameter
@@ -55,7 +56,7 @@ class MeLU(nn.Module):
             self.b[j] = j * 2.0 / (k-1) - 1.0  # Spread between -1 and 1
             self.c[j] = 1.0 / (j+1)            # Decreasing values
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         # PReLU part
         prelu_out = F.prelu(x, self.prelu_weight)
         
@@ -70,7 +71,7 @@ class MeLU(nn.Module):
 
 
 @register_activation
-class MMeLU(nn.Module):
+class MMeLU(BaseActivation):
     r"""
     Applies the Modified Mexican ReLU (MMeLU) function:
 
@@ -95,14 +96,14 @@ class MMeLU(nn.Module):
         >>> output = m(x)
     """
 
-    def __init__(self, init_a: float = 0.5, init_b: float = 1.0, init_c: float = 0.0, inplace: bool = False):
-        super(MMeLU, self).__init__()
+    def __init__(self, init_a: float = 0.5, init_b: float = 1.0, init_c: float = 0.0, **kwargs):
+        super().__init__(**kwargs)
         self.a_raw = nn.Parameter(Tensor([init_a]))
         self.b_raw = nn.Parameter(Tensor([init_b]))
         self.c = nn.Parameter(Tensor([init_c]))
-        self.inplace = inplace
+        
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         # Constrain a to [0, 1] using sigmoid
         a = torch.sigmoid(self.a_raw)
         
@@ -119,7 +120,7 @@ class MMeLU(nn.Module):
 
 
 @register_activation
-class GaLU(nn.Module):
+class GaLU(BaseActivation):
     r"""
     Applies the Gaussian ReLU (GaLU) function:
 
@@ -146,8 +147,8 @@ class GaLU(nn.Module):
         >>> output = m(x)
     """
 
-    def __init__(self, k: int = 4, init_negative_slope: float = 0.01, init_a: float = 0.0):
-        super(GaLU, self).__init__()
+    def __init__(self, k: int = 4, init_negative_slope: float = 0.01, init_a: float = 0.0, **kwargs):
+        super().__init__(**kwargs)
         self.k = k
         
         # PReLU parameter
@@ -166,7 +167,7 @@ class GaLU(nn.Module):
             self.b[j] = j * 2.0 / (k-1) - 1.0  # Spread between -1 and 1
             self.c[j] = 1.0 / (j+1)            # Decreasing values
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         # PReLU part
         prelu_out = F.prelu(x, self.prelu_weight)
         
@@ -183,7 +184,7 @@ class GaLU(nn.Module):
 
 
 @register_activation
-class HardSwish(nn.Module):
+class HardSwish(BaseActivation):
     r"""
     Applies the Hard-Swish function:
 
@@ -206,12 +207,12 @@ class HardSwish(nn.Module):
         >>> output = m(x)
     """
 
-    def __init__(self, b_init: float = 1.0, inplace: bool = False):
-        super(HardSwish, self).__init__()
+    def __init__(self, b_init: float = 1.0, **kwargs):
+        super().__init__(**kwargs)
         self.b = nn.Parameter(Tensor([b_init]))
-        self.inplace = inplace
+        
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         # Calculate hard sigmoid part: max(0, min(0.2*b*x + 0.5, 1))
         hard_sigmoid = torch.clamp(0.2 * self.b * x + 0.5, min=0.0, max=1.0)
         

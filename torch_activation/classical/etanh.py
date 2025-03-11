@@ -3,11 +3,11 @@ import torch.nn as nn
 from torch import Tensor
 
 from torch_activation import register_activation
-
+from torch_activation.base import BaseActivation
 
 
 @register_activation
-class ETanh(nn.Module):
+class ETanh(BaseActivation):
     r"""
     Applies the E-Tanh activation function:
 
@@ -25,17 +25,17 @@ class ETanh(nn.Module):
         - Output: :math:`(*)`, same shape as the input.
     """
 
-    def __init__(self, a: float = 1.0, inplace: bool = False):
-        super(ETanh, self).__init__()
+    def __init__(self, a: float = 1.0, **kwargs):
+        super().__init__(**kwargs)
         self.a = a
-        self.inplace = inplace  # Unused
+          # Unused
 
-    def forward(self, z) -> Tensor:
+    def _forward(self, z) -> Tensor:
         return self.a * torch.exp(z) * torch.tanh(z)
 
 
 @register_activation
-class EvolvedTanhReLU(nn.Module):
+class EvolvedTanhReLU(BaseActivation):
     r"""
     Applies the evolved combination of tanh and ReLU activation function:
 
@@ -54,17 +54,17 @@ class EvolvedTanhReLU(nn.Module):
         - Output: :math:`(*)`, same shape as the input.
     """
 
-    def __init__(self, a: float = 1.0, inplace: bool = False):
-        super(EvolvedTanhReLU, self).__init__()
+    def __init__(self, a: float = 1.0, **kwargs):
+        super().__init__(**kwargs)
         self.a = a
-        self.inplace = inplace  # Unused
+          # Unused
 
-    def forward(self, z) -> Tensor:
+    def _forward(self, z) -> Tensor:
         return self.a * torch.tanh(z**2) + torch.relu(z)
 
 
 @register_activation
-class EvolvedTanhLogReLU(nn.Module):
+class EvolvedTanhLogReLU(BaseActivation):
     r"""
     Applies the evolved regular activation function combining tanh and ReLU:
 
@@ -81,11 +81,11 @@ class EvolvedTanhLogReLU(nn.Module):
         - Output: :math:`(*)`, same shape as the input.
     """
 
-    def __init__(self, inplace: bool = False):
-        super(EvolvedTanhLogReLU, self).__init__()
-        self.inplace = inplace  # Unused
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+          # Unused
 
-    def forward(self, z) -> Tensor:
+    def _forward(self, z) -> Tensor:
         # Handle potential negative values for log
         safe_log = torch.log(torch.clamp(z, min=1e-10))
         return torch.maximum(torch.tanh(safe_log), torch.relu(z))

@@ -1,6 +1,7 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+from torch_activation.base import BaseActivation
 from torch import Tensor
 import math
 
@@ -8,7 +9,7 @@ from torch_activation import register_activation
 
 
 @register_activation
-class Swish(nn.Module):
+class Swish(BaseActivation):
     r"""
     Applies the Swish activation function:
 
@@ -41,15 +42,15 @@ class Swish(nn.Module):
         a: float = 1.0, 
         learnable: bool = False, 
         inplace: bool = False
-    ):
+    , **kwargs):
         super().__init__()
-        self.inplace = inplace
+        
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
         else:
             self.a = Tensor([a])
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         result = x * torch.sigmoid(self.a * x)
         
         if self.inplace and hasattr(x, 'copy_'):
@@ -60,7 +61,7 @@ class Swish(nn.Module):
 
 
 @register_activation
-class AHAF(nn.Module):
+class AHAF(BaseActivation):
     r"""
     Applies the Adaptive Hybrid Activation Function:
 
@@ -95,9 +96,9 @@ class AHAF(nn.Module):
         b: float = 1.0, 
         learnable: bool = False, 
         inplace: bool = False
-    ):
+    , **kwargs):
         super().__init__()
-        self.inplace = inplace
+        
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
             self.b = nn.Parameter(Tensor([b]))
@@ -105,7 +106,7 @@ class AHAF(nn.Module):
             self.a = Tensor([a])
             self.b = Tensor([b])
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         result = self.a * x * torch.sigmoid(self.b * x)
         
         if self.inplace and hasattr(x, 'copy_'):
@@ -116,7 +117,7 @@ class AHAF(nn.Module):
 
 
 @register_activation
-class PSSiLU(nn.Module):
+class PSSiLU(BaseActivation):
     r"""
     Applies the Parametric Shifted SiLU function:
 
@@ -151,9 +152,9 @@ class PSSiLU(nn.Module):
         b: float = 0.5, 
         learnable: bool = False, 
         inplace: bool = False
-    ):
+    , **kwargs):
         super().__init__()
-        self.inplace = inplace
+        
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
             # Ensure b is less than 1 to avoid division by zero
@@ -162,7 +163,7 @@ class PSSiLU(nn.Module):
             self.a = Tensor([a])
             self.b = Tensor([min(b, 0.99)])  # Ensure b is less than 1
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         # Compute the shifted and normalized sigmoid
         shifted_sigmoid = (torch.sigmoid(self.a * x) - self.b) / (1 - self.b)
         result = x * shifted_sigmoid
@@ -175,7 +176,7 @@ class PSSiLU(nn.Module):
 
 
 @register_activation
-class ESwish(nn.Module):
+class ESwish(BaseActivation):
     r"""
     Applies the E-Swish activation function:
 
@@ -208,15 +209,15 @@ class ESwish(nn.Module):
         a: float = 1.5, 
         learnable: bool = False, 
         inplace: bool = False
-    ):
+    , **kwargs):
         super().__init__()
-        self.inplace = inplace
+        
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
         else:
             self.a = Tensor([a])
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         result = self.a * x * torch.sigmoid(x)
         
         if self.inplace and hasattr(x, 'copy_'):
@@ -227,7 +228,7 @@ class ESwish(nn.Module):
 
 
 @register_activation
-class ACONB(nn.Module):
+class ACONB(BaseActivation):
     r"""
     Applies the ACON-B activation function:
 
@@ -262,9 +263,9 @@ class ACONB(nn.Module):
         b: float = 0.25, 
         learnable: bool = False, 
         inplace: bool = False
-    ):
+    , **kwargs):
         super().__init__()
-        self.inplace = inplace
+        
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
             # Ensure b is between 0 and 1
@@ -273,7 +274,7 @@ class ACONB(nn.Module):
             self.a = Tensor([a])
             self.b = Tensor([max(0.0, min(b, 1.0))])  # Ensure b is between 0 and 1
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         one_minus_b = 1 - self.b
         swish_part = one_minus_b * x * torch.sigmoid(self.a * one_minus_b * x)
         linear_part = self.b * x
@@ -287,7 +288,7 @@ class ACONB(nn.Module):
 
 
 @register_activation
-class ACONC(nn.Module):
+class ACONC(BaseActivation):
     r"""
     Applies the ACON-C activation function:
 
@@ -324,9 +325,9 @@ class ACONC(nn.Module):
         c: float = 1.0, 
         learnable: bool = False, 
         inplace: bool = False
-    ):
+    , **kwargs):
         super().__init__()
-        self.inplace = inplace
+        
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
             self.b = nn.Parameter(Tensor([b]))
@@ -336,7 +337,7 @@ class ACONC(nn.Module):
             self.b = Tensor([b])
             self.c = Tensor([c])
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         c_minus_b = self.c - self.b
         swish_part = c_minus_b * x * torch.sigmoid(self.a * c_minus_b * x)
         linear_part = self.b * x
@@ -350,7 +351,7 @@ class ACONC(nn.Module):
 
 
 @register_activation
-class PSGU(nn.Module):
+class PSGU(BaseActivation):
     r"""
     Applies the Parameterized Self-Circulating Gating Unit function:
 
@@ -383,15 +384,15 @@ class PSGU(nn.Module):
         a: float = 0.5, 
         learnable: bool = False, 
         inplace: bool = False
-    ):
+    , **kwargs):
         super().__init__()
-        self.inplace = inplace
+        
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
         else:
             self.a = Tensor([a])
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         result = x * torch.tanh(self.a * torch.sigmoid(x))
         
         if self.inplace and hasattr(x, 'copy_'):
@@ -402,7 +403,7 @@ class PSGU(nn.Module):
 
 
 @register_activation
-class TBSReLUl(nn.Module):
+class TBSReLUl(BaseActivation):
     r"""
     Applies the Tangent-Bipolar-Sigmoid ReLU Learnable function:
 
@@ -433,15 +434,15 @@ class TBSReLUl(nn.Module):
         a: float = 0.5, 
         learnable: bool = False, 
         inplace: bool = False
-    ):
+    , **kwargs):
         super().__init__()
-        self.inplace = inplace
+        
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
         else:
             self.a = Tensor([a])
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         # Calculate bipolar sigmoid: (1 - exp(-x)) / (1 + exp(-x))
         bipolar_sigmoid = (1 - torch.exp(-x)) / (1 + torch.exp(-x))
         result = x * torch.tanh(self.a * bipolar_sigmoid)
@@ -454,7 +455,7 @@ class TBSReLUl(nn.Module):
 
 
 @register_activation
-class PATS(nn.Module):
+class PATS(BaseActivation):
     r"""
     Applies the PATS activation function:
 
@@ -491,9 +492,9 @@ class PATS(nn.Module):
         upper_bound: float = 0.75,
         learnable: bool = False, 
         inplace: bool = False
-    ):
+    , **kwargs):
         super().__init__()
-        self.inplace = inplace
+        
         self.lower_bound = lower_bound
         self.upper_bound = upper_bound
         
@@ -503,7 +504,7 @@ class PATS(nn.Module):
         else:
             self.a = Tensor([a])
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         # If not in training mode or not learnable, use the fixed parameter
         if not self.training or not isinstance(self.a, nn.Parameter):
             a_value = self.a
@@ -521,7 +522,7 @@ class PATS(nn.Module):
 
 
 @register_activation
-class AQuLU(nn.Module):
+class AQuLU(BaseActivation):
     r"""
     Applies the Adaptive Quadratic Linear Unit function:
 
@@ -558,9 +559,9 @@ class AQuLU(nn.Module):
         b: float = 0.1, 
         learnable: bool = False, 
         inplace: bool = False
-    ):
+    , **kwargs):
         super().__init__()
-        self.inplace = inplace
+        
         if learnable:
             # Ensure a is positive to avoid division by zero
             self.a = nn.Parameter(Tensor([max(1e-6, a)]))
@@ -569,7 +570,7 @@ class AQuLU(nn.Module):
             self.a = Tensor([max(1e-6, a)])
             self.b = Tensor([b])
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         # Calculate thresholds
         upper_threshold = (1 - self.b) / self.a
         lower_threshold = -self.b / self.a
@@ -604,7 +605,7 @@ class AQuLU(nn.Module):
 
 
 @register_activation
-class SinLU(nn.Module):
+class SinLU(BaseActivation):
     r"""
     Applies the Sinu-Sigmoidal Linear Unit function:
 
@@ -639,9 +640,9 @@ class SinLU(nn.Module):
         b: float = 1.0, 
         learnable: bool = False, 
         inplace: bool = False
-    ):
+    , **kwargs):
         super().__init__()
-        self.inplace = inplace
+        
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
             self.b = nn.Parameter(Tensor([b]))
@@ -649,7 +650,7 @@ class SinLU(nn.Module):
             self.a = Tensor([a])
             self.b = Tensor([b])
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         modified_x = x + self.a * torch.sin(self.b * x)
         result = modified_x * torch.sigmoid(x)
         
@@ -661,7 +662,7 @@ class SinLU(nn.Module):
 
 
 @register_activation
-class ErfAct(nn.Module):
+class ErfAct(BaseActivation):
     r"""
     Applies the ErfAct activation function:
 
@@ -696,9 +697,9 @@ class ErfAct(nn.Module):
         b: float = 0.5, 
         learnable: bool = False, 
         inplace: bool = False
-    ):
+    , **kwargs):
         super().__init__()
-        self.inplace = inplace
+        
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
             self.b = nn.Parameter(Tensor([b]))
@@ -706,7 +707,7 @@ class ErfAct(nn.Module):
             self.a = Tensor([a])
             self.b = Tensor([b])
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         # Calculate exp(b*x) with clipping to prevent overflow
         exp_term = torch.exp(torch.clamp(self.b * x, max=20))
         result = x * torch.erf(self.a * exp_term)
@@ -719,7 +720,7 @@ class ErfAct(nn.Module):
 
 
 @register_activation
-class PSerf(nn.Module):
+class PSerf(BaseActivation):
     r"""
     Applies the Parametric Serf activation function:
 
@@ -754,9 +755,9 @@ class PSerf(nn.Module):
         b: float = 1.0, 
         learnable: bool = False, 
         inplace: bool = False
-    ):
+    , **kwargs):
         super().__init__()
-        self.inplace = inplace
+        
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
             self.b = nn.Parameter(Tensor([b]))
@@ -764,7 +765,7 @@ class PSerf(nn.Module):
             self.a = Tensor([a])
             self.b = Tensor([b])
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         # Calculate softplus: ln(1 + exp(b*x))
         softplus = torch.log(1 + torch.exp(torch.clamp(self.b * x, max=20)))
         result = x * torch.erf(self.a * softplus)
@@ -777,7 +778,7 @@ class PSerf(nn.Module):
 
 
 @register_activation
-class Swim(nn.Module):
+class Swim(BaseActivation):
     r"""
     Applies the Swim activation function:
 
@@ -808,15 +809,15 @@ class Swim(nn.Module):
         a: float = 0.5, 
         learnable: bool = False, 
         inplace: bool = False
-    ):
+    , **kwargs):
         super().__init__()
-        self.inplace = inplace
+        
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
         else:
             self.a = Tensor([a])
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         # Calculate the modified sigmoid-like term
         sigmoid_term = 0.5 * (1 + (self.a * x) / torch.sqrt(1 + x.pow(2)))
         result = x * sigmoid_term

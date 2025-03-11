@@ -4,9 +4,10 @@ from torch import Tensor
 import math
 
 from torch_activation import register_activation
+from torch_activation.base import BaseActivation
 
 @register_activation
-class Binary(nn.Module):
+class Binary(BaseActivation):
     r"""
     Applies the Binary activation function:
 
@@ -25,13 +26,13 @@ class Binary(nn.Module):
         - Output: :math:`(*)`, same shape as the input.
     """
 
-    def __init__(self, a: float = 0.0, b: float = 1.0, inplace: bool = False):
-        super(Binary, self).__init__()
+    def __init__(self, a: float = 0.0, b: float = 1.0, **kwargs):
+        super().__init__(**kwargs)
         self.a = a
         self.b = b
-        self.inplace = inplace
+        
 
-    def forward(self, z) -> Tensor:
+    def _forward(self, z) -> Tensor:
         return _Binary.apply(z, self.a, self.b)
 
 
@@ -53,7 +54,7 @@ class _Binary(torch.autograd.Function):
 
 
 @register_activation
-class BentIdentity(nn.Module):
+class BentIdentity(BaseActivation):
     r"""
     Applies the Bent Identity activation function:
 
@@ -68,16 +69,16 @@ class BentIdentity(nn.Module):
         - Output: :math:`(*)`, same shape as the input.
     """
 
-    def __init__(self, inplace: bool = False):
-        super(BentIdentity, self).__init__()
-        self.inplace = inplace  # Unused
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+          # Unused
 
-    def forward(self, z) -> Tensor:
+    def _forward(self, z) -> Tensor:
         return (torch.sqrt(z**2 + 1) - 1) / 2 + z
 
 
 @register_activation
-class Mishra(nn.Module):
+class Mishra(BaseActivation):
     r"""
     Applies the Mishra activation function:
 
@@ -92,11 +93,11 @@ class Mishra(nn.Module):
         - Output: :math:`(*)`, same shape as the input.
     """
 
-    def __init__(self, inplace: bool = False):
-        super(Mishra, self).__init__()
-        self.inplace = inplace  # Unused
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+          # Unused
 
-    def forward(self, z) -> Tensor:
+    def _forward(self, z) -> Tensor:
         abs_z = torch.abs(z)
         term1 = 0.5 * z / (1 + abs_z)
         term2 = 0.5 * z / (1 + abs_z)
@@ -104,7 +105,7 @@ class Mishra(nn.Module):
 
 
 @register_activation
-class SahaBora(nn.Module):
+class SahaBora(BaseActivation):
     r"""
     Applies the Saha-Bora activation function (SBAF):
 
@@ -121,13 +122,13 @@ class SahaBora(nn.Module):
         - Output: :math:`(*)`, same shape as the input.
     """
 
-    def __init__(self, k: float = 0.98, alpha: float = 0.5, inplace: bool = False):
-        super(SahaBora, self).__init__()
+    def __init__(self, k: float = 0.98, alpha: float = 0.5, **kwargs):
+        super().__init__(**kwargs)
         self.k = k
         self.alpha = alpha
-        self.inplace = inplace  # Unused
+          # Unused
 
-    def forward(self, z) -> Tensor:
+    def _forward(self, z) -> Tensor:
         # Clamp z to avoid numerical issues when z is close to 0 or 1
         z_safe = torch.clamp(z, min=1e-7, max=1-1e-7)
         denominator = 1 + self.k * (z_safe**self.alpha) * ((1 - z_safe)**(1 - self.alpha))
@@ -135,7 +136,7 @@ class SahaBora(nn.Module):
 
 
 @register_activation
-class Logarithmic(nn.Module):
+class Logarithmic(BaseActivation):
     r"""
     Applies the Logarithmic activation function (LAF):
 
@@ -155,11 +156,11 @@ class Logarithmic(nn.Module):
         - Output: :math:`(*)`, same shape as the input.
     """
 
-    def __init__(self, inplace: bool = False):
-        super(Logarithmic, self).__init__()
-        self.inplace = inplace  # Unused
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+          # Unused
 
-    def forward(self, z) -> Tensor:
+    def _forward(self, z) -> Tensor:
         # Add small epsilon to avoid log(0)
         eps = 1e-7
         pos_mask = z >= 0
@@ -170,7 +171,7 @@ class Logarithmic(nn.Module):
 
 
 @register_activation
-class SPOCU(nn.Module):
+class SPOCU(BaseActivation):
     r"""
     Applies the Scaled Polynomial Constant Unit (SPOCU) activation function:
 
@@ -199,8 +200,8 @@ class SPOCU(nn.Module):
         - Output: :math:`(*)`, same shape as the input.
     """
 
-    def __init__(self, a: float = 1.0, b: float = 0.5, c: float = 1.0, d: float = 1.0, inplace: bool = False):
-        super(SPOCU, self).__init__()
+    def __init__(self, a: float = 1.0, b: float = 0.5, c: float = 1.0, d: float = 1.0, **kwargs):
+        super().__init__(**kwargs)
         assert a > 0, "Parameter a must be positive"
         assert 0 < b < 1, "Parameter b must be in range (0,1)"
         assert c > 0, "Parameter c must be positive"
@@ -210,7 +211,7 @@ class SPOCU(nn.Module):
         self.b = b
         self.c = c
         self.d = d
-        self.inplace = inplace  # Unused
+          # Unused
         
         # Pre-compute h(b) for efficiency
         self.h_b = self._r(b) if 0 <= b < d else self._r(d)
@@ -230,13 +231,13 @@ class SPOCU(nn.Module):
         
         return result
 
-    def forward(self, z) -> Tensor:
+    def _forward(self, z) -> Tensor:
         h_z = self._h(z)
         return self.a * (h_z**self.c) + self.b - self.a * self.h_b
 
 
 @register_activation
-class PUAF(nn.Module):
+class PUAF(BaseActivation):
     r"""
     Applies the Polynomial Universal Activation Function (PUAF):
 
@@ -263,14 +264,14 @@ class PUAF(nn.Module):
         - Output: :math:`(*)`, same shape as the input.
     """
 
-    def __init__(self, a: float = 1.0, b: float = 5.0, c: float = 10.0, inplace: bool = False):
-        super(PUAF, self).__init__()
+    def __init__(self, a: float = 1.0, b: float = 5.0, c: float = 10.0, **kwargs):
+        super().__init__(**kwargs)
         self.a = a
         self.b = b
         self.c = c
-        self.inplace = inplace  # Unused
+          # Unused
 
-    def forward(self, z) -> Tensor:
+    def _forward(self, z) -> Tensor:
         result = torch.zeros_like(z)
         
         # z > c
@@ -294,7 +295,7 @@ class PUAF(nn.Module):
 
 
 @register_activation
-class ArandaOrdaz(nn.Module):
+class ArandaOrdaz(BaseActivation):
     r"""
     Applies the Aranda-Ordaz activation function:
 
@@ -310,18 +311,18 @@ class ArandaOrdaz(nn.Module):
         - Output: :math:`(*)`, same shape as the input.
     """
 
-    def __init__(self, a: float = 2.0, inplace: bool = False):
-        super(ArandaOrdaz, self).__init__()
+    def __init__(self, a: float = 2.0, **kwargs):
+        super().__init__(**kwargs)
         assert a > 0, "Parameter a must be positive"
         self.a = a
-        self.inplace = inplace  # Unused
+          # Unused
 
-    def forward(self, z) -> Tensor:
+    def _forward(self, z) -> Tensor:
         return 1 - (1 + self.a * torch.exp(z))**(-1)
 
 
 @register_activation
-class KDAC(nn.Module):
+class KDAC(BaseActivation):
     r"""
     :note: Adapted from `https://github.com/pyy-copyto/KDAC/blob/4541ffed1a964dfff9b8243a89c38a61e85860f5/KDAC.py`
     Applies the Knowledge Discovery Activation Function (KDAC):
@@ -363,15 +364,15 @@ class KDAC(nn.Module):
         - Output: :math:`(*)`, same shape as the input.
     """
 
-    def __init__(self, a: float = 0.1, b: float = 0.1, c: float = 0.01, inplace: bool = False):
-        super(KDAC, self).__init__()
+    def __init__(self, a: float = 0.1, b: float = 0.1, c: float = 0.01, **kwargs):
+        super().__init__(**kwargs)
         assert a > 0, "Parameter a must be positive"
         assert b > 0, "Parameter b must be positive"
         
         self.a = nn.Parameter(torch.tensor(a))
         self.b = nn.Parameter(torch.tensor(b))
         self.c = c  # Fixed parameter
-        self.inplace = inplace  # Unused
+          # Unused
 
     def _clip(self, x):
         return torch.clamp(x, 0.0, 1.0)
@@ -390,7 +391,7 @@ class KDAC(nn.Module):
     def _positive_region(self, z):
         return self.a * z
 
-    def forward(self, z) -> Tensor:
+    def _forward(self, z) -> Tensor:
         p = self.a * z
         
         # Calculate r based on condition z > 0
@@ -405,7 +406,7 @@ class KDAC(nn.Module):
 
 
 @register_activation
-class KWTA(nn.Module):
+class KWTA(BaseActivation):
     r"""
     Applies the k-Winner-Takes-All (k-WTA) activation function:
 
@@ -432,13 +433,13 @@ class KWTA(nn.Module):
         - Output: :math:`(*)`, same shape as the input.
     """
 
-    def __init__(self, k: float = 0.2, dim: int = None, inplace: bool = False):
-        super(KWTA, self).__init__()
+    def __init__(self, k: float = 0.2, dim: int = None, **kwargs):
+        super().__init__(**kwargs)
         self.k = k
         self.dim = dim
-        self.inplace = inplace  # Unused
+          # Unused
 
-    def forward(self, z) -> Tensor:
+    def _forward(self, z) -> Tensor:
         if self.dim is None:
             # Operate on flattened tensor
             original_shape = z.shape
@@ -488,7 +489,7 @@ class KWTA(nn.Module):
 
 # TODO: Verify this implementation
 @register_activation
-class VBAF(nn.Module):
+class VBAF(BaseActivation):
     r"""
     :note: The implementation of this activation function is based on limited information from the literature.
            The original papers don't provide complete details on how this function should be applied in neural networks.
@@ -518,12 +519,12 @@ class VBAF(nn.Module):
         - Output: :math:`(*, 1)`, with the last dimension reduced to size 1.
     """
 
-    def __init__(self, dim: int = -1, inplace: bool = False):
-        super(VBAF, self).__init__()
+    def __init__(self, dim: int = -1, **kwargs):
+        super().__init__(**kwargs)
         self.dim = dim
-        self.inplace = inplace  # Unused
+          # Unused
 
-    def forward(self, z) -> Tensor:
+    def _forward(self, z) -> Tensor:
         # Compute mean along the specified dimension
         z_mean = torch.mean(z, dim=self.dim, keepdim=True)
         

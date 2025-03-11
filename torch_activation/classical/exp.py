@@ -3,10 +3,11 @@ import torch.nn as nn
 from torch import Tensor
 
 from torch_activation import register_activation
+from torch_activation.base import BaseActivation
 
 
 @register_activation
-class Polyexp(nn.Module):
+class Polyexp(BaseActivation):
     r"""
     Applies the Polyexp activation function:
 
@@ -27,20 +28,20 @@ class Polyexp(nn.Module):
         - Output: :math:`(*)`, same shape as the input.
     """
 
-    def __init__(self, a: float = 1.0, b: float = 1.0, c: float = 1.0, d: float = 1.0, inplace: bool = False):
-        super(Polyexp, self).__init__()
+    def __init__(self, a: float = 1.0, b: float = 1.0, c: float = 1.0, d: float = 1.0, **kwargs):
+        super().__init__(**kwargs)
         self.a = a
         self.b = b
         self.c = c
         self.d = d
-        self.inplace = inplace  # Unused
+          # Unused
 
-    def forward(self, z) -> Tensor:
+    def _forward(self, z) -> Tensor:
         return self.a * z**2 + self.b * z + self.c * torch.exp(-self.d * z**2)
 
 
 @register_activation
-class Exponential(nn.Module):
+class Exponential(BaseActivation):
     r"""
     Applies the Exponential activation function:
 
@@ -55,15 +56,15 @@ class Exponential(nn.Module):
         - Output: :math:`(*)`, same shape as the input.
     """
 
-    def __init__(self, inplace: bool = False):
-        super(Exponential, self).__init__()
-        self.inplace = inplace  # Unused
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+          # Unused
 
-    def forward(self, z) -> Tensor:
+    def _forward(self, z) -> Tensor:
         return torch.exp(-z)
 
 @register_activation
-class Symexp(nn.Module):
+class Symexp(BaseActivation):
     r"""
     Applies the Symexp activation function:
 
@@ -80,15 +81,15 @@ class Symexp(nn.Module):
         - Output: :math:`(*)`, same shape as the input.
     """
 
-    def __init__(self, inplace: bool = False):
-        super(Symexp, self).__init__()
-        self.inplace = inplace  # Unused
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+          # Unused
 
-    def forward(self, z) -> Tensor:
+    def _forward(self, z) -> Tensor:
         return torch.sign(z) * (torch.exp(torch.abs(z)) - 1)
 
 @register_activation
-class Wave(nn.Module):
+class Wave(BaseActivation):
     r"""
     Applies the Wave activation function:
 
@@ -106,10 +107,10 @@ class Wave(nn.Module):
         - Output: :math:`(*)`, same shape as the input.
     """
 
-    def __init__(self, a: float = 1.0, inplace: bool = False):
-        super(Wave, self).__init__()
+    def __init__(self, a: float = 1.0, **kwargs):
+        super().__init__(**kwargs)
         self.a = a
-        self.inplace = inplace  # Unused
+          # Unused
 
-    def forward(self, z) -> Tensor:
+    def _forward(self, z) -> Tensor:
         return 1 - z**2 * torch.exp(-self.a * z**2)

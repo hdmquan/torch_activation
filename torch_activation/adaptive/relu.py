@@ -1,6 +1,7 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+from torch_activation.base import BaseActivation
 
 from torch import Tensor
 from typing import Callable
@@ -8,7 +9,7 @@ from typing import Callable
 from torch_activation import register_activation
 
 @register_activation
-class ShiLU(nn.Module):
+class ShiLU(BaseActivation):
     r"""
     Applies the ShiLU activation function:
 
@@ -40,13 +41,13 @@ class ShiLU(nn.Module):
         >>> m(x)
     """
 
-    def __init__(self, alpha: float = 1.0, beta: float = 0.0, inplace: bool = False):
+    def __init__(self, alpha: float = 1.0, beta: float = 0.0, **kwargs):
         super().__init__()
         self.alpha = nn.Parameter(Tensor([alpha]))
         self.beta = nn.Parameter(Tensor([beta]))
-        self.inplace = inplace
+        
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         if self.inplace:
             F.relu_(x)
             x.mul_(self.alpha)
@@ -57,7 +58,7 @@ class ShiLU(nn.Module):
 
 
 @register_activation
-class StarReLU(nn.Module):
+class StarReLU(BaseActivation):
     r"""
     Applies the element-wise function:
 
@@ -94,9 +95,10 @@ class StarReLU(nn.Module):
         b: float = -0.4472,
         learnable: bool = False,
         inplace: bool = False,
+        **kwargs
     ):
-        super().__init__()
-        self.inplace = inplace
+        super().__init__(**kwargs)
+        
         if learnable:
             self.s = nn.Parameter(Tensor([s]))
             self.b = nn.Parameter(Tensor([b]))
@@ -104,7 +106,7 @@ class StarReLU(nn.Module):
             self.s = Tensor([s])
             self.b = Tensor([b])
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         if self.inplace:
             return F.relu_(x).pow_(2).mul_(self.s).add_(self.b)
         else:
@@ -112,7 +114,7 @@ class StarReLU(nn.Module):
 
 
 @register_activation
-class DELU(nn.Module):
+class DELU(BaseActivation):
     r"""
     Applies the DELU activation function:
 
@@ -143,13 +145,12 @@ class DELU(nn.Module):
         >>> m(x)
     """
 
-    def __init__(self, n: float = 1.0, inplace: bool = False):
-        super(DELU, self).__init__()
+    def __init__(self, n: float = 1.0, **kwargs):
+        super().__init__(**kwargs)
         self.n = torch.nn.Parameter(Tensor([n]))
-        self.inplace = inplace
+        
 
-    def forward(self, x) -> Tensor:
-        return self._forward_inplace(x) if self.inplace else self._forward(x)
+    
 
     def _forward(self, x):
         return torch.where(
@@ -163,7 +164,7 @@ class DELU(nn.Module):
 
 
 @register_activation
-class PReLU(nn.Module):
+class PReLU(BaseActivation):
     r"""
     Applies the Parametric Rectified Linear Unit function:
 
@@ -189,15 +190,15 @@ class PReLU(nn.Module):
         >>> m(x)
     """
 
-    def __init__(self, a: float = 1.0, learnable: bool = False, inplace: bool = False):
+    def __init__(self, a: float = 1.0, learnable: bool = False, **kwargs):
         super().__init__()
-        self.inplace = inplace
+        
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
         else:
             self.a = Tensor([a])
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         if self.inplace:
             mask = x < 0
             x[mask] = x[mask] / self.a
@@ -207,7 +208,7 @@ class PReLU(nn.Module):
 
 
 @register_activation
-class PReLUPlus(nn.Module):
+class PReLUPlus(BaseActivation):
     r"""
     Applies the Positive Parametric Rectified Linear Unit function:
 
@@ -233,15 +234,15 @@ class PReLUPlus(nn.Module):
         >>> m(x)
     """
 
-    def __init__(self, a: float = 1.0, learnable: bool = False, inplace: bool = False):
+    def __init__(self, a: float = 1.0, learnable: bool = False, **kwargs):
         super().__init__()
-        self.inplace = inplace
+        
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
         else:
             self.a = Tensor([a])
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         if self.inplace:
             mask = x < 0
             x.mul_(self.a)
@@ -252,7 +253,7 @@ class PReLUPlus(nn.Module):
 
 
 @register_activation
-class MarReLU(nn.Module):
+class MarReLU(BaseActivation):
     r"""
     Applies the Margin ReLU activation function:
 
@@ -278,15 +279,15 @@ class MarReLU(nn.Module):
         >>> m(x)
     """
 
-    def __init__(self, a: float = 0.0, learnable: bool = False, inplace: bool = False):
+    def __init__(self, a: float = 0.0, learnable: bool = False, **kwargs):
         super().__init__()
-        self.inplace = inplace
+        
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
         else:
             self.a = Tensor([a])
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         if self.inplace:
             mask = x < self.a
             x[mask] = self.a
@@ -296,7 +297,7 @@ class MarReLU(nn.Module):
 
 
 @register_activation
-class RPReLU(nn.Module):
+class RPReLU(BaseActivation):
     r"""
     Applies the React-PReLU activation function:
 
@@ -331,9 +332,9 @@ class RPReLU(nn.Module):
         c: float = 1.0, 
         learnable: bool = False, 
         inplace: bool = False
-    ):
+    , **kwargs):
         super().__init__()
-        self.inplace = inplace
+        
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
             self.b = nn.Parameter(Tensor([b]))
@@ -343,7 +344,7 @@ class RPReLU(nn.Module):
             self.b = Tensor([b])
             self.c = Tensor([c])
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         if self.inplace:
             mask = x < self.a
             x_minus_a = x - self.a
@@ -356,7 +357,7 @@ class RPReLU(nn.Module):
 
 
 @register_activation
-class LeLeLU(nn.Module):
+class LeLeLU(BaseActivation):
     r"""
     Applies the Leaky Learnable ReLU activation function:
 
@@ -389,16 +390,16 @@ class LeLeLU(nn.Module):
         negative_slope: float = 0.01, 
         learnable: bool = False, 
         inplace: bool = False
-    ):
+    , **kwargs):
         super().__init__()
-        self.inplace = inplace
+        
         self.negative_slope = negative_slope
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
         else:
             self.a = Tensor([a])
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         if self.inplace:
             mask = x < 0
             x.mul_(self.a)
@@ -409,7 +410,7 @@ class LeLeLU(nn.Module):
 
 
 @register_activation
-class PREU(nn.Module):
+class PREU(BaseActivation):
     r"""
     Applies the Parametric Rectified Exponential Unit activation function:
 
@@ -442,9 +443,9 @@ class PREU(nn.Module):
         b: float = 1.0, 
         learnable: bool = False, 
         inplace: bool = False
-    ):
+    , **kwargs):
         super().__init__()
-        self.inplace = inplace
+        
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
             self.b = nn.Parameter(Tensor([b]))
@@ -452,7 +453,7 @@ class PREU(nn.Module):
             self.a = Tensor([a])
             self.b = Tensor([b])
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         if self.inplace:
             mask = x < 0
             x.mul_(self.a)
@@ -463,7 +464,7 @@ class PREU(nn.Module):
 
 
 @register_activation
-class RTReLU(nn.Module):
+class RTReLU(BaseActivation):
     r"""
     Applies the Randomly Translational PReLU activation function:
 
@@ -498,16 +499,16 @@ class RTReLU(nn.Module):
         sigma: float = 0.75, 
         learnable: bool = False, 
         inplace: bool = False
-    ):
+    , **kwargs):
         super().__init__()
-        self.inplace = inplace
+        
         self.sigma = sigma
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
         else:
             self.a = Tensor([a])
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         b = torch.randn_like(x) * self.sigma
         if self.inplace:
             mask = x + b < 0
@@ -518,7 +519,7 @@ class RTReLU(nn.Module):
 
 
 @register_activation
-class SMU(nn.Module):
+class SMU(BaseActivation):
     r"""
     Applies the Smooth Maximum Unit activation function:
 
@@ -551,9 +552,9 @@ class SMU(nn.Module):
         b: float = 25.0, 
         learnable: bool = False, 
         inplace: bool = False
-    ):
+    , **kwargs):
         super().__init__()
-        self.inplace = inplace
+        
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
             self.b = nn.Parameter(Tensor([b]))
@@ -561,7 +562,7 @@ class SMU(nn.Module):
             self.a = Tensor([a])
             self.b = Tensor([b])
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         term1 = (1 + self.a) * x
         term2 = (1 - self.a) * x * torch.erf(self.b * (1 - self.a) * x)
         
@@ -573,7 +574,7 @@ class SMU(nn.Module):
 
 
 @register_activation
-class SAU(nn.Module):
+class SAU(BaseActivation):
     r"""
     Applies the Smooth Activation Unit function:
 
@@ -604,7 +605,7 @@ class SAU(nn.Module):
         a: float = 1.0, 
         b: float = 1.0, 
         learnable: bool = False
-    ):
+    , **kwargs):
         super().__init__()
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
@@ -613,7 +614,7 @@ class SAU(nn.Module):
             self.a = Tensor([a])
             self.b = Tensor([b])
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         # Handle potential division by zero
         safe_x = torch.where(x == 0, torch.ones_like(x) * 1e-10, x)
         
@@ -624,7 +625,7 @@ class SAU(nn.Module):
 
 
 @register_activation
-class ProbAct(nn.Module):
+class ProbAct(BaseActivation):
     r"""
     Applies the Probabilistic Activation function:
 
@@ -659,16 +660,16 @@ class ProbAct(nn.Module):
         sigma: float = 0.1, 
         learnable: bool = False, 
         inplace: bool = False
-    ):
+    , **kwargs):
         super().__init__()
         self.base_activation = base_activation
-        self.inplace = inplace
+        
         if learnable:
             self.sigma = nn.Parameter(Tensor([sigma]))
         else:
             self.sigma = Tensor([sigma])
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         activated = self.base_activation(x)
         noise = torch.randn_like(x) * self.sigma
         
@@ -680,7 +681,7 @@ class ProbAct(nn.Module):
 
 
 @register_activation
-class ReLUProbAct(nn.Module):
+class ReLUProbAct(BaseActivation):
     r"""
     Applies the ReLU-based Probabilistic Activation function:
 
@@ -713,15 +714,15 @@ class ReLUProbAct(nn.Module):
         sigma: float = 0.1, 
         learnable: bool = False, 
         inplace: bool = False
-    ):
+    , **kwargs):
         super().__init__()
-        self.inplace = inplace
+        
         if learnable:
             self.sigma = nn.Parameter(Tensor([sigma]))
         else:
             self.sigma = Tensor([sigma])
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         if self.inplace:
             x.clamp_(min=0)
             x.add_(torch.randn_like(x) * self.sigma)
@@ -731,7 +732,7 @@ class ReLUProbAct(nn.Module):
 
 
 @register_activation
-class AOAF(nn.Module):
+class AOAF(BaseActivation):
     r"""
     Applies the Adaptive Offset Activation Function:
 
@@ -766,9 +767,9 @@ class AOAF(nn.Module):
         c: float = 0.17, 
         learnable: bool = False, 
         inplace: bool = False
-    ):
+    , **kwargs):
         super().__init__()
-        self.inplace = inplace
+        
         self.b = b
         self.c = c
         if learnable:
@@ -776,7 +777,7 @@ class AOAF(nn.Module):
         else:
             self.a = Tensor([a])
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         offset = self.b * self.a
         bias = self.c * self.a
         
@@ -788,7 +789,7 @@ class AOAF(nn.Module):
 
 
 @register_activation
-class DLReLU(nn.Module):
+class DLReLU(BaseActivation):
     r"""
     Applies the Dynamic Leaky ReLU function:
 
@@ -824,9 +825,9 @@ class DLReLU(nn.Module):
         mse: float = 1.0, 
         learnable: bool = False, 
         inplace: bool = False
-    ):
+    , **kwargs):
         super().__init__()
-        self.inplace = inplace
+        
         self.mse = mse
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
@@ -837,7 +838,7 @@ class DLReLU(nn.Module):
         """Update the MSE value for the dynamic slope."""
         self.mse = mse
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         negative_slope = self.a * self.mse
         
         if self.inplace:
@@ -849,7 +850,7 @@ class DLReLU(nn.Module):
 
 
 @register_activation
-class ExpDLReLU(nn.Module):
+class ExpDLReLU(BaseActivation):
     r"""
     Applies the Exponential Dynamic Leaky ReLU function:
 
@@ -885,9 +886,9 @@ class ExpDLReLU(nn.Module):
         mse: float = 0.0, 
         learnable: bool = False, 
         inplace: bool = False
-    ):
+    , **kwargs):
         super().__init__()
-        self.inplace = inplace
+        
         self.mse = mse
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
@@ -898,7 +899,7 @@ class ExpDLReLU(nn.Module):
         """Update the MSE value for the dynamic slope."""
         self.mse = mse
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         negative_slope = self.a * torch.exp(-torch.tensor(self.mse))
         
         if self.inplace:
@@ -910,7 +911,7 @@ class ExpDLReLU(nn.Module):
 
 
 @register_activation
-class DReLU(nn.Module):
+class DReLU(BaseActivation):
     r"""
     Applies the Dynamic ReLU function:
 
@@ -941,15 +942,15 @@ class DReLU(nn.Module):
         a: float = 0.0, 
         learnable: bool = False, 
         inplace: bool = False
-    ):
+    , **kwargs):
         super().__init__()
-        self.inplace = inplace
+        
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
         else:
             self.a = Tensor([a])
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         if self.inplace:
             mask = x < self.a
             x[mask] = self.a
@@ -959,7 +960,7 @@ class DReLU(nn.Module):
 
 
 @register_activation
-class FReLU(nn.Module):
+class FReLU(BaseActivation):
     r"""
     Applies the Flexible ReLU function:
 
@@ -990,15 +991,15 @@ class FReLU(nn.Module):
         b: float = 0.0, 
         learnable: bool = False, 
         inplace: bool = False
-    ):
+    , **kwargs):
         super().__init__()
-        self.inplace = inplace
+        
         if learnable:
             self.b = nn.Parameter(Tensor([b]))
         else:
             self.b = Tensor([b])
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         if self.inplace:
             mask = x < 0
             x[mask] = 0
@@ -1009,7 +1010,7 @@ class FReLU(nn.Module):
 
 
 @register_activation
-class AdaptiveHardTanh(nn.Module):
+class AdaptiveHardTanh(BaseActivation):
     r"""
     Applies the Adaptive HardTanh function:
 
@@ -1046,9 +1047,9 @@ class AdaptiveHardTanh(nn.Module):
         max_val: float = 1.0,
         learnable: bool = False, 
         inplace: bool = False
-    ):
+    , **kwargs):
         super().__init__()
-        self.inplace = inplace
+        
         self.min_val = min_val
         self.max_val = max_val
         if learnable:
@@ -1058,7 +1059,7 @@ class AdaptiveHardTanh(nn.Module):
             self.a = Tensor([a])
             self.b = Tensor([b])
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         scaled_shifted = self.a * (x - self.b)
         
         if self.inplace:
@@ -1069,7 +1070,7 @@ class AdaptiveHardTanh(nn.Module):
 
 
 @register_activation
-class AReLU(nn.Module):
+class AReLU(BaseActivation):
     r"""
     Applies the Attention-based ReLU function:
 
@@ -1104,9 +1105,9 @@ class AReLU(nn.Module):
         b: float = 2.0, 
         learnable: bool = False, 
         inplace: bool = False
-    ):
+    , **kwargs):
         super().__init__()
-        self.inplace = inplace
+        
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
             self.b = nn.Parameter(Tensor([b]))
@@ -1114,7 +1115,7 @@ class AReLU(nn.Module):
             self.a = Tensor([a])
             self.b = Tensor([b])
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         positive_scale = 1 + torch.sigmoid(self.b)
         negative_scale = self.a  # C(a) = a in the simplest case
         
@@ -1128,7 +1129,7 @@ class AReLU(nn.Module):
 
 
 @register_activation
-class DPReLU(nn.Module):
+class DPReLU(BaseActivation):
     r"""
     Applies the Dual Parametric ReLU function:
 
@@ -1161,9 +1162,9 @@ class DPReLU(nn.Module):
         b: float = 0.01, 
         learnable: bool = False, 
         inplace: bool = False
-    ):
+    , **kwargs):
         super().__init__()
-        self.inplace = inplace
+        
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
             self.b = nn.Parameter(Tensor([b]))
@@ -1171,7 +1172,7 @@ class DPReLU(nn.Module):
             self.a = Tensor([a])
             self.b = Tensor([b])
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         if self.inplace:
             mask = x < 0
             x[~mask].mul_(self.a)
@@ -1182,7 +1183,7 @@ class DPReLU(nn.Module):
 
 
 @register_activation
-class DualLine(nn.Module):
+class DualLine(BaseActivation):
     r"""
     Applies the Dual Line activation function:
 
@@ -1217,9 +1218,9 @@ class DualLine(nn.Module):
         m: float = -0.22, 
         learnable: bool = False, 
         inplace: bool = False
-    ):
+    , **kwargs):
         super().__init__()
-        self.inplace = inplace
+        
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
             self.b = nn.Parameter(Tensor([b]))
@@ -1229,7 +1230,7 @@ class DualLine(nn.Module):
             self.b = Tensor([b])
             self.m = Tensor([m])
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         if self.inplace:
             mask = x < 0
             x[~mask].mul_(self.a).add_(self.m)
@@ -1240,7 +1241,7 @@ class DualLine(nn.Module):
 
 
 @register_activation
-class PiLU(nn.Module):
+class PiLU(BaseActivation):
     r"""
     Applies the Piecewise Linear Unit function:
 
@@ -1275,9 +1276,9 @@ class PiLU(nn.Module):
         c: float = 0.0, 
         learnable: bool = False, 
         inplace: bool = False
-    ):
+    , **kwargs):
         super().__init__()
-        self.inplace = inplace
+        
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
             self.b = nn.Parameter(Tensor([b]))
@@ -1287,7 +1288,7 @@ class PiLU(nn.Module):
             self.b = Tensor([b])
             self.c = Tensor([c])
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         bias_a = self.c * (1 - self.a)
         bias_b = self.c * (1 - self.b)
         
@@ -1301,7 +1302,7 @@ class PiLU(nn.Module):
 
 
 @register_activation
-class DPAF(nn.Module):
+class DPAF(BaseActivation):
     r"""
     Applies the Dual Parametric Activation Function:
 
@@ -1338,10 +1339,10 @@ class DPAF(nn.Module):
         base_activation: Callable = F.relu,
         learnable: bool = False, 
         inplace: bool = False
-    ):
+    , **kwargs):
         super().__init__()
         self.base_activation = base_activation
-        self.inplace = inplace
+        
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
             self.m = nn.Parameter(Tensor([m]))
@@ -1349,7 +1350,7 @@ class DPAF(nn.Module):
             self.a = Tensor([a])
             self.m = Tensor([m])
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         activated = self.base_activation(x)
         
         if self.inplace and hasattr(activated, 'add_'):
@@ -1362,7 +1363,7 @@ class DPAF(nn.Module):
 
 
 @register_activation
-class FPAF(nn.Module):
+class FPAF(BaseActivation):
     r"""
     Applies the Fully Parameterized Activation Function:
 
@@ -1399,7 +1400,7 @@ class FPAF(nn.Module):
         pos_activation: Callable = F.relu,
         neg_activation: Callable = F.relu,
         learnable: bool = False
-    ):
+    , **kwargs):
         super().__init__()
         self.pos_activation = pos_activation
         self.neg_activation = neg_activation
@@ -1410,7 +1411,7 @@ class FPAF(nn.Module):
             self.a = Tensor([a])
             self.b = Tensor([b])
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         pos_mask = x >= 0
         neg_mask = ~pos_mask
         
@@ -1424,7 +1425,7 @@ class FPAF(nn.Module):
 
 
 @register_activation
-class EPReLU(nn.Module):
+class EPReLU(BaseActivation):
     r"""
     Applies the Elastic PReLU function:
 
@@ -1459,16 +1460,16 @@ class EPReLU(nn.Module):
         alpha: float = 0.1, 
         learnable: bool = False, 
         inplace: bool = False
-    ):
+    , **kwargs):
         super().__init__()
-        self.inplace = inplace
+        
         self.alpha = alpha
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
         else:
             self.a = Tensor([a])
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         # Sample k from uniform distribution
         k = 1 + (2 * torch.rand_like(x) - 1) * self.alpha
         
@@ -1482,7 +1483,7 @@ class EPReLU(nn.Module):
 
 
 @register_activation
-class PairedReLU(nn.Module):
+class PairedReLU(BaseActivation):
     r"""
     Applies the Paired ReLU function:
 
@@ -1517,7 +1518,7 @@ class PairedReLU(nn.Module):
         c: float = -0.5, 
         d: float = 0.0, 
         learnable: bool = False
-    ):
+    , **kwargs):
         super().__init__()
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
@@ -1530,7 +1531,7 @@ class PairedReLU(nn.Module):
             self.c = Tensor([c])
             self.d = Tensor([d])
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         # First component: max(a*x - b, 0)
         y1 = F.relu(self.a * x - self.b)
         
@@ -1545,7 +1546,7 @@ class PairedReLU(nn.Module):
 
 
 @register_activation
-class Tent(nn.Module):
+class Tent(BaseActivation):
     r"""
     Applies the Tent activation function:
 
@@ -1576,15 +1577,15 @@ class Tent(nn.Module):
         a: float = 1.0, 
         learnable: bool = False, 
         inplace: bool = False
-    ):
+    , **kwargs):
         super().__init__()
-        self.inplace = inplace
+        
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
         else:
             self.a = Tensor([a])
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         if self.inplace:
             x.abs_().neg_().add_(self.a).clamp_(min=0)
             return x
@@ -1593,7 +1594,7 @@ class Tent(nn.Module):
 
 
 @register_activation
-class Hat(nn.Module):
+class Hat(BaseActivation):
     r"""
     Applies the Hat activation function:
 
@@ -1629,15 +1630,15 @@ class Hat(nn.Module):
         a: float = 2.0, 
         learnable: bool = False, 
         inplace: bool = False
-    ):
+    , **kwargs):
         super().__init__()
-        self.inplace = inplace
+        
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
         else:
             self.a = Tensor([a])
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         half_a = self.a / 2
         
         if self.inplace:
@@ -1671,7 +1672,7 @@ class Hat(nn.Module):
 
 
 @register_activation
-class RMAF(nn.Module):
+class RMAF(BaseActivation):
     r"""
     Applies the ReLU Memristor-like Activation Function:
 
@@ -1706,9 +1707,9 @@ class RMAF(nn.Module):
         c: float = 1.0, 
         learnable: bool = False, 
         inplace: bool = False
-    ):
+    , **kwargs):
         super().__init__()
-        self.inplace = inplace
+        
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
             self.b = nn.Parameter(Tensor([b]))
@@ -1718,7 +1719,7 @@ class RMAF(nn.Module):
             self.b = Tensor([b])
             self.c = Tensor([c])
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         # Calculate the memristor-like term
         memristor_term = (1 / (0.25 * (1 + torch.exp(-x)) + 0.75)) ** self.c
         
@@ -1733,7 +1734,7 @@ class RMAF(nn.Module):
 
 
 @register_activation
-class PTELU(nn.Module):
+class PTELU(BaseActivation):
     r"""
     Applies the Parametric Tanh Exponential Linear Unit function:
 
@@ -1766,9 +1767,9 @@ class PTELU(nn.Module):
         b: float = 1.0, 
         learnable: bool = False, 
         inplace: bool = False
-    ):
+    , **kwargs):
         super().__init__()
-        self.inplace = inplace
+        
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
             self.b = nn.Parameter(Tensor([b]))
@@ -1776,7 +1777,7 @@ class PTELU(nn.Module):
             self.a = Tensor([a])
             self.b = Tensor([b])
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         if self.inplace:
             mask = x < 0
             x[mask] = self.a * torch.tanh(self.b * x[mask])
@@ -1786,7 +1787,7 @@ class PTELU(nn.Module):
 
 
 @register_activation
-class TaLU(nn.Module):
+class TaLU(BaseActivation):
     r"""
     Applies the Tangent Linear Unit function:
 
@@ -1821,15 +1822,15 @@ class TaLU(nn.Module):
         a: float = -1.0, 
         learnable: bool = False, 
         inplace: bool = False
-    ):
+    , **kwargs):
         super().__init__()
-        self.inplace = inplace
+        
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
         else:
             self.a = Tensor([a])
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         tanh_a = torch.tanh(self.a)
         
         if self.inplace:
@@ -1858,7 +1859,7 @@ class TaLU(nn.Module):
 
 
 @register_activation
-class PTaLU(nn.Module):
+class PTaLU(BaseActivation):
     r"""
     Applies the Parametric Tangent Linear Unit function:
 
@@ -1895,9 +1896,9 @@ class PTaLU(nn.Module):
         b: float = 1.0, 
         learnable: bool = False, 
         inplace: bool = False
-    ):
+    , **kwargs):
         super().__init__()
-        self.inplace = inplace
+        
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
             self.b = nn.Parameter(Tensor([b]))
@@ -1905,7 +1906,7 @@ class PTaLU(nn.Module):
             self.a = Tensor([a])
             self.b = Tensor([b])
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         tanh_a = torch.tanh(self.a)
         
         if self.inplace:
@@ -1934,7 +1935,7 @@ class PTaLU(nn.Module):
 
 
 @register_activation
-class TanhLU(nn.Module):
+class TanhLU(BaseActivation):
     r"""
     Applies the TanhLU activation function:
 
@@ -1969,9 +1970,9 @@ class TanhLU(nn.Module):
         c: float = 1.0, 
         learnable: bool = False, 
         inplace: bool = False
-    ):
+    , **kwargs):
         super().__init__()
-        self.inplace = inplace
+        
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
             self.b = nn.Parameter(Tensor([b]))
@@ -1981,7 +1982,7 @@ class TanhLU(nn.Module):
             self.b = Tensor([b])
             self.c = Tensor([c])
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         result = self.a * torch.tanh(self.b * x) + self.c * x
         
         if self.inplace and hasattr(x, 'copy_'):
@@ -1992,7 +1993,7 @@ class TanhLU(nn.Module):
 
 
 @register_activation
-class TeLU(nn.Module):
+class TeLU(BaseActivation):
     r"""
     Applies the Tanh Exponential Linear Unit function:
 
@@ -2025,15 +2026,15 @@ class TeLU(nn.Module):
         a: float = 1.0, 
         learnable: bool = False, 
         inplace: bool = False
-    ):
+    , **kwargs):
         super().__init__()
-        self.inplace = inplace
+        
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
         else:
             self.a = Tensor([a])
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         # Apply ELU
         elu_output = F.elu(self.a * x)
         
@@ -2048,7 +2049,7 @@ class TeLU(nn.Module):
 
 
 @register_activation
-class TReLU(nn.Module):
+class TReLU(BaseActivation):
     r"""
     Applies the Tanh-based ReLU function:
 
@@ -2079,15 +2080,15 @@ class TReLU(nn.Module):
         b: float = 1.0, 
         learnable: bool = False, 
         inplace: bool = False
-    ):
+    , **kwargs):
         super().__init__()
-        self.inplace = inplace
+        
         if learnable:
             self.b = nn.Parameter(Tensor([b]))
         else:
             self.b = Tensor([b])
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         if self.inplace:
             mask = x < 0
             x[mask] = torch.tanh(self.b * x[mask])
@@ -2097,7 +2098,7 @@ class TReLU(nn.Module):
 
 
 @register_activation
-class TReLU2(nn.Module):
+class TReLU2(BaseActivation):
     r"""
     Applies the Tanh-based ReLU variant 2 function:
 
@@ -2128,15 +2129,15 @@ class TReLU2(nn.Module):
         a: float = 1.0, 
         learnable: bool = False, 
         inplace: bool = False
-    ):
+    , **kwargs):
         super().__init__()
-        self.inplace = inplace
+        
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
         else:
             self.a = Tensor([a])
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         if self.inplace:
             mask = x < 0
             x[mask] = self.a * torch.tanh(x[mask])
@@ -2145,7 +2146,7 @@ class TReLU2(nn.Module):
             return torch.where(x >= 0, x, self.a * torch.tanh(x))
 
 @register_activation
-class ReLTanh(nn.Module):
+class ReLTanh(BaseActivation):
     r"""
     Applies the Rectified Linear Tanh function:
 
@@ -2184,9 +2185,9 @@ class ReLTanh(nn.Module):
         b: float = 0.0, 
         learnable: bool = False, 
         inplace: bool = False
-    ):
+    , **kwargs):
         super().__init__()
-        self.inplace = inplace
+        
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
             self.b = nn.Parameter(Tensor([b]))
@@ -2198,7 +2199,7 @@ class ReLTanh(nn.Module):
         # Derivative of tanh(x) = 1 - tanh^2(x) = 4 / (e^x + e^-x)^2
         return 4 / (torch.exp(x) + torch.exp(-x))**2
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         tanh_a = torch.tanh(self.a)
         tanh_b = torch.tanh(self.b)
         tanh_deriv_a = self._tanh_derivative(self.a)
@@ -2244,7 +2245,7 @@ class ReLTanh(nn.Module):
 
 
 @register_activation
-class BLU(nn.Module):
+class BLU(BaseActivation):
     r"""
     Applies the Bendable Linear Unit function:
 
@@ -2277,16 +2278,16 @@ class BLU(nn.Module):
         a: float = 0.0, 
         learnable: bool = False, 
         inplace: bool = False
-    ):
+    , **kwargs):
         super().__init__()
-        self.inplace = inplace
+        
         if learnable:
             # Constrain a to be in [-1, 1]
             self.a = nn.Parameter(Tensor([a]).clamp(-1, 1))
         else:
             self.a = Tensor([min(max(a, -1), 1)])  # Clamp a to [-1, 1]
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         result = self.a * torch.sqrt(x**2 + 1) - 1 + x
         
         if self.inplace and hasattr(x, 'copy_'):
@@ -2297,7 +2298,7 @@ class BLU(nn.Module):
 
 
 @register_activation
-class ReBLU(nn.Module):
+class ReBLU(BaseActivation):
     r"""
     Applies the Rectified Bendable Linear Unit function:
 
@@ -2333,16 +2334,16 @@ class ReBLU(nn.Module):
         a: float = 0.0, 
         learnable: bool = False, 
         inplace: bool = False
-    ):
+    , **kwargs):
         super().__init__()
-        self.inplace = inplace
+        
         if learnable:
             # Constrain a to be in [-1, 1]
             self.a = nn.Parameter(Tensor([a]).clamp(-1, 1))
         else:
             self.a = Tensor([min(max(a, -1), 1)])  # Clamp a to [-1, 1]
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         if self.inplace:
             mask = x <= 0
             x[~mask] = self.a * torch.sqrt(x[~mask]**2 + 1) - 1 + x[~mask]
@@ -2354,7 +2355,7 @@ class ReBLU(nn.Module):
 
 
 @register_activation
-class DELU(nn.Module):
+class DELU(BaseActivation):
     r"""
     Applies the DELU activation function:
 
@@ -2390,15 +2391,15 @@ class DELU(nn.Module):
         a: float = 0.0, 
         learnable: bool = False, 
         inplace: bool = False
-    ):
+    , **kwargs):
         super().__init__()
-        self.inplace = inplace
+        
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
         else:
             self.a = Tensor([a])
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         if self.inplace:
             mask = x < 0
             # Positive part: (a + 0.5) * x + |exp(-x) - 1|
@@ -2415,7 +2416,7 @@ class DELU(nn.Module):
 
 
 @register_activation
-class SCMish(nn.Module):
+class SCMish(BaseActivation):
     r"""
     Applies the Soft Clipping Mish activation function:
 
@@ -2450,15 +2451,15 @@ class SCMish(nn.Module):
         a: float = 1.0, 
         learnable: bool = False, 
         inplace: bool = False
-    ):
+    , **kwargs):
         super().__init__()
-        self.inplace = inplace
+        
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
         else:
             self.a = Tensor([a])
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         # softplus(a*x)
         softplus = F.softplus(self.a * x)
         # tanh(softplus(a*x))
@@ -2476,7 +2477,7 @@ class SCMish(nn.Module):
 
 
 @register_activation
-class SCSwish(nn.Module):
+class SCSwish(BaseActivation):
     r"""
     Applies the Soft Clipping Swish activation function:
 
@@ -2502,11 +2503,11 @@ class SCSwish(nn.Module):
         >>> m(x)
     """
 
-    def __init__(self, inplace: bool = False):
+    def __init__(self, **kwargs):
         super().__init__()
-        self.inplace = inplace
+        
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         # x * sigmoid(x)
         swish = x * torch.sigmoid(x)
         # max(0, swish)
@@ -2520,7 +2521,7 @@ class SCSwish(nn.Module):
 
 
 @register_activation
-class PSwish(nn.Module):
+class PSwish(BaseActivation):
     r"""
     Applies the Parametric Swish activation function:
 
@@ -2560,9 +2561,9 @@ class PSwish(nn.Module):
         c: float = 0.0, 
         learnable: bool = False, 
         inplace: bool = False
-    ):
+    , **kwargs):
         super().__init__()
-        self.inplace = inplace
+        
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
             self.b = nn.Parameter(Tensor([b]))
@@ -2572,7 +2573,7 @@ class PSwish(nn.Module):
             self.b = Tensor([b])
             self.c = Tensor([c])
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         if self.inplace:
             mask = x <= self.c
             # Swish part: a * x * sigmoid(b * x)
@@ -2585,7 +2586,7 @@ class PSwish(nn.Module):
 
 
 @register_activation
-class PELU(nn.Module):
+class PELU(BaseActivation):
     r"""
     Applies the Parametric Exponential Linear Unit function:
 
@@ -2621,9 +2622,9 @@ class PELU(nn.Module):
         b: float = 1.0, 
         learnable: bool = False, 
         inplace: bool = False
-    ):
+    , **kwargs):
         super().__init__()
-        self.inplace = inplace
+        
         if learnable:
             # Ensure a and b are positive
             self.a = nn.Parameter(Tensor([abs(a)]))
@@ -2632,7 +2633,7 @@ class PELU(nn.Module):
             self.a = Tensor([abs(a)])
             self.b = Tensor([abs(b)])
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         if self.inplace:
             mask = x < 0
             # Positive part: (a/b) * x
@@ -2649,7 +2650,7 @@ class PELU(nn.Module):
 
 
 @register_activation
-class EDELU(nn.Module):
+class EDELU(BaseActivation):
     r"""
     Applies the Extended Exponential Linear Unit function:
 
@@ -2687,9 +2688,9 @@ class EDELU(nn.Module):
         c: float = 0.0, 
         learnable: bool = False, 
         inplace: bool = False
-    ):
+    , **kwargs):
         super().__init__()
-        self.inplace = inplace
+        
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
             self.c = nn.Parameter(Tensor([c]))
@@ -2697,7 +2698,7 @@ class EDELU(nn.Module):
             self.a = Tensor([a])
             self.c = Tensor([c])
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         # Calculate b to ensure continuity at x = c
         # b*c = exp(a*c) - 1 => b = (exp(a*c) - 1) / c
         # Handle the case where c is close to zero
@@ -2718,7 +2719,7 @@ class EDELU(nn.Module):
 
 
 @register_activation
-class AdaptiveCombination1(nn.Module):
+class AdaptiveCombination1(BaseActivation):
     # TODO: Naming
     r"""
     :note: This is a temporary naming.
@@ -2755,9 +2756,9 @@ class AdaptiveCombination1(nn.Module):
         elu_alpha: float = 1.0,
         learnable: bool = False, 
         inplace: bool = False
-    ):
+    , **kwargs):
         super().__init__()
-        self.inplace = inplace
+        
         self.lrelu_slope = lrelu_slope
         self.elu_alpha = elu_alpha
         if learnable:
@@ -2766,7 +2767,7 @@ class AdaptiveCombination1(nn.Module):
         else:
             self.a = Tensor([min(max(a, 0), 1)])  # Clamp a to [0, 1]
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         # LReLU(x)
         lrelu = F.leaky_relu(x, negative_slope=self.lrelu_slope)
         
@@ -2784,7 +2785,7 @@ class AdaptiveCombination1(nn.Module):
 
 
 @register_activation
-class AdaptiveCombination2(nn.Module):
+class AdaptiveCombination2(BaseActivation):
 
     r"""
     :note: This is a temporary naming.
@@ -2825,9 +2826,9 @@ class AdaptiveCombination2(nn.Module):
         pelu_beta: float = 1.0,
         learnable: bool = False, 
         inplace: bool = False
-    ):
+    , **kwargs):
         super().__init__()
-        self.inplace = inplace
+        
         self.prelu_slope = prelu_slope
         self.pelu_alpha = pelu_alpha
         self.pelu_beta = pelu_beta
@@ -2836,7 +2837,7 @@ class AdaptiveCombination2(nn.Module):
         else:
             self.a = Tensor([a])
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         # Sigmoid gate
         gate = torch.sigmoid(self.a * x)
         
@@ -2859,7 +2860,7 @@ class AdaptiveCombination2(nn.Module):
 
 
 @register_activation
-class FELU(nn.Module):
+class FELU(BaseActivation):
     r"""
     Applies the Fast Exponential Linear Unit function:
 
@@ -2893,15 +2894,15 @@ class FELU(nn.Module):
         a: float = 1.0, 
         learnable: bool = False, 
         inplace: bool = False
-    ):
+    , **kwargs):
         super().__init__()
-        self.inplace = inplace
+        
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
         else:
             self.a = Tensor([a])
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         if self.inplace:
             mask = x < 0
             # Using 2^(x/ln(2)) = exp(x) for negative values
@@ -2913,7 +2914,7 @@ class FELU(nn.Module):
 
 
 @register_activation
-class PFELU(nn.Module):
+class PFELU(BaseActivation):
     r"""
     Applies the P+FELU function:
 
@@ -2949,9 +2950,9 @@ class PFELU(nn.Module):
         b: float = 0.0, 
         learnable: bool = False, 
         inplace: bool = False
-    ):
+    , **kwargs):
         super().__init__()
-        self.inplace = inplace
+        
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
             self.b = nn.Parameter(Tensor([b]))
@@ -2959,7 +2960,7 @@ class PFELU(nn.Module):
             self.a = Tensor([a])
             self.b = Tensor([b])
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         if self.inplace:
             mask = x < 0
             # Using 2^(x/ln(2)) = exp(x) for negative values
@@ -2974,7 +2975,7 @@ class PFELU(nn.Module):
 
 
 @register_activation
-class MPELU(nn.Module):
+class MPELU(BaseActivation):
     r"""
     Applies the Multiple Parametric Exponential Linear Unit function:
 
@@ -3010,9 +3011,9 @@ class MPELU(nn.Module):
         b: float = 1.0, 
         learnable: bool = False, 
         inplace: bool = False
-    ):
+    , **kwargs):
         super().__init__()
-        self.inplace = inplace
+        
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
             self.b = nn.Parameter(Tensor([b]))
@@ -3020,7 +3021,7 @@ class MPELU(nn.Module):
             self.a = Tensor([a])
             self.b = Tensor([b])
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         if self.inplace:
             mask = x < 0
             x[mask] = self.a * (torch.exp(self.b * x[mask]) - 1)
@@ -3030,7 +3031,7 @@ class MPELU(nn.Module):
 
 
 @register_activation
-class PE2ReLU(nn.Module):
+class PE2ReLU(BaseActivation):
     r"""
     Applies the P-E2-ReLU function:
 
@@ -3065,9 +3066,9 @@ class PE2ReLU(nn.Module):
         elu_alpha: float = 1.0,
         learnable: bool = False, 
         inplace: bool = False
-    ):
+    , **kwargs):
         super().__init__()
-        self.inplace = inplace
+        
         self.elu_alpha = elu_alpha
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
@@ -3076,7 +3077,7 @@ class PE2ReLU(nn.Module):
             self.a = Tensor([a])
             self.b = Tensor([b])
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         # ReLU(x)
         relu_part = F.relu(x)
         
@@ -3097,7 +3098,7 @@ class PE2ReLU(nn.Module):
 
 
 @register_activation
-class PE2Id(nn.Module):
+class PE2Id(BaseActivation):
     r"""
     Applies the P-E2-Id function:
 
@@ -3130,16 +3131,16 @@ class PE2Id(nn.Module):
         elu_alpha: float = 1.0,
         learnable: bool = False, 
         inplace: bool = False
-    ):
+    , **kwargs):
         super().__init__()
-        self.inplace = inplace
+        
         self.elu_alpha = elu_alpha
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
         else:
             self.a = Tensor([a])
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         # Identity part
         id_part = x
         
@@ -3157,7 +3158,7 @@ class PE2Id(nn.Module):
 
 
 @register_activation
-class SoftExponential(nn.Module):
+class SoftExponential(BaseActivation):
     r"""
     Applies the Soft Exponential activation function:
 
@@ -3192,15 +3193,15 @@ class SoftExponential(nn.Module):
         a: float = 0.0, 
         learnable: bool = False, 
         inplace: bool = False
-    ):
+    , **kwargs):
         super().__init__()
-        self.inplace = inplace
+        
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
         else:
             self.a = Tensor([a])
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         a = self.a.item()  # Get scalar value for conditional logic
         
         if abs(a) < 1e-6:  # a ≈ 0
@@ -3221,7 +3222,7 @@ class SoftExponential(nn.Module):
 
 
 @register_activation
-class CELU(nn.Module):
+class CELU(BaseActivation):
     r"""
     Applies the Continuously Differentiable ELU function:
 
@@ -3255,15 +3256,15 @@ class CELU(nn.Module):
         a: float = 1.0, 
         learnable: bool = False, 
         inplace: bool = False
-    ):
+    , **kwargs):
         super().__init__()
-        self.inplace = inplace
+        
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
         else:
             self.a = Tensor([a])
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         if self.inplace:
             mask = x < 0
             x[mask] = self.a * (torch.exp(x[mask] / self.a) - 1)
@@ -3273,7 +3274,7 @@ class CELU(nn.Module):
 
 
 @register_activation
-class ErfReLU(nn.Module):
+class ErfReLU(BaseActivation):
     r"""
     Applies the Erf-based ReLU function:
 
@@ -3309,15 +3310,15 @@ class ErfReLU(nn.Module):
         a: float = 1.0, 
         learnable: bool = False, 
         inplace: bool = False
-    ):
+    , **kwargs):
         super().__init__()
-        self.inplace = inplace
+        
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
         else:
             self.a = Tensor([a])
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         if self.inplace:
             mask = x < 0
             x[mask] = self.a * torch.erf(x[mask])
@@ -3327,7 +3328,7 @@ class ErfReLU(nn.Module):
 
 
 @register_activation
-class PSELU(nn.Module):
+class PSELU(BaseActivation):
     r"""
     Applies the Parametric Scaled Exponential Linear Unit function:
 
@@ -3363,9 +3364,9 @@ class PSELU(nn.Module):
         b: float = 1.0, 
         learnable: bool = False, 
         inplace: bool = False
-    ):
+    , **kwargs):
         super().__init__()
-        self.inplace = inplace
+        
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
             self.b = nn.Parameter(Tensor([b]))
@@ -3373,7 +3374,7 @@ class PSELU(nn.Module):
             self.a = Tensor([a])
             self.b = Tensor([b])
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         if self.inplace:
             mask = x < 0
             x[~mask] = self.a * x[~mask]
@@ -3386,7 +3387,7 @@ class PSELU(nn.Module):
 
 
 @register_activation
-class LPSELU(nn.Module):
+class LPSELU(BaseActivation):
     r"""
     Applies the Leaky Parametric Scaled Exponential Linear Unit function:
 
@@ -3424,9 +3425,9 @@ class LPSELU(nn.Module):
         c: float = 0.01, 
         learnable: bool = False, 
         inplace: bool = False
-    ):
+    , **kwargs):
         super().__init__()
-        self.inplace = inplace
+        
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
             self.b = nn.Parameter(Tensor([b]))
@@ -3436,7 +3437,7 @@ class LPSELU(nn.Module):
             self.b = Tensor([b])
             self.c = Tensor([c])
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         if self.inplace:
             mask = x < 0
             x[~mask] = self.a * x[~mask]
@@ -3449,7 +3450,7 @@ class LPSELU(nn.Module):
 
 
 @register_activation
-class LPSELU_RP(nn.Module):
+class LPSELU_RP(BaseActivation):
     r"""
     Applies the Leaky Parametric Scaled Exponential Linear Unit with Reposition Parameter function:
 
@@ -3489,9 +3490,9 @@ class LPSELU_RP(nn.Module):
         m: float = 0.0,
         learnable: bool = False, 
         inplace: bool = False
-    ):
+    , **kwargs):
         super().__init__()
-        self.inplace = inplace
+        
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
             self.b = nn.Parameter(Tensor([b]))
@@ -3503,7 +3504,7 @@ class LPSELU_RP(nn.Module):
             self.c = Tensor([c])
             self.m = Tensor([m])
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         if self.inplace:
             mask = x < 0
             x[~mask] = self.a * x[~mask] + self.m
@@ -3516,7 +3517,7 @@ class LPSELU_RP(nn.Module):
 
 
 @register_activation
-class ShELU(nn.Module):
+class ShELU(BaseActivation):
     r"""
     Applies the Shifted ELU (horizontal) function:
 
@@ -3552,9 +3553,9 @@ class ShELU(nn.Module):
         b: float = 0.0, 
         learnable: bool = False, 
         inplace: bool = False
-    ):
+    , **kwargs):
         super().__init__()
-        self.inplace = inplace
+        
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
             self.b = nn.Parameter(Tensor([b]))
@@ -3562,7 +3563,7 @@ class ShELU(nn.Module):
             self.a = Tensor([a])
             self.b = Tensor([b])
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         shifted_x = x + self.b
         
         if self.inplace:
@@ -3575,7 +3576,7 @@ class ShELU(nn.Module):
 
 
 @register_activation
-class SvELU(nn.Module):
+class SvELU(BaseActivation):
     r"""
     Applies the Shifted ELU (vertical) function:
 
@@ -3611,9 +3612,9 @@ class SvELU(nn.Module):
         b: float = 0.0, 
         learnable: bool = False, 
         inplace: bool = False
-    ):
+    , **kwargs):
         super().__init__()
-        self.inplace = inplace
+        
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
             self.b = nn.Parameter(Tensor([b]))
@@ -3621,7 +3622,7 @@ class SvELU(nn.Module):
             self.a = Tensor([a])
             self.b = Tensor([b])
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         if self.inplace:
             mask = x < 0
             x[~mask] = x[~mask] + self.b
@@ -3634,7 +3635,7 @@ class SvELU(nn.Module):
 
 
 @register_activation
-class PShELU(nn.Module):
+class PShELU(BaseActivation):
     r"""
     Applies the PELU with Horizontal Shift function:
 
@@ -3672,9 +3673,9 @@ class PShELU(nn.Module):
         c: float = 0.0, 
         learnable: bool = False, 
         inplace: bool = False
-    ):
+    , **kwargs):
         super().__init__()
-        self.inplace = inplace
+        
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
             self.b = nn.Parameter(Tensor([b]))
@@ -3684,7 +3685,7 @@ class PShELU(nn.Module):
             self.b = Tensor([b])
             self.c = Tensor([c])
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         shifted_x = x + self.c
         
         if self.inplace:
@@ -3699,7 +3700,7 @@ class PShELU(nn.Module):
 
 
 @register_activation
-class PSvELU(nn.Module):
+class PSvELU(BaseActivation):
     r"""
     Applies the PELU with Vertical Shift function:
 
@@ -3737,9 +3738,9 @@ class PSvELU(nn.Module):
         c: float = 0.0, 
         learnable: bool = False, 
         inplace: bool = False
-    ):
+    , **kwargs):
         super().__init__()
-        self.inplace = inplace
+        
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
             self.b = nn.Parameter(Tensor([b]))
@@ -3749,7 +3750,7 @@ class PSvELU(nn.Module):
             self.b = Tensor([b])
             self.c = Tensor([c])
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         if self.inplace:
             mask = x < 0
             x[~mask] = (self.a / self.b) * x[~mask] + self.c
@@ -3762,7 +3763,7 @@ class PSvELU(nn.Module):
 
 
 @register_activation
-class TSwish(nn.Module):
+class TSwish(BaseActivation):
     r"""
     Applies the Tunable Swish function:
 
@@ -3802,9 +3803,9 @@ class TSwish(nn.Module):
         c: float = 0.0, 
         learnable: bool = False, 
         inplace: bool = False
-    ):
+    , **kwargs):
         super().__init__()
-        self.inplace = inplace
+        
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
             self.b = nn.Parameter(Tensor([b]))
@@ -3814,7 +3815,7 @@ class TSwish(nn.Module):
             self.b = Tensor([b])
             self.c = Tensor([c])
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         if self.inplace:
             mask = x < self.c
             x[mask] = self.a * x[mask] * torch.sigmoid(self.b * x[mask])
@@ -3825,7 +3826,7 @@ class TSwish(nn.Module):
 
 
 @register_activation
-class RePSU(nn.Module):
+class RePSU(BaseActivation):
     r"""
     Applies the Rectified Parametric Sigmoid Unit function:
 
@@ -3876,9 +3877,9 @@ class RePSU(nn.Module):
         e: float = 1.0, 
         learnable: bool = False, 
         inplace: bool = False
-    ):
+    , **kwargs):
         super().__init__()
-        self.inplace = inplace
+        
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
             self.b = nn.Parameter(Tensor([b]))
@@ -3907,7 +3908,7 @@ class RePSU(nn.Module):
             
         return result
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         # Calculate RePSKU
         repsku = self._repsku(x)
         
@@ -3927,7 +3928,7 @@ class RePSU(nn.Module):
 
 
 @register_activation
-class PDELU(nn.Module):
+class PDELU(BaseActivation):
     r"""
     Applies the Parametric Deformable Exponential Linear Unit function:
 
@@ -3963,9 +3964,9 @@ class PDELU(nn.Module):
         b: float = 0.9, 
         learnable: bool = False, 
         inplace: bool = False
-    ):
+    , **kwargs):
         super().__init__()
-        self.inplace = inplace
+        
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
             # Constrain b to avoid division by zero
@@ -3975,7 +3976,7 @@ class PDELU(nn.Module):
             # Constrain b to avoid division by zero
             self.b = Tensor([min(max(b, 0), 0.999)])
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         if self.inplace:
             mask = x < 0
             if mask.any():
@@ -4002,7 +4003,7 @@ class PDELU(nn.Module):
 
 
 @register_activation
-class EELU(nn.Module):
+class EELU(BaseActivation):
     r"""
     Applies the Elastic Exponential Linear Unit function:
 
@@ -4042,9 +4043,9 @@ class EELU(nn.Module):
         epsilon: float = 0.5, 
         learnable: bool = False, 
         inplace: bool = False
-    ):
+    , **kwargs):
         super().__init__()
-        self.inplace = inplace
+        
         self.epsilon = epsilon
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
@@ -4053,7 +4054,7 @@ class EELU(nn.Module):
             self.a = Tensor([a])
             self.b = Tensor([b])
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         # Sample sigma from uniform distribution
         sigma = torch.rand(1, device=x.device) * self.epsilon
         
@@ -4074,7 +4075,7 @@ class EELU(nn.Module):
 
 
 @register_activation
-class PFPLUS(nn.Module):
+class PFPLUS(BaseActivation):
     r"""
     Applies the Parametric First Power Linear Unit with Sign function:
 
@@ -4109,9 +4110,9 @@ class PFPLUS(nn.Module):
         b: float = 0.1, 
         learnable: bool = False, 
         inplace: bool = False
-    ):
+    , **kwargs):
         super().__init__()
-        self.inplace = inplace
+        
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
             self.b = nn.Parameter(Tensor([b]))
@@ -4119,7 +4120,7 @@ class PFPLUS(nn.Module):
             self.a = Tensor([a])
             self.b = Tensor([b])
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         # Calculate H(x) - 1
         h_minus_1 = torch.where(x >= 0, torch.zeros_like(x), torch.ones_like(x) * (-1))
         
@@ -4140,7 +4141,7 @@ class PFPLUS(nn.Module):
 
 
 @register_activation
-class PVLU(nn.Module):
+class PVLU(BaseActivation):
     r"""
     Applies the Parametric Variational Linear Unit function:
 
@@ -4173,9 +4174,9 @@ class PVLU(nn.Module):
         b: float = 1.0, 
         learnable: bool = False, 
         inplace: bool = False
-    ):
+    , **kwargs):
         super().__init__()
-        self.inplace = inplace
+        
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
             self.b = nn.Parameter(Tensor([b]))
@@ -4183,7 +4184,7 @@ class PVLU(nn.Module):
             self.a = Tensor([a])
             self.b = Tensor([b])
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         relu_part = F.relu(x)
         sin_part = self.a * torch.sin(self.b * x)
         

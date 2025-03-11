@@ -1,6 +1,7 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+from torch_activation.base import BaseActivation
 from torch import Tensor
 
 from typing import Callable
@@ -9,7 +10,7 @@ from torch_activation import register_activation
 
 
 @register_activation
-class AdaptiveSigmoid(nn.Module):
+class AdaptiveSigmoid(BaseActivation):
     r"""
     Applies the Adaptive Sigmoid function:
 
@@ -38,26 +39,23 @@ class AdaptiveSigmoid(nn.Module):
     """
 
     def __init__(
-        self, 
-        a: float = 1.0, 
-        learnable: bool = False, 
-        inplace: bool = False
+        self, a: float = 1.0, learnable: bool = False, inplace: bool = False, **kwargs
     ):
         super().__init__()
-        self.inplace = inplace
+
         if learnable:
             # Ensure a is positive
             self.a = nn.Parameter(Tensor([abs(a)]))
         else:
             self.a = Tensor([abs(a)])
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         # Compute the adaptive sigmoid
         term1 = 2 / (1 - torch.exp(-self.a * x))
         term2 = 2 / (self.a * (1 + torch.exp(-self.a * x)))
         result = term1 - term2
-        
-        if self.inplace and hasattr(x, 'copy_'):
+
+        if self.inplace and hasattr(x, "copy_"):
             x.copy_(result)
             return x
         else:
@@ -65,7 +63,7 @@ class AdaptiveSigmoid(nn.Module):
 
 
 @register_activation
-class GeneralizedHyperbolicTangent(nn.Module):
+class GeneralizedHyperbolicTangent(BaseActivation):
     r"""
     Applies the Generalized Hyperbolic Tangent function:
 
@@ -93,14 +91,15 @@ class GeneralizedHyperbolicTangent(nn.Module):
     """
 
     def __init__(
-        self, 
-        a: float = 1.0, 
-        b: float = 1.0, 
-        learnable: bool = False, 
-        inplace: bool = False
+        self,
+        a: float = 1.0,
+        b: float = 1.0,
+        learnable: bool = False,
+        inplace: bool = False,
+        **kwargs
     ):
         super().__init__()
-        self.inplace = inplace
+
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
             self.b = nn.Parameter(Tensor([b]))
@@ -108,13 +107,13 @@ class GeneralizedHyperbolicTangent(nn.Module):
             self.a = Tensor([a])
             self.b = Tensor([b])
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         # Compute the generalized hyperbolic tangent
         numerator = 1 - torch.exp(-self.b * x)
         denominator = 1 + torch.exp(-self.b * x)
         result = self.a * (numerator / denominator)
-        
-        if self.inplace and hasattr(x, 'copy_'):
+
+        if self.inplace and hasattr(x, "copy_"):
             x.copy_(result)
             return x
         else:
@@ -122,7 +121,7 @@ class GeneralizedHyperbolicTangent(nn.Module):
 
 
 @register_activation
-class TrainableAmplitude(nn.Module):
+class TrainableAmplitude(BaseActivation):
     r"""
     Applies the Trainable Amplitude function:
 
@@ -153,16 +152,17 @@ class TrainableAmplitude(nn.Module):
     """
 
     def __init__(
-        self, 
+        self,
         base_activation: Callable = torch.tanh,
-        a: float = 1.0, 
-        b: float = 0.0, 
-        learnable: bool = False, 
-        inplace: bool = False
+        a: float = 1.0,
+        b: float = 0.0,
+        learnable: bool = False,
+        inplace: bool = False,
+        **kwargs
     ):
         super().__init__()
         self.base_activation = base_activation
-        self.inplace = inplace
+
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
             self.b = nn.Parameter(Tensor([b]))
@@ -170,14 +170,14 @@ class TrainableAmplitude(nn.Module):
             self.a = Tensor([a])
             self.b = Tensor([b])
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         # Apply the base activation function
         activated = self.base_activation(x)
-        
+
         # Scale and shift
         result = self.a * activated + self.b
-        
-        if self.inplace and hasattr(x, 'copy_'):
+
+        if self.inplace and hasattr(x, "copy_"):
             x.copy_(result)
             return x
         else:
@@ -185,7 +185,7 @@ class TrainableAmplitude(nn.Module):
 
 
 @register_activation
-class ASSF(nn.Module):
+class ASSF(BaseActivation):
     r"""
     Applies the Adaptive Slope Sigmoidal Function:
 
@@ -214,23 +214,20 @@ class ASSF(nn.Module):
     """
 
     def __init__(
-        self, 
-        a: float = 1.0, 
-        learnable: bool = False, 
-        inplace: bool = False
+        self, a: float = 1.0, learnable: bool = False, inplace: bool = False, **kwargs
     ):
         super().__init__()
-        self.inplace = inplace
+
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
         else:
             self.a = Tensor([a])
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         # Compute the adaptive slope sigmoid
         result = torch.sigmoid(self.a * x)
-        
-        if self.inplace and hasattr(x, 'copy_'):
+
+        if self.inplace and hasattr(x, "copy_"):
             x.copy_(result)
             return x
         else:
@@ -238,7 +235,7 @@ class ASSF(nn.Module):
 
 
 @register_activation
-class SVAF(nn.Module):
+class SVAF(BaseActivation):
     r"""
     Applies the Slope Varying Activation Function:
 
@@ -265,23 +262,20 @@ class SVAF(nn.Module):
     """
 
     def __init__(
-        self, 
-        a: float = 1.0, 
-        learnable: bool = False, 
-        inplace: bool = False
+        self, a: float = 1.0, learnable: bool = False, inplace: bool = False, **kwargs
     ):
         super().__init__()
-        self.inplace = inplace
+
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
         else:
             self.a = Tensor([a])
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         # Compute the slope varying tanh
         result = torch.tanh(self.a * x)
-        
-        if self.inplace and hasattr(x, 'copy_'):
+
+        if self.inplace and hasattr(x, "copy_"):
             x.copy_(result)
             return x
         else:
@@ -289,7 +283,7 @@ class SVAF(nn.Module):
 
 
 @register_activation
-class TanhSoft(nn.Module):
+class TanhSoft(BaseActivation):
     r"""
     Applies the TanhSoft function:
 
@@ -321,16 +315,17 @@ class TanhSoft(nn.Module):
     """
 
     def __init__(
-        self, 
-        a: float = 0.5, 
-        b: float = 0.5, 
+        self,
+        a: float = 0.5,
+        b: float = 0.5,
         c: float = 1.0,
         d: float = 0.1,
-        learnable: bool = False, 
-        inplace: bool = False
+        learnable: bool = False,
+        inplace: bool = False,
+        **kwargs
     ):
         super().__init__()
-        self.inplace = inplace
+
         if learnable:
             # Constrain parameters to their valid ranges
             self.a = nn.Parameter(Tensor([min(a, 1.0)]))
@@ -343,13 +338,13 @@ class TanhSoft(nn.Module):
             self.c = Tensor([max(c, 0.01)])  # Avoid c=0
             self.d = Tensor([max(min(d, 1.0), 0.0)])
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         # Compute the TanhSoft function
         tanh_term = torch.tanh(self.a * x + self.b * torch.exp(self.c * x))
         log_term = torch.log(self.d + torch.exp(x))
         result = tanh_term * log_term
-        
-        if self.inplace and hasattr(x, 'copy_'):
+
+        if self.inplace and hasattr(x, "copy_"):
             x.copy_(result)
             return x
         else:
@@ -357,7 +352,7 @@ class TanhSoft(nn.Module):
 
 
 @register_activation
-class TanhSoft1(nn.Module):
+class TanhSoft1(BaseActivation):
     r"""
     Applies the TanhSoft-1 function:
 
@@ -384,25 +379,22 @@ class TanhSoft1(nn.Module):
     """
 
     def __init__(
-        self, 
-        a: float = 1.0, 
-        learnable: bool = False, 
-        inplace: bool = False
+        self, a: float = 1.0, learnable: bool = False, inplace: bool = False, **kwargs
     ):
         super().__init__()
-        self.inplace = inplace
+
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
         else:
             self.a = Tensor([a])
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         # Compute the TanhSoft-1 function
         tanh_term = torch.tanh(self.a * x)
         softplus_term = torch.log(1 + torch.exp(x))
         result = tanh_term * softplus_term
-        
-        if self.inplace and hasattr(x, 'copy_'):
+
+        if self.inplace and hasattr(x, "copy_"):
             x.copy_(result)
             return x
         else:
@@ -410,7 +402,7 @@ class TanhSoft1(nn.Module):
 
 
 @register_activation
-class TanhSoft2(nn.Module):
+class TanhSoft2(BaseActivation):
     r"""
     Applies the TanhSoft-2 function:
 
@@ -438,14 +430,15 @@ class TanhSoft2(nn.Module):
     """
 
     def __init__(
-        self, 
-        b: float = 1.0, 
-        c: float = 1.0, 
-        learnable: bool = False, 
-        inplace: bool = False
+        self,
+        b: float = 1.0,
+        c: float = 1.0,
+        learnable: bool = False,
+        inplace: bool = False,
+        **kwargs
     ):
         super().__init__()
-        self.inplace = inplace
+
         if learnable:
             self.b = nn.Parameter(Tensor([b]))
             self.c = nn.Parameter(Tensor([c]))
@@ -453,12 +446,12 @@ class TanhSoft2(nn.Module):
             self.b = Tensor([b])
             self.c = Tensor([c])
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         # Compute the TanhSoft-2 function
         tanh_term = torch.tanh(self.b * torch.exp(self.c * x))
         result = x * tanh_term
-        
-        if self.inplace and hasattr(x, 'copy_'):
+
+        if self.inplace and hasattr(x, "copy_"):
             x.copy_(result)
             return x
         else:
@@ -466,7 +459,7 @@ class TanhSoft2(nn.Module):
 
 
 @register_activation
-class TanhSoft3(nn.Module):
+class TanhSoft3(BaseActivation):
     r"""
     Applies the TanhSoft-3 function:
 
@@ -493,24 +486,21 @@ class TanhSoft3(nn.Module):
     """
 
     def __init__(
-        self, 
-        a: float = 1.0, 
-        learnable: bool = False, 
-        inplace: bool = False
+        self, a: float = 1.0, learnable: bool = False, inplace: bool = False, **kwargs
     ):
         super().__init__()
-        self.inplace = inplace
+
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
         else:
             self.a = Tensor([a])
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         # Compute the TanhSoft-3 function
         inner_term = torch.exp(x) * torch.tanh(self.a * x)
         result = torch.log(1 + inner_term)
-        
-        if self.inplace and hasattr(x, 'copy_'):
+
+        if self.inplace and hasattr(x, "copy_"):
             x.copy_(result)
             return x
         else:
@@ -518,7 +508,7 @@ class TanhSoft3(nn.Module):
 
 
 @register_activation
-class PSigmoid(nn.Module):
+class PSigmoid(BaseActivation):
     r"""
     Applies the Parametric Sigmoid function:
 
@@ -548,14 +538,15 @@ class PSigmoid(nn.Module):
     """
 
     def __init__(
-        self, 
-        a: float = 1.0, 
-        b: float = 1.0, 
-        learnable: bool = False, 
-        inplace: bool = False
+        self,
+        a: float = 1.0,
+        b: float = 1.0,
+        learnable: bool = False,
+        inplace: bool = False,
+        **kwargs
     ):
         super().__init__()
-        self.inplace = inplace
+
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
             self.b = nn.Parameter(Tensor([b]))
@@ -563,11 +554,11 @@ class PSigmoid(nn.Module):
             self.a = Tensor([a])
             self.b = Tensor([b])
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         # Compute the parametric sigmoid
         result = self.a * torch.sigmoid(self.b * x)
-        
-        if self.inplace and hasattr(x, 'copy_'):
+
+        if self.inplace and hasattr(x, "copy_"):
             x.copy_(result)
             return x
         else:
@@ -575,7 +566,7 @@ class PSigmoid(nn.Module):
 
 
 @register_activation
-class PSF(nn.Module):
+class PSF(BaseActivation):
     r"""
     Applies the Parametric Sigmoid Function:
 
@@ -602,24 +593,21 @@ class PSF(nn.Module):
     """
 
     def __init__(
-        self, 
-        m: float = 1.0, 
-        learnable: bool = False, 
-        inplace: bool = False
+        self, m: float = 1.0, learnable: bool = False, inplace: bool = False, **kwargs
     ):
         super().__init__()
-        self.inplace = inplace
+
         if learnable:
             self.m = nn.Parameter(Tensor([m]))
         else:
             self.m = Tensor([m])
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         # Compute the parametric sigmoid function
         sigmoid = 1 / (1 + torch.exp(-x))
-        result = sigmoid ** self.m
-        
-        if self.inplace and hasattr(x, 'copy_'):
+        result = sigmoid**self.m
+
+        if self.inplace and hasattr(x, "copy_"):
             x.copy_(result)
             return x
         else:
@@ -627,7 +615,7 @@ class PSF(nn.Module):
 
 
 @register_activation
-class STACTanh(nn.Module):
+class STACTanh(BaseActivation):
     r"""
     Applies the Slope and Threshold Adaptive Activation Function with tanh:
 
@@ -659,14 +647,15 @@ class STACTanh(nn.Module):
     """
 
     def __init__(
-        self, 
-        a: float = 1.0, 
-        b: float = 0.1, 
-        learnable: bool = False, 
-        inplace: bool = False
+        self,
+        a: float = 1.0,
+        b: float = 0.1,
+        learnable: bool = False,
+        inplace: bool = False,
+        **kwargs
     ):
         super().__init__()
-        self.inplace = inplace
+
         if learnable:
             self.a = nn.Parameter(Tensor([abs(a)]))  # Ensure a is positive
             self.b = nn.Parameter(Tensor([b]))
@@ -674,35 +663,35 @@ class STACTanh(nn.Module):
             self.a = Tensor([abs(a)])  # Ensure a is positive
             self.b = Tensor([b])
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         # Precompute constants
         tanh_a = torch.tanh(self.a)
         tanh_neg_a = torch.tanh(-self.a)
-        
+
         # Create masks for different regions
         mask_lower = x < -self.a
         mask_middle = (x >= -self.a) & (x <= self.a)
         mask_upper = x > self.a
-        
+
         if self.inplace:
             # Create a copy to avoid modifying during computation
             result = x.clone()
-            
+
             # Apply different functions to different regions
             result[mask_lower] = tanh_neg_a + self.b * (x[mask_lower] + self.a)
             result[mask_middle] = torch.tanh(x[mask_middle])
             result[mask_upper] = tanh_a + self.b * (x[mask_upper] - self.a)
-            
+
             # Copy back to original tensor
             x.copy_(result)
             return x
         else:
             # Initialize result tensor
             result = torch.zeros_like(x)
-            
+
             # Apply different functions to different regions
             result[mask_lower] = tanh_neg_a + self.b * (x[mask_lower] + self.a)
             result[mask_middle] = torch.tanh(x[mask_middle])
             result[mask_upper] = tanh_a + self.b * (x[mask_upper] - self.a)
-            
+
             return result

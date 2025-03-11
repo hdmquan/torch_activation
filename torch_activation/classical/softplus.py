@@ -4,10 +4,11 @@ from torch import Tensor
 import math
 
 from torch_activation import register_activation
+from torch_activation.base import BaseActivation
 
 
 @register_activation
-class Softplus(nn.Module):
+class Softplus(BaseActivation):
     r"""
     Applies the Softplus activation function:
 
@@ -27,19 +28,19 @@ class Softplus(nn.Module):
         - Output: :math:`(*)`, same shape as the input.
     """
 
-    def __init__(self, beta: float = 1.0, threshold: float = 20.0, inplace: bool = False):
-        super(Softplus, self).__init__()
+    def __init__(self, beta: float = 1.0, threshold: float = 20.0, **kwargs):
+        super().__init__(**kwargs)
         self.beta = beta
         self.threshold = threshold
-        self.inplace = inplace  # Unused
+          # Unused
 
-    def forward(self, z) -> Tensor:
+    def _forward(self, z) -> Tensor:
         # Use the built-in softplus for numerical stability
         return torch.nn.functional.softplus(z, self.beta, self.threshold)
 
 
 @register_activation
-class ParametricSoftplus(nn.Module):
+class ParametricSoftplus(BaseActivation):
     r"""
     Applies the Parametric Softplus (PSoftplus) activation function:
 
@@ -62,21 +63,21 @@ class ParametricSoftplus(nn.Module):
     """
 
     def __init__(self, a: float = 1.5, b: float = 0.693, beta: float = 1.0, 
-                 threshold: float = 20.0, inplace: bool = False):
-        super(ParametricSoftplus, self).__init__()
+                 threshold: float = 20.0, **kwargs):
+        super().__init__(**kwargs)
         self.a = a
         self.b = b
         self.beta = beta
         self.threshold = threshold
-        self.inplace = inplace  # Unused
+          # Unused
 
-    def forward(self, z) -> Tensor:
+    def _forward(self, z) -> Tensor:
         softplus = torch.nn.functional.softplus(z, self.beta, self.threshold)
         return self.a * (softplus - self.b)
 
 
 @register_activation
-class SoftPlusPlus(nn.Module):
+class SoftPlusPlus(BaseActivation):
     r"""
     Applies the Soft++ activation function:
 
@@ -97,15 +98,15 @@ class SoftPlusPlus(nn.Module):
         - Output: :math:`(*)`, same shape as the input.
     """
 
-    def __init__(self, a: float = 1.0, b: float = 2.0, threshold: float = 20.0, inplace: bool = False):
-        super(SoftPlusPlus, self).__init__()
+    def __init__(self, a: float = 1.0, b: float = 2.0, threshold: float = 20.0, **kwargs):
+        super().__init__(**kwargs)
         self.a = a
         self.b = b
         self.threshold = threshold
         self.ln2 = math.log(2)
-        self.inplace = inplace  # Unused
+          # Unused
 
-    def forward(self, z) -> Tensor:
+    def _forward(self, z) -> Tensor:
         # Apply a to the input for the softplus term
         scaled_input = self.a * z
         
@@ -117,7 +118,7 @@ class SoftPlusPlus(nn.Module):
 
 
 @register_activation
-class RandSoftplus(nn.Module):
+class RandSoftplus(BaseActivation):
     r"""
     Applies the Rand Softplus (RSP) activation function:
 
@@ -138,14 +139,14 @@ class RandSoftplus(nn.Module):
         - Output: :math:`(*)`, same shape as the input.
     """
 
-    def __init__(self, a: float = 0.5, beta: float = 1.0, threshold: float = 20.0, inplace: bool = False):
-        super(RandSoftplus, self).__init__()
+    def __init__(self, a: float = 0.5, beta: float = 1.0, threshold: float = 20.0, **kwargs):
+        super().__init__(**kwargs)
         self.a = a
         self.beta = beta
         self.threshold = threshold
-        self.inplace = inplace  # Unused
+          # Unused
 
-    def forward(self, z) -> Tensor:
+    def _forward(self, z) -> Tensor:
         # ReLU term
         relu_term = torch.nn.functional.relu(z)
         

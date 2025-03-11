@@ -2,13 +2,13 @@ import os
 import importlib
 import inspect
 
-__version__ = "0.3.13"
+__version__ = "0.4.0"
 
 __all__ = []
 
 current_dir = os.path.dirname(__file__)
 
-# Registry to store all activation functions
+# This only registers decorated classes. Some undecorated are either untested or incomplete.
 _ACTIVATIONS = {}
 
 
@@ -34,38 +34,20 @@ def register_activation(cls=None, *, differentiable=True):
     return _register(cls)
 
 
-# Function to get all registered activations
-def get_all_activations(differentiable_only=None):
-    """
-    Get all registered activation functions.
-
-    Args:
-        differentiable_only: If True, return only differentiable activations.
-                            If False, return only non-differentiable activations.
-                            If None, return all activations.
-
-    Returns:
-        List of activation function names
-    """
-    if differentiable_only is None:
-        return list(_ACTIVATIONS.keys())
-    return [
-        name
-        for name, info in _ACTIVATIONS.items()
-        if info["differentiable"] == differentiable_only
-    ]
+def get_all_activations():
+    return list(_ACTIVATIONS.keys())
 
 
-# Import and register classes from Python files in the main directory
 for file_name in os.listdir(current_dir):
     if file_name.endswith(".py") and file_name != "__init__.py":
-        # .py
-        module_name = file_name[:-3]
+
+        module_name = file_name[:-3]  # Remove .py extension
+
         module = importlib.import_module(f".{module_name}", package=__package__)
+
 
         for name, obj in inspect.getmembers(module, inspect.isclass):
             if obj.__module__ == module.__name__:
-                # Register the class with the activation registry
                 register_activation(obj)
 
 # Import and conditionally register classes from the classical subdirectory
