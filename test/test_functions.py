@@ -1,3 +1,5 @@
+# Someone make this a real test plz :((
+
 import torch
 import torch_activation
 import inspect
