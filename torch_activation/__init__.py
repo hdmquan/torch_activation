@@ -2,7 +2,7 @@ import os
 import importlib
 import inspect
 
-__version__ = "0.3.12"
+__version__ = "0.3.13"
 
 __all__ = []
 

@@ -479,8 +479,8 @@ class FracELU(nn.Module):
             
         return result
 
-
-@register_activation
+# TODO: Forward pass failed: Can't call numpy() on Tensor that requires grad. Use tensor.detach().numpy() instead.
+# @register_activation
 class FracSiLU1(nn.Module):
     r"""
     Applies the Fractional SiLU Variant 1 function:
