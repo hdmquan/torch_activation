@@ -79,14 +79,27 @@ class MyActivation(BaseActivation):
         >>> x = torch.randn(2)
         >>> output = m(x)
     '''
-    def __init__(self, inplace=False, **kwargs):
+    def __init__(self, a:float = 1.0, inplace=False, **kwargs):
         super().__init__(inplace, **kwargs)
+        self.a = a
 
     def _forward(self, x):
-        return x * 2
+        return x * 2 + self.a
 
     def _forward_inplace(self, x):
         x *= 2
+        return x + self.a
+
+# At the end of file
+if __name__ == "__main__":
+    from torch_activation.utils import plot_activation
+    activation_params = {
+        "MyActivation": {"a": [1, 2, 3]}
+    }
+
+    for activation_name, params in activation_params.items():
+        activation_class = globals()[activation_name]
+        plot_activation(activation_class, params)
 ```
 
 ### 3. Testing

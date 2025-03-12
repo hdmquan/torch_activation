@@ -43,11 +43,9 @@ class Net(nn.Module):
         return self.net(x)
 ```
 
-Activation functions can be imported directly from the package, such as `torch_activation.CoLU`, or from submodules, such as `torch_activation.non_linear.CoLU`.
+Activation functions can be imported directly from the package, such as `torch_activation.CoLU`, or from submodules, such as `torch_activation.classical.CoLU` or `torch_activation.classical.sigmoid_weighted.CoLU`.
 
-For a comprehensive list of available functions, please refer to the [LIST_OF_FUNCTION](LIST_OF_FUNCTION.md) file.
-
-To learn more about usage, please refer to [Documentation](https://torch-activation.readthedocs.io)
+To learn more about usage and the comprehended list of available functions, please refer to [Documentation](https://torch-activation.readthedocs.io)
 
 We hope you find PyTorch Activations useful for your experimentation and model development. Enjoy exploring different activation functions!
 
