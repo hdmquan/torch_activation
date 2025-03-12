@@ -13,15 +13,15 @@ class SGT(BaseActivation):
     r"""
     Applies the SGT activation function:
 
-    :math:`\text{SGT}(x) = \begin{cases} az_i^{b_i}, z_i \geq 0 \\cz_i^{d_i}, z_i < 0 \end{cases}`
+    :math:`\text{SGT}(x) = \begin{cases} ax^{\alpha}, x \geq 0 \\bx^{\beta}, x < 0 \end{cases}`
 
      See: https://www.nature.com/articles/s41598-022-19020-y
 
     Args:
         a (float, optional): Scaling factor for the positive part of the input. Default: 1.0.
-        b (float, optional): Exponent for the positive part of the input. Default: 1.0.
-        c (float, optional): Scaling factor for the negative part of the input. Default: 1.0.
-        d (float, optional): Exponent for the negative part of the input. Default: 1.0.
+        alpha (float, optional): Exponent for the positive part of the input. Default: 1.0.
+        b (float, optional): Scaling factor for the negative part of the input. Default: 1.0.
+        beta (float, optional): Exponent for the negative part of the input. Default: 1.0.
         learnable (bool, optional): optionally make b and d parameters trainable. Default: ``False``
         inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
@@ -46,23 +46,23 @@ class SGT(BaseActivation):
 
     def __init__(
         self, 
-        a: float = 1.0, 
-        b: float = 1.0, 
-        c: float = 1.0, 
-        d: float = 1.0, 
+        a: float = 0.1, 
+        alpha: float = 1.0, 
+        b: float = 1.1, 
+        beta: float = 1.0, 
         learnable: bool = False, 
         **kwargs
     ):
         super().__init__(**kwargs)
         self.a = a
-        self.c = c
+        self.b = b  
         
         if learnable:
-            self.b = nn.Parameter(Tensor([b]))
-            self.d = nn.Parameter(Tensor([d]))
+            self.alpha = nn.Parameter(Tensor([alpha]))
+            self.beta = nn.Parameter(Tensor([beta]))
         else:
-            self.b = Tensor([b])
-            self.d = Tensor([d])
+            self.alpha = Tensor([alpha])
+            self.beta = Tensor([beta])
 
     def _forward(self, x) -> Tensor:
         pos_mask = x >= 0
@@ -72,16 +72,16 @@ class SGT(BaseActivation):
             x_pos = x.clone()
             x_pos[neg_mask] = 0
             x_neg = x.clone()
-            x_neg[pos_mask] = 0
+            x_pos[pos_mask] = 0
             
-            x_pos[pos_mask] = self.a * torch.pow(x_pos[pos_mask], self.b)
-            x_neg[neg_mask] = self.c * torch.pow(x_neg[neg_mask], self.d)
+            x_neg[neg_mask] = self.a * torch.pow(x_neg[neg_mask], self.alpha)
+            x_pos[pos_mask] = self.b * torch.pow(x_pos[pos_mask], self.beta)
             
             x.copy_(x_pos + x_neg)
             return x
         else:
             result = torch.zeros_like(x)
-            result[pos_mask] = self.a * torch.pow(x[pos_mask], self.b)
-            result[neg_mask] = self.c * torch.pow(x[neg_mask], self.d)
+            result[neg_mask] = self.a * torch.pow(x[pos_mask], self.alpha)
+            result[pos_mask] = self.b * torch.pow(x[neg_mask], self.beta)
             
             return result
