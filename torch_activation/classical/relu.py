@@ -1,12 +1,13 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+from torch_activation.base import BaseActivation
 
 from torch import Tensor
 from torch_activation import register_activation
 
 @register_activation
-class ReLU(nn.Module):
+class ReLU(BaseActivation):
     r"""
     Applies the Rectified Linear Unit activation function.
 
@@ -27,17 +28,17 @@ class ReLU(nn.Module):
         >>> x = torch.randn(2)
         >>> m(x)
     """
-    def __init__(self, inplace: bool = False):
+    def __init__(self, **kwargs):
         super().__init__()
-        self.inplace = inplace
-    def forward(self, x: Tensor) -> Tensor:
+        
+    def _forward(self, x: Tensor) -> Tensor:
         if self.inplace:
             return F.relu_(x)
         else:
             return F.relu(x)
 
 @register_activation    
-class SReLU(nn.Module):
+class SReLU(BaseActivation):
     r"""
     A Shifted ReLU is a simple translation of a ReLU and is defined as:
 
@@ -58,18 +59,18 @@ class SReLU(nn.Module):
     .. image:: ../images/activation_images/SReLU.png
     """
 
-    def __init__(self, inplace: bool = False):
+    def __init__(self, **kwargs):
         super().__init__()
-        self.inplace = inplace
+        
 
-    def forward(self, x: Tensor) -> Tensor:
+    def _forward(self, x: Tensor) -> Tensor:
         if self.inplace:
             return F.relu_(x - 1.0)
         else:
             return F.relu(x - 1.0)
 
 @register_activation
-class LReLU(nn.Module):
+class LReLU(BaseActivation):
     r"""
     Applies the Leaky ReLU activation function.
 
@@ -94,19 +95,19 @@ class LReLU(nn.Module):
         >>> x = torch.randn(2)
         >>> m(x)
     """
-    def __init__(self, inplace: bool = False, alpha: float = 0.01):
+    def __init__(self, alpha: float = 0.01, **kwargs):
         super().__init__()
-        self.inplace = inplace
+        
         self.alpha = alpha
 
-    def forward(self, x: Tensor) -> Tensor:
+    def _forward(self, x: Tensor) -> Tensor:
         if self.inplace:
             return F.leaky_relu_(x, negative_slope=self.alpha)
         else:
             return F.leaky_relu(x, negative_slope=self.alpha)
         
 @register_activation
-class VLReLU(nn.Module):
+class VLReLU(BaseActivation):
     r"""
     Applies the Very Leaky ReLU activation function.
 
@@ -133,12 +134,12 @@ class VLReLU(nn.Module):
         >>> x = torch.randn(2)
         >>> m(x)
     """
-    def __init__(self, inplace: bool = False, alpha: float = 3.0):
+    def __init__(self, alpha: float = 3.0, **kwargs):
         super().__init__()
-        self.inplace = inplace
+        
         self.alpha = alpha
 
-    def forward(self, x: Tensor) -> Tensor:
+    def _forward(self, x: Tensor) -> Tensor:
         if self.inplace:
             return F.leaky_relu_(x, negative_slope=self.alpha)
         else:
@@ -146,7 +147,7 @@ class VLReLU(nn.Module):
         
 
 @register_activation
-class RReLU(nn.Module):
+class RReLU(BaseActivation):
     r"""
     Applies the Randomized Leaky ReLU activation function:
 
@@ -185,20 +186,21 @@ class RReLU(nn.Module):
         >>> x = torch.randn(2)
         >>> m(x)
     """
-    def __init__(self, inplace: bool = False, lower: float = 0.125, upper: float = 0.333):
-        self.inplace = inplace
+    def __init__(self, lower: float = 0.125, upper: float = 0.333):
+        
         self.lower = lower
         self.upper = upper
 
-    def forward(self, x: Tensor) -> Tensor:
+    def _forward(self, x: Tensor) -> Tensor:
         if self.inplace:
             return F.leaky_relu_(x, negative_slope=torch.rand(x.shape).uniform_(self.lower, self.upper))
         else:
             return F.leaky_relu(x, negative_slope=torch.rand(x.shape).uniform_(self.lower, self.upper))
         
 
+# FIXME: Does not pass test
 @register_activation
-class OLReLU(nn.Module):
+class OLReLU(BaseActivation):
     r"""
     Applies the Optimized Leaky ReLU (OLReLU) activation function:
 
@@ -231,24 +233,24 @@ class OLReLU(nn.Module):
         >>> x = torch.randn(2)
         >>> m(x)
     """
-    def __init__(self, lower: float = 0.125, upper: float = 0.333, inplace: bool = False):
-        super(OLReLU, self).__init__()
+    def __init__(self, lower: float = 0.125, upper: float = 0.333, **kwargs):
+        super().__init__(**kwargs)
         self.lower = lower
         self.upper = upper
-        self.inplace = inplace
+        
         
         # Calculate alpha according to the formula in the paper
         self.alpha = (upper + lower) / (upper - lower)
         self.negative_slope = torch.exp(-self.alpha)
 
-    def forward(self, x: Tensor) -> Tensor:
+    def _forward(self, x: Tensor) -> Tensor:
         if self.inplace:
             return F.leaky_relu_(x, negative_slope=self.negative_slope)
         else:
             return F.leaky_relu(x, negative_slope=self.negative_slope)
 
 @register_activation
-class SoftsignRReLU(nn.Module):
+class SoftsignRReLU(BaseActivation):
     r"""
     The Softsign Randomized Leaky ReLU (S-RReLU) is defined as:
 
@@ -273,14 +275,14 @@ class SoftsignRReLU(nn.Module):
         u (float, optional): Upper bound of the uniform distribution (default: 1/3).
     """
 
-    def __init__(self, l: float = 1 / 8, u: float = 1 / 3):
+    def __init__(self, l: float = 1 / 8, u: float = 1 / 3, **kwargs):
         super().__init__()
         assert 0 < l < u, "Ensure 0 < l < u for the uniform distribution bounds."
         self.l = l
         self.u = u
 
     # TODO: There should be a better way to implement this
-    def forward(self, x: Tensor) -> Tensor:
+    def _forward(self, x: Tensor) -> Tensor:
         # Sample a_i from U(l, u)
         a = torch.empty_like(x).uniform_(self.l, self.u)
 
@@ -291,7 +293,7 @@ class SoftsignRReLU(nn.Module):
 
 
 @register_activation
-class SlReLU(nn.Module):
+class SlReLU(BaseActivation):
     r"""
     The Sloped ReLU (SlReLU) is defined as:
 
@@ -318,21 +320,18 @@ class SlReLU(nn.Module):
 
     """
 
-    def __init__(self, alpha: float = 10.0, inplace: bool = False):
+    def __init__(self, alpha: float = 10.0, **kwargs):
         super().__init__()
-        self.inplace = inplace
+        
         self.alpha = alpha
 
-        if inplace:
-            raise NotImplementedError
-
-    def forward(self, x: Tensor) -> Tensor:
+    def _forward(self, x: Tensor) -> Tensor:
         # TODO: Performance
         return torch.clamp(self.alpha * x, min=0)
 
 
 @register_activation
-class CReLU(nn.Module):
+class CReLU(BaseActivation):
     r"""
     Applies the Concatenated Rectified Linear Unit activation function.
 
@@ -363,16 +362,16 @@ class CReLU(nn.Module):
         >>> m(x)
     """
 
-    def __init__(self, dim: int = 0):
-        super(CReLU, self).__init__()
+    def __init__(self, dim: int = 0, **kwargs):
+        super().__init__(**kwargs)
         self.dim = dim
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         return F.relu(torch.cat((x, -x), dim=self.dim))
 
 
 @register_activation
-class ReLUN(nn.Module):
+class ReLUN(BaseActivation):
     r"""Applies the element-wise function:
 
     :math:`\text{ReLUN}(x) = \min(\text{ReLU}(x), n)`
@@ -404,12 +403,12 @@ class ReLUN(nn.Module):
     """
 
     # TODO: Default to RELU6
-    def __init__(self, n: float = 1.0, inplace: bool = False):
-        super(ReLUN, self).__init__()
+    def __init__(self, n: float = 1.0, **kwargs):
+        super().__init__(**kwargs)
         self.n = nn.Parameter(Tensor([n]))
-        self.inplace = inplace
+        
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         if self.inplace:
             return x.clamp_(0, self.n.item())
         else:
@@ -417,7 +416,7 @@ class ReLUN(nn.Module):
 
 
 @register_activation
-class SquaredReLU(nn.Module):
+class SquaredReLU(BaseActivation):
     r"""
     Applies the element-wise function:
 
@@ -447,11 +446,11 @@ class SquaredReLU(nn.Module):
         >>> m(x)
     """
 
-    def __init__(self, inplace: bool = False):
+    def __init__(self, **kwargs):
         super().__init__()
-        self.inplace = inplace
+        
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         if self.inplace:
             return F.relu_(x).pow_(2)
         else:
@@ -459,7 +458,7 @@ class SquaredReLU(nn.Module):
 
 
 @register_activation
-class SineReLU(nn.Module):
+class SineReLU(BaseActivation):
     r"""
     Applies the element-wise function:
 
@@ -493,12 +492,12 @@ class SineReLU(nn.Module):
         >>> m(x)
     """
 
-    def __init__(self, a: float = 1.0, inplace: bool = False):
+    def __init__(self, a: float = 1.0, **kwargs):
         super().__init__()
         self.a = a
-        self.inplace = inplace
+        
 
-    def forward(self, x: Tensor) -> Tensor:
+    def _forward(self, x: Tensor) -> Tensor:
         if self.inplace:
             return x.where(x >= 0, x.mul_(self.a * (torch.sin(x) - torch.cos(x))))
         else:
@@ -506,7 +505,7 @@ class SineReLU(nn.Module):
 
 
 @register_activation
-class Minsin(nn.Module):
+class Minsin(BaseActivation):
     r"""
     Applies the element-wise function:
 
@@ -531,11 +530,11 @@ class Minsin(nn.Module):
         >>> output = m(x)
     """
 
-    def __init__(self, inplace: bool = False):
-        super(Minsin, self).__init__()
-        self.inplace = inplace
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        
 
-    def forward(self, x: Tensor) -> Tensor:
+    def _forward(self, x: Tensor) -> Tensor:
         if self.inplace:
             return x.where(x >= 0, x.sin_())
         else:
@@ -543,7 +542,7 @@ class Minsin(nn.Module):
 
 
 @register_activation
-class VLU(nn.Module):
+class VLU(BaseActivation):
     r"""
     Applies the element-wise function:
 
@@ -570,20 +569,17 @@ class VLU(nn.Module):
         >>> output = m(x)
     """
 
-    def __init__(self, a: float = 1.0, b: float = 1.0, inplace: bool = False):
+    def __init__(self, a: float = 1.0, b: float = 1.0, **kwargs):
         super().__init__()
         self.a = a
         self.b = b
-        self.inplace = inplace
+        
 
-        if inplace:
-            raise NotImplementedError
-
-    def forward(self, x: Tensor) -> Tensor:
+    def _forward(self, x: Tensor) -> Tensor:
         return torch.relu(x) + self.a * torch.sin(self.b * x)
 
 @register_activation
-class LReLU(nn.Module):
+class LReLU(BaseActivation):
     r"""
     Applies the Leaky ReLU activation function.
 
@@ -619,19 +615,19 @@ class LReLU(nn.Module):
         >>> m(x)
     """
 
-    def __init__(self, a: float = 100.0, inplace: bool = False):
+    def __init__(self, a: float = 100.0, **kwargs):
         super().__init__()
         self.a = a
-        self.inplace = inplace
+        
 
-    def forward(self, x: Tensor) -> Tensor:
+    def _forward(self, x: Tensor) -> Tensor:
         if self.inplace:
             return x.where(x >= 0, x.div_(self.a))
         else:
             return torch.where(x >= 0, x, x / self.a)
 
 
-class OLReLU(nn.Module):
+class OLReLU(BaseActivation):
     r"""
     Applies the Optimized Leaky ReLU activation function.
 
@@ -668,13 +664,13 @@ class OLReLU(nn.Module):
         >>> m(x)
     """
 
-    def __init__(self, l: float = 3.0, u: float = 8.0, inplace: bool = False):
+    def __init__(self, l: float = 3.0, u: float = 8.0, **kwargs):
         super().__init__()
         assert l < u, "Lower bound must be less than upper bound"
         self.a = (u + l) / (u - l)
-        self.inplace = inplace
+        
 
-    def forward(self, x: Tensor) -> Tensor:
+    def _forward(self, x: Tensor) -> Tensor:
         if self.inplace:
             return x.where(x >= 0, x.mul_(torch.exp(-self.a)))
         else:
@@ -682,7 +678,7 @@ class OLReLU(nn.Module):
 
 
 @register_activation
-class RReLU(nn.Module):
+class RReLU(BaseActivation):
     r"""
     Applies the Randomized Leaky ReLU activation function.
 
@@ -720,14 +716,14 @@ class RReLU(nn.Module):
         >>> m(x)
     """
 
-    def __init__(self, l: float = 3.0, u: float = 8.0, inplace: bool = False):
+    def __init__(self, l: float = 3.0, u: float = 8.0, **kwargs):
         super().__init__()
         assert 0 < l < u, "Ensure 0 < l < u for the uniform distribution bounds."
         self.l = l
         self.u = u
-        self.inplace = inplace
+        
 
-    def forward(self, x: Tensor) -> Tensor:
+    def _forward(self, x: Tensor) -> Tensor:
         # Sample a_i from U(l, u)
         a = torch.empty_like(x).uniform_(self.l, self.u)
         
@@ -738,7 +734,7 @@ class RReLU(nn.Module):
 
 
 @register_activation
-class SRReLU(nn.Module):
+class SRReLU(BaseActivation):
     r"""
     The Softsign Randomized Leaky ReLU (S-RReLU) is defined as:
 
@@ -776,16 +772,13 @@ class SRReLU(nn.Module):
         >>> m(x)
     """
 
-    def __init__(self, l: float = 1/8, u: float = 1/3, inplace: bool = False):
+    def __init__(self, l: float = 1/8, u: float = 1/3, **kwargs):
         super().__init__()
         assert 0 < l < u, "Ensure 0 < l < u for the uniform distribution bounds."
         self.l = l
         self.u = u
 
-        if inplace:
-            raise NotImplementedError
-
-    def forward(self, x: Tensor) -> Tensor:
+    def _forward(self, x: Tensor) -> Tensor:
         a = torch.empty_like(x).uniform_(self.l, self.u)
 
         frac = 1 / torch.square(1 + x)
@@ -794,7 +787,7 @@ class SRReLU(nn.Module):
     
     
 @register_activation
-class NReLU(nn.Module):
+class NReLU(BaseActivation):
     r"""
     Applies the Noisy ReLU (NReLU) activation function as proposed in [221].
 
@@ -829,11 +822,11 @@ class NReLU(nn.Module):
         >>> m(x)
     """
 
-    def __init__(self, inplace: bool = False):
+    def __init__(self, **kwargs):
         super().__init__()
-        self.inplace = inplace
+        
 
-    def forward(self, x: Tensor) -> Tensor:
+    def _forward(self, x: Tensor) -> Tensor:
         with torch.no_grad():
             std = torch.std(x)
         
@@ -848,7 +841,7 @@ class NReLU(nn.Module):
         
 
 # TODO: Really really check this again. Should be correct, but I'm not sure.
-class SCAA(nn.Module):
+class SCAA(BaseActivation):
     r"""
     Applies the Spatial Context-Aware Activation function:
 
@@ -872,7 +865,7 @@ class SCAA(nn.Module):
         >>> output = m(x)
     """
 
-    def __init__(self, channels: int, kernel_size: int = 3, padding: int = 1):
+    def __init__(self, channels: int, kernel_size: int = 3, padding: int = 1, **kwargs):
         super().__init__()
         self.dw_conv = nn.Conv2d(
             channels, 
@@ -885,12 +878,12 @@ class SCAA(nn.Module):
         # Initialize weights
         nn.init.kaiming_normal_(self.dw_conv.weight, mode='fan_out', nonlinearity='relu')
 
-    def forward(self, x: Tensor) -> Tensor:
+    def _forward(self, x: Tensor) -> Tensor:
         return torch.maximum(x, self.dw_conv(x))
 
 
 @register_activation
-class RTReLU(nn.Module):
+class RTReLU(BaseActivation):
     r"""
     Applies the Randomly Translational ReLU activation function:
 
@@ -926,12 +919,12 @@ class RTReLU(nn.Module):
         >>> m(x)
     """
 
-    def __init__(self, sigma: float = 0.75, inplace: bool = False):
+    def __init__(self, sigma: float = 0.75, **kwargs):
         super().__init__()
         self.sigma = sigma
-        self.inplace = inplace
+        
 
-    def forward(self, x: Tensor) -> Tensor:
+    def _forward(self, x: Tensor) -> Tensor:
         # Generate random translations from a normal distribution
         a = torch.randn_like(x) * self.sigma
         
@@ -943,7 +936,7 @@ class RTReLU(nn.Module):
 
 
 @register_activation
-class NLReLU(nn.Module):
+class NLReLU(BaseActivation):
     r"""
     Applies the Natural-Logarithm-ReLU activation function:
 
@@ -972,20 +965,17 @@ class NLReLU(nn.Module):
         >>> m(x)
     """
 
-    def __init__(self, a: float = 1.0, inplace: bool = False):
+    def __init__(self, a: float = 1.0, **kwargs):
         super().__init__()
         self.a = a
-        self.inplace = inplace
+        
 
-        if inplace:
-            raise NotImplementedError
-
-    def forward(self, x: Tensor) -> Tensor:
+    def _forward(self, x: Tensor) -> Tensor:
         return torch.log(self.a * F.relu(x) + 1.0)
 
 
 @register_activation
-class SLU(nn.Module):
+class SLU(BaseActivation):
     r"""
     Applies the Softplus Linear Unit activation function:
 
@@ -1031,12 +1021,12 @@ class SLU(nn.Module):
         >>> m(x)
     """
 
-    def __init__(self, inplace: bool = False):
+    def __init__(self, **kwargs):
         super().__init__()
         self.c = 2 * torch.log(torch.tensor(2.0))
-        self.inplace = inplace
+        
 
-    def forward(self, x: Tensor) -> Tensor:
+    def _forward(self, x: Tensor) -> Tensor:
         if self.inplace:
             neg_mask = x < 0
             x[neg_mask] = 2 * torch.log((torch.exp(x[neg_mask]) + 1) / 2)
@@ -1051,7 +1041,7 @@ class SLU(nn.Module):
 
 
 @register_activation
-class ReSP(nn.Module):
+class ReSP(BaseActivation):
     r"""
     Applies the Rectified Softplus activation function:
 
@@ -1087,13 +1077,13 @@ class ReSP(nn.Module):
         >>> m(x)
     """
 
-    def __init__(self, a: float = 1.7, inplace: bool = False):
+    def __init__(self, a: float = 1.7, **kwargs):
         super().__init__()
         self.a = a
         self.ln2 = torch.log(torch.tensor(2.0))
-        self.inplace = inplace
+        
 
-    def forward(self, x: Tensor) -> Tensor:
+    def _forward(self, x: Tensor) -> Tensor:
         if self.inplace:
             neg_mask = x < 0
             x[~neg_mask] = self.a * x[~neg_mask] + self.ln2
@@ -1108,7 +1098,7 @@ class ReSP(nn.Module):
 
 
 @register_activation
-class PReNU(nn.Module):
+class PReNU(BaseActivation):
     r"""
     Applies the Parametric Rectified Non-linear Unit activation function:
 
@@ -1142,22 +1132,20 @@ class PReNU(nn.Module):
         >>> m(x)
     """
 
-    def __init__(self, a: float = 0.25, inplace: bool = False):
+    def __init__(self, a: float = 0.25, **kwargs):
         super().__init__()
         self.a = a
-        self.inplace = inplace
+        
 
-        if inplace:
-            raise NotImplementedError
 
-    def forward(self, x: Tensor) -> Tensor:
+    def _forward(self, x: Tensor) -> Tensor:
         # TODO: The mathematical definition does not have this step.
         pos_x = F.relu(x)  # Un-negative first
         return pos_x - self.a * torch.log(pos_x + 1)
 
 
 @register_activation
-class BReLU(nn.Module):
+class BReLU(BaseActivation):
     r"""
     Applies the Bounded ReLU activation function:
 
@@ -1194,12 +1182,12 @@ class BReLU(nn.Module):
         >>> m(x)
     """
 
-    def __init__(self, a: float = 1.0, inplace: bool = False):
+    def __init__(self, a: float = 1.0, **kwargs):
         super().__init__()
         self.a = a
-        self.inplace = inplace
+        
 
-    def forward(self, x: Tensor) -> Tensor:
+    def _forward(self, x: Tensor) -> Tensor:
         if self.inplace:
             return x.clamp_(0, self.a)
         else:
@@ -1208,7 +1196,7 @@ class BReLU(nn.Module):
 
 # NOTE: Hm... version? 
 @register_activation
-class HardSigmoid(nn.Module):
+class HardSigmoid(BaseActivation):
     r"""
     Applies the Hard Sigmoid activation function:
 
@@ -1241,13 +1229,13 @@ class HardSigmoid(nn.Module):
         >>> m(x)
     """
 
-    def __init__(self, version: int = 1, inplace: bool = False):
+    def __init__(self, version: int = 1, **kwargs):
         super().__init__()
         assert version in [1, 2], "version must be 1 or 2"
         self.version = version
-        self.inplace = inplace
+        
 
-    def forward(self, x: Tensor) -> Tensor:
+    def _forward(self, x: Tensor) -> Tensor:
         if self.version == 1:
             if self.inplace:
                 x.add_(1).div_(2).clamp_(0, 1)
@@ -1263,7 +1251,7 @@ class HardSigmoid(nn.Module):
 
 
 @register_activation
-class HardTanh(nn.Module):
+class HardTanh(BaseActivation):
     r"""
     Applies the HardTanh activation function:
 
@@ -1301,13 +1289,13 @@ class HardTanh(nn.Module):
         >>> m(x)
     """
 
-    def __init__(self, a: float = -1.0, b: float = 11.0, inplace: bool = False):
+    def __init__(self, a: float = -1.0, b: float = 11.0, **kwargs):
         super().__init__()
         self.a = a
         self.b = b
-        self.inplace = inplace
+        
 
-    def forward(self, x: Tensor) -> Tensor:
+    def _forward(self, x: Tensor) -> Tensor:
         if self.inplace:
             return x.clamp_(self.a, self.b)
         else:
@@ -1315,7 +1303,7 @@ class HardTanh(nn.Module):
 
 
 @register_activation
-class SvHardTanh(nn.Module):
+class SvHardTanh(BaseActivation):
     r"""
     Applies the Shifted HardTanh activation function:
 
@@ -1350,12 +1338,12 @@ class SvHardTanh(nn.Module):
         >>> m(x)
     """
 
-    def __init__(self, a: float = 0.0, inplace: bool = False):
+    def __init__(self, a: float = 0.0, **kwargs):
         super().__init__()
         self.a = a
-        self.inplace = inplace
+        
 
-    def forward(self, x: Tensor) -> Tensor:
+    def _forward(self, x: Tensor) -> Tensor:
         if self.inplace:
             x.clamp_(-1, 1).add_(self.a)
             return x
@@ -1363,7 +1351,7 @@ class SvHardTanh(nn.Module):
             return torch.clamp(x, -1, 1) + self.a
         
 @register_activation
-class ShHardTanh(nn.Module):
+class ShHardTanh(BaseActivation):
     r"""
     Applies the Shifted HardTanh activation function:
 
@@ -1398,12 +1386,12 @@ class ShHardTanh(nn.Module):
         >>> m(x)
     """
 
-    def __init__(self, a: float = 0.0, inplace: bool = False):
+    def __init__(self, a: float = 0.0, **kwargs):
         super().__init__()
         self.a = a
-        self.inplace = inplace
+        
 
-    def forward(self, x: Tensor) -> Tensor:
+    def _forward(self, x: Tensor) -> Tensor:
         if self.inplace:
             return x.clamp_(-1 - self.a, 1 - self.a).clamp_(-1, 1)
         else:
@@ -1411,7 +1399,7 @@ class ShHardTanh(nn.Module):
 
 
 @register_activation
-class HardSwish(nn.Module):
+class HardSwish(BaseActivation):
     r"""
     Applies the Hard Swish activation function:
 
@@ -1445,11 +1433,11 @@ class HardSwish(nn.Module):
         >>> m(x)
     """
 
-    def __init__(self, inplace: bool = False):
+    def __init__(self, **kwargs):
         super().__init__()
-        self.inplace = inplace
+        
 
-    def forward(self, x: Tensor) -> Tensor:
+    def _forward(self, x: Tensor) -> Tensor:
         if self.inplace:
             inner = x.add_(3).clamp_(-18, 18).div_(6)
             x.mul_(inner)
@@ -1460,7 +1448,7 @@ class HardSwish(nn.Module):
 
 
 @register_activation
-class TRec(nn.Module):
+class TRec(BaseActivation):
     r"""
     Applies the Truncated Rectified activation function:
 
@@ -1494,12 +1482,12 @@ class TRec(nn.Module):
         >>> m(x)
     """
 
-    def __init__(self, a: float = 1.0, inplace: bool = False):
+    def __init__(self, a: float = 1.0, **kwargs):
         super().__init__()
         self.a = a
-        self.inplace = inplace
+        
 
-    def forward(self, x: Tensor) -> Tensor:
+    def _forward(self, x: Tensor) -> Tensor:
         if self.inplace:
             return x.masked_fill_(x <= self.a, 0)
         else:
@@ -1507,7 +1495,7 @@ class TRec(nn.Module):
 
 
 @register_activation
-class Hardshrink(nn.Module):
+class Hardshrink(BaseActivation):
     r"""
     Applies the Hardshrink activation function:
 
@@ -1544,13 +1532,13 @@ class Hardshrink(nn.Module):
         >>> m(x)
     """
 
-    def __init__(self, a: float = 0.5, inplace: bool = False):
+    def __init__(self, a: float = 0.5, **kwargs):
         super().__init__()
         assert a > 0, "Threshold parameter 'a' must be positive"
         self.a = a
-        self.inplace = inplace
+        
 
-    def forward(self, x: Tensor) -> Tensor:
+    def _forward(self, x: Tensor) -> Tensor:
         if self.inplace:
             mask = (x >= -self.a) & (x <= self.a)
             x.masked_fill_(mask, 0)
@@ -1560,7 +1548,7 @@ class Hardshrink(nn.Module):
 
 
 @register_activation
-class Softshrink(nn.Module):
+class Softshrink(BaseActivation):
     r"""
     Applies the Softshrink activation function:
 
@@ -1597,13 +1585,13 @@ class Softshrink(nn.Module):
         >>> m(x)
     """
 
-    def __init__(self, a: float = 0.5, inplace: bool = False):
+    def __init__(self, a: float = 0.5, **kwargs):
         super().__init__()
         assert a > 0, "Threshold parameter 'a' must be positive"
         self.a = a
-        self.inplace = inplace
+        
 
-    def forward(self, x: Tensor) -> Tensor:
+    def _forward(self, x: Tensor) -> Tensor:
         if self.inplace:
             mask_pos = x > self.a
             mask_neg = x < -self.a
@@ -1626,7 +1614,7 @@ class Softshrink(nn.Module):
 
 
 @register_activation
-class BLReLU(nn.Module):
+class BLReLU(BaseActivation):
     r"""
     Applies the Bounded Leaky ReLU activation function:
 
@@ -1664,14 +1652,14 @@ class BLReLU(nn.Module):
         >>> m(x)
     """
 
-    def __init__(self, a: float = 0.1, b: float = 1.0, inplace: bool = False):
+    def __init__(self, a: float = 0.1, b: float = 1.0, **kwargs):
         super().__init__()
         self.a = a
         self.b = b
         self.c = (1 - a) * b
-        self.inplace = inplace
+        
 
-    def forward(self, x: Tensor) -> Tensor:
+    def _forward(self, x: Tensor) -> Tensor:
         if self.inplace:
             mask_neg = x <= 0
             mask_pos_large = x >= self.b
@@ -1693,7 +1681,7 @@ class BLReLU(nn.Module):
 
 
 @register_activation
-class VReLU(nn.Module):
+class VReLU(BaseActivation):
     r"""
     Applies the V-shaped ReLU activation function:
 
@@ -1726,11 +1714,11 @@ class VReLU(nn.Module):
         >>> m(x)
     """
 
-    def __init__(self, inplace: bool = False):
+    def __init__(self, **kwargs):
         super().__init__()
-        self.inplace = inplace
+        
 
-    def forward(self, x: Tensor) -> Tensor:
+    def _forward(self, x: Tensor) -> Tensor:
         if self.inplace:
             x.abs_()
             return x
@@ -1739,7 +1727,7 @@ class VReLU(nn.Module):
 
 
 @register_activation
-class PanFunction(nn.Module):
+class PanFunction(BaseActivation):
     r"""
     Applies the Pan activation function:
 
@@ -1774,12 +1762,12 @@ class PanFunction(nn.Module):
         >>> m(x)
     """
 
-    def __init__(self, a: float = 1.0, inplace: bool = False):
+    def __init__(self, a: float = 1.0, **kwargs):
         super().__init__()
         self.a = a
-        self.inplace = inplace
+        
 
-    def forward(self, x: Tensor) -> Tensor:
+    def _forward(self, x: Tensor) -> Tensor:
         if self.inplace:
             mask_pos = x >= self.a
             mask_neg = x <= -self.a
@@ -1802,7 +1790,7 @@ class PanFunction(nn.Module):
 
 
 @register_activation
-class AbsLU(nn.Module):
+class AbsLU(BaseActivation):
     r"""
     Applies the Absolute Linear Unit activation function:
 
@@ -1838,13 +1826,13 @@ class AbsLU(nn.Module):
         >>> m(x)
     """
 
-    def __init__(self, a: float = 0.5, inplace: bool = False):
+    def __init__(self, a: float = 0.5, **kwargs):
         super().__init__()
         assert 0 <= a <= 1, "Parameter 'a' must be in the range [0, 1]"
         self.a = a
-        self.inplace = inplace
+        
 
-    def forward(self, x: Tensor) -> Tensor:
+    def _forward(self, x: Tensor) -> Tensor:
         if self.inplace:
             mask_neg = x < 0
             x[mask_neg] = self.a * x[mask_neg].abs_()
@@ -1854,7 +1842,7 @@ class AbsLU(nn.Module):
 
 
 @register_activation
-class MReLU(nn.Module):
+class MReLU(BaseActivation):
     r"""
     Applies the Mirrored Rectified Linear Unit activation function:
 
@@ -1888,11 +1876,11 @@ class MReLU(nn.Module):
         >>> m(x)
     """
 
-    def __init__(self, inplace: bool = False):
+    def __init__(self, **kwargs):
         super().__init__()
-        self.inplace = inplace
+        
 
-    def forward(self, x: Tensor) -> Tensor:
+    def _forward(self, x: Tensor) -> Tensor:
         if self.inplace:
             # Cannot be done fully in-place
             return torch.minimum(F.relu(1 - x), F.relu(1 + x))
@@ -1901,7 +1889,7 @@ class MReLU(nn.Module):
 
 
 @register_activation
-class LSPTLU(nn.Module):
+class LSPTLU(BaseActivation):
     r"""
     Applies the Linear Symmetric Piecewise Triangular Linear Unit activation function:
 
@@ -1937,12 +1925,12 @@ class LSPTLU(nn.Module):
         >>> m(x)
     """
 
-    def __init__(self, a: float = 1.0, inplace: bool = False):
+    def __init__(self, a: float = 1.0, **kwargs):
         super().__init__()
         self.a = a
-        self.inplace = inplace
+        
 
-    def forward(self, x: Tensor) -> Tensor:
+    def _forward(self, x: Tensor) -> Tensor:
         if self.inplace:
             mask_neg = x < 0
             mask_mid = (0 <= x) & (x <= self.a)

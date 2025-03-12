@@ -21,6 +21,36 @@ def split(x: Tensor, dim: int) -> Tuple[Tensor, Tensor]:
     split_size = dim_size // 2
     return torch.split(x, split_size, dim=dim)
 
+def can_be_inplace(func, x):
+    """
+    Check if an activation function can be safely performed in-place.
+    
+    Args:
+        func: The activation function to test
+        x: A sample input tensor
+        
+    Returns:
+        bool: True if the function can be performed in-place, False otherwise
+    """
+    x = x.clone().requires_grad_()
+    y = func(x)
+    grad_outputs = torch.ones_like(y)
+    
+    dy_dx = torch.autograd.grad(y, x, grad_outputs, retain_graph=True, create_graph=True)[0]
+    
+    # If derivatives computed by only x match the above, the function can be in-place
+    try:
+        # Detach to not use y inderivative computation
+        y = y.detach()
+        
+        y_recomputed = func(x)
+        dy_dx_recomputed = torch.autograd.grad(y_recomputed, x, grad_outputs, retain_graph=True)[0]
+        
+        return torch.allclose(dy_dx, dy_dx_recomputed, rtol=1e-4, atol=1e-4)
+        
+    except:  # TODO: Add specific
+        return False
+
 def plot_activation(
     activation: torch.nn.Module,
     params: dict = {},

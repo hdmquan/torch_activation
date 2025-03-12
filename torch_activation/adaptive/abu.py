@@ -1,13 +1,14 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+from torch_activation.base import BaseActivation
 import math
 from torch import Tensor
 
 from torch_activation import register_activation
 
 @register_activation
-class ABU(nn.Module):
+class ABU(BaseActivation):
     r"""
     Applies the Adaptive Blending Unit (ABU) function:
 
@@ -37,8 +38,8 @@ class ABU(nn.Module):
         >>> output = m(x)
     """
 
-    def __init__(self, activation_pool=None, constrain_weights='none', init_weights=None, bias=False, init_bias=0.0):
-        super(ABU, self).__init__()
+    def __init__(self, activation_pool=None, constrain_weights='none', init_weights=None, bias=False, init_bias=0.0, **kwargs):
+        super().__init__(**kwargs)
         
         # Default activation pool if none provided
         if activation_pool is None:
@@ -61,7 +62,7 @@ class ABU(nn.Module):
         if bias:
             self.bias_param = nn.Parameter(torch.tensor(init_bias))
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         # Apply constraint to weights if needed
         if self.constrain_weights == 'sum_to_one':
             weights = self.weights / (torch.sum(self.weights) + 1e-6)
@@ -88,7 +89,7 @@ class ABU(nn.Module):
 
 
 @register_activation
-class MoGU(nn.Module):
+class MoGU(BaseActivation):
     r"""
     Applies the Mixture of Gaussian Unit (MoGU) function:
 
@@ -113,8 +114,8 @@ class MoGU(nn.Module):
         >>> output = m(x)
     """
 
-    def __init__(self, n_gaussians=3, init_a=1.0, init_sigma=1.0, init_mu_spread=2.0):
-        super(MoGU, self).__init__()
+    def __init__(self, n_gaussians=3, init_a=1.0, init_sigma=1.0, init_mu_spread=2.0, **kwargs):
+        super().__init__(**kwargs)
         self.n_gaussians = n_gaussians
         
         # Initialize trainable parameters
@@ -128,7 +129,7 @@ class MoGU(nn.Module):
         mu_init = torch.linspace(-init_mu_spread, init_mu_spread, n_gaussians)
         self.mu = nn.Parameter(mu_init)
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         # Ensure sigma is positive using softplus
         sigma = F.softplus(self.sigma_raw)
         
@@ -146,7 +147,7 @@ class MoGU(nn.Module):
 
 
 @register_activation
-class FSA(nn.Module):
+class FSA(BaseActivation):
     r"""
     Applies the Fourier Series Activation (FSA) function:
 
@@ -173,8 +174,8 @@ class FSA(nn.Module):
         >>> output = m(x)
     """
 
-    def __init__(self, rank=5, init_a=0.0, init_b=0.1, init_c=0.1, init_d=1.0):
-        super(FSA, self).__init__()
+    def __init__(self, rank=5, init_a=0.0, init_b=0.1, init_c=0.1, init_d=1.0, **kwargs):
+        super().__init__(**kwargs)
         self.rank = rank
         
         # Initialize trainable parameters
@@ -183,7 +184,7 @@ class FSA(nn.Module):
         self.c = nn.Parameter(torch.full((rank,), init_c))
         self.d = nn.Parameter(torch.tensor([init_d]))
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         result = self.a.expand_as(x)
         
         for j in range(1, self.rank + 1):
@@ -197,7 +198,7 @@ class FSA(nn.Module):
 
 
 @register_activation
-class TCA(nn.Module):
+class TCA(BaseActivation):
     r"""
     Applies the Trainable Compound Activation (TCA) function:
 
@@ -223,8 +224,8 @@ class TCA(nn.Module):
         >>> output = m(x)
     """
 
-    def __init__(self, activation_pool=None, init_a=0.0, init_b=0.0):
-        super(TCA, self).__init__()
+    def __init__(self, activation_pool=None, init_a=0.0, init_b=0.0, **kwargs):
+        super().__init__(**kwargs)
         
         # Default activation pool if none provided
         if activation_pool is None:
@@ -237,7 +238,7 @@ class TCA(nn.Module):
         self.a = nn.Parameter(torch.full((self.k,), init_a))
         self.b = nn.Parameter(torch.full((self.k,), init_b))
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         result = 0
         for j, activation in enumerate(self.activation_pool):
             # Apply horizontal scaling and translation
@@ -251,7 +252,7 @@ class TCA(nn.Module):
 
 
 @register_activation
-class TCAv2(nn.Module):
+class TCAv2(BaseActivation):
     r"""
     Applies the Trainable Compound Activation Variant 2 (TCAv2) function:
 
@@ -278,7 +279,7 @@ class TCAv2(nn.Module):
         >>> output = m(x)
     """
 
-    def __init__(self, activation_pool=None, init_a=0.0, init_b=0.0, init_c=0.0):
+    def __init__(self, activation_pool=None, init_a=0.0, init_b=0.0, init_c=0.0, **kwargs):
         super(TCAv2, self).__init__()
         
         # Default activation pool if none provided
@@ -293,7 +294,7 @@ class TCAv2(nn.Module):
         self.b = nn.Parameter(torch.full((self.k,), init_b))
         self.c = nn.Parameter(torch.full((self.k,), init_c))
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         numerator = 0
         denominator = torch.sum(torch.exp(self.a))
         
@@ -309,7 +310,7 @@ class TCAv2(nn.Module):
 
 
 @register_activation
-class APAF(nn.Module):
+class APAF(BaseActivation):
     r"""
     Applies the Average of a Pool of Activation Functions (APAF):
 
@@ -333,8 +334,8 @@ class APAF(nn.Module):
         >>> output = m(x)
     """
 
-    def __init__(self, activation_pool=None, init_weights=1.0):
-        super(APAF, self).__init__()
+    def __init__(self, activation_pool=None, init_weights=1.0, **kwargs):
+        super().__init__(**kwargs)
         
         # Default activation pool if none provided
         if activation_pool is None:
@@ -346,7 +347,7 @@ class APAF(nn.Module):
         # Initialize trainable parameters
         self.weights = nn.Parameter(torch.full((self.n,), init_weights))
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         numerator = 0
         denominator = torch.sum(self.weights)
         
@@ -359,7 +360,7 @@ class APAF(nn.Module):
 
 
 @register_activation
-class GABU(nn.Module):
+class GABU(BaseActivation):
     r"""
     Applies the Gating Adaptive Blending Unit (GABU) function:
 
@@ -384,8 +385,8 @@ class GABU(nn.Module):
         >>> output = m(x)
     """
 
-    def __init__(self, activation_pool=None, init_gates=0.0):
-        super(GABU, self).__init__()
+    def __init__(self, activation_pool=None, init_gates=0.0, **kwargs):
+        super().__init__(**kwargs)
         
         # Default activation pool if none provided
         if activation_pool is None:
@@ -397,7 +398,7 @@ class GABU(nn.Module):
         # Initialize trainable parameters
         self.gates = nn.Parameter(torch.full((self.n,), init_gates))
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         result = 0
         
         for j, activation in enumerate(self.activation_pool):
@@ -409,7 +410,7 @@ class GABU(nn.Module):
 
 
 @register_activation
-class DKNN(nn.Module):
+class DKNN(BaseActivation):
     r"""
     Applies the Deep Kronecker Neural Network (DKNN) activation function:
 
@@ -435,8 +436,8 @@ class DKNN(nn.Module):
         >>> output = m(x)
     """
 
-    def __init__(self, activation_pool=None, init_a=1.0, init_b=1.0):
-        super(DKNN, self).__init__()
+    def __init__(self, activation_pool=None, init_a=1.0, init_b=1.0, **kwargs):
+        super().__init__(**kwargs)
         
         # Default activation pool if none provided
         if activation_pool is None:
@@ -449,7 +450,7 @@ class DKNN(nn.Module):
         self.a = nn.Parameter(torch.full((self.n,), init_a))
         self.b = nn.Parameter(torch.full((self.n,), init_b))
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         result = 0
         
         for j, activation in enumerate(self.activation_pool):
@@ -460,7 +461,7 @@ class DKNN(nn.Module):
 
 
 @register_activation
-class RowdyActivation(nn.Module):
+class RowdyActivation(BaseActivation):
     r"""
     Applies the Rowdy Activation function, a special case of DKNN:
 
@@ -487,8 +488,8 @@ class RowdyActivation(nn.Module):
         >>> output = m(x)
     """
 
-    def __init__(self, base_activation=None, n_terms=5, scaling_factor=1.0, init_a=0.1, use_cos=False):
-        super(RowdyActivation, self).__init__()
+    def __init__(self, base_activation=None, n_terms=5, scaling_factor=1.0, init_a=0.1, use_cos=False, **kwargs):
+        super().__init__(**kwargs)
         
         if base_activation is None:
             base_activation = nn.ReLU()
@@ -501,7 +502,7 @@ class RowdyActivation(nn.Module):
         # Initialize trainable parameters
         self.a = nn.Parameter(torch.full((n_terms,), init_a))
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         result = self.base_activation(x)
         
         for j in range(1, self.n_terms + 1):
@@ -515,7 +516,7 @@ class RowdyActivation(nn.Module):
 
 
 @register_activation
-class SLAF(nn.Module):
+class SLAF(BaseActivation):
     r"""
     Applies the Self-Learnable Activation Function (SLAF):
 
@@ -539,14 +540,14 @@ class SLAF(nn.Module):
         >>> output = m(x)
     """
 
-    def __init__(self, k=6, init_a=0.1):
-        super(SLAF, self).__init__()
+    def __init__(self, k=6, init_a=0.1, **kwargs):
+        super().__init__(**kwargs)
         self.k = k
         
         # Initialize trainable parameters
         self.a = nn.Parameter(torch.full((k,), init_a))
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         result = self.a[0] * torch.ones_like(x)  # j=0 term
         
         # Compute powers of x and multiply by coefficients
@@ -559,7 +560,7 @@ class SLAF(nn.Module):
 
 
 @register_activation
-class ChPAF(nn.Module):
+class ChPAF(BaseActivation):
     r"""
     Applies the Chebyshev Polynomial-based Activation Function (ChPAF):
 
@@ -583,14 +584,14 @@ class ChPAF(nn.Module):
         >>> output = m(x)
     """
 
-    def __init__(self, k=3, init_a=0.1):
-        super(ChPAF, self).__init__()
+    def __init__(self, k=3, init_a=0.1, **kwargs):
+        super().__init__(**kwargs)
         self.k = k
         
         # Initialize trainable parameters
         self.coefficients = nn.Parameter(torch.full((k+1,), init_a))
         
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         result = self.coefficients[0]  # C_0(x) = 1
         
         if self.k >= 1:
@@ -610,7 +611,7 @@ class ChPAF(nn.Module):
 
 
 @register_activation
-class LPAF(nn.Module):
+class LPAF(BaseActivation):
     r"""
     Applies the Legendre Polynomial-based Activation Function (LPAF):
 
@@ -634,14 +635,14 @@ class LPAF(nn.Module):
         >>> output = m(x)
     """
 
-    def __init__(self, k=3, init_a=0.1):
-        super(LPAF, self).__init__()
+    def __init__(self, k=3, init_a=0.1, **kwargs):
+        super().__init__(**kwargs)
         self.k = k
         
         # Initialize trainable parameters
         self.coefficients = nn.Parameter(torch.full((k+1,), init_a))
         
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         result = self.coefficients[0]  # G_0(x) = 1
         
         if self.k >= 1:
@@ -663,7 +664,7 @@ class LPAF(nn.Module):
 
 
 @register_activation
-class HPAF(nn.Module):
+class HPAF(BaseActivation):
     r"""
     Applies the Hermite Polynomial-based Activation Function (HPAF):
 
@@ -687,14 +688,14 @@ class HPAF(nn.Module):
         >>> output = m(x)
     """
 
-    def __init__(self, order=5, init_a=0.1):
-        super(HPAF, self).__init__()
+    def __init__(self, order=5, init_a=0.1, **kwargs):
+        super().__init__(**kwargs)
         self.order = order
         
         # Initialize trainable parameters
         self.coefficients = nn.Parameter(torch.full((order+1,), init_a))
         
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         result = self.coefficients[0]  # H_0(x) = 1
         
         if self.order >= 1:

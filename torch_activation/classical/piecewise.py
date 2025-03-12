@@ -4,10 +4,11 @@ from torch import Tensor
 import math
 
 from torch_activation import register_activation
+from torch_activation.base import BaseActivation
 
 
 @register_activation
-class BiFiring(nn.Module):
+class BiFiring(BaseActivation):
     r"""
     Applies the Bi-Firing activation function (bfire):
 
@@ -29,12 +30,12 @@ class BiFiring(nn.Module):
         - Output: :math:`(*)`, same shape as the input.
     """
 
-    def __init__(self, a: float = 1.0, inplace: bool = False):
-        super(BiFiring, self).__init__()
+    def __init__(self, a: float = 1.0, **kwargs):
+        super().__init__(**kwargs)
         self.a = a
-        self.inplace = inplace  # Unused
+          # Unused
 
-    def forward(self, z) -> Tensor:
+    def _forward(self, z) -> Tensor:
         result = torch.zeros_like(z)
         
         # z > a
@@ -53,7 +54,7 @@ class BiFiring(nn.Module):
 
 
 @register_activation
-class BoundedBiFiring(nn.Module):
+class BoundedBiFiring(BaseActivation):
     r"""
     Applies the Bounded Bi-Firing activation function (bbfire):
 
@@ -79,13 +80,13 @@ class BoundedBiFiring(nn.Module):
         - Output: :math:`(*)`, same shape as the input.
     """
 
-    def __init__(self, a: float = 1.0, b: float = 5.0, inplace: bool = False):
-        super(BoundedBiFiring, self).__init__()
+    def __init__(self, a: float = 1.0, b: float = 5.0, **kwargs):
+        super().__init__(**kwargs)
         self.a = a
         self.b = b
-        self.inplace = inplace  # Unused
+          # Unused
 
-    def forward(self, z) -> Tensor:
+    def _forward(self, z) -> Tensor:
         result = torch.zeros_like(z)
         
         # z < -b - a/2
@@ -112,7 +113,7 @@ class BoundedBiFiring(nn.Module):
 
 
 @register_activation
-class PiecewiseMexicanHat(nn.Module):
+class PiecewiseMexicanHat(BaseActivation):
     r"""
     Applies the Piecewise Mexican-Hat activation function (PMAF):
 
@@ -131,13 +132,13 @@ class PiecewiseMexicanHat(nn.Module):
         - Output: :math:`(*)`, same shape as the input.
     """
 
-    def __init__(self, a: float = 4.0, inplace: bool = False):
-        super(PiecewiseMexicanHat, self).__init__()
+    def __init__(self, a: float = 4.0, **kwargs):
+        super().__init__(**kwargs)
         self.a = a
-        self.inplace = inplace  # Unused
+          # Unused
         self.const_term = 1 / (math.sqrt(3) * math.pi)
 
-    def forward(self, z) -> Tensor:
+    def _forward(self, z) -> Tensor:
         result = torch.zeros_like(z)
         
         # z < 0
@@ -158,7 +159,7 @@ class PiecewiseMexicanHat(nn.Module):
 
 
 @register_activation
-class PiecewiseRadialBasisFunction(nn.Module):
+class PiecewiseRadialBasisFunction(BaseActivation):
     r"""
     Applies the Piecewise Radial Basis Function (PRBF):
 
@@ -179,13 +180,13 @@ class PiecewiseRadialBasisFunction(nn.Module):
         - Output: :math:`(*)`, same shape as the input.
     """
 
-    def __init__(self, a: float = 3.0, b: float = 1.0, inplace: bool = False):
-        super(PiecewiseRadialBasisFunction, self).__init__()
+    def __init__(self, a: float = 3.0, b: float = 1.0, **kwargs):
+        super().__init__(**kwargs)
         self.a = a
         self.b = b
-        self.inplace = inplace  # Unused
+          # Unused
 
-    def forward(self, z) -> Tensor:
+    def _forward(self, z) -> Tensor:
         result = torch.zeros_like(z)
         
         # z >= a

@@ -1,6 +1,7 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+from torch_activation.base import BaseActivation
 
 from torch import Tensor
 
@@ -9,7 +10,7 @@ from torch_activation.utils import sech
 # TODO: Optimize any functions that use where
 
 @register_activation
-class Sigmoid(nn.Module):
+class Sigmoid(BaseActivation):
     r"""
     Applies the Sigmoid activation function:
 
@@ -33,12 +34,12 @@ class Sigmoid(nn.Module):
         >>> m(x)
     """
 
-    def __init__(self, inplace: bool = False):
-        super(Sigmoid, self).__init__()
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
 
-        self.inplace = inplace
+        
 
-    def forward(self, z) -> Tensor:
+    def _forward(self, z) -> Tensor:
         if self.inplace:
             z.sigmoid_()
             return z
@@ -47,7 +48,7 @@ class Sigmoid(nn.Module):
 
 
 @register_activation
-class Tanh(nn.Module):
+class Tanh(BaseActivation):
     r"""
     Applies the Tanh activation function:
 
@@ -71,11 +72,11 @@ class Tanh(nn.Module):
         >>> m(x)
     """
 
-    def __init__(self, inplace: bool = False):
-        super(Tanh, self).__init__()
-        self.inplace = inplace
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        
 
-    def forward(self, z) -> Tensor:
+    def _forward(self, z) -> Tensor:
         if self.inplace:
             z.tanh_()
             return z
@@ -84,7 +85,7 @@ class Tanh(nn.Module):
 
 
 @register_activation
-class ShiftedScaledSigmoid(nn.Module):
+class ShiftedScaledSigmoid(BaseActivation):
     r"""
     Applies the Shifted Scaled Sigmoid activation function:
 
@@ -110,14 +111,13 @@ class ShiftedScaledSigmoid(nn.Module):
         >>> m(x)
     """
 
-    def __init__(self, a: float = 1.0, b: float = 0.0, inplace: bool = False):
-        super(ShiftedScaledSigmoid, self).__init__()
+    def __init__(self, a: float = 1.0, b: float = 0.0, **kwargs):
+        super().__init__(**kwargs)
         self.a = nn.Parameter(torch.tensor([a]))
         self.b = nn.Parameter(torch.tensor([b]))
-        self.inplace = inplace
+        
 
-    def forward(self, z) -> Tensor:
-        return self._forward_inplace(z) if self.inplace else self._forward(z)
+    
 
     def _forward(self, z):
         return torch.sigmoid(self.a * (z - self.b))
@@ -129,7 +129,7 @@ class ShiftedScaledSigmoid(nn.Module):
 
 
 @register_activation
-class VariantSigmoidFunction(nn.Module):
+class VariantSigmoidFunction(BaseActivation):
     r"""
     Applies the Variant Sigmoid Function activation:
 
@@ -157,16 +157,15 @@ class VariantSigmoidFunction(nn.Module):
     """
 
     def __init__(
-        self, a: float = 1.0, b: float = 1.0, c: float = 0.0, inplace: bool = False
-    ):
-        super(VariantSigmoidFunction, self).__init__()
+        self, a: float = 1.0, b: float = 1.0, c: float = 0.0
+    , **kwargs):
+        super().__init__(**kwargs)
         self.a = nn.Parameter(torch.tensor([a]))
         self.b = nn.Parameter(torch.tensor([b]))
         self.c = nn.Parameter(torch.tensor([c]))
-        self.inplace = inplace
+        
 
-    def forward(self, z) -> Tensor:
-        return self._forward_inplace(z) if self.inplace else self._forward(z)
+    
 
     def _forward(self, z):
         return self.a * torch.sigmoid(self.b * z) - self.c
@@ -177,7 +176,7 @@ class VariantSigmoidFunction(nn.Module):
 
 
 @register_activation
-class STanh(nn.Module):
+class STanh(BaseActivation):
     r"""
     Applies the Scaled Hyperbolic Tangent activation function:
 
@@ -205,14 +204,13 @@ class STanh(nn.Module):
         >>> m(x)
     """
 
-    def __init__(self, a: float = 1.7159, b: float = 2 / 3, inplace: bool = False):
-        super(STanh, self).__init__()
+    def __init__(self, a: float = 1.7159, b: float = 2 / 3, **kwargs):
+        super().__init__(**kwargs)
         self.a = nn.Parameter(torch.tensor([a]))
         self.b = nn.Parameter(torch.tensor([b]))
-        self.inplace = inplace
+        
 
-    def forward(self, z) -> Tensor:
-        return self._forward_inplace(z) if self.inplace else self._forward(z)
+    
 
     def _forward(self, z):
         return self.a * torch.tanh(self.b * z)
@@ -224,7 +222,7 @@ class STanh(nn.Module):
 
 # FIXME: Revise this
 # @register_activation
-# class BiModalDerivativeSigmoid(nn.Module):
+# class BiModalDerivativeSigmoid(BaseActivation):
 #     r"""
 #     Applies the Bi-Modal Derivative Sigmoid activation function:
 
@@ -245,17 +243,17 @@ class STanh(nn.Module):
 #     """
 
 #     def __init__(self, b: float = 1.0):
-#         super(BiModalDerivativeSigmoid, self).__init__()
+#         super().__init__(**kwargs)
 #         self.b = nn.Parameter(torch.tensor([b]))
 
-#     def forward(self, z):
+#     def _forward(self, z):
 #         first_term = self.a * torch.sigmoid(self.b * z)
 #         second_term = torch.sigmoid(z) + torch.sigmoid(z + self.b)
 #         return 0.5 * (first_term - second_term)
 
 
 @register_activation
-class Arctan(nn.Module):
+class Arctan(BaseActivation):
     r"""
     Applies the Arctan activation function:
 
@@ -278,15 +276,15 @@ class Arctan(nn.Module):
         >>> output = m(x)
     """
 
-    def __init__(self):
-        super(Arctan, self).__init__()
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
 
-    def forward(self, z) -> Tensor:
+    def _forward(self, z) -> Tensor:
         return torch.atan(z)
 
 
 @register_activation
-class ArctanGR(nn.Module):
+class ArctanGR(BaseActivation):
     r"""
     Applies the ArctanGR activation function:
 
@@ -319,16 +317,16 @@ class ArctanGR(nn.Module):
 
     def __init__(
         self, scale_factor: float = 1.0 / (1.0 + torch.sqrt(torch.tensor(2.0)))
-    ):
-        super(ArctanGR, self).__init__()
+    , **kwargs):
+        super().__init__(**kwargs)
         self.scale_factor = scale_factor
 
-    def forward(self, z) -> Tensor:
+    def _forward(self, z) -> Tensor:
         return torch.atan(z) * self.scale_factor
 
 
 @register_activation
-class SigmoidAlgebraic(nn.Module):
+class SigmoidAlgebraic(BaseActivation):
     r"""
     Applies the Sigmoid Algebraic activation function:
 
@@ -352,12 +350,12 @@ class SigmoidAlgebraic(nn.Module):
         >>> m(x)
     """
 
-    def __init__(self, a: float = 1.0):
-        super(SigmoidAlgebraic, self).__init__()
+    def __init__(self, a: float = 1.0, **kwargs):
+        super().__init__(**kwargs)
         assert a > 0, "a must be greater than 0"
         self.a = nn.Parameter(torch.tensor([a]))
 
-    def forward(self, z) -> Tensor:
+    def _forward(self, z) -> Tensor:
         abs_z = torch.abs(z)
         a_abs_z = self.a * abs_z
         numerator = z * (1 + a_abs_z)
@@ -367,7 +365,7 @@ class SigmoidAlgebraic(nn.Module):
 
 
 @register_activation
-class TripleStateSigmoid(nn.Module):
+class TripleStateSigmoid(BaseActivation):
     r"""
     Applies the Triple State Sigmoid activation function:
 
@@ -395,18 +393,18 @@ class TripleStateSigmoid(nn.Module):
         >>> output = m(x)
     """
 
-    def __init__(self, a: float = 20.0, b: float = 40.0, inplace: bool = False):
-        super(TripleStateSigmoid, self).__init__()
+    def __init__(self, a: float = 20.0, b: float = 40.0, **kwargs):
+        super().__init__(**kwargs)
         self.a = nn.Parameter(torch.tensor([a]))
         self.b = nn.Parameter(torch.tensor([b]))
-        self.inplace = inplace
+        
 
-    def forward(self, z) -> Tensor:
+    def _forward(self, z) -> Tensor:
         return torch.sigmoid(z) + torch.sigmoid(z - self.a) + torch.sigmoid(z - self.b)
 
 
 @register_activation
-class ImprovedLogisticSigmoid(nn.Module):
+class ImprovedLogisticSigmoid(BaseActivation):
     r"""
     Applies the Improved Logistic Sigmoid activation function:
 
@@ -451,8 +449,8 @@ class ImprovedLogisticSigmoid(nn.Module):
         >>> output = m(x)
     """
 
-    def __init__(self, a: float = 0.2, b: float = 2.0, trainable: bool = False):
-        super(ImprovedLogisticSigmoid, self).__init__()
+    def __init__(self, a: float = 0.2, b: float = 2.0, trainable: bool = False, **kwargs):
+        super().__init__(**kwargs)
 
         b_tensor = torch.tensor([b])
         a_min = torch.exp(-b_tensor) / (1 + torch.exp(-b_tensor)) ** 2
@@ -466,7 +464,7 @@ class ImprovedLogisticSigmoid(nn.Module):
             self.register_buffer("a", torch.tensor([a]))
             self.register_buffer("b", torch.tensor([b]))
 
-    def forward(self, z) -> Tensor:
+    def _forward(self, z) -> Tensor:
         sig_b = torch.sigmoid(self.b)
         
         upper_mask = z >= self.b
@@ -486,7 +484,7 @@ class ImprovedLogisticSigmoid(nn.Module):
 
 
 @register_activation
-class SigLin(nn.Module):
+class SigLin(BaseActivation):
     r"""
     Applies the SigLin activation function:
 
@@ -509,16 +507,16 @@ class SigLin(nn.Module):
 
     """
 
-    def __init__(self, a: float = 0.1):
-        super(SigLin, self).__init__()
+    def __init__(self, a: float = 0.1, **kwargs):
+        super().__init__(**kwargs)
         self.a = nn.Parameter(torch.tensor([a]))
 
-    def forward(self, z) -> Tensor:
+    def _forward(self, z) -> Tensor:
         return torch.sigmoid(z) + self.a * z
 
 
 @register_activation
-class PTanh(nn.Module):
+class PTanh(BaseActivation):
     r"""
     Applies the Penalized Hyperbolic Tangent activation function:
 
@@ -543,12 +541,12 @@ class PTanh(nn.Module):
         >>> output = m(x)
     """
 
-    def __init__(self, a: float = 2.0):
-        super(PTanh, self).__init__()
+    def __init__(self, a: float = 2.0, **kwargs):
+        super().__init__(**kwargs)
         assert a > 1.0, "a must be greater than 1.0"
         self.a = nn.Parameter(torch.tensor([a]), requires_grad=False)
 
-    def forward(self, z) -> Tensor:
+    def _forward(self, z) -> Tensor:
         # Turned the thing from 1 line to 10 just to not use where :D
         tanh_z = torch.tanh(z)
         
@@ -567,7 +565,7 @@ class PTanh(nn.Module):
 
 
 @register_activation
-class SRS(nn.Module):
+class SRS(BaseActivation):
     r"""
     Applies the Soft Root Sign activation function:
 
@@ -589,8 +587,8 @@ class SRS(nn.Module):
         >>> output = m(x)
     """
 
-    def __init__(self, a: float = 2.0, b: float = 3.0, learnable: bool = False):
-        super(SRS, self).__init__()
+    def __init__(self, a: float = 2.0, b: float = 3.0, learnable: bool = False, **kwargs):
+        super().__init__(**kwargs)
         self.a = nn.Parameter(torch.tensor([a]))
         self.b = nn.Parameter(torch.tensor([b]))
         self.learnable = learnable
@@ -599,14 +597,14 @@ class SRS(nn.Module):
             self.a.requires_grad = False
             self.b.requires_grad = False
 
-    def forward(self, z) -> Tensor:
+    def _forward(self, z) -> Tensor:
         denominator = torch.pow(1 + torch.exp(-z / self.b), 1 / self.a)
         return z / denominator
 
 
 
 @register_activation
-class SC(nn.Module):
+class SC(BaseActivation):
     r"""
     Applies the Soft Clipping activation function:
 
@@ -627,11 +625,11 @@ class SC(nn.Module):
         >>> output = m(x)
     """
 
-    def __init__(self, a: float = 50.0):
-        super(SC, self).__init__()
+    def __init__(self, a: float = 50.0, **kwargs):
+        super().__init__(**kwargs)
         self.a = nn.Parameter(torch.tensor([a]), requires_grad=False)
 
-    def forward(self, z) -> Tensor:
+    def _forward(self, z) -> Tensor:
         numerator = 1 + torch.exp(self.a * z)
         denominator = 1 + torch.exp(self.a * (z - 1))
         return torch.log(numerator / denominator) / self.a
@@ -639,7 +637,7 @@ class SC(nn.Module):
 
 
 @register_activation
-class Hexpo(nn.Module):
+class Hexpo(BaseActivation):
     r"""
     Applies the Hexpo activation function:
 
@@ -675,8 +673,8 @@ class Hexpo(nn.Module):
         c: float = 1.0,
         d: float = 1.0,
         learnable: bool = False,
-    ):
-        super(Hexpo, self).__init__()
+        **kwargs):
+        super().__init__(**kwargs)
         self.a = nn.Parameter(torch.tensor([a]))
         self.b = nn.Parameter(torch.tensor([b]))
         self.c = nn.Parameter(torch.tensor([c]))
@@ -689,7 +687,7 @@ class Hexpo(nn.Module):
             self.c.requires_grad = False
             self.d.requires_grad = False
 
-    def forward(self, z) -> Tensor:
+    def _forward(self, z) -> Tensor:
         pos_mask = z >= 0
         
         result = torch.empty_like(z)
@@ -705,7 +703,7 @@ class Hexpo(nn.Module):
 
 
 @register_activation
-class Softsign(nn.Module):
+class Softsign(BaseActivation):
     r"""
     Applies the Softsign activation function:
 
@@ -722,15 +720,15 @@ class Softsign(nn.Module):
         >>> output = m(x)
     """
 
-    def __init__(self):
-        super(Softsign, self).__init__()
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
 
-    def forward(self, z) -> Tensor:
+    def _forward(self, z) -> Tensor:
         return z / (1 + torch.abs(z))
 
 
 @register_activation
-class SmoothStep(nn.Module):
+class SmoothStep(BaseActivation):
     r"""
     Applies the Smooth Step activation function:
 
@@ -754,11 +752,11 @@ class SmoothStep(nn.Module):
         >>> output = m(x)
     """
 
-    def __init__(self, a: float = 1.0):
-        super(SmoothStep, self).__init__()
+    def __init__(self, a: float = 1.0, **kwargs):
+        super().__init__(**kwargs)
         self.a = nn.Parameter(torch.tensor([a]), requires_grad=False)
 
-    def forward(self, z) -> Tensor:
+    def _forward(self, z) -> Tensor:
         half_a = self.a / 2
         
         result = torch.ones_like(z)
@@ -784,7 +782,7 @@ class SmoothStep(nn.Module):
 
 
 @register_activation
-class Elliott(nn.Module):
+class Elliott(BaseActivation):
     r"""
     Applies the Elliott Activation Function:
 
@@ -802,15 +800,15 @@ class Elliott(nn.Module):
         >>> output = m(x)
     """
 
-    def __init__(self):
-        super(Elliott, self).__init__()
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
 
-    def forward(self, z) -> Tensor:
+    def _forward(self, z) -> Tensor:
         return (0.5 * z) / (1 + torch.abs(z)) + 0.5
 
 
 @register_activation
-class SincSigmoid(nn.Module):
+class SincSigmoid(BaseActivation):
     r"""
     Applies the Sinc Sigmoid activation function:
 
@@ -829,10 +827,10 @@ class SincSigmoid(nn.Module):
         >>> output = m(x)
     """
 
-    def __init__(self):
-        super(SincSigmoid, self).__init__()
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
 
-    def forward(self, z) -> Tensor:
+    def _forward(self, z) -> Tensor:
         sigmoid_z = torch.sigmoid(z)
         
         result = torch.ones_like(z)
@@ -846,7 +844,7 @@ class SincSigmoid(nn.Module):
 
 
 @register_activation
-class SigmoidGumbel(nn.Module):
+class SigmoidGumbel(BaseActivation):
     r"""
     Applies the Sigmoid Gumbel activation function:
 
@@ -863,17 +861,17 @@ class SigmoidGumbel(nn.Module):
         >>> output = m(x)
     """
 
-    def __init__(self):
-        super(SigmoidGumbel, self).__init__()
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
 
-    def forward(self, z) -> Tensor:
+    def _forward(self, z) -> Tensor:
         neg_z = -z
         # Sigmoid is defined as 1 / (1 + exp(-z))
         return torch.sigmoid(z) * torch.exp(-torch.exp(neg_z))
 
 
 @register_activation
-class NewSigmoid(nn.Module):
+class NewSigmoid(BaseActivation):
     r"""
     Applies the New Sigmoid activation function:
 
@@ -890,10 +888,10 @@ class NewSigmoid(nn.Module):
         >>> output = m(x)
     """
 
-    def __init__(self):
-        super(NewSigmoid, self).__init__()
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
 
-    def forward(self, z) -> Tensor:
+    def _forward(self, z) -> Tensor:
         exp_z = torch.exp(z)
         exp_neg_z = torch.exp(-z)
         exp_2z = torch.exp(2 * z)
@@ -906,7 +904,7 @@ class NewSigmoid(nn.Module):
 
 
 @register_activation
-class Root2sigmoid(nn.Module):
+class Root2sigmoid(BaseActivation):
     r"""
     Applies the Root2sigmoid activation function:
 
@@ -923,18 +921,18 @@ class Root2sigmoid(nn.Module):
         >>> output = m(x)
     """
 
-    def __init__(self):
+    def __init__(self, **kwargs):
         super(Root2sigmoid, self).__init__()
         self.r = torch.sqrt(torch.tensor(2.0))
 
-    def forward(self, z) -> Tensor:
+    def _forward(self, z) -> Tensor:
         numerator = torch.pow(self.r, z) - torch.pow(self.r, -z)
         denominator = 2 * self.r * (torch.sqrt(2 * (torch.pow(self.r, 2 * z) + torch.pow(self.r, -2 * z))))
         return numerator / denominator
 
 
 @register_activation
-class LogLog(nn.Module):
+class LogLog(BaseActivation):
     r"""
     Applies the LogLog activation function:
 
@@ -951,15 +949,15 @@ class LogLog(nn.Module):
         >>> output = m(x)
     """
 
-    def __init__(self):
-        super(LogLog, self).__init__()
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
 
-    def forward(self, z) -> Tensor:
+    def _forward(self, z) -> Tensor:
         return torch.exp(-torch.exp(-z))
 
 
 @register_activation
-class cLogLog(nn.Module):
+class cLogLog(BaseActivation):
     r"""
     Applies the Complementary LogLog activation function:
 
@@ -976,15 +974,15 @@ class cLogLog(nn.Module):
         >>> output = m(x)
     """
 
-    def __init__(self):
-        super(cLogLog, self).__init__()
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
 
-    def forward(self, z) -> Tensor:
+    def _forward(self, z) -> Tensor:
         return 1 - torch.exp(-torch.exp(-z))
 
 
 @register_activation
-class cLogLogm(nn.Module):
+class cLogLogm(BaseActivation):
     r"""
     Applies the Modified Complementary LogLog activation function:
 
@@ -1001,15 +999,15 @@ class cLogLogm(nn.Module):
         >>> output = m(x)
     """
 
-    def __init__(self):
-        super(cLogLogm, self).__init__()
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
 
-    def forward(self, z) -> Tensor:
+    def _forward(self, z) -> Tensor:
         return 1 - 2 * torch.exp(-0.7 * torch.exp(-z))
 
 
 @register_activation
-class SechSig(nn.Module):
+class SechSig(BaseActivation):
     r"""
     Applies the SechSig activation function:
 
@@ -1028,15 +1026,15 @@ class SechSig(nn.Module):
         >>> output = m(x)
     """
 
-    def __init__(self):
-        super(SechSig, self).__init__()
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
 
-    def forward(self, z) -> Tensor:
+    def _forward(self, z) -> Tensor:
         return (z + sech(z)) * torch.sigmoid(z)
 
 
 @register_activation
-class pSechSig(nn.Module):
+class pSechSig(BaseActivation):
     r"""
     Applies the Parametric SechSig activation function:
 
@@ -1058,16 +1056,16 @@ class pSechSig(nn.Module):
         >>> output = m(x)
     """
 
-    def __init__(self, a: float = 1.0):
-        super(pSechSig, self).__init__()
+    def __init__(self, a: float = 1.0, **kwargs):
+        super().__init__(**kwargs)
         self.a = nn.Parameter(torch.tensor([a]), requires_grad=False)
 
-    def forward(self, z) -> Tensor:
+    def _forward(self, z) -> Tensor:
         return (z + self.a * sech(z + self.a)) * torch.sigmoid(z)
 
 
 @register_activation
-class TanhSig(nn.Module):
+class TanhSig(BaseActivation):
     r"""
     Applies the TanhSig activation function:
 
@@ -1084,15 +1082,15 @@ class TanhSig(nn.Module):
         >>> output = m(x)
     """
 
-    def __init__(self):
-        super(TanhSig, self).__init__()
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
 
-    def forward(self, z) -> Tensor:
+    def _forward(self, z) -> Tensor:
         return (z + torch.tanh(z)) * torch.sigmoid(z)
 
 
 @register_activation
-class pTanhSig(nn.Module):
+class pTanhSig(BaseActivation):
     r"""
     Applies the Parametric TanhSig activation function:
 
@@ -1112,16 +1110,16 @@ class pTanhSig(nn.Module):
         >>> output = m(x)
     """
 
-    def __init__(self, a: float = 1.0):
-        super(pTanhSig, self).__init__()
+    def __init__(self, a: float = 1.0, **kwargs):
+        super().__init__(**kwargs)
         self.a = nn.Parameter(torch.tensor([a]), requires_grad=False)
 
-    def forward(self, z) -> Tensor:
+    def _forward(self, z) -> Tensor:
         return (z + self.a * torch.tanh(z + self.a)) * torch.sigmoid(z)
 
 
 @register_activation
-class MSAF(nn.Module):
+class MSAF(BaseActivation):
     r"""
     Applies the Multistate Activation Function:
 
@@ -1142,14 +1140,14 @@ class MSAF(nn.Module):
         >>> output = m(x)
     """
 
-    def __init__(self, a: float = 0.0, b: list = None):
-        super(MSAF, self).__init__()
+    def __init__(self, a: float = 0.0, b: list = None, **kwargs):
+        super().__init__(**kwargs)
         if b is None:
             b = [1.0, 2.0]
         self.a = nn.Parameter(torch.tensor([a]), requires_grad=False)
         self.b = nn.Parameter(torch.tensor(b), requires_grad=False)
 
-    def forward(self, z) -> Tensor:
+    def _forward(self, z) -> Tensor:
         result = self.a.expand_as(z)
 
         for k in range(len(self.b)):
@@ -1159,7 +1157,7 @@ class MSAF(nn.Module):
 
 
 @register_activation
-class SymMSAF(nn.Module):
+class SymMSAF(BaseActivation):
     r"""
     Applies the Symmetrical Multistate Activation Function:
 
@@ -1179,16 +1177,16 @@ class SymMSAF(nn.Module):
         >>> output = m(x)
     """
 
-    def __init__(self, a: float = 1.0):
-        super(SymMSAF, self).__init__()
+    def __init__(self, a: float = 1.0, **kwargs):
+        super().__init__(**kwargs)
         self.a = nn.Parameter(torch.tensor([a]))
 
-    def forward(self, z) -> Tensor:
+    def _forward(self, z) -> Tensor:
         return -1 + torch.sigmoid(z) + torch.sigmoid(z + self.a)
 
 
 @register_activation
-class Rootsig(nn.Module):
+class Rootsig(BaseActivation):
     r"""
     Applies the Rootsig activation function:
 
@@ -1208,18 +1206,18 @@ class Rootsig(nn.Module):
         >>> output = m(x)
     """
 
-    def __init__(self, a: float = 1.0):
-        super(Rootsig, self).__init__()
+    def __init__(self, a: float = 1.0, **kwargs):
+        super().__init__(**kwargs)
         self.a = nn.Parameter(torch.tensor([a]), requires_grad=False)
 
-    def forward(self, z) -> Tensor:
+    def _forward(self, z) -> Tensor:
         a_z = self.a * z
         return a_z / (1 + torch.sqrt(1 + a_z * a_z))
 
 
 # The math is equivalent to RootsigPlus
 # @register_activation
-# class UnnamedSigmoid1(nn.Module):
+# class UnnamedSigmoid1(BaseActivation):
 #     # TODO: Ask someone about this name. 
 #     r"""
 #     :note: The name "UnnamedSigmoid1" derived from the first entry in "3.2.25 Rootsig and others" entry. I named it this way because the curve resembles the Rootsig but not as soft
@@ -1246,14 +1244,14 @@ class Rootsig(nn.Module):
 #         super(UnnamedSigmoid1, self).__init__()
 #         self.a = nn.Parameter(torch.tensor([a]), requires_grad=False)
 
-#     def forward(self, z) -> Tensor:
+#     def _forward(self, z) -> Tensor:
 #         numerator = torch.sign(z) * z - self.a
 #         denominator = torch.square(z) - torch.square(self.a)
 #         return z * (numerator / denominator)
 
 
 @register_activation
-class RootsigPlus(nn.Module):
+class RootsigPlus(BaseActivation):
     # TODO: Ask someone about this name. 
     r"""
     :note: The name "RootsigPlus" derived from the second entry in "3.2.25 Rootsig and others" entry, found in the `Estimates of the number of hidden units and variation with respect
@@ -1276,18 +1274,18 @@ class RootsigPlus(nn.Module):
         >>> output = m(x)
     """
 
-    def __init__(self, a: float = 1.0):
-        super(RootsigPlus, self).__init__()
+    def __init__(self, a: float = 1.0, **kwargs):
+        super().__init__(**kwargs)
         self.a = nn.Parameter(torch.tensor([a]))
 
-    def forward(self, z) -> Tensor:
+    def _forward(self, z) -> Tensor:
         a_z = self.a * z
         return a_z / (1 + torch.abs(a_z))
 
 
 
 @register_activation
-class SoftTanh(nn.Module):
+class SoftTanh(BaseActivation):
     # TODO: Ask someone about this name. 
     r"""
     :note: The name "RadicalTanh" derived from the third entry in "3.2.25 Rootsig and others" entry, found in the `Estimates of the number of hidden units and variation with respect
@@ -1310,17 +1308,17 @@ class SoftTanh(nn.Module):
         >>> output = m(x)
     """
 
-    def __init__(self, a: float = 2.0):
-        super(SoftTanh, self).__init__()
+    def __init__(self, a: float = 2.0, **kwargs):
+        super().__init__(**kwargs)
         self.a = nn.Parameter(torch.tensor([a]))
 
-    def forward(self, z) -> Tensor:
+    def _forward(self, z) -> Tensor:
         a_z = self.a * z
         return a_z / (torch.sqrt(1 + a_z * a_z))
 
 
 @register_activation
-class SigmoidTanh(nn.Module):
+class SigmoidTanh(BaseActivation):
     r"""
     Applies the Sigmoid-Tanh Combinations activation function:
 
@@ -1351,12 +1349,12 @@ class SigmoidTanh(nn.Module):
         >>> output = m(x)
     """
 
-    def __init__(self, g_func=torch.sigmoid, h_func=torch.tanh):
-        super(SigmoidTanh, self).__init__()
+    def __init__(self, g_func=torch.sigmoid, h_func=torch.tanh, **kwargs):
+        super().__init__(**kwargs)
         self.g_func = g_func
         self.h_func = h_func
 
-    def forward(self, z) -> Tensor:
+    def _forward(self, z) -> Tensor:
         pos_mask = z >= 0
         neg_mask = ~pos_mask
 

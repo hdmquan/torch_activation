@@ -2,10 +2,11 @@ import torch
 import torch.nn as nn
 from torch import Tensor
 from torch_activation import register_activation
+from torch_activation.base import BaseActivation
 
 
 @register_activation
-class SQNL(nn.Module):
+class SQNL(BaseActivation):
     r"""
     Applies the SQNL (Square Non-Linear) activation function:
 
@@ -34,12 +35,8 @@ class SQNL(nn.Module):
         >>> m(x)
     """
 
-    def __init__(self, inplace: bool = False):
-        super(SQNL, self).__init__()
-        self.inplace = inplace
-
-    def forward(self, z) -> Tensor:
-        return self._forward_inplace(z) if self.inplace else self._forward(z)
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
 
     def _forward(self, z):
         result = torch.empty_like(z)
@@ -47,12 +44,12 @@ class SQNL(nn.Module):
         between0and2 = (z >= 0) & (z <= 2)
         betweenNeg2and0 = (z >= -2) & (z < 0)
         ltNeg2 = z < -2
-        
+
         result[gt2] = 1
         result[between0and2] = z[between0and2] - (z[between0and2] ** 2) / 4
         result[betweenNeg2and0] = z[betweenNeg2and0] + (z[betweenNeg2and0] ** 2) / 4
         result[ltNeg2] = -1
-        
+
         return result
 
     def _forward_inplace(self, z):
@@ -60,17 +57,17 @@ class SQNL(nn.Module):
         between0and2 = (z >= 0) & (z <= 2)
         betweenNeg2and0 = (z >= -2) & (z < 0)
         ltNeg2 = z < -2
-        
+
         z[gt2] = 1
         z[between0and2] = z[between0and2] - (z[between0and2] ** 2) / 4
         z[betweenNeg2and0] = z[betweenNeg2and0] + (z[betweenNeg2and0] ** 2) / 4
         z[ltNeg2] = -1
-        
+
         return z
 
 
 @register_activation
-class SQLU(nn.Module):
+class SQLU(BaseActivation):
     r"""
     Applies the SQLU (Square Linear Unit) activation function:
 
@@ -98,39 +95,35 @@ class SQLU(nn.Module):
         >>> m(x)
     """
 
-    def __init__(self, inplace: bool = False):
-        super(SQLU, self).__init__()
-        self.inplace = inplace
-
-    def forward(self, z) -> Tensor:
-        return self._forward_inplace(z) if self.inplace else self._forward(z)
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
 
     def _forward(self, z):
         result = torch.empty_like(z)
         gt0 = z > 0
         betweenNeg2and0 = (z >= -2) & (z <= 0)
         ltNeg2 = z < -2
-        
+
         result[gt0] = z[gt0]
         result[betweenNeg2and0] = z[betweenNeg2and0] + (z[betweenNeg2and0] ** 2) / 4
         result[ltNeg2] = -1
-        
+
         return result
 
     def _forward_inplace(self, z):
         gt0 = z > 0
         betweenNeg2and0 = (z >= -2) & (z <= 0)
         ltNeg2 = z < -2
-        
+
         # No change needed for z > 0
         z[betweenNeg2and0] = z[betweenNeg2and0] + (z[betweenNeg2and0] ** 2) / 4
         z[ltNeg2] = -1
-        
+
         return z
 
 
 @register_activation
-class Squish(nn.Module):
+class Squish(BaseActivation):
     r"""
     Applies the Squish activation function:
 
@@ -158,39 +151,35 @@ class Squish(nn.Module):
         >>> m(x)
     """
 
-    def __init__(self, inplace: bool = False):
-        super(Squish, self).__init__()
-        self.inplace = inplace
-
-    def forward(self, z) -> Tensor:
-        return self._forward_inplace(z) if self.inplace else self._forward(z)
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
 
     def _forward(self, z):
         result = torch.empty_like(z)
         gt0 = z > 0
         betweenNeg2and0 = (z >= -2) & (z <= 0)
         ltNeg2 = z < -2
-        
+
         result[gt0] = z[gt0] + (z[gt0] ** 2) / 32
         result[betweenNeg2and0] = z[betweenNeg2and0] + (z[betweenNeg2and0] ** 2) / 2
         result[ltNeg2] = 0
-        
+
         return result
 
     def _forward_inplace(self, z):
         gt0 = z > 0
         betweenNeg2and0 = (z >= -2) & (z <= 0)
         ltNeg2 = z < -2
-        
+
         z[gt0] = z[gt0] + (z[gt0] ** 2) / 32
         z[betweenNeg2and0] = z[betweenNeg2and0] + (z[betweenNeg2and0] ** 2) / 2
         z[ltNeg2] = 0
-        
+
         return z
 
 
 @register_activation
-class SqREU(nn.Module):
+class SqREU(BaseActivation):
     r"""
     Applies the SqREU (Square Rectified Exponential Unit) activation function:
 
@@ -218,39 +207,35 @@ class SqREU(nn.Module):
         >>> m(x)
     """
 
-    def __init__(self, inplace: bool = False):
-        super(SqREU, self).__init__()
-        self.inplace = inplace
-
-    def forward(self, z) -> Tensor:
-        return self._forward_inplace(z) if self.inplace else self._forward(z)
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
 
     def _forward(self, z):
         result = torch.empty_like(z)
         gt0 = z > 0
         betweenNeg2and0 = (z >= -2) & (z <= 0)
         ltNeg2 = z < -2
-        
+
         result[gt0] = z[gt0]
         result[betweenNeg2and0] = z[betweenNeg2and0] + (z[betweenNeg2and0] ** 2) / 2
         result[ltNeg2] = 0
-        
+
         return result
 
     def _forward_inplace(self, z):
         gt0 = z > 0
         betweenNeg2and0 = (z >= -2) & (z <= 0)
         ltNeg2 = z < -2
-        
+
         # No change needed for z > 0
         z[betweenNeg2and0] = z[betweenNeg2and0] + (z[betweenNeg2and0] ** 2) / 2
         z[ltNeg2] = 0
-        
+
         return z
 
 
 @register_activation
-class SqSoftplus(nn.Module):
+class SqSoftplus(BaseActivation):
     r"""
     Applies the SqSoftplus (Square Softplus) activation function:
 
@@ -278,39 +263,39 @@ class SqSoftplus(nn.Module):
         >>> m(x)
     """
 
-    def __init__(self, inplace: bool = False):
-        super(SqSoftplus, self).__init__()
-        self.inplace = inplace
-
-    def forward(self, z) -> Tensor:
-        return self._forward_inplace(z) if self.inplace else self._forward(z)
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
 
     def _forward(self, z):
         result = torch.empty_like(z)
         gtHalf = z > 0.5
         betweenNegHalfAndHalf = (z >= -0.5) & (z <= 0.5)
         ltNegHalf = z < -0.5
-        
+
         result[gtHalf] = z[gtHalf]
-        result[betweenNegHalfAndHalf] = z[betweenNegHalfAndHalf] + ((z[betweenNegHalfAndHalf] + 0.5) ** 2) / 2
+        result[betweenNegHalfAndHalf] = (
+            z[betweenNegHalfAndHalf] + ((z[betweenNegHalfAndHalf] + 0.5) ** 2) / 2
+        )
         result[ltNegHalf] = 0
-        
+
         return result
 
     def _forward_inplace(self, z):
         gtHalf = z > 0.5
         betweenNegHalfAndHalf = (z >= -0.5) & (z <= 0.5)
         ltNegHalf = z < -0.5
-        
+
         # No change needed for z > 0.5
-        z[betweenNegHalfAndHalf] = z[betweenNegHalfAndHalf] + ((z[betweenNegHalfAndHalf] + 0.5) ** 2) / 2
+        z[betweenNegHalfAndHalf] = (
+            z[betweenNegHalfAndHalf] + ((z[betweenNegHalfAndHalf] + 0.5) ** 2) / 2
+        )
         z[ltNegHalf] = 0
-        
+
         return z
 
 
 @register_activation
-class LogSQNL(nn.Module):
+class LogSQNL(BaseActivation):
     r"""
     Applies the LogSQNL (Logarithmic Square Non-Linear) activation function:
 
@@ -339,12 +324,8 @@ class LogSQNL(nn.Module):
         >>> m(x)
     """
 
-    def __init__(self, inplace: bool = False):
-        super(LogSQNL, self).__init__()
-        self.inplace = inplace
-
-    def forward(self, z) -> Tensor:
-        return self._forward_inplace(z) if self.inplace else self._forward(z)
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
 
     def _forward(self, z):
         result = torch.empty_like(z)
@@ -352,12 +333,14 @@ class LogSQNL(nn.Module):
         between0and2 = (z >= 0) & (z <= 2)
         betweenNeg2and0 = (z >= -2) & (z < 0)
         ltNeg2 = z < -2
-        
+
         result[gt2] = 1
         result[between0and2] = 0.5 * z[between0and2] - (z[between0and2] ** 2) / 4 + 0.5
-        result[betweenNeg2and0] = 0.5 * z[betweenNeg2and0] + (z[betweenNeg2and0] ** 2) / 4 + 0.5
+        result[betweenNeg2and0] = (
+            0.5 * z[betweenNeg2and0] + (z[betweenNeg2and0] ** 2) / 4 + 0.5
+        )
         result[ltNeg2] = 0
-        
+
         return result
 
     def _forward_inplace(self, z):
@@ -365,17 +348,19 @@ class LogSQNL(nn.Module):
         between0and2 = (z >= 0) & (z <= 2)
         betweenNeg2and0 = (z >= -2) & (z < 0)
         ltNeg2 = z < -2
-        
+
         z[gt2] = 1
         z[between0and2] = 0.5 * z[between0and2] - (z[between0and2] ** 2) / 4 + 0.5
-        z[betweenNeg2and0] = 0.5 * z[betweenNeg2and0] + (z[betweenNeg2and0] ** 2) / 4 + 0.5
+        z[betweenNeg2and0] = (
+            0.5 * z[betweenNeg2and0] + (z[betweenNeg2and0] ** 2) / 4 + 0.5
+        )
         z[ltNeg2] = 0
-        
+
         return z
 
 
 @register_activation
-class SQMAX(nn.Module):
+class SQMAX(BaseActivation):
     r"""
     Applies the SQMAX (Square Maximum) activation function:
 
@@ -400,20 +385,20 @@ class SQMAX(nn.Module):
         >>> output = m(x)
     """
 
-    def __init__(self, c: float = 0.0, dim: int = -1):
-        super(SQMAX, self).__init__()
+    def __init__(self, c: float = 0.0, dim: int = -1, **kwargs):
+        super().__init__(**kwargs)
         self.c = nn.Parameter(torch.tensor([c]))
         self.dim = dim
 
-    def forward(self, z) -> Tensor:
+    def _forward(self, z) -> Tensor:
         shifted = z + self.c
-        squared = shifted ** 2
+        squared = shifted**2
         sum_squared = squared.sum(dim=self.dim, keepdim=True)
         return squared / sum_squared
 
 
 @register_activation
-class LinQ(nn.Module):
+class LinQ(BaseActivation):
     r"""
     Applies the LinQ (Linear Quadratic) activation function:
 
@@ -442,46 +427,52 @@ class LinQ(nn.Module):
         >>> m(x)
     """
 
-    def __init__(self, a: float = 1.0, inplace: bool = False):
-        super(LinQ, self).__init__()
+    def __init__(self, a: float = 1.0, **kwargs):
+        super().__init__(**kwargs)
         self.a = nn.Parameter(torch.tensor([a]))
-        self.inplace = inplace
-
-    def forward(self, z) -> Tensor:
-        return self._forward_inplace(z) if self.inplace else self._forward(z)
 
     def _forward(self, z):
         result = torch.empty_like(z)
         upper_threshold = 2 - 2 * self.a
         lower_threshold = -2 + 2 * self.a
-        
+
         upper_region = z >= upper_threshold
         middle_region = (z > lower_threshold) & (z < upper_threshold)
         lower_region = z <= lower_threshold
-        
-        result[upper_region] = self.a * z[upper_region] + 1 - 2 * z[upper_region] + z[upper_region] ** 2
-        result[middle_region] = 0.25 * z[middle_region] * (4 - torch.abs(z[middle_region]))
-        result[lower_region] = self.a * z[lower_region] - 1 - 2 * z[lower_region] + z[lower_region] ** 2
-        
+
+        result[upper_region] = (
+            self.a * z[upper_region] + 1 - 2 * z[upper_region] + z[upper_region] ** 2
+        )
+        result[middle_region] = (
+            0.25 * z[middle_region] * (4 - torch.abs(z[middle_region]))
+        )
+        result[lower_region] = (
+            self.a * z[lower_region] - 1 - 2 * z[lower_region] + z[lower_region] ** 2
+        )
+
         return result
 
     def _forward_inplace(self, z):
         upper_threshold = 2 - 2 * self.a
         lower_threshold = -2 + 2 * self.a
-        
+
         upper_region = z >= upper_threshold
         middle_region = (z > lower_threshold) & (z < upper_threshold)
         lower_region = z <= lower_threshold
-        
-        z[upper_region] = self.a * z[upper_region] + 1 - 2 * z[upper_region] + z[upper_region] ** 2
+
+        z[upper_region] = (
+            self.a * z[upper_region] + 1 - 2 * z[upper_region] + z[upper_region] ** 2
+        )
         z[middle_region] = 0.25 * z[middle_region] * (4 - torch.abs(z[middle_region]))
-        z[lower_region] = self.a * z[lower_region] - 1 - 2 * z[lower_region] + z[lower_region] ** 2
-        
+        z[lower_region] = (
+            self.a * z[lower_region] - 1 - 2 * z[lower_region] + z[lower_region] ** 2
+        )
+
         return z
 
 
 @register_activation
-class ISRLU(nn.Module):
+class ISRLU(BaseActivation):
     r"""
     Applies the ISRLU (Inverse Square Root Linear Unit) activation function:
 
@@ -509,22 +500,18 @@ class ISRLU(nn.Module):
         >>> m(x)
     """
 
-    def __init__(self, a: float = 1.0, inplace: bool = False):
-        super(ISRLU, self).__init__()
+    def __init__(self, a: float = 1.0, **kwargs):
+        super().__init__(**kwargs)
         self.a = nn.Parameter(torch.tensor([a]))
-        self.inplace = inplace
-
-    def forward(self, z) -> Tensor:
-        return self._forward_inplace(z) if self.inplace else self._forward(z)
 
     def _forward(self, z):
         result = torch.empty_like(z)
         pos = z >= 0
         neg = z < 0
-        
+
         result[pos] = z[pos]
         result[neg] = z[neg] / torch.sqrt(1 + self.a * z[neg] ** 2)
-        
+
         return result
 
     def _forward_inplace(self, z):
@@ -532,8 +519,9 @@ class ISRLU(nn.Module):
         z[neg] = z[neg] / torch.sqrt(1 + self.a * z[neg] ** 2)
         return z
 
+
 @register_activation
-class ISRU(nn.Module):
+class ISRU(BaseActivation):
     r"""
     Applies the ISRU (Inverse Square Root Unit) activation function:
 
@@ -558,23 +546,20 @@ class ISRU(nn.Module):
         >>> m(x)
     """
 
-    def __init__(self, a: float = 1.0, inplace: bool = False):
-        super(ISRU, self).__init__()
+    def __init__(self, a: float = 1.0, **kwargs):
+        super().__init__(**kwargs)
         self.a = nn.Parameter(torch.tensor([a]))
-        self.inplace = inplace
-
-    def forward(self, z) -> Tensor:
-        return self._forward_inplace(z) if self.inplace else self._forward(z)
 
     def _forward(self, z):
-        return z / torch.sqrt(1 + self.a * z ** 2)
+        return z / torch.sqrt(1 + self.a * z**2)
 
     def _forward_inplace(self, z):
-        z.div_(torch.sqrt(1 + self.a * z ** 2))
+        z.div_(torch.sqrt(1 + self.a * z**2))
         return z
 
+
 @register_activation
-class MEF(nn.Module):
+class MEF(BaseActivation):
     r"""
     Applies the MEF (Modified Error Function) activation function:
 
@@ -598,23 +583,19 @@ class MEF(nn.Module):
         >>> m(x)
     """
 
-    def __init__(self, inplace: bool = False):
-        super(MEF, self).__init__()
-        self.inplace = inplace
-
-    def forward(self, z) -> Tensor:
-        return self._forward_inplace(z) if self.inplace else self._forward(z)
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
 
     def _forward(self, z):
-        return z / (torch.sqrt(1 + z ** 2) + 2)
+        return z / (torch.sqrt(1 + z**2) + 2)
 
     def _forward_inplace(self, z):
-        z.div_(torch.sqrt(1 + z ** 2) + 2)
+        z.div_(torch.sqrt(1 + z**2) + 2)
         return z
 
 
 @register_activation
-class SquaredReLU(nn.Module):
+class SquaredReLU(BaseActivation):
     r"""
     Applies the SquaredReLU activation function:
 
@@ -641,21 +622,17 @@ class SquaredReLU(nn.Module):
         >>> m(x)
     """
 
-    def __init__(self, inplace: bool = False):
-        super(SquaredReLU, self).__init__()
-        self.inplace = inplace
-
-    def forward(self, z) -> Tensor:
-        return self._forward_inplace(z) if self.inplace else self._forward(z)
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
 
     def _forward(self, z):
         result = torch.empty_like(z)
         pos = z > 0
         neg = z <= 0
-        
+
         result[pos] = z[pos] ** 2
         result[neg] = 0
-        
+
         return result
 
     def _forward_inplace(self, z):

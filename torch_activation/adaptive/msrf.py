@@ -1,12 +1,13 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+from torch_activation.base import BaseActivation
 from torch import Tensor
 
 from torch_activation import register_activation
 
 @register_activation
-class MollifiedAbsoluteValue(nn.Module):
+class MollifiedAbsoluteValue(BaseActivation):
     r"""
     Applies the Mollified Absolute Value function:
 
@@ -26,16 +27,16 @@ class MollifiedAbsoluteValue(nn.Module):
         >>> output = m(x)
     """
 
-    def __init__(self, epsilon=1e-6):
-        super(MollifiedAbsoluteValue, self).__init__()
+    def __init__(self, epsilon=1e-6, **kwargs):
+        super().__init__(**kwargs)
         self.epsilon = epsilon
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         return torch.sqrt(x.pow(2) + self.epsilon)
 
 
 @register_activation
-class SquarePlus(nn.Module):
+class SquarePlus(BaseActivation):
     r"""
     Applies the SquarePlus function:
 
@@ -55,16 +56,16 @@ class SquarePlus(nn.Module):
         >>> output = m(x)
     """
 
-    def __init__(self, epsilon=1e-6):
-        super(SquarePlus, self).__init__()
+    def __init__(self, epsilon=1e-6, **kwargs):
+        super().__init__(**kwargs)
         self.epsilon = epsilon
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         return 0.5 * (x + torch.sqrt(x.pow(2) + self.epsilon))
 
 
 @register_activation
-class StepPlus(nn.Module):
+class StepPlus(BaseActivation):
     r"""
     Applies the StepPlus function:
 
@@ -84,17 +85,17 @@ class StepPlus(nn.Module):
         >>> output = m(x)
     """
 
-    def __init__(self, epsilon=1e-6):
-        super(StepPlus, self).__init__()
+    def __init__(self, epsilon=1e-6, **kwargs):
+        super().__init__(**kwargs)
         self.epsilon = epsilon
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         abs_x_eps = torch.sqrt(x.pow(2) + self.epsilon)
         return 0.5 * (1 + x / abs_x_eps)
 
 
 @register_activation
-class BipolarPlus(nn.Module):
+class BipolarPlus(BaseActivation):
     r"""
     Applies the BipolarPlus function:
 
@@ -114,17 +115,17 @@ class BipolarPlus(nn.Module):
         >>> output = m(x)
     """
 
-    def __init__(self, epsilon=1e-6):
-        super(BipolarPlus, self).__init__()
+    def __init__(self, epsilon=1e-6, **kwargs):
+        super().__init__(**kwargs)
         self.epsilon = epsilon
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         abs_x_eps = torch.sqrt(x.pow(2) + self.epsilon)
         return x / abs_x_eps
 
 
 @register_activation
-class LReLUPlus(nn.Module):
+class LReLUPlus(BaseActivation):
     r"""
     Applies the Leaky ReLU Plus function:
 
@@ -145,19 +146,19 @@ class LReLUPlus(nn.Module):
         >>> output = m(x)
     """
 
-    def __init__(self, negative_slope=0.01, epsilon=1e-6):
-        super(LReLUPlus, self).__init__()
+    def __init__(self, negative_slope=0.01, epsilon=1e-6, **kwargs):
+        super().__init__(**kwargs)
         self.negative_slope = negative_slope
         self.epsilon = epsilon
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         term = (1 - self.negative_slope) * x
         abs_term_eps = torch.sqrt(term.pow(2) + self.epsilon)
         return 0.5 * (x + self.negative_slope * x + abs_term_eps)
 
 
 @register_activation
-class vReLUPlus(nn.Module):
+class vReLUPlus(BaseActivation):
     r"""
     Applies the vReLU Plus function:
 
@@ -177,16 +178,16 @@ class vReLUPlus(nn.Module):
         >>> output = m(x)
     """
 
-    def __init__(self, epsilon=1e-6):
-        super(vReLUPlus, self).__init__()
+    def __init__(self, epsilon=1e-6, **kwargs):
+        super().__init__(**kwargs)
         self.epsilon = epsilon
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         return torch.sqrt(x.pow(2) + self.epsilon)
 
 
 @register_activation
-class SoftshrinkPlus(nn.Module):
+class SoftshrinkPlus(BaseActivation):
     r"""
     Applies the Softshrink Plus function:
 
@@ -207,19 +208,19 @@ class SoftshrinkPlus(nn.Module):
         >>> output = m(x)
     """
 
-    def __init__(self, lambda_val=0.5, epsilon=1e-6):
-        super(SoftshrinkPlus, self).__init__()
+    def __init__(self, lambda_val=0.5, epsilon=1e-6, **kwargs):
+        super().__init__(**kwargs)
         self.lambda_val = lambda_val
         self.epsilon = epsilon
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         term1 = torch.sqrt((x - self.lambda_val).pow(2) + self.epsilon)
         term2 = torch.sqrt((x + self.lambda_val).pow(2) + self.epsilon)
         return x + 0.5 * (term1 - term2)
 
 
 @register_activation
-class PanPlus(nn.Module):
+class PanPlus(BaseActivation):
     r"""
     Applies the Pan Plus function:
 
@@ -240,19 +241,19 @@ class PanPlus(nn.Module):
         >>> output = m(x)
     """
 
-    def __init__(self, a=0.5, epsilon=1e-6):
-        super(PanPlus, self).__init__()
+    def __init__(self, a=0.5, epsilon=1e-6, **kwargs):
+        super().__init__(**kwargs)
         self.a = a
         self.epsilon = epsilon
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         term1 = torch.sqrt((x - self.a).pow(2) + self.epsilon)
         term2 = torch.sqrt((x + self.a).pow(2) + self.epsilon)
         return -self.a + 0.5 * (term1 + term2)
 
 
 @register_activation
-class BReLUPlus(nn.Module):
+class BReLUPlus(BaseActivation):
     r"""
     Applies the Bounded ReLU Plus function:
 
@@ -272,18 +273,18 @@ class BReLUPlus(nn.Module):
         >>> output = m(x)
     """
 
-    def __init__(self, epsilon=1e-6):
-        super(BReLUPlus, self).__init__()
+    def __init__(self, epsilon=1e-6, **kwargs):
+        super().__init__(**kwargs)
         self.epsilon = epsilon
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         abs_x_eps = torch.sqrt(x.pow(2) + self.epsilon)
         abs_x_minus_1_eps = torch.sqrt((x - 1).pow(2) + self.epsilon)
         return 0.5 * (1 + abs_x_eps - abs_x_minus_1_eps)
 
 
 @register_activation
-class SReLUPlus(nn.Module):
+class SReLUPlus(BaseActivation):
     r"""
     Applies the S-shaped ReLU Plus function:
 
@@ -305,20 +306,20 @@ class SReLUPlus(nn.Module):
         >>> output = m(x)
     """
 
-    def __init__(self, a=0.5, t=1.0, epsilon=1e-6):
-        super(SReLUPlus, self).__init__()
+    def __init__(self, a=0.5, t=1.0, epsilon=1e-6, **kwargs):
+        super().__init__(**kwargs)
         self.a = a
         self.t = t
         self.epsilon = epsilon
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         abs_x_minus_t_eps = torch.sqrt((x - self.t).pow(2) + self.epsilon)
         abs_x_plus_t_eps = torch.sqrt((x + self.t).pow(2) + self.epsilon)
         return self.a * x + 0.5 * (self.a - 1) * (abs_x_minus_t_eps - abs_x_plus_t_eps)
 
 
 @register_activation
-class HardTanhPlus(nn.Module):
+class HardTanhPlus(BaseActivation):
     r"""
     Applies the HardTanh Plus function:
 
@@ -338,18 +339,18 @@ class HardTanhPlus(nn.Module):
         >>> output = m(x)
     """
 
-    def __init__(self, epsilon=1e-6):
-        super(HardTanhPlus, self).__init__()
+    def __init__(self, epsilon=1e-6, **kwargs):
+        super().__init__(**kwargs)
         self.epsilon = epsilon
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         abs_x_plus_1_eps = torch.sqrt((x + 1).pow(2) + self.epsilon)
         abs_x_minus_1_eps = torch.sqrt((x - 1).pow(2) + self.epsilon)
         return 0.5 * (abs_x_plus_1_eps - abs_x_minus_1_eps)
 
 
 @register_activation
-class HardshrinkPlus(nn.Module):
+class HardshrinkPlus(BaseActivation):
     r"""
     Applies the Hardshrink Plus function:
 
@@ -370,19 +371,19 @@ class HardshrinkPlus(nn.Module):
         >>> output = m(x)
     """
 
-    def __init__(self, lambda_val=0.5, epsilon=1e-6):
-        super(HardshrinkPlus, self).__init__()
+    def __init__(self, lambda_val=0.5, epsilon=1e-6, **kwargs):
+        super().__init__(**kwargs)
         self.lambda_val = lambda_val
         self.epsilon = epsilon
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         term1 = (x - self.lambda_val) / torch.sqrt((x - self.lambda_val).pow(2) + self.epsilon)
         term2 = (x + self.lambda_val) / torch.sqrt((x + self.lambda_val).pow(2) + self.epsilon)
         return x * (1 + 0.5 * (term1 - term2))
 
 
 @register_activation
-class MollifiedMeLUComponent(nn.Module):
+class MollifiedMeLUComponent(BaseActivation):
     r"""
     Applies the Mollified MeLU Component function:
 
@@ -404,20 +405,20 @@ class MollifiedMeLUComponent(nn.Module):
         >>> output = m(x)
     """
 
-    def __init__(self, b=0.0, c=1.0, epsilon=1e-6):
-        super(MollifiedMeLUComponent, self).__init__()
+    def __init__(self, b=0.0, c=1.0, epsilon=1e-6, **kwargs):
+        super().__init__(**kwargs)
         self.b = b
         self.c = c
         self.epsilon = epsilon
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         abs_x_minus_b_eps = torch.sqrt((x - self.b).pow(2) + self.epsilon)
         term = self.c - abs_x_minus_b_eps
         return 0.5 * (term + torch.sqrt(term.pow(2) + self.epsilon))
 
 
 @register_activation
-class TSAFPlus(nn.Module):
+class TSAFPlus(BaseActivation):
     r"""
     Applies the TSAF Plus function:
 
@@ -440,14 +441,14 @@ class TSAFPlus(nn.Module):
         >>> output = m(x)
     """
 
-    def __init__(self, a=0.5, b=0.5, c=1.0, epsilon=1e-6):
-        super(TSAFPlus, self).__init__()
+    def __init__(self, a=0.5, b=0.5, c=1.0, epsilon=1e-6, **kwargs):
+        super().__init__(**kwargs)
         self.a = a
         self.b = b
         self.c = c
         self.epsilon = epsilon
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         term1 = torch.sqrt((x - self.a + self.c).pow(2) + self.epsilon)
         term2 = torch.sqrt((x - self.a).pow(2) + self.epsilon)
         term3 = torch.sqrt((x + self.b - self.c).pow(2) + self.epsilon)
@@ -456,7 +457,7 @@ class TSAFPlus(nn.Module):
 
 
 @register_activation
-class ELUPlus(nn.Module):
+class ELUPlus(BaseActivation):
     r"""
     Applies the ELU Plus function:
 
@@ -477,12 +478,12 @@ class ELUPlus(nn.Module):
         >>> output = m(x)
     """
 
-    def __init__(self, alpha=1.0, epsilon=1e-6):
-        super(ELUPlus, self).__init__()
+    def __init__(self, alpha=1.0, epsilon=1e-6, **kwargs):
+        super().__init__(**kwargs)
         self.alpha = alpha
         self.epsilon = epsilon
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         term1 = 0.5 * (x + torch.sqrt(x.pow(2) + self.epsilon))
         elu_term = (torch.exp(x) - 1) / self.alpha
         term2 = 0.5 * (elu_term + torch.sqrt(elu_term.pow(2) + self.epsilon))
@@ -490,7 +491,7 @@ class ELUPlus(nn.Module):
 
 
 @register_activation
-class SwishPlus(nn.Module):
+class SwishPlus(BaseActivation):
     r"""
     Applies the Swish Plus function:
 
@@ -510,17 +511,17 @@ class SwishPlus(nn.Module):
         >>> output = m(x)
     """
 
-    def __init__(self, epsilon=1e-6):
-        super(SwishPlus, self).__init__()
+    def __init__(self, epsilon=1e-6, **kwargs):
+        super().__init__(**kwargs)
         self.epsilon = epsilon
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         abs_x_eps = torch.sqrt(x.pow(2) + self.epsilon)
         return 0.5 * (x + (x.pow(2) / abs_x_eps))
 
 
 @register_activation
-class MishPlus(nn.Module):
+class MishPlus(BaseActivation):
     r"""
     Applies the Mish Plus function:
 
@@ -540,11 +541,11 @@ class MishPlus(nn.Module):
         >>> output = m(x)
     """
 
-    def __init__(self, epsilon=1e-6):
-        super(MishPlus, self).__init__()
+    def __init__(self, epsilon=1e-6, **kwargs):
+        super().__init__(**kwargs)
         self.epsilon = epsilon
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         # First BipolarPlus
         abs_x_eps = torch.sqrt(x.pow(2) + self.epsilon)
         bipolar1 = x / abs_x_eps
@@ -557,7 +558,7 @@ class MishPlus(nn.Module):
 
 
 @register_activation
-class LogishPlus(nn.Module):
+class LogishPlus(BaseActivation):
     r"""
     Applies the Logish Plus function:
 
@@ -577,18 +578,18 @@ class LogishPlus(nn.Module):
         >>> output = m(x)
     """
 
-    def __init__(self, epsilon=1e-6):
-        super(LogishPlus, self).__init__()
+    def __init__(self, epsilon=1e-6, **kwargs):
+        super().__init__(**kwargs)
         self.epsilon = epsilon
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         abs_x_eps = torch.sqrt(x.pow(2) + self.epsilon)
         step_plus = 0.5 * (1 + x / abs_x_eps)
         return x * torch.log(1 + step_plus)
 
 
 @register_activation
-class SoftsignPlus(nn.Module):
+class SoftsignPlus(BaseActivation):
     r"""
     Applies the Softsign Plus function:
 
@@ -608,17 +609,17 @@ class SoftsignPlus(nn.Module):
         >>> output = m(x)
     """
 
-    def __init__(self, epsilon=1e-6):
-        super(SoftsignPlus, self).__init__()
+    def __init__(self, epsilon=1e-6, **kwargs):
+        super().__init__(**kwargs)
         self.epsilon = epsilon
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         abs_x_eps = torch.sqrt(x.pow(2) + self.epsilon)
         return x / (1 + abs_x_eps)
 
 
 @register_activation
-class SignReLUPlus(nn.Module):
+class SignReLUPlus(BaseActivation):
     r"""
     Applies the SignReLU Plus function:
 
@@ -638,11 +639,11 @@ class SignReLUPlus(nn.Module):
         >>> output = m(x)
     """
 
-    def __init__(self, epsilon=1e-6):
-        super(SignReLUPlus, self).__init__()
+    def __init__(self, epsilon=1e-6, **kwargs):
+        super().__init__(**kwargs)
         self.epsilon = epsilon
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         abs_x_eps = torch.sqrt(x.pow(2) + self.epsilon)
         abs_1_minus_x_eps = torch.sqrt((1 - x).pow(2) + self.epsilon)
         term1 = 0.5 * (x + abs_x_eps)

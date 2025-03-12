@@ -1,6 +1,7 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+from torch_activation.base import BaseActivation
 from torch import Tensor
 from typing import Tuple
 
@@ -8,7 +9,7 @@ import torch_activation as tac
 from torch_activation import register_activation
 from torch_activation.utils import split
 
-class GLU(nn.Module):
+class GLU(BaseActivation):
     r"""
     Applies the Gated Linear Unit function:
 
@@ -30,15 +31,15 @@ class GLU(nn.Module):
         >>> output = m(x)
     """
 
-    def __init__(self, dim: int = -1):
-        super(GLU, self).__init__()
+    def __init__(self, dim: int = -1, **kwargs):
+        super().__init__(**kwargs)
         self.dim = dim
 
-    def forward(self, x: Tensor) -> Tensor:
+    def _forward(self, x: Tensor) -> Tensor:
         return F.glu(x, dim=self.dim)
 
 
-class GTU(nn.Module):
+class GTU(BaseActivation):
     r"""
     Applies the Gated Tanh Unit function:
 
@@ -60,16 +61,16 @@ class GTU(nn.Module):
         >>> output = m(x)
     """
 
-    def __init__(self, dim: int = -1):
-        super(GTU, self).__init__()
+    def __init__(self, dim: int = -1, **kwargs):
+        super().__init__(**kwargs)
         self.dim = dim
 
-    def forward(self, x: Tensor) -> Tensor:
+    def _forward(self, x: Tensor) -> Tensor:
         a, b = split(x, self.dim)
         return torch.tanh(a) * torch.sigmoid(b)
 
 
-class GReLU(nn.Module):
+class GReLU(BaseActivation):
     r"""
     Applies the Gated ReLU function:
 
@@ -91,16 +92,16 @@ class GReLU(nn.Module):
         >>> output = m(x)
     """
 
-    def __init__(self, dim: int = -1):
-        super(GReLU, self).__init__()
+    def __init__(self, dim: int = -1, **kwargs):
+        super().__init__(**kwargs)
         self.dim = dim
 
-    def forward(self, x: Tensor) -> Tensor:
+    def _forward(self, x: Tensor) -> Tensor:
         a, b = split(x, self.dim)
         return a * F.relu(b)
 
 
-class GEGLU(nn.Module):
+class GEGLU(BaseActivation):
     r"""
     Applies the Gated GELU function:
 
@@ -122,16 +123,16 @@ class GEGLU(nn.Module):
         >>> output = m(x)
     """
 
-    def __init__(self, dim: int = -1):
-        super(GEGLU, self).__init__()
+    def __init__(self, dim: int = -1, **kwargs):
+        super().__init__(**kwargs)
         self.dim = dim
 
-    def forward(self, x: Tensor) -> Tensor:
+    def _forward(self, x: Tensor) -> Tensor:
         a, b = split(x, self.dim)
         return a * F.gelu(b)
 
 
-class SwiGLU(nn.Module):
+class SwiGLU(BaseActivation):
     r"""
     Applies the Swish-GELU function:
 
@@ -153,11 +154,11 @@ class SwiGLU(nn.Module):
         >>> output = m(x)
     """
 
-    def __init__(self, dim: int = -1):
-        super(SwiGLU, self).__init__()
+    def __init__(self, dim: int = -1, **kwargs):
+        super().__init__(**kwargs)
         self.dim = dim
 
-    def forward(self, x: Tensor) -> Tensor:
+    def _forward(self, x: Tensor) -> Tensor:
         a, b = split(x, self.dim)
         return a * tac.Swish()(b)
 

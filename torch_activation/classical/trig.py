@@ -4,10 +4,10 @@ from torch import Tensor
 import math
 
 from torch_activation import register_activation
-
+from torch_activation.base import BaseActivation
 
 @register_activation
-class Sine(nn.Module):
+class Sine(BaseActivation):
     r"""
     Applies the Sine activation function:
 
@@ -23,17 +23,17 @@ class Sine(nn.Module):
         - Output: :math:`(*)`, same shape as the input.
     """
 
-    def __init__(self, omega: float = math.pi, inplace: bool = False):
-        super(Sine, self).__init__()
+    def __init__(self, omega: float = math.pi, **kwargs):
+        super().__init__(**kwargs)
         self.omega = omega
-        self.inplace = inplace  # Unused
+          # Unused
 
-    def forward(self, z) -> Tensor:
+    def _forward(self, z) -> Tensor:
         return torch.sin(self.omega * z)
 
 
 @register_activation
-class CombHSine(nn.Module):
+class CombHSine(BaseActivation):
     r"""
     Applies the Comb-H-sine activation function:
 
@@ -52,18 +52,18 @@ class CombHSine(nn.Module):
         - Output: :math:`(*)`, same shape as the input.
     """
 
-    def __init__(self, a: float = 1.0, inplace: bool = False):
-        super(CombHSine, self).__init__()
+    def __init__(self, a: float = 1.0, **kwargs):
+        super().__init__(**kwargs)
         self.a = a
-        self.inplace = inplace  # Unused
+          # Unused
 
-    def forward(self, z) -> Tensor:
+    def _forward(self, z) -> Tensor:
         az = self.a * z
         return torch.sinh(az) + torch.asinh(az)
 
 
 @register_activation
-class ModifiedArcsinh(nn.Module):
+class ModifiedArcsinh(BaseActivation):
     r"""
     Applies the Modified arcsinh (m-arcsinh) activation function:
 
@@ -78,16 +78,16 @@ class ModifiedArcsinh(nn.Module):
         - Output: :math:`(*)`, same shape as the input.
     """
 
-    def __init__(self, inplace: bool = False):
-        super(ModifiedArcsinh, self).__init__()
-        self.inplace = inplace  # Unused
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+          # Unused
 
-    def forward(self, z) -> Tensor:
+    def _forward(self, z) -> Tensor:
         return (1.0 / 12.0) * torch.asinh(z) * torch.abs(z)
 
 
 @register_activation
-class HyperSinh(nn.Module):
+class HyperSinh(BaseActivation):
     r"""
     Applies the hyper-sinh activation function:
 
@@ -106,18 +106,18 @@ class HyperSinh(nn.Module):
         - Output: :math:`(*)`, same shape as the input.
     """
 
-    def __init__(self, inplace: bool = False):
-        super(HyperSinh, self).__init__()
-        self.inplace = inplace  # Unused
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+          # Unused
 
-    def forward(self, z) -> Tensor:
+    def _forward(self, z) -> Tensor:
         positive_part = torch.sinh(z) / 3.0
         negative_part = torch.pow(z, 3) / 4.0
         return torch.where(z > 0, positive_part, negative_part)
 
 
 @register_activation
-class Arctid(nn.Module):
+class Arctid(BaseActivation):
     r"""
     Applies the Arctid activation function:
 
@@ -132,16 +132,16 @@ class Arctid(nn.Module):
         - Output: :math:`(*)`, same shape as the input.
     """
 
-    def __init__(self, inplace: bool = False):
-        super(Arctid, self).__init__()
-        self.inplace = inplace  # Unused
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+          # Unused
 
-    def forward(self, z) -> Tensor:
+    def _forward(self, z) -> Tensor:
         return torch.atan(z) * torch.pow(2.0, -z)
 
 
 @register_activation
-class Cosine(nn.Module):
+class Cosine(BaseActivation):
     r"""
     Applies the Cosine activation function:
 
@@ -156,16 +156,16 @@ class Cosine(nn.Module):
         - Output: :math:`(*)`, same shape as the input.
     """
 
-    def __init__(self, inplace: bool = False):
-        super(Cosine, self).__init__()
-        self.inplace = inplace  # Unused
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+          # Unused
 
-    def forward(self, z) -> Tensor:
+    def _forward(self, z) -> Tensor:
         return 1.0 - torch.cos(z)
 
 
 @register_activation
-class Cosid(nn.Module):
+class Cosid(BaseActivation):
     r"""
     Applies the Cosid activation function:
 
@@ -180,16 +180,16 @@ class Cosid(nn.Module):
         - Output: :math:`(*)`, same shape as the input.
     """
 
-    def __init__(self, inplace: bool = False):
-        super(Cosid, self).__init__()
-        self.inplace = inplace  # Unused
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+          # Unused
 
-    def forward(self, z) -> Tensor:
+    def _forward(self, z) -> Tensor:
         return torch.cos(z) - z
 
 
 @register_activation
-class Sinp(nn.Module):
+class Sinp(BaseActivation):
     r"""
     Applies the Sinp activation function:
 
@@ -207,17 +207,17 @@ class Sinp(nn.Module):
         - Output: :math:`(*)`, same shape as the input.
     """
 
-    def __init__(self, a: float = 1.0, inplace: bool = False):
-        super(Sinp, self).__init__()
+    def __init__(self, a: float = 1.0, **kwargs):
+        super().__init__(**kwargs)
         self.a = a
-        self.inplace = inplace  # Unused
+          # Unused
 
-    def forward(self, z) -> Tensor:
+    def _forward(self, z) -> Tensor:
         return torch.sin(z) - self.a * z
 
 
 @register_activation
-class GCU(nn.Module):
+class GCU(BaseActivation):
     r"""
     Applies the Growing Cosine Unit (GCU) activation function:
 
@@ -232,16 +232,16 @@ class GCU(nn.Module):
         - Output: :math:`(*)`, same shape as the input.
     """
 
-    def __init__(self, inplace: bool = False):
-        super(GCU, self).__init__()
-        self.inplace = inplace  # Unused
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+          # Unused
 
-    def forward(self, z) -> Tensor:
+    def _forward(self, z) -> Tensor:
         return z * torch.cos(z)
 
 
 @register_activation
-class ASU(nn.Module):
+class ASU(BaseActivation):
     r"""
     Applies the Amplifying Sine Unit (ASU) activation function:
 
@@ -256,16 +256,16 @@ class ASU(nn.Module):
         - Output: :math:`(*)`, same shape as the input.
     """
 
-    def __init__(self, inplace: bool = False):
-        super(ASU, self).__init__()
-        self.inplace = inplace  # Unused
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+          # Unused
 
-    def forward(self, z) -> Tensor:
+    def _forward(self, z) -> Tensor:
         return z * torch.sin(z)
 
 
 @register_activation
-class Sinc(nn.Module):
+class Sinc(BaseActivation):
     r"""
     Applies the Sinc activation function:
 
@@ -284,17 +284,17 @@ class Sinc(nn.Module):
         - Output: :math:`(*)`, same shape as the input.
     """
 
-    def __init__(self, inplace: bool = False):
-        super(Sinc, self).__init__()
-        self.inplace = inplace  # Unused
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+          # Unused
 
-    def forward(self, z) -> Tensor:
+    def _forward(self, z) -> Tensor:
         # Handle the case where z = 0 to avoid division by zero
         return torch.where(z == 0, torch.ones_like(z), torch.sin(math.pi * z) / (math.pi * z))
 
 
 @register_activation
-class SSU(nn.Module):
+class SSU(BaseActivation):
     r"""
     Applies the Shifted Sine Unit (SSU) activation function:
 
@@ -309,11 +309,11 @@ class SSU(nn.Module):
         - Output: :math:`(*)`, same shape as the input.
     """
 
-    def __init__(self, inplace: bool = False):
-        super(SSU, self).__init__()
-        self.inplace = inplace  # Unused
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+          # Unused
 
-    def forward(self, z) -> Tensor:
+    def _forward(self, z) -> Tensor:
         shifted_z = z - math.pi
         # Handle the case where shifted_z = 0 to avoid division by zero
         return math.pi * torch.where(
@@ -324,7 +324,7 @@ class SSU(nn.Module):
 
 
 @register_activation
-class DSU(nn.Module):
+class DSU(BaseActivation):
     r"""
     Applies the Decaying Sine Unit (DSU) activation function:
 
@@ -339,11 +339,11 @@ class DSU(nn.Module):
         - Output: :math:`(*)`, same shape as the input.
     """
 
-    def __init__(self, inplace: bool = False):
-        super(DSU, self).__init__()
-        self.inplace = inplace  # Unused
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+          # Unused
 
-    def forward(self, z) -> Tensor:
+    def _forward(self, z) -> Tensor:
         left_shifted = z - math.pi
         right_shifted = z + math.pi
         
@@ -364,7 +364,7 @@ class DSU(nn.Module):
 
 
 @register_activation
-class HcLSH(nn.Module):
+class HcLSH(BaseActivation):
     r"""
     Applies the Hyperbolic Cosine Linearized Squashing Function (HcLSH) activation function:
 
@@ -383,11 +383,11 @@ class HcLSH(nn.Module):
         - Output: :math:`(*)`, same shape as the input.
     """
 
-    def __init__(self, inplace: bool = False):
-        super(HcLSH, self).__init__()
-        self.inplace = inplace  # Unused
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+          # Unused
 
-    def forward(self, z) -> Tensor:
+    def _forward(self, z) -> Tensor:
         log_cosh = torch.log(torch.cosh(z))
         positive_part = log_cosh + (z * torch.cosh(z)) / 2.0
         negative_part = log_cosh + z

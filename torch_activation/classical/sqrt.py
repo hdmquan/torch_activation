@@ -3,10 +3,10 @@ import torch.nn as nn
 from torch import Tensor
 
 from torch_activation import register_activation
-
+from torch_activation.base import BaseActivation
 
 @register_activation
-class SQRT(nn.Module):
+class SQRT(BaseActivation):
     r"""
     Applies the Square-root-based activation function (SQRT):
 
@@ -23,11 +23,11 @@ class SQRT(nn.Module):
         - Noel et al. "Square-root-based activation functions for deep learning." (2021)
     """
 
-    def __init__(self, inplace: bool = False):
-        super(SQRT, self).__init__()
-        self.inplace = inplace
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        
 
-    def forward(self, z) -> Tensor:
+    def _forward(self, z) -> Tensor:
         if self.inplace:
             return z.where(z >= 0, torch.sqrt(z), -torch.sqrt(-z))
         else:
@@ -35,7 +35,7 @@ class SQRT(nn.Module):
 
 
 @register_activation
-class SSAF(nn.Module):
+class SSAF(BaseActivation):
     r"""
     Applies the S-shaped activation function (SSAF), a parametric variant of SQRT:
 
@@ -57,13 +57,13 @@ class SSAF(nn.Module):
         - Proposed independently as "S-shaped activation function" (SSAF)
     """
 
-    def __init__(self, a: float = 1.0, inplace: bool = False):
-        super(SSAF, self).__init__()
+    def __init__(self, a: float = 1.0, **kwargs):
+        super().__init__(**kwargs)
         self.a = a
         self.factor = 2 * a
-        self.inplace = inplace
+        
 
-    def forward(self, z) -> Tensor:
+    def _forward(self, z) -> Tensor:
         if self.inplace:
             return z.where(z >= 0, torch.sqrt(self.factor * z), -torch.sqrt(-self.factor * z))
         else:

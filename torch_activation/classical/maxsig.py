@@ -1,12 +1,13 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+from torch_activation.base import BaseActivation
 from torch import Tensor
 from torch_activation import register_activation
 
 
 @register_activation
-class TanhLinearUnit(nn.Module):
+class TanhLinearUnit(BaseActivation):
     r"""
     Applies the Tanh Linear Unit activation function:
 
@@ -29,10 +30,10 @@ class TanhLinearUnit(nn.Module):
         >>> output = m(x)
     """
 
-    def __init__(self):
-        super(TanhLinearUnit, self).__init__()
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         pos_mask = x >= 0
         neg_mask = ~pos_mask
         
@@ -42,7 +43,7 @@ class TanhLinearUnit(nn.Module):
         return result
 
 
-class DualELU(nn.Module):
+class DualELU(BaseActivation):
     r"""
     Applies the Dual ELU activation function:
 
@@ -63,12 +64,12 @@ class DualELU(nn.Module):
         >>> output = m(x)
     """
 
-    def __init__(self, alpha: float = 1.0, dim: int = -1):
-        super(DualELU, self).__init__()
+    def __init__(self, alpha: float = 1.0, dim: int = -1, **kwargs):
+        super().__init__(**kwargs)
         self.alpha = alpha
         self.dim = dim
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         dim_size = x.size(self.dim)
         assert dim_size % 2 == 0, f"Dimension {self.dim} must be divisible by 2"
         
@@ -79,7 +80,7 @@ class DualELU(nn.Module):
 
 
 @register_activation
-class DifferenceELU(nn.Module):
+class DifferenceELU(BaseActivation):
     r"""
     Applies the Difference ELU activation function:
 
@@ -103,12 +104,12 @@ class DifferenceELU(nn.Module):
         >>> output = m(x)
     """
 
-    def __init__(self, a: float = 1.0, b: float = 1.0):
-        super(DifferenceELU, self).__init__()
+    def __init__(self, a: float = 1.0, b: float = 1.0, **kwargs):
+        super().__init__(**kwargs)
         self.a = nn.Parameter(Tensor([a]))
         self.b = nn.Parameter(Tensor([b]))
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         pos_mask = x >= 0
         neg_mask = ~pos_mask
         
@@ -120,7 +121,7 @@ class DifferenceELU(nn.Module):
 
 
 @register_activation
-class PolynomialLinearUnit(nn.Module):
+class PolynomialLinearUnit(BaseActivation):
     r"""
     Applies the Polynomial Linear Unit activation function:
 
@@ -140,10 +141,10 @@ class PolynomialLinearUnit(nn.Module):
         >>> output = m(x)
     """
 
-    def __init__(self):
-        super(PolynomialLinearUnit, self).__init__()
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         pos_mask = x >= 0
         neg_mask = ~pos_mask
         
@@ -158,7 +159,7 @@ class PolynomialLinearUnit(nn.Module):
 
 
 @register_activation
-class InversePolynomialLinearUnit(nn.Module):
+class InversePolynomialLinearUnit(BaseActivation):
     r"""
     Applies the Inverse Polynomial Linear Unit activation function:
 
@@ -181,11 +182,11 @@ class InversePolynomialLinearUnit(nn.Module):
         >>> output = m(x)
     """
 
-    def __init__(self, a: float = 1.0):
-        super(InversePolynomialLinearUnit, self).__init__()
+    def __init__(self, a: float = 1.0, **kwargs):
+        super().__init__(**kwargs)
         self.a = nn.Parameter(Tensor([a]))
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         pos_mask = x >= 0
         neg_mask = ~pos_mask
         
@@ -197,7 +198,7 @@ class InversePolynomialLinearUnit(nn.Module):
 
 
 @register_activation
-class PowerLinearUnit(nn.Module):
+class PowerLinearUnit(BaseActivation):
     r"""
     Applies the Power Linear Unit activation function:
 
@@ -220,11 +221,11 @@ class PowerLinearUnit(nn.Module):
         >>> output = m(x)
     """
 
-    def __init__(self, a: float = 1.0):
-        super(PowerLinearUnit, self).__init__()
+    def __init__(self, a: float = 1.0, **kwargs):
+        super().__init__(**kwargs)
         self.a = nn.Parameter(Tensor([a]))
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         pos_mask = x >= 0
         neg_mask = ~pos_mask
         
@@ -239,7 +240,7 @@ class PowerLinearUnit(nn.Module):
 
 
 @register_activation
-class PowerFunctionLinearUnit(nn.Module):
+class PowerFunctionLinearUnit(BaseActivation):
     r"""
     Applies the Power Function Linear Unit activation function:
 
@@ -256,15 +257,15 @@ class PowerFunctionLinearUnit(nn.Module):
         >>> output = m(x)
     """
 
-    def __init__(self):
-        super(PowerFunctionLinearUnit, self).__init__()
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         return x * 0.5 * (1 + x / torch.sqrt(1 + x.pow(2)))
 
 
 @register_activation
-class FasterPowerFunctionLinearUnit(nn.Module):
+class FasterPowerFunctionLinearUnit(BaseActivation):
     r"""
     Applies the Faster Power Function Linear Unit activation function:
 
@@ -284,10 +285,10 @@ class FasterPowerFunctionLinearUnit(nn.Module):
         >>> output = m(x)
     """
 
-    def __init__(self):
-        super(FasterPowerFunctionLinearUnit, self).__init__()
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         pos_mask = x >= 0
         neg_mask = ~pos_mask
         
@@ -299,7 +300,7 @@ class FasterPowerFunctionLinearUnit(nn.Module):
 
 
 @register_activation
-class ElasticAdaptivelyParametricCompoundedUnit(nn.Module):
+class ElasticAdaptivelyParametricCompoundedUnit(BaseActivation):
     r"""
     Applies the Elastic Adaptively Parametric Compounded Unit activation function:
 
@@ -329,8 +330,8 @@ class ElasticAdaptivelyParametricCompoundedUnit(nn.Module):
         >>> output = m(x)
     """
 
-    def __init__(self, a: float = 1.0, b: float = 1.0, num_parameters: int = 1):
-        super(ElasticAdaptivelyParametricCompoundedUnit, self).__init__()
+    def __init__(self, a: float = 1.0, b: float = 1.0, num_parameters: int = 1, **kwargs):
+        super().__init__(**kwargs)
         self.num_parameters = num_parameters
         
         if num_parameters == 1:
@@ -340,7 +341,7 @@ class ElasticAdaptivelyParametricCompoundedUnit(nn.Module):
             self.a = nn.Parameter(torch.full((num_parameters,), a))
             self.b = nn.Parameter(torch.full((num_parameters,), b))
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         if self.num_parameters == 1:
             pos_mask = x >= 0
             neg_mask = ~pos_mask
@@ -377,7 +378,7 @@ class ElasticAdaptivelyParametricCompoundedUnit(nn.Module):
 
 
 @register_activation
-class LipschitzReLU(nn.Module):
+class LipschitzReLU(BaseActivation):
     r"""
     Applies the Lipschitz ReLU activation function:
 
@@ -406,12 +407,12 @@ class LipschitzReLU(nn.Module):
         >>> output = m(x)
     """
 
-    def __init__(self, p_fn=None, n_fn=None):
-        super(LipschitzReLU, self).__init__()
+    def __init__(self, p_fn=None, n_fn=None, **kwargs):
+        super().__init__(**kwargs)
         self.p_fn = p_fn if p_fn is not None else lambda x: x
         self.n_fn = n_fn if n_fn is not None else lambda x: torch.zeros_like(x)
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         pos_mask = x > 0
         neg_mask = ~pos_mask
         
@@ -423,7 +424,7 @@ class LipschitzReLU(nn.Module):
 
 
 @register_activation
-class ScaledExponentialLinearUnit(nn.Module):
+class ScaledExponentialLinearUnit(BaseActivation):
     r"""
     Applies the Scaled Exponential Linear Unit activation function:
 
@@ -447,17 +448,17 @@ class ScaledExponentialLinearUnit(nn.Module):
         >>> output = m(x)
     """
 
-    def __init__(self, a: float = 1.67326, b: float = 1.0):
-        super(ScaledExponentialLinearUnit, self).__init__()
+    def __init__(self, a: float = 1.67326, b: float = 1.0, **kwargs):
+        super().__init__(**kwargs)
         self.a = a
         self.b = b
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         return F.selu(x)
 
 
 @register_activation
-class LeakyScaledExponentialLinearUnit(nn.Module):
+class LeakyScaledExponentialLinearUnit(BaseActivation):
     r"""
     Applies the Leaky Scaled Exponential Linear Unit activation function:
 
@@ -482,13 +483,13 @@ class LeakyScaledExponentialLinearUnit(nn.Module):
         >>> output = m(x)
     """
 
-    def __init__(self, a: float = 1.0, b: float = 1.0, c: float = 0.1):
-        super(LeakyScaledExponentialLinearUnit, self).__init__()
+    def __init__(self, a: float = 1.0, b: float = 1.0, c: float = 0.1, **kwargs):
+        super().__init__(**kwargs)
         self.a = nn.Parameter(Tensor([a]))
         self.b = nn.Parameter(Tensor([b]))
         self.c = nn.Parameter(Tensor([c]))
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         pos_mask = x >= 0
         neg_mask = ~pos_mask
         
@@ -502,7 +503,7 @@ class LeakyScaledExponentialLinearUnit(nn.Module):
 
 
 @register_activation
-class ScaledExponentiallyRegularizedLinearUnit(nn.Module):
+class ScaledExponentiallyRegularizedLinearUnit(BaseActivation):
     r"""
     Applies the Scaled Exponentially Regularized Linear Unit activation function:
 
@@ -526,12 +527,12 @@ class ScaledExponentiallyRegularizedLinearUnit(nn.Module):
         >>> output = m(x)
     """
 
-    def __init__(self, a: float = 1.0, b: float = 1.0):
-        super(ScaledExponentiallyRegularizedLinearUnit, self).__init__()
+    def __init__(self, a: float = 1.0, b: float = 1.0, **kwargs):
+        super().__init__(**kwargs)
         self.a = nn.Parameter(Tensor([a]))
         self.b = nn.Parameter(Tensor([b]))
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         pos_mask = x >= 0
         neg_mask = ~pos_mask
         
@@ -545,7 +546,7 @@ class ScaledExponentiallyRegularizedLinearUnit(nn.Module):
 
 
 @register_activation
-class ScaledScaledExponentialLinearUnit(nn.Module):
+class ScaledScaledExponentialLinearUnit(BaseActivation):
     r"""
     Applies the Scaled Scaled Exponential Linear Unit activation function:
 
@@ -570,13 +571,13 @@ class ScaledScaledExponentialLinearUnit(nn.Module):
         >>> output = m(x)
     """
 
-    def __init__(self, a: float = 1.0, b: float = 1.0, c: float = 1.0):
-        super(ScaledScaledExponentialLinearUnit, self).__init__()
+    def __init__(self, a: float = 1.0, b: float = 1.0, c: float = 1.0, **kwargs):
+        super().__init__(**kwargs)
         self.a = nn.Parameter(Tensor([a]))
         self.b = nn.Parameter(Tensor([b]))
         self.c = nn.Parameter(Tensor([c]))
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         pos_mask = x >= 0
         neg_mask = ~pos_mask
         
@@ -590,7 +591,7 @@ class ScaledScaledExponentialLinearUnit(nn.Module):
 
 
 @register_activation
-class RSigELU(nn.Module):
+class RSigELU(BaseActivation):
     r"""
     Applies the RSigELU activation function:
 
@@ -614,11 +615,11 @@ class RSigELU(nn.Module):
         >>> output = m(x)
     """
 
-    def __init__(self, a: float = 1.0):
-        super(RSigELU, self).__init__()
+    def __init__(self, a: float = 1.0, **kwargs):
+        super().__init__(**kwargs)
         self.a = nn.Parameter(Tensor([a]))
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         result = torch.zeros_like(x)
         
         # Case 1: 1 < z < infinity
@@ -637,7 +638,7 @@ class RSigELU(nn.Module):
 
 
 @register_activation
-class HardSReLUE(nn.Module):
+class HardSReLUE(BaseActivation):
     r"""
     Applies the Hard SReLUE activation function:
 
@@ -660,11 +661,11 @@ class HardSReLUE(nn.Module):
         >>> output = m(x)
     """
 
-    def __init__(self, a: float = 1.0):
-        super(HardSReLUE, self).__init__()
+    def __init__(self, a: float = 1.0, **kwargs):
+        super().__init__(**kwargs)
         self.a = nn.Parameter(Tensor([a]))
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         pos_mask = x >= 0
         neg_mask = ~pos_mask
         
@@ -683,7 +684,7 @@ class HardSReLUE(nn.Module):
 
 
 @register_activation
-class ExponentialLinearSigmoidSquashing(nn.Module):
+class ExponentialLinearSigmoidSquashing(BaseActivation):
     r"""
     Applies the Exponential Linear Sigmoid Squashing activation function:
 
@@ -703,10 +704,10 @@ class ExponentialLinearSigmoidSquashing(nn.Module):
         >>> output = m(x)
     """
 
-    def __init__(self):
-        super(ExponentialLinearSigmoidSquashing, self).__init__()
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         pos_mask = x >= 0
         neg_mask = ~pos_mask
         
@@ -724,7 +725,7 @@ class ExponentialLinearSigmoidSquashing(nn.Module):
 
 
 @register_activation
-class HardExponentialLinearSigmoidSquashing(nn.Module):
+class HardExponentialLinearSigmoidSquashing(BaseActivation):
     r"""
     Applies the Hard Exponential Linear Sigmoid Squashing activation function:
 
@@ -744,10 +745,10 @@ class HardExponentialLinearSigmoidSquashing(nn.Module):
         >>> output = m(x)
     """
 
-    def __init__(self):
-        super(HardExponentialLinearSigmoidSquashing, self).__init__()
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         pos_mask = x >= 0
         neg_mask = ~pos_mask
         
@@ -765,7 +766,7 @@ class HardExponentialLinearSigmoidSquashing(nn.Module):
 
 
 @register_activation
-class RSigELUD(nn.Module):
+class RSigELUD(BaseActivation):
     r"""
     Applies the RSigELUD activation function:
 
@@ -790,12 +791,12 @@ class RSigELUD(nn.Module):
         >>> output = m(x)
     """
 
-    def __init__(self, a: float = 1.0, b: float = 1.0):
-        super(RSigELUD, self).__init__()
+    def __init__(self, a: float = 1.0, b: float = 1.0, **kwargs):
+        super().__init__(**kwargs)
         self.a = nn.Parameter(Tensor([a]))
         self.b = nn.Parameter(Tensor([b]))
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         result = torch.zeros_like(x)
         
         # Case 1: 1 < z < infinity
@@ -814,7 +815,7 @@ class RSigELUD(nn.Module):
 
 
 @register_activation 
-class LSReLU(nn.Module):
+class LSReLU(BaseActivation):
     r"""
     Applies the LSReLU activation function:
 
@@ -839,12 +840,12 @@ class LSReLU(nn.Module):
         >>> output = m(x)
     """
 
-    def __init__(self, a: float = 1.0, b: float = 1.0):
-        super(LSReLU, self).__init__()
+    def __init__(self, a: float = 1.0, b: float = 1.0, **kwargs):
+        super().__init__(**kwargs)
         self.a = nn.Parameter(Tensor([a]))
         self.b = nn.Parameter(Tensor([b]))
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         result = torch.zeros_like(x)
         
         # Case 1: z <= 0

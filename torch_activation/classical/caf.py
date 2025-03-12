@@ -2,8 +2,9 @@ import torch
 import torch.nn as nn
 from torch import Tensor
 from torch_activation import register_activation
+from torch_activation.base import BaseActivation
 
-class HCAF(nn.Module):
+class HCAF(BaseActivation):
     r"""
     Applies the Hybrid Chaotic Activation Function:
 
@@ -35,12 +36,12 @@ class HCAF(nn.Module):
         >>> output = m(x)
     """
 
-    def __init__(self, r: float = 4.0, iterations: int = 3):
+    def __init__(self, r: float = 4.0, iterations: int = 3, **kwargs):
         super().__init__()
         self.r = r
         self.iterations = iterations
 
-    def forward(self, x: Tensor) -> Tensor:
+    def _forward(self, x: Tensor) -> Tensor:
         # Initial sigmoid activation
         a = torch.sigmoid(x)
         
@@ -55,7 +56,7 @@ class HCAF(nn.Module):
 
 
 @register_activation
-class FCAF_Hidden(nn.Module):
+class FCAF_Hidden(BaseActivation):
     r"""
     Applies the Fusion of Chaotic Activation Function for hidden units:
 
@@ -83,14 +84,14 @@ class FCAF_Hidden(nn.Module):
         >>> output = m(x)
     """
 
-    def __init__(self, r: float = 4.0, a: float = 0.0, b: float = 0.5, iterations: int = 1):
+    def __init__(self, r: float = 4.0, a: float = 0.0, b: float = 0.5, iterations: int = 1, **kwargs):
         super().__init__()
         self.r = r
         self.a = a
         self.b = b
         self.iterations = iterations
 
-    def forward(self, x: Tensor) -> Tensor:
+    def _forward(self, x: Tensor) -> Tensor:
         # Normalize input to [0,1] range for chaotic map stability
         z = torch.sigmoid(x)
         
@@ -102,7 +103,7 @@ class FCAF_Hidden(nn.Module):
 
 
 @register_activation
-class FCAF_Output(nn.Module):
+class FCAF_Output(BaseActivation):
     r"""
     Applies the Fusion of Chaotic Activation Function for output units:
 
@@ -133,7 +134,7 @@ class FCAF_Output(nn.Module):
     """
 
     def __init__(self, r: float = 4.0, a: float = 0.0, b: float = 0.5, 
-                 c: float = 1.0, d: float = 0.0, iterations: int = 1):
+                 c: float = 1.0, d: float = 0.0, iterations: int = 1, **kwargs):
         super().__init__()
         self.r = r
         self.a = a
@@ -142,7 +143,7 @@ class FCAF_Output(nn.Module):
         self.d = d
         self.iterations = iterations
 
-    def forward(self, x: Tensor) -> Tensor:
+    def _forward(self, x: Tensor) -> Tensor:
         # Normalize input to [0,1] range for chaotic map stability
         z = torch.sigmoid(x)
         
@@ -158,7 +159,7 @@ class FCAF_Output(nn.Module):
 
 
 @register_activation
-class CCAF(nn.Module):
+class CCAF(BaseActivation):
     r"""
     Applies the Cascade Chaotic Activation Function:
 
@@ -187,7 +188,7 @@ class CCAF(nn.Module):
         >>> output = m(x)
     """
 
-    def __init__(self, a: float = 0.5, b: float = 0.5, iterations: int = 1):
+    def __init__(self, a: float = 0.5, b: float = 0.5, iterations: int = 1, **kwargs):
         super().__init__()
         assert 0 <= a <= 1, "Parameter 'a' must be in the range [0, 1]"
         assert 0 <= b <= 1, "Parameter 'b' must be in the range [0, 1]"
@@ -195,7 +196,7 @@ class CCAF(nn.Module):
         self.b = b
         self.iterations = iterations
 
-    def forward(self, x: Tensor) -> Tensor:
+    def _forward(self, x: Tensor) -> Tensor:
         # Normalize input to [-1,1] range for sine stability
         z = torch.tanh(x)
         

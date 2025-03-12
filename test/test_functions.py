@@ -1,3 +1,5 @@
+# Someone make this a real test plz :((
+
 import torch
 import torch_activation
 import inspect
@@ -10,15 +12,14 @@ from utils import (
 
 from loguru import logger
 
-# Get all registered activations
-diff_acts = torch_activation.get_all_activations(differentiable_only=True)
-non_diff_acts = torch_activation.get_all_activations(differentiable_only=False)
-
-def test_diff_acts(acts, dev="cpu"):
+def test_activations(dev="cpu"):
+    """Test all registered activation functions."""
     passed_tests = 0
     failed_tests = 0
     tested_count = 0
     skipped_count = 0
+    
+    acts = torch_activation.get_all_activations()
 
     for act_name in acts:
         try:
@@ -30,14 +31,6 @@ def test_diff_acts(acts, dev="cpu"):
             skipped_count += 1
             continue
 
-        # logger.debug(act_fn)
-
-        if act_fn is None:
-            logger.error(f"Activation function {act_name} not found.")
-            skipped_count += 1
-            continue
-
-        # logger.info(f"Testing differentiable activation: {act_name}")
         tested_count += 1
 
         # Test forward pass
@@ -50,36 +43,6 @@ def test_diff_acts(acts, dev="cpu"):
         # Test backward pass
         if not check_backward_pass(act_fn, dev):
             logger.error(f"{act_name} failed backward pass.")
-            failed_tests += 1
-        else:
-            passed_tests += 1
-
-    return passed_tests, failed_tests, tested_count, skipped_count
-
-
-def test_non_diff_acts(acts, dev="cpu"):
-    passed_tests = 0
-    failed_tests = 0
-    tested_count = 0
-    skipped_count = 0
-
-    for act_name in acts:
-        try:
-            # Get the class from the registry
-            act_class = torch_activation._ACTIVATIONS[act_name]["class"]
-            act_fn = act_class()
-        except (KeyError, TypeError):
-            logger.error(f"Activation function {act_name} not found or couldn't be instantiated.")
-            skipped_count += 1
-            continue
-
-        logger.info(f"Testing non-differentiable activation: {act_name}")
-        tested_count += 1
-        inp_tensor = torch.randn(2, 3).to(dev)
-
-        # Test forward pass
-        if not check_forward_pass(act_fn, inp_tensor, dev):
-            logger.error(f"{act_name} failed forward pass.")
             failed_tests += 1
         else:
             passed_tests += 1
@@ -116,23 +79,17 @@ def find_unregistered_activations():
 
 def test_all_acts():
     dev = "cpu"
-    diff_passed, diff_failed, diff_tested, diff_skipped = test_diff_acts(diff_acts, dev)
-    non_diff_passed, non_diff_failed, non_diff_tested, non_diff_skipped = test_non_diff_acts(non_diff_acts, dev)
-
-    total_passed = diff_passed + non_diff_passed
-    total_failed = diff_failed + non_diff_failed
-    total_tested = diff_tested + non_diff_tested
-    total_skipped = diff_skipped + non_diff_skipped
-    total_activations = len(diff_acts) + len(non_diff_acts)
+    passed, failed, tested, skipped = test_activations(dev)
+    total_activations = len(torch_activation.get_all_activations())
     
     # Find unregistered activation functions
     unregistered = find_unregistered_activations()
 
     logger.info(
-        f"\033[92mSummary: {total_passed} tests passed\033[0m, \033[91m{total_failed} tests failed\033[0m."
+        f"\033[92mSummary: {passed} tests passed\033[0m, \033[91m{failed} tests failed\033[0m."
     )
     logger.info(
-        f"Activation functions: {total_tested} tested, {total_skipped} skipped, {total_activations} total."
+        f"Activation functions: {tested} tested, {skipped} skipped, {total_activations} total."
     )
     
     if unregistered:
@@ -140,5 +97,8 @@ def test_all_acts():
         for class_name, module_name in unregistered:
             logger.warning(f"  {class_name} in {module_name}")
 
+    assert failed == 0, "Failed tests"
+        
 
-test_all_acts()
+if __name__ == "__main__":
+    test_all_acts()

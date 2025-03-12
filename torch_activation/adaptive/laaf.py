@@ -1,13 +1,14 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+from torch_activation.base import BaseActivation
 
 from torch import Tensor
 
 from torch_activation import register_activation
 
 @register_activation
-class CosLU(nn.Module):
+class CosLU(BaseActivation):
     r"""
     Applies the Cosine Linear Unit function:
 
@@ -39,14 +40,13 @@ class CosLU(nn.Module):
         >>> m(x)
     """
 
-    def __init__(self, a: float = 1.0, b: float = 1.0, inplace: bool = False):
-        super(CosLU, self).__init__()
+    def __init__(self, a: float = 1.0, b: float = 1.0, **kwargs):
+        super().__init__(**kwargs)
         self.alpha = nn.Parameter(Tensor([a]))
         self.beta = nn.Parameter(Tensor([b]))
-        self.inplace = inplace
+        
 
-    def forward(self, x) -> Tensor:
-        return self._forward_inplace(x) if self.inplace else self._forward(x)
+    
 
     def _forward(self, x):
         result = x + self.alpha * torch.cos(self.beta * x)
@@ -60,7 +60,7 @@ class CosLU(nn.Module):
         return x
 
 @register_activation
-class LAAF(nn.Module):
+class LAAF(BaseActivation):
     r"""
     Applies the Locally Adaptive Activation Function (LAAF):
 
@@ -93,18 +93,18 @@ class LAAF(nn.Module):
     """
 
     def __init__(self, activation: str = 'sigmoid', a_init: float = 1.0, 
-                 leaky_slope: float = 0.01, fixed_n: float = 1.0, inplace: bool = False):
-        super(LAAF, self).__init__()
+                 leaky_slope: float = 0.01, fixed_n: float = 1.0, **kwargs):
+        super().__init__(**kwargs)
         self.a = nn.Parameter(Tensor([a_init]))
         self.activation = activation.lower()
         self.leaky_slope = leaky_slope
         self.fixed_n = fixed_n
-        self.inplace = inplace
+        
         
         if self.activation not in ['sigmoid', 'tanh', 'relu', 'leaky_relu']:
             raise ValueError(f"Unsupported activation: {activation}. Choose from 'sigmoid', 'tanh', 'relu', 'leaky_relu'")
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         scaled_x = self.fixed_n * self.a * x
         
         if self.activation == 'sigmoid':
@@ -112,13 +112,13 @@ class LAAF(nn.Module):
         elif self.activation == 'tanh':
             return torch.tanh(scaled_x)
         elif self.activation == 'relu':
-            return F.relu(scaled_x, inplace=self.inplace)
+            return F.relu(scaled_x)
         elif self.activation == 'leaky_relu':
-            return F.leaky_relu(scaled_x, negative_slope=self.leaky_slope, inplace=self.inplace)
+            return F.leaky_relu(scaled_x, negative_slope=self.leaky_slope)
 
 
 @register_activation
-class AdaptiveSlopeTanh(nn.Module):
+class AdaptiveSlopeTanh(BaseActivation):
     r"""
     Applies the Adaptive Slope Hyperbolic Tangent function:
 
@@ -140,16 +140,16 @@ class AdaptiveSlopeTanh(nn.Module):
         >>> output = m(x)
     """
 
-    def __init__(self, a_init: float = 1.0):
-        super(AdaptiveSlopeTanh, self).__init__()
+    def __init__(self, a_init: float = 1.0, **kwargs):
+        super().__init__(**kwargs)
         self.a = nn.Parameter(Tensor([a_init]))
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         return torch.tanh(self.a * x)
 
 
 @register_activation
-class PSTanh(nn.Module):
+class PSTanh(BaseActivation):
     r"""
     Applies the Parametric Scaled Hyperbolic Tangent function:
 
@@ -172,17 +172,17 @@ class PSTanh(nn.Module):
         >>> output = m(x)
     """
 
-    def __init__(self, a_init: float = 1.0, b_init: float = 1.0):
-        super(PSTanh, self).__init__()
+    def __init__(self, a_init: float = 1.0, b_init: float = 1.0, **kwargs):
+        super().__init__(**kwargs)
         self.a = nn.Parameter(Tensor([a_init]))
         self.b = nn.Parameter(Tensor([b_init]))
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         return x * self.a * (1 + torch.tanh(self.b * x))
 
 
 @register_activation
-class SSinH(nn.Module):
+class SSinH(BaseActivation):
     r"""
     Applies the Scaled Sine-Hyperbolic function:
 
@@ -205,17 +205,17 @@ class SSinH(nn.Module):
         >>> output = m(x)
     """
 
-    def __init__(self, a_init: float = 1.0, b_init: float = 1.0):
-        super(SSinH, self).__init__()
+    def __init__(self, a_init: float = 1.0, b_init: float = 1.0, **kwargs):
+        super().__init__(**kwargs)
         self.a = nn.Parameter(Tensor([a_init]))
         self.b = nn.Parameter(Tensor([b_init]))
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         return self.a * torch.sinh(self.b * x)
 
 
 @register_activation
-class SExp(nn.Module):
+class SExp(BaseActivation):
     r"""
     Applies the Scaled Exponential function:
 
@@ -238,17 +238,17 @@ class SExp(nn.Module):
         >>> output = m(x)
     """
 
-    def __init__(self, a_init: float = 1.0, b_init: float = 1.0):
-        super(SExp, self).__init__()
+    def __init__(self, a_init: float = 1.0, b_init: float = 1.0, **kwargs):
+        super().__init__(**kwargs)
         self.a = nn.Parameter(Tensor([a_init]))
         self.b = nn.Parameter(Tensor([b_init]))
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         return self.a * (torch.exp(self.b * x) - 1)
 
 
 @register_activation
-class LAU(nn.Module):
+class LAU(BaseActivation):
     r"""
     Applies the Logmoid Activation Unit function:
 
@@ -271,17 +271,17 @@ class LAU(nn.Module):
         >>> output = m(x)
     """
 
-    def __init__(self, a_init: float = 1.0, b_init: float = 1.0):
-        super(LAU, self).__init__()
+    def __init__(self, a_init: float = 1.0, b_init: float = 1.0, **kwargs):
+        super().__init__(**kwargs)
         self.a = nn.Parameter(Tensor([a_init]))
         self.b = nn.Parameter(Tensor([b_init]))
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         return x * torch.log(1 + self.a * torch.sigmoid(self.b * x))
 
 
 @register_activation
-class AGumb(nn.Module):
+class AGumb(BaseActivation):
     r"""
     Applies the Adaptive Gumbel function:
 
@@ -303,12 +303,12 @@ class AGumb(nn.Module):
         >>> output = m(x)
     """
 
-    def __init__(self, a_init: float = 1.0):
-        super(AGumb, self).__init__()
+    def __init__(self, a_init: float = 1.0, **kwargs):
+        super().__init__(**kwargs)
         # Using softplus to ensure a is positive
         self.a_raw = nn.Parameter(Tensor([a_init]))
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         # Ensure a is positive using softplus
         a = F.softplus(self.a_raw)
         return 1 - (1 + a * torch.exp(x))**(-1)

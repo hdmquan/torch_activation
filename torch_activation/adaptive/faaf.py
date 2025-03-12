@@ -1,6 +1,7 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+from torch_activation.base import BaseActivation
 import math
 from torch import Tensor
 from scipy.special import bernoulli
@@ -9,7 +10,7 @@ from torch_activation import register_activation
 
 # TODO: Naming
 
-class FAAF(nn.Module):
+class FAAF(BaseActivation):
     r"""
     Applies the Fractional Adaptive Activation Function (FAAF):
 
@@ -27,16 +28,16 @@ class FAAF(nn.Module):
         - Output: :math:`(*)`, same shape as the input.
     """
 
-    def __init__(self, a_init: float = 0.5):
-        super(FAAF, self).__init__()
+    def __init__(self, a_init: float = 0.5, **kwargs):
+        super().__init__(**kwargs)
         self.a = nn.Parameter(Tensor([a_init]))
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         raise NotImplementedError("Subclasses must implement forward method")
 
 
 @register_activation
-class FracReLU(nn.Module):
+class FracReLU(BaseActivation):
     r"""
     Applies the Fractional ReLU function:
 
@@ -59,12 +60,12 @@ class FracReLU(nn.Module):
         >>> output = m(x)
     """
 
-    def __init__(self, a_init: float = 0.5, eps: float = 1e-6):
-        super(FracReLU, self).__init__()
+    def __init__(self, a_init: float = 0.5, eps: float = 1e-6, **kwargs):
+        super().__init__(**kwargs)
         self.a = nn.Parameter(Tensor([a_init]))
         self.eps = eps
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         # Clamp a to be in (0, 1) range for stability
         a_clamped = torch.clamp(self.a, 0.01, 0.99)
         
@@ -84,7 +85,7 @@ class FracReLU(nn.Module):
 
 
 @register_activation
-class FracSoftplus(nn.Module):
+class FracSoftplus(BaseActivation):
     r"""
     Applies the Fractional Softplus function:
 
@@ -112,13 +113,13 @@ class FracSoftplus(nn.Module):
         >>> output = m(x)
     """
 
-    def __init__(self, a_init: float = 0.5, h: float = 0.1, n_terms: int = 5):
-        super(FracSoftplus, self).__init__()
+    def __init__(self, a_init: float = 0.5, h: float = 0.1, n_terms: int = 5, **kwargs):
+        super().__init__(**kwargs)
         self.a = nn.Parameter(Tensor([a_init]))
         self.h = h
         self.n_terms = n_terms
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         # Clamp a to be in (0, 2) range for stability
         a_clamped = torch.clamp(self.a, 0.01, 1.99)
         
@@ -146,7 +147,7 @@ class FracSoftplus(nn.Module):
 
 
 @register_activation
-class FracTanh(nn.Module):
+class FracTanh(BaseActivation):
     r"""
     Applies the Fractional Hyperbolic Tangent function:
 
@@ -174,13 +175,13 @@ class FracTanh(nn.Module):
         >>> output = m(x)
     """
 
-    def __init__(self, a_init: float = 0.5, h: float = 0.1, n_terms: int = 5):
-        super(FracTanh, self).__init__()
+    def __init__(self, a_init: float = 0.5, h: float = 0.1, n_terms: int = 5, **kwargs):
+        super().__init__(**kwargs)
         self.a = nn.Parameter(Tensor([a_init]))
         self.h = h
         self.n_terms = n_terms
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         # Clamp a to be in (0, 2) range for stability
         a_clamped = torch.clamp(self.a, 0.01, 1.99)
         
@@ -205,7 +206,7 @@ class FracTanh(nn.Module):
 
 
 @register_activation
-class FALU(nn.Module):
+class FALU(BaseActivation):
     r"""
     Applies the Fractional Adaptive Linear Unit (FALU):
 
@@ -239,12 +240,12 @@ class FALU(nn.Module):
         >>> output = m(x)
     """
 
-    def __init__(self, a_init: float = 0.5, b_init: float = 1.0):
-        super(FALU, self).__init__()
+    def __init__(self, a_init: float = 0.5, b_init: float = 1.0, **kwargs):
+        super().__init__(**kwargs)
         self.a = nn.Parameter(Tensor([a_init]))
         self.b = nn.Parameter(Tensor([b_init]))
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         # Clamp a to be in (0, 2) range and b to be in (1, 10) range for stability
         a_clamped = torch.clamp(self.a, 0.0, 2.0)
         b_clamped = torch.clamp(self.b, 1.0, 10.0)
@@ -272,7 +273,7 @@ class FALU(nn.Module):
 
 
 @register_activation
-class FracLReLU(nn.Module):
+class FracLReLU(BaseActivation):
     r"""
     Applies the Fractional Leaky ReLU function:
 
@@ -299,13 +300,13 @@ class FracLReLU(nn.Module):
         >>> output = m(x)
     """
 
-    def __init__(self, a_init: float = 0.5, negative_slope: float = 0.1, eps: float = 1e-6):
-        super(FracLReLU, self).__init__()
+    def __init__(self, a_init: float = 0.5, negative_slope: float = 0.1, eps: float = 1e-6, **kwargs):
+        super().__init__(**kwargs)
         self.a = nn.Parameter(Tensor([a_init]))
         self.negative_slope = negative_slope
         self.eps = eps
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         # Clamp a to be in (0, 1) range for stability
         a_clamped = torch.clamp(self.a, 0.01, 0.99)
         
@@ -337,7 +338,7 @@ class FracLReLU(nn.Module):
 
 
 @register_activation
-class FracPReLU(nn.Module):
+class FracPReLU(BaseActivation):
     r"""
     Applies the Fractional Parametric ReLU function:
 
@@ -364,13 +365,13 @@ class FracPReLU(nn.Module):
         >>> output = m(x)
     """
 
-    def __init__(self, a_init: float = 0.5, b_init: float = 0.25, eps: float = 1e-6):
-        super(FracPReLU, self).__init__()
+    def __init__(self, a_init: float = 0.5, b_init: float = 0.25, eps: float = 1e-6, **kwargs):
+        super().__init__(**kwargs)
         self.a = nn.Parameter(Tensor([a_init]))
         self.b = nn.Parameter(Tensor([b_init]))
         self.eps = eps
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         # Clamp a to be in (0, 1) range for stability
         a_clamped = torch.clamp(self.a, 0.01, 0.99)
         
@@ -404,7 +405,7 @@ class FracPReLU(nn.Module):
 
 
 @register_activation
-class FracELU(nn.Module):
+class FracELU(BaseActivation):
     r"""
     Applies the Fractional Exponential Linear Unit function:
 
@@ -432,14 +433,14 @@ class FracELU(nn.Module):
         >>> output = m(x)
     """
 
-    def __init__(self, a_init: float = 0.5, alpha: float = 1.0, n_terms: int = 5, eps: float = 1e-6):
-        super(FracELU, self).__init__()
+    def __init__(self, a_init: float = 0.5, alpha: float = 1.0, n_terms: int = 5, eps: float = 1e-6, **kwargs):
+        super().__init__(**kwargs)
         self.a = nn.Parameter(Tensor([a_init]))
         self.alpha = alpha
         self.n_terms = n_terms
         self.eps = eps
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         # Clamp a to be in (0, 1) range for stability
         a_clamped = torch.clamp(self.a, 0.01, 0.99)
         
@@ -479,9 +480,9 @@ class FracELU(nn.Module):
             
         return result
 
-
-@register_activation
-class FracSiLU1(nn.Module):
+# TODO: Forward pass failed: Can't call numpy() on Tensor that requires grad. Use tensor.detach().numpy() instead.
+# @register_activation
+class FracSiLU1(BaseActivation):
     r"""
     Applies the Fractional SiLU Variant 1 function:
 
@@ -508,7 +509,7 @@ class FracSiLU1(nn.Module):
         >>> output = m(x)
     """
 
-    def __init__(self, a_init: float = 0.5, n_terms: int = 5, eps: float = 1e-6):
+    def __init__(self, a_init: float = 0.5, n_terms: int = 5, eps: float = 1e-6, **kwargs):
         super(FracSiLU1, self).__init__()
         self.a = nn.Parameter(Tensor([a_init]))
         self.n_terms = n_terms
@@ -516,7 +517,7 @@ class FracSiLU1(nn.Module):
         # Pre-compute Bernoulli numbers
         self.bernoulli_numbers = [bernoulli(i) for i in range(n_terms + 2)]
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         # Clamp a to be in (0, 1) range for stability
         a_clamped = torch.clamp(self.a, 0.01, 0.99)
         
@@ -564,7 +565,7 @@ class FracSiLU1(nn.Module):
 
 # TODO: Forward pass failed: Can't call numpy() on Tensor that requires grad. Use tensor.detach().numpy() instead.
 # @register_activation
-class FracSiLU2(nn.Module):
+class FracSiLU2(BaseActivation):
     r"""
     Applies the Fractional SiLU Variant 2 function:
 
@@ -588,7 +589,7 @@ class FracSiLU2(nn.Module):
         >>> output = m(x)
     """
 
-    def __init__(self, a_init: float = 0.5, n_terms: int = 5, eps: float = 1e-6):
+    def __init__(self, a_init: float = 0.5, n_terms: int = 5, eps: float = 1e-6, **kwargs):
         super(FracSiLU2, self).__init__()
         self.a = nn.Parameter(Tensor([a_init]))
         self.n_terms = n_terms
@@ -596,7 +597,7 @@ class FracSiLU2(nn.Module):
         # Pre-compute Bernoulli numbers
         self.bernoulli_numbers = [bernoulli(i) for i in range(n_terms + 2)]
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         # Clamp a to be in (0, 1) range for stability
         a_clamped = torch.clamp(self.a, 0.01, 0.99)
         
@@ -624,7 +625,7 @@ class FracSiLU2(nn.Module):
 
 
 @register_activation
-class FracGELU1(nn.Module):
+class FracGELU1(BaseActivation):
     r"""
     Applies the Fractional GELU Variant 1 function:
 
@@ -651,14 +652,14 @@ class FracGELU1(nn.Module):
         >>> output = m(x)
     """
 
-    def __init__(self, a_init: float = 0.5, n_terms: int = 5, eps: float = 1e-6):
+    def __init__(self, a_init: float = 0.5, n_terms: int = 5, eps: float = 1e-6, **kwargs):
         super(FracGELU1, self).__init__()
         self.a = nn.Parameter(Tensor([a_init]))
         self.n_terms = n_terms
         self.eps = eps
         self.sqrt_2pi = math.sqrt(2 * math.pi)
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         # Clamp a to be in (0, 1) range for stability
         a_clamped = torch.clamp(self.a, 0.01, 0.99)
         
@@ -710,7 +711,7 @@ class FracGELU1(nn.Module):
 
 
 @register_activation
-class FracGELU2(nn.Module):
+class FracGELU2(BaseActivation):
     r"""
     Applies the Fractional GELU Variant 2 function:
 
@@ -734,14 +735,14 @@ class FracGELU2(nn.Module):
         >>> output = m(x)
     """
 
-    def __init__(self, a_init: float = 0.5, n_terms: int = 5, eps: float = 1e-6):
+    def __init__(self, a_init: float = 0.5, n_terms: int = 5, eps: float = 1e-6, **kwargs):
         super(FracGELU2, self).__init__()
         self.a = nn.Parameter(Tensor([a_init]))
         self.n_terms = n_terms
         self.eps = eps
         self.sqrt_2pi = math.sqrt(2 * math.pi)
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         # Clamp a to be in (0, 1) range for stability
         a_clamped = torch.clamp(self.a, 0.01, 0.99)
         

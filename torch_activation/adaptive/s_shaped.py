@@ -1,12 +1,13 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+from torch_activation.base import BaseActivation
 from torch import Tensor
 
 from torch_activation import register_activation
 
 @register_activation
-class SReLU(nn.Module):
+class SReLU(BaseActivation):
     r"""
     Applies the S-shaped Rectified Linear Unit (SReLU) function:
 
@@ -38,8 +39,8 @@ class SReLU(nn.Module):
 
     def __init__(self, init_tr: float = 1.0, init_tl: float = 0.0, 
                  init_ar: float = 1.0, init_al: float = 0.1,
-                 fix_init_epochs: int = 0):
-        super(SReLU, self).__init__()
+                 fix_init_epochs: int = 0, **kwargs):
+        super().__init__(**kwargs)
         self.tr = nn.Parameter(Tensor([init_tr]))
         self.tl = nn.Parameter(Tensor([init_tl]))
         self.ar = nn.Parameter(Tensor([init_ar]))
@@ -53,7 +54,7 @@ class SReLU(nn.Module):
         self.init_ar = init_ar
         self.init_al = init_al
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         # Use fixed parameters during initial epochs if specified
         if self.current_epoch < self.fix_init_epochs and self.training:
             tr = self.init_tr
@@ -86,7 +87,7 @@ class SReLU(nn.Module):
         
         return result
     
-    def train(self, mode=True):
+    def train(self, mode=True, **kwargs):
         super(SReLU, self).train(mode)
         if mode:
             # Increment epoch counter when switching to training mode
@@ -95,7 +96,7 @@ class SReLU(nn.Module):
 
 
 @register_activation
-class NActivation(nn.Module):
+class NActivation(BaseActivation):
     r"""
     Applies the N-Activation function:
 
@@ -123,12 +124,12 @@ class NActivation(nn.Module):
         >>> output = m(x)
     """
 
-    def __init__(self, init_a: float = -0.5, init_b: float = 0.5):
-        super(NActivation, self).__init__()
+    def __init__(self, init_a: float = -0.5, init_b: float = 0.5, **kwargs):
+        super().__init__(**kwargs)
         self.a = nn.Parameter(Tensor([init_a]))
         self.b = nn.Parameter(Tensor([init_b]))
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         # Calculate t_min and t_max
         t_min = torch.min(self.a, self.b)
         t_max = torch.max(self.a, self.b)
@@ -155,7 +156,7 @@ class NActivation(nn.Module):
 
 
 @register_activation
-class ALiSA(nn.Module):
+class ALiSA(BaseActivation):
     r"""
     Applies the Adaptive Linearized Sigmoidal Activation (ALiSA) function:
 
@@ -182,12 +183,12 @@ class ALiSA(nn.Module):
         >>> output = m(x)
     """
 
-    def __init__(self, init_ar: float = 1.0, init_al: float = 0.1):
-        super(ALiSA, self).__init__()
+    def __init__(self, init_ar: float = 1.0, init_al: float = 0.1, **kwargs):
+        super().__init__(**kwargs)
         self.ar = nn.Parameter(Tensor([init_ar]))
         self.al = nn.Parameter(Tensor([init_al]))
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         # Create masks for the three regions
         right_mask = x >= 1
         left_mask = x <= 0
@@ -210,7 +211,7 @@ class ALiSA(nn.Module):
 
 
 @register_activation
-class LiSA(nn.Module):
+class LiSA(BaseActivation):
     r"""
     Applies the Linearized Sigmoidal Activation (LiSA) function:
 
@@ -237,12 +238,12 @@ class LiSA(nn.Module):
         >>> output = m(x)
     """
 
-    def __init__(self, ar: float = 1.0, al: float = 0.1):
-        super(LiSA, self).__init__()
+    def __init__(self, ar: float = 1.0, al: float = 0.1, **kwargs):
+        super().__init__(**kwargs)
         self.ar = ar
         self.al = al
 
-    def forward(self, x) -> Tensor:
+    def _forward(self, x) -> Tensor:
         # Create masks for the three regions
         right_mask = x >= 1
         left_mask = x <= 0

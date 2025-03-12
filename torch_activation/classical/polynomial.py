@@ -3,10 +3,11 @@ import torch.nn as nn
 from torch import Tensor
 
 from torch_activation import register_activation
+from torch_activation.base import BaseActivation
 
 
 @register_activation
-class NCU(nn.Module):
+class NCU(BaseActivation):
     r"""
     Applies the Non-monotonic Cubic Unit (NCU) activation function:
 
@@ -23,16 +24,16 @@ class NCU(nn.Module):
         - Output: :math:`(*)`, same shape as the input.
     """
 
-    def __init__(self, inplace: bool = False):
-        super(NCU, self).__init__()
-        self.inplace = inplace  # Unused
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+          # Unused
 
-    def forward(self, z) -> Tensor:
+    def _forward(self, z) -> Tensor:
         return z - z**3
 
 
 @register_activation
-class Triple(nn.Module):
+class Triple(BaseActivation):
     r"""
     Applies the Triple activation function:
 
@@ -50,17 +51,17 @@ class Triple(nn.Module):
         - Output: :math:`(*)`, same shape as the input.
     """
 
-    def __init__(self, a: float = 1.0, inplace: bool = False):
-        super(Triple, self).__init__()
+    def __init__(self, a: float = 1.0, **kwargs):
+        super().__init__(**kwargs)
         self.a = a
-        self.inplace = inplace  # Unused
+          # Unused
 
-    def forward(self, z) -> Tensor:
+    def _forward(self, z) -> Tensor:
         return self.a * z**3
 
 
 @register_activation
-class SQU(nn.Module):
+class SQU(BaseActivation):
     r"""
     Applies the Shifted Quadratic Unit (SQU) activation function:
 
@@ -77,9 +78,9 @@ class SQU(nn.Module):
         - Output: :math:`(*)`, same shape as the input.
     """
 
-    def __init__(self, inplace: bool = False):
-        super(SQU, self).__init__()
-        self.inplace = inplace  # Unused
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+          # Unused
 
-    def forward(self, z) -> Tensor:
+    def _forward(self, z) -> Tensor:
         return z**2 + z
