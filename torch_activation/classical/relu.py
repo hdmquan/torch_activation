@@ -29,13 +29,13 @@ class ReLU(BaseActivation):
         >>> m(x)
     """
     def __init__(self, **kwargs):
-        super().__init__()
+        super().__init__(**kwargs)
         
     def _forward(self, x: Tensor) -> Tensor:
-        if self.inplace:
-            return F.relu_(x)
-        else:
-            return F.relu(x)
+        return F.relu(x)
+    
+    def _forward_inplace(self, x: Tensor) -> Tensor:
+        return F.relu_(x)
 
 @register_activation    
 class SReLU(BaseActivation):
@@ -60,14 +60,14 @@ class SReLU(BaseActivation):
     """
 
     def __init__(self, **kwargs):
-        super().__init__()
+        super().__init__(**kwargs)
         
 
     def _forward(self, x: Tensor) -> Tensor:
-        if self.inplace:
-            return F.relu_(x - 1.0)
-        else:
-            return F.relu(x - 1.0)
+        return F.relu(x - 1.0)
+    
+    def _forward_inplace(self, x: Tensor) -> Tensor:
+        return F.relu_(x - 1.0)
 
 @register_activation
 class LReLU(BaseActivation):
@@ -96,15 +96,15 @@ class LReLU(BaseActivation):
         >>> m(x)
     """
     def __init__(self, alpha: float = 0.01, **kwargs):
-        super().__init__()
+        super().__init__(**kwargs)
         
         self.alpha = alpha
 
     def _forward(self, x: Tensor) -> Tensor:
-        if self.inplace:
-            return F.leaky_relu_(x, negative_slope=self.alpha)
-        else:
-            return F.leaky_relu(x, negative_slope=self.alpha)
+        return F.leaky_relu(x, negative_slope=self.alpha)
+    
+    def _forward_inplace(self, x: Tensor) -> Tensor:
+        return F.leaky_relu_(x, negative_slope=self.alpha)
         
 @register_activation
 class VLReLU(BaseActivation):
@@ -135,15 +135,15 @@ class VLReLU(BaseActivation):
         >>> m(x)
     """
     def __init__(self, alpha: float = 3.0, **kwargs):
-        super().__init__()
+        super().__init__(**kwargs)
         
         self.alpha = alpha
 
     def _forward(self, x: Tensor) -> Tensor:
-        if self.inplace:
-            return F.leaky_relu_(x, negative_slope=self.alpha)
-        else:
-            return F.leaky_relu(x, negative_slope=self.alpha)
+        return F.leaky_relu(x, negative_slope=self.alpha)
+    
+    def _forward_inplace(self, x: Tensor) -> Tensor:
+        return F.leaky_relu_(x, negative_slope=self.alpha)
         
 
 @register_activation
@@ -192,10 +192,10 @@ class RReLU(BaseActivation):
         self.upper = upper
 
     def _forward(self, x: Tensor) -> Tensor:
-        if self.inplace:
-            return F.leaky_relu_(x, negative_slope=torch.rand(x.shape).uniform_(self.lower, self.upper))
-        else:
-            return F.leaky_relu(x, negative_slope=torch.rand(x.shape).uniform_(self.lower, self.upper))
+        return F.leaky_relu_(x, negative_slope=torch.rand(x.shape).uniform_(self.lower, self.upper))
+    
+    def _forward_inplace(self, x: Tensor) -> Tensor:
+        return F.leaky_relu_(x, negative_slope=torch.rand(x.shape).uniform_(self.lower, self.upper))
         
 
 # FIXME: Does not pass test
@@ -238,16 +238,15 @@ class OLReLU(BaseActivation):
         self.lower = lower
         self.upper = upper
         
-        
         # Calculate alpha according to the formula in the paper
         self.alpha = (upper + lower) / (upper - lower)
         self.negative_slope = torch.exp(-self.alpha)
 
     def _forward(self, x: Tensor) -> Tensor:
-        if self.inplace:
-            return F.leaky_relu_(x, negative_slope=self.negative_slope)
-        else:
-            return F.leaky_relu(x, negative_slope=self.negative_slope)
+        return F.leaky_relu(x, negative_slope=self.negative_slope)
+    
+    def _forward_inplace(self, x: Tensor) -> Tensor:
+        return F.leaky_relu_(x, negative_slope=self.negative_slope)
 
 @register_activation
 class SoftsignRReLU(BaseActivation):
@@ -276,7 +275,7 @@ class SoftsignRReLU(BaseActivation):
     """
 
     def __init__(self, l: float = 1 / 8, u: float = 1 / 3, **kwargs):
-        super().__init__()
+        super().__init__(**kwargs)
         assert 0 < l < u, "Ensure 0 < l < u for the uniform distribution bounds."
         self.l = l
         self.u = u
@@ -321,7 +320,7 @@ class SlReLU(BaseActivation):
     """
 
     def __init__(self, alpha: float = 10.0, **kwargs):
-        super().__init__()
+        super().__init__(**kwargs)
         
         self.alpha = alpha
 
@@ -447,7 +446,7 @@ class SquaredReLU(BaseActivation):
     """
 
     def __init__(self, **kwargs):
-        super().__init__()
+        super().__init__(**kwargs)
         
 
     def _forward(self, x) -> Tensor:
@@ -493,7 +492,7 @@ class SineReLU(BaseActivation):
     """
 
     def __init__(self, a: float = 1.0, **kwargs):
-        super().__init__()
+        super().__init__(**kwargs)
         self.a = a
         
 
@@ -570,7 +569,7 @@ class VLU(BaseActivation):
     """
 
     def __init__(self, a: float = 1.0, b: float = 1.0, **kwargs):
-        super().__init__()
+        super().__init__(**kwargs)
         self.a = a
         self.b = b
         
@@ -616,7 +615,7 @@ class LReLU(BaseActivation):
     """
 
     def __init__(self, a: float = 100.0, **kwargs):
-        super().__init__()
+        super().__init__(**kwargs)
         self.a = a
         
 
@@ -665,7 +664,7 @@ class OLReLU(BaseActivation):
     """
 
     def __init__(self, l: float = 3.0, u: float = 8.0, **kwargs):
-        super().__init__()
+        super().__init__(**kwargs)
         assert l < u, "Lower bound must be less than upper bound"
         self.a = (u + l) / (u - l)
         
@@ -717,7 +716,7 @@ class RReLU(BaseActivation):
     """
 
     def __init__(self, l: float = 3.0, u: float = 8.0, **kwargs):
-        super().__init__()
+        super().__init__(**kwargs)
         assert 0 < l < u, "Ensure 0 < l < u for the uniform distribution bounds."
         self.l = l
         self.u = u
@@ -773,7 +772,7 @@ class SRReLU(BaseActivation):
     """
 
     def __init__(self, l: float = 1/8, u: float = 1/3, **kwargs):
-        super().__init__()
+        super().__init__(**kwargs)
         assert 0 < l < u, "Ensure 0 < l < u for the uniform distribution bounds."
         self.l = l
         self.u = u
@@ -823,7 +822,7 @@ class NReLU(BaseActivation):
     """
 
     def __init__(self, **kwargs):
-        super().__init__()
+        super().__init__(**kwargs)
         
 
     def _forward(self, x: Tensor) -> Tensor:
@@ -866,7 +865,7 @@ class SCAA(BaseActivation):
     """
 
     def __init__(self, channels: int, kernel_size: int = 3, padding: int = 1, **kwargs):
-        super().__init__()
+        super().__init__(**kwargs)
         self.dw_conv = nn.Conv2d(
             channels, 
             channels, 
@@ -920,7 +919,7 @@ class RTReLU(BaseActivation):
     """
 
     def __init__(self, sigma: float = 0.75, **kwargs):
-        super().__init__()
+        super().__init__(**kwargs)
         self.sigma = sigma
         
 
@@ -966,7 +965,7 @@ class NLReLU(BaseActivation):
     """
 
     def __init__(self, a: float = 1.0, **kwargs):
-        super().__init__()
+        super().__init__(**kwargs)
         self.a = a
         
 
@@ -1022,7 +1021,7 @@ class SLU(BaseActivation):
     """
 
     def __init__(self, **kwargs):
-        super().__init__()
+        super().__init__(**kwargs)
         self.c = 2 * torch.log(torch.tensor(2.0))
         
 
@@ -1078,7 +1077,7 @@ class ReSP(BaseActivation):
     """
 
     def __init__(self, a: float = 1.7, **kwargs):
-        super().__init__()
+        super().__init__(**kwargs)
         self.a = a
         self.ln2 = torch.log(torch.tensor(2.0))
         
@@ -1133,7 +1132,7 @@ class PReNU(BaseActivation):
     """
 
     def __init__(self, a: float = 0.25, **kwargs):
-        super().__init__()
+        super().__init__(**kwargs)
         self.a = a
         
 
@@ -1183,7 +1182,7 @@ class BReLU(BaseActivation):
     """
 
     def __init__(self, a: float = 1.0, **kwargs):
-        super().__init__()
+        super().__init__(**kwargs)
         self.a = a
         
 
@@ -1230,7 +1229,7 @@ class HardSigmoid(BaseActivation):
     """
 
     def __init__(self, version: int = 1, **kwargs):
-        super().__init__()
+        super().__init__(**kwargs)
         assert version in [1, 2], "version must be 1 or 2"
         self.version = version
         
@@ -1290,7 +1289,7 @@ class HardTanh(BaseActivation):
     """
 
     def __init__(self, a: float = -1.0, b: float = 11.0, **kwargs):
-        super().__init__()
+        super().__init__(**kwargs)
         self.a = a
         self.b = b
         
@@ -1339,7 +1338,7 @@ class SvHardTanh(BaseActivation):
     """
 
     def __init__(self, a: float = 0.0, **kwargs):
-        super().__init__()
+        super().__init__(**kwargs)
         self.a = a
         
 
@@ -1387,7 +1386,7 @@ class ShHardTanh(BaseActivation):
     """
 
     def __init__(self, a: float = 0.0, **kwargs):
-        super().__init__()
+        super().__init__(**kwargs)
         self.a = a
         
 
@@ -1434,7 +1433,7 @@ class HardSwish(BaseActivation):
     """
 
     def __init__(self, **kwargs):
-        super().__init__()
+        super().__init__(**kwargs)
         
 
     def _forward(self, x: Tensor) -> Tensor:
@@ -1483,7 +1482,7 @@ class TRec(BaseActivation):
     """
 
     def __init__(self, a: float = 1.0, **kwargs):
-        super().__init__()
+        super().__init__(**kwargs)
         self.a = a
         
 
@@ -1530,7 +1529,7 @@ class Hardshrink(BaseActivation):
     """
 
     def __init__(self, a: float = 0.5, **kwargs):
-        super().__init__()
+        super().__init__(**kwargs)
         assert a > 0, "Threshold parameter 'a' must be positive"
         self.a = a
         
@@ -1583,7 +1582,7 @@ class Softshrink(BaseActivation):
     """
 
     def __init__(self, a: float = 0.5, **kwargs):
-        super().__init__()
+        super().__init__(**kwargs)
         assert a > 0, "Threshold parameter 'a' must be positive"
         self.a = a
         
@@ -1650,7 +1649,7 @@ class BLReLU(BaseActivation):
     """
 
     def __init__(self, a: float = 0.1, b: float = 1.0, **kwargs):
-        super().__init__()
+        super().__init__(**kwargs)
         self.a = a
         self.b = b
         self.c = (1 - a) * b
@@ -1712,7 +1711,7 @@ class VReLU(BaseActivation):
     """
 
     def __init__(self, **kwargs):
-        super().__init__()
+        super().__init__(**kwargs)
         
 
     def _forward(self, x: Tensor) -> Tensor:
@@ -1760,7 +1759,7 @@ class PanFunction(BaseActivation):
     """
 
     def __init__(self, a: float = 1.0, **kwargs):
-        super().__init__()
+        super().__init__(**kwargs)
         self.a = a
         
 
@@ -1824,7 +1823,7 @@ class AbsLU(BaseActivation):
     """
 
     def __init__(self, a: float = 0.5, **kwargs):
-        super().__init__()
+        super().__init__(**kwargs)
         assert 0 <= a <= 1, "Parameter 'a' must be in the range [0, 1]"
         self.a = a
         
@@ -1874,7 +1873,7 @@ class MReLU(BaseActivation):
     """
 
     def __init__(self, **kwargs):
-        super().__init__()
+        super().__init__(**kwargs)
         
 
     def _forward(self, x: Tensor) -> Tensor:
@@ -1923,7 +1922,7 @@ class LSPTLU(BaseActivation):
     """
 
     def __init__(self, a: float = 1.0, **kwargs):
-        super().__init__()
+        super().__init__(**kwargs)
         self.a = a
         
 

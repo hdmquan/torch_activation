@@ -42,7 +42,7 @@ class ShiLU(BaseActivation):
     """
 
     def __init__(self, alpha: float = 1.0, beta: float = 0.0, **kwargs):
-        super().__init__()
+        super().__init__(**kwargs)
         self.alpha = nn.Parameter(Tensor([alpha]))
         self.beta = nn.Parameter(Tensor([beta]))
         
@@ -191,7 +191,7 @@ class PReLU(BaseActivation):
     """
 
     def __init__(self, a: float = 1.0, learnable: bool = False, **kwargs):
-        super().__init__()
+        super().__init__(**kwargs)
         
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
@@ -235,7 +235,7 @@ class PReLUPlus(BaseActivation):
     """
 
     def __init__(self, a: float = 1.0, learnable: bool = False, **kwargs):
-        super().__init__()
+        super().__init__(**kwargs)
         
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
@@ -280,7 +280,7 @@ class MarReLU(BaseActivation):
     """
 
     def __init__(self, a: float = 0.0, learnable: bool = False, **kwargs):
-        super().__init__()
+        super().__init__(**kwargs)
         
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
@@ -333,7 +333,7 @@ class RPReLU(BaseActivation):
         learnable: bool = False, 
         inplace: bool = False
     , **kwargs):
-        super().__init__()
+        super().__init__(**kwargs)
         
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
@@ -391,7 +391,7 @@ class LeLeLU(BaseActivation):
         learnable: bool = False, 
         inplace: bool = False
     , **kwargs):
-        super().__init__()
+        super().__init__(**kwargs)
         
         self.negative_slope = negative_slope
         if learnable:
@@ -444,7 +444,7 @@ class PREU(BaseActivation):
         learnable: bool = False, 
         inplace: bool = False
     , **kwargs):
-        super().__init__()
+        super().__init__(**kwargs)
         
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
@@ -500,7 +500,7 @@ class RTReLU(BaseActivation):
         learnable: bool = False, 
         inplace: bool = False
     , **kwargs):
-        super().__init__()
+        super().__init__(**kwargs)
         
         self.sigma = sigma
         if learnable:
@@ -553,7 +553,7 @@ class SMU(BaseActivation):
         learnable: bool = False, 
         inplace: bool = False
     , **kwargs):
-        super().__init__()
+        super().__init__(**kwargs)
         
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
@@ -606,7 +606,7 @@ class SAU(BaseActivation):
         b: float = 1.0, 
         learnable: bool = False
     , **kwargs):
-        super().__init__()
+        super().__init__(**kwargs)
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
             self.b = nn.Parameter(Tensor([b]))
@@ -661,7 +661,7 @@ class ProbAct(BaseActivation):
         learnable: bool = False, 
         inplace: bool = False
     , **kwargs):
-        super().__init__()
+        super().__init__(**kwargs)
         self.base_activation = base_activation
         
         if learnable:
@@ -715,7 +715,7 @@ class ReLUProbAct(BaseActivation):
         learnable: bool = False, 
         inplace: bool = False
     , **kwargs):
-        super().__init__()
+        super().__init__(**kwargs)
         
         if learnable:
             self.sigma = nn.Parameter(Tensor([sigma]))
@@ -768,7 +768,7 @@ class AOAF(BaseActivation):
         learnable: bool = False, 
         inplace: bool = False
     , **kwargs):
-        super().__init__()
+        super().__init__(**kwargs)
         
         self.b = b
         self.c = c
@@ -826,7 +826,7 @@ class DLReLU(BaseActivation):
         learnable: bool = False, 
         inplace: bool = False
     , **kwargs):
-        super().__init__()
+        super().__init__(**kwargs)
         
         self.mse = mse
         if learnable:
@@ -887,7 +887,7 @@ class ExpDLReLU(BaseActivation):
         learnable: bool = False, 
         inplace: bool = False
     , **kwargs):
-        super().__init__()
+        super().__init__(**kwargs)
         
         self.mse = mse
         if learnable:
@@ -943,7 +943,7 @@ class DReLU(BaseActivation):
         learnable: bool = False, 
         inplace: bool = False
     , **kwargs):
-        super().__init__()
+        super().__init__(**kwargs)
         
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
@@ -992,7 +992,7 @@ class FReLU(BaseActivation):
         learnable: bool = False, 
         inplace: bool = False
     , **kwargs):
-        super().__init__()
+        super().__init__(**kwargs)
         
         if learnable:
             self.b = nn.Parameter(Tensor([b]))
@@ -1048,7 +1048,7 @@ class AdaptiveHardTanh(BaseActivation):
         learnable: bool = False, 
         inplace: bool = False
     , **kwargs):
-        super().__init__()
+        super().__init__(**kwargs)
         
         self.min_val = min_val
         self.max_val = max_val
@@ -1106,7 +1106,7 @@ class AReLU(BaseActivation):
         learnable: bool = False, 
         inplace: bool = False
     , **kwargs):
-        super().__init__()
+        super().__init__(**kwargs)
         
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
@@ -1163,7 +1163,7 @@ class DPReLU(BaseActivation):
         learnable: bool = False, 
         inplace: bool = False
     , **kwargs):
-        super().__init__()
+        super().__init__(**kwargs)
         
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
@@ -1219,7 +1219,7 @@ class DualLine(BaseActivation):
         learnable: bool = False, 
         inplace: bool = False
     , **kwargs):
-        super().__init__()
+        super().__init__(**kwargs)
         
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
@@ -1277,7 +1277,7 @@ class PiLU(BaseActivation):
         learnable: bool = False, 
         inplace: bool = False
     , **kwargs):
-        super().__init__()
+        super().__init__(**kwargs)
         
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
@@ -1340,7 +1340,7 @@ class DPAF(BaseActivation):
         learnable: bool = False, 
         inplace: bool = False
     , **kwargs):
-        super().__init__()
+        super().__init__(**kwargs)
         self.base_activation = base_activation
         
         if learnable:
@@ -1401,7 +1401,7 @@ class FPAF(BaseActivation):
         neg_activation: Callable = F.relu,
         learnable: bool = False
     , **kwargs):
-        super().__init__()
+        super().__init__(**kwargs)
         self.pos_activation = pos_activation
         self.neg_activation = neg_activation
         if learnable:
@@ -1461,7 +1461,7 @@ class EPReLU(BaseActivation):
         learnable: bool = False, 
         inplace: bool = False
     , **kwargs):
-        super().__init__()
+        super().__init__(**kwargs)
         
         self.alpha = alpha
         if learnable:
@@ -1519,7 +1519,7 @@ class PairedReLU(BaseActivation):
         d: float = 0.0, 
         learnable: bool = False
     , **kwargs):
-        super().__init__()
+        super().__init__(**kwargs)
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
             self.b = nn.Parameter(Tensor([b]))
@@ -1578,7 +1578,7 @@ class Tent(BaseActivation):
         learnable: bool = False, 
         inplace: bool = False
     , **kwargs):
-        super().__init__()
+        super().__init__(**kwargs)
         
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
@@ -1631,7 +1631,7 @@ class Hat(BaseActivation):
         learnable: bool = False, 
         inplace: bool = False
     , **kwargs):
-        super().__init__()
+        super().__init__(**kwargs)
         
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
@@ -1708,7 +1708,7 @@ class RMAF(BaseActivation):
         learnable: bool = False, 
         inplace: bool = False
     , **kwargs):
-        super().__init__()
+        super().__init__(**kwargs)
         
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
@@ -1768,7 +1768,7 @@ class PTELU(BaseActivation):
         learnable: bool = False, 
         inplace: bool = False
     , **kwargs):
-        super().__init__()
+        super().__init__(**kwargs)
         
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
@@ -1823,7 +1823,7 @@ class TaLU(BaseActivation):
         learnable: bool = False, 
         inplace: bool = False
     , **kwargs):
-        super().__init__()
+        super().__init__(**kwargs)
         
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
@@ -1897,7 +1897,7 @@ class PTaLU(BaseActivation):
         learnable: bool = False, 
         inplace: bool = False
     , **kwargs):
-        super().__init__()
+        super().__init__(**kwargs)
         
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
@@ -1971,7 +1971,7 @@ class TanhLU(BaseActivation):
         learnable: bool = False, 
         inplace: bool = False
     , **kwargs):
-        super().__init__()
+        super().__init__(**kwargs)
         
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
@@ -2027,7 +2027,7 @@ class TeLU(BaseActivation):
         learnable: bool = False, 
         inplace: bool = False
     , **kwargs):
-        super().__init__()
+        super().__init__(**kwargs)
         
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
@@ -2081,7 +2081,7 @@ class TReLU(BaseActivation):
         learnable: bool = False, 
         inplace: bool = False
     , **kwargs):
-        super().__init__()
+        super().__init__(**kwargs)
         
         if learnable:
             self.b = nn.Parameter(Tensor([b]))
@@ -2130,7 +2130,7 @@ class TReLU2(BaseActivation):
         learnable: bool = False, 
         inplace: bool = False
     , **kwargs):
-        super().__init__()
+        super().__init__(**kwargs)
         
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
@@ -2186,7 +2186,7 @@ class ReLTanh(BaseActivation):
         learnable: bool = False, 
         inplace: bool = False
     , **kwargs):
-        super().__init__()
+        super().__init__(**kwargs)
         
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
@@ -2279,7 +2279,7 @@ class BLU(BaseActivation):
         learnable: bool = False, 
         inplace: bool = False
     , **kwargs):
-        super().__init__()
+        super().__init__(**kwargs)
         
         if learnable:
             # Constrain a to be in [-1, 1]
@@ -2335,7 +2335,7 @@ class ReBLU(BaseActivation):
         learnable: bool = False, 
         inplace: bool = False
     , **kwargs):
-        super().__init__()
+        super().__init__(**kwargs)
         
         if learnable:
             # Constrain a to be in [-1, 1]
@@ -2392,7 +2392,7 @@ class DELU(BaseActivation):
         learnable: bool = False, 
         inplace: bool = False
     , **kwargs):
-        super().__init__()
+        super().__init__(**kwargs)
         
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
@@ -2452,7 +2452,7 @@ class SCMish(BaseActivation):
         learnable: bool = False, 
         inplace: bool = False
     , **kwargs):
-        super().__init__()
+        super().__init__(**kwargs)
         
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
@@ -2504,7 +2504,7 @@ class SCSwish(BaseActivation):
     """
 
     def __init__(self, **kwargs):
-        super().__init__()
+        super().__init__(**kwargs)
         
 
     def _forward(self, x) -> Tensor:
@@ -2562,7 +2562,7 @@ class PSwish(BaseActivation):
         learnable: bool = False, 
         inplace: bool = False
     , **kwargs):
-        super().__init__()
+        super().__init__(**kwargs)
         
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
@@ -2623,7 +2623,7 @@ class PELU(BaseActivation):
         learnable: bool = False, 
         inplace: bool = False
     , **kwargs):
-        super().__init__()
+        super().__init__(**kwargs)
         
         if learnable:
             # Ensure a and b are positive
@@ -2689,7 +2689,7 @@ class EDELU(BaseActivation):
         learnable: bool = False, 
         inplace: bool = False
     , **kwargs):
-        super().__init__()
+        super().__init__(**kwargs)
         
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
@@ -2757,7 +2757,7 @@ class AdaptiveCombination1(BaseActivation):
         learnable: bool = False, 
         inplace: bool = False
     , **kwargs):
-        super().__init__()
+        super().__init__(**kwargs)
         
         self.lrelu_slope = lrelu_slope
         self.elu_alpha = elu_alpha
@@ -2827,7 +2827,7 @@ class AdaptiveCombination2(BaseActivation):
         learnable: bool = False, 
         inplace: bool = False
     , **kwargs):
-        super().__init__()
+        super().__init__(**kwargs)
         
         self.prelu_slope = prelu_slope
         self.pelu_alpha = pelu_alpha
@@ -2895,7 +2895,7 @@ class FELU(BaseActivation):
         learnable: bool = False, 
         inplace: bool = False
     , **kwargs):
-        super().__init__()
+        super().__init__(**kwargs)
         
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
@@ -2951,7 +2951,7 @@ class PFELU(BaseActivation):
         learnable: bool = False, 
         inplace: bool = False
     , **kwargs):
-        super().__init__()
+        super().__init__(**kwargs)
         
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
@@ -3012,7 +3012,7 @@ class MPELU(BaseActivation):
         learnable: bool = False, 
         inplace: bool = False
     , **kwargs):
-        super().__init__()
+        super().__init__(**kwargs)
         
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
@@ -3067,7 +3067,7 @@ class PE2ReLU(BaseActivation):
         learnable: bool = False, 
         inplace: bool = False
     , **kwargs):
-        super().__init__()
+        super().__init__(**kwargs)
         
         self.elu_alpha = elu_alpha
         if learnable:
@@ -3132,7 +3132,7 @@ class PE2Id(BaseActivation):
         learnable: bool = False, 
         inplace: bool = False
     , **kwargs):
-        super().__init__()
+        super().__init__(**kwargs)
         
         self.elu_alpha = elu_alpha
         if learnable:
@@ -3194,7 +3194,7 @@ class SoftExponential(BaseActivation):
         learnable: bool = False, 
         inplace: bool = False
     , **kwargs):
-        super().__init__()
+        super().__init__(**kwargs)
         
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
@@ -3257,7 +3257,7 @@ class CELU(BaseActivation):
         learnable: bool = False, 
         inplace: bool = False
     , **kwargs):
-        super().__init__()
+        super().__init__(**kwargs)
         
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
@@ -3311,7 +3311,7 @@ class ErfReLU(BaseActivation):
         learnable: bool = False, 
         inplace: bool = False
     , **kwargs):
-        super().__init__()
+        super().__init__(**kwargs)
         
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
@@ -3365,7 +3365,7 @@ class PSELU(BaseActivation):
         learnable: bool = False, 
         inplace: bool = False
     , **kwargs):
-        super().__init__()
+        super().__init__(**kwargs)
         
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
@@ -3426,7 +3426,7 @@ class LPSELU(BaseActivation):
         learnable: bool = False, 
         inplace: bool = False
     , **kwargs):
-        super().__init__()
+        super().__init__(**kwargs)
         
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
@@ -3491,7 +3491,7 @@ class LPSELU_RP(BaseActivation):
         learnable: bool = False, 
         inplace: bool = False
     , **kwargs):
-        super().__init__()
+        super().__init__(**kwargs)
         
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
@@ -3554,7 +3554,7 @@ class ShELU(BaseActivation):
         learnable: bool = False, 
         inplace: bool = False
     , **kwargs):
-        super().__init__()
+        super().__init__(**kwargs)
         
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
@@ -3613,7 +3613,7 @@ class SvELU(BaseActivation):
         learnable: bool = False, 
         inplace: bool = False
     , **kwargs):
-        super().__init__()
+        super().__init__(**kwargs)
         
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
@@ -3674,7 +3674,7 @@ class PShELU(BaseActivation):
         learnable: bool = False, 
         inplace: bool = False
     , **kwargs):
-        super().__init__()
+        super().__init__(**kwargs)
         
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
@@ -3739,7 +3739,7 @@ class PSvELU(BaseActivation):
         learnable: bool = False, 
         inplace: bool = False
     , **kwargs):
-        super().__init__()
+        super().__init__(**kwargs)
         
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
@@ -3804,7 +3804,7 @@ class TSwish(BaseActivation):
         learnable: bool = False, 
         inplace: bool = False
     , **kwargs):
-        super().__init__()
+        super().__init__(**kwargs)
         
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
@@ -3878,7 +3878,7 @@ class RePSU(BaseActivation):
         learnable: bool = False, 
         inplace: bool = False
     , **kwargs):
-        super().__init__()
+        super().__init__(**kwargs)
         
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
@@ -3965,7 +3965,7 @@ class PDELU(BaseActivation):
         learnable: bool = False, 
         inplace: bool = False
     , **kwargs):
-        super().__init__()
+        super().__init__(**kwargs)
         
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
@@ -4044,7 +4044,7 @@ class EELU(BaseActivation):
         learnable: bool = False, 
         inplace: bool = False
     , **kwargs):
-        super().__init__()
+        super().__init__(**kwargs)
         
         self.epsilon = epsilon
         if learnable:
@@ -4111,7 +4111,7 @@ class PFPLUS(BaseActivation):
         learnable: bool = False, 
         inplace: bool = False
     , **kwargs):
-        super().__init__()
+        super().__init__(**kwargs)
         
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
@@ -4175,7 +4175,7 @@ class PVLU(BaseActivation):
         learnable: bool = False, 
         inplace: bool = False
     , **kwargs):
-        super().__init__()
+        super().__init__(**kwargs)
         
         if learnable:
             self.a = nn.Parameter(Tensor([a]))

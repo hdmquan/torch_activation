@@ -43,7 +43,7 @@ class Swish(BaseActivation):
         learnable: bool = False, 
         inplace: bool = False
     , **kwargs):
-        super().__init__()
+        super().__init__(**kwargs)
         
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
@@ -97,7 +97,7 @@ class AHAF(BaseActivation):
         learnable: bool = False, 
         inplace: bool = False
     , **kwargs):
-        super().__init__()
+        super().__init__(**kwargs)
         
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
@@ -153,7 +153,7 @@ class PSSiLU(BaseActivation):
         learnable: bool = False, 
         inplace: bool = False
     , **kwargs):
-        super().__init__()
+        super().__init__(**kwargs)
         
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
@@ -210,7 +210,7 @@ class ESwish(BaseActivation):
         learnable: bool = False, 
         inplace: bool = False
     , **kwargs):
-        super().__init__()
+        super().__init__(**kwargs)
         
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
@@ -264,7 +264,7 @@ class ACONB(BaseActivation):
         learnable: bool = False, 
         inplace: bool = False
     , **kwargs):
-        super().__init__()
+        super().__init__(**kwargs)
         
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
@@ -326,7 +326,7 @@ class ACONC(BaseActivation):
         learnable: bool = False, 
         inplace: bool = False
     , **kwargs):
-        super().__init__()
+        super().__init__(**kwargs)
         
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
@@ -385,7 +385,7 @@ class PSGU(BaseActivation):
         learnable: bool = False, 
         inplace: bool = False
     , **kwargs):
-        super().__init__()
+        super().__init__(**kwargs)
         
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
@@ -435,7 +435,7 @@ class TBSReLUl(BaseActivation):
         learnable: bool = False, 
         inplace: bool = False
     , **kwargs):
-        super().__init__()
+        super().__init__(**kwargs)
         
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
@@ -493,7 +493,7 @@ class PATS(BaseActivation):
         learnable: bool = False, 
         inplace: bool = False
     , **kwargs):
-        super().__init__()
+        super().__init__(**kwargs)
         
         self.lower_bound = lower_bound
         self.upper_bound = upper_bound
@@ -560,7 +560,7 @@ class AQuLU(BaseActivation):
         learnable: bool = False, 
         inplace: bool = False
     , **kwargs):
-        super().__init__()
+        super().__init__(**kwargs)
         
         if learnable:
             # Ensure a is positive to avoid division by zero
@@ -641,7 +641,7 @@ class SinLU(BaseActivation):
         learnable: bool = False, 
         inplace: bool = False
     , **kwargs):
-        super().__init__()
+        super().__init__(**kwargs)
         
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
@@ -698,7 +698,7 @@ class ErfAct(BaseActivation):
         learnable: bool = False, 
         inplace: bool = False
     , **kwargs):
-        super().__init__()
+        super().__init__(**kwargs)
         
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
@@ -756,7 +756,7 @@ class PSerf(BaseActivation):
         learnable: bool = False, 
         inplace: bool = False
     , **kwargs):
-        super().__init__()
+        super().__init__(**kwargs)
         
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
@@ -810,7 +810,7 @@ class Swim(BaseActivation):
         learnable: bool = False, 
         inplace: bool = False
     , **kwargs):
-        super().__init__()
+        super().__init__(**kwargs)
         
         if learnable:
             self.a = nn.Parameter(Tensor([a]))

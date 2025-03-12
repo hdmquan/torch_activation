@@ -37,7 +37,7 @@ class HCAF(BaseActivation):
     """
 
     def __init__(self, r: float = 4.0, iterations: int = 3, **kwargs):
-        super().__init__()
+        super().__init__(**kwargs)
         self.r = r
         self.iterations = iterations
 
@@ -85,7 +85,7 @@ class FCAF_Hidden(BaseActivation):
     """
 
     def __init__(self, r: float = 4.0, a: float = 0.0, b: float = 0.5, iterations: int = 1, **kwargs):
-        super().__init__()
+        super().__init__(**kwargs)
         self.r = r
         self.a = a
         self.b = b
@@ -135,7 +135,7 @@ class FCAF_Output(BaseActivation):
 
     def __init__(self, r: float = 4.0, a: float = 0.0, b: float = 0.5, 
                  c: float = 1.0, d: float = 0.0, iterations: int = 1, **kwargs):
-        super().__init__()
+        super().__init__(**kwargs)
         self.r = r
         self.a = a
         self.b = b
@@ -189,7 +189,7 @@ class CCAF(BaseActivation):
     """
 
     def __init__(self, a: float = 0.5, b: float = 0.5, iterations: int = 1, **kwargs):
-        super().__init__()
+        super().__init__(**kwargs)
         assert 0 <= a <= 1, "Parameter 'a' must be in the range [0, 1]"
         assert 0 <= b <= 1, "Parameter 'b' must be in the range [0, 1]"
         self.a = a
