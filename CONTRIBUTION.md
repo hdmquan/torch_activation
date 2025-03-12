@@ -11,6 +11,24 @@ Thank you for your interest in contributing to torch_activation! We welcome all 
 poetry install
 ```
 
+## Revise an Existing Activation Function
+
+To revise an existing activation function:
+
+1. Try to only change the functions in question
+2. Make your changes while ensuring:
+   - Documentation remains accurate and complete
+   - Mathematical formulas are updated if needed
+   - References and citations are maintained/updated
+   - The function's behavior is clearly described
+   - Add/Update activation plot if needed
+3. Update tests if the changes affect the function's behavior
+4. Run the test files.
+5. If you've modified the function's behavior significantly:
+   - Update the function's docstring
+   - Update or add new test cases
+   - Regenerate the function plot if applicable
+
 ## Adding a New Activation Function
 
 ### 1. Choose the Right Category

@@ -41,7 +41,7 @@ class AdaptiveSigmoid(BaseActivation):
     def __init__(
         self, a: float = 1.0, learnable: bool = False, inplace: bool = False, **kwargs
     ):
-        super().__init__()
+        super().__init__(**kwargs)
 
         if learnable:
             # Ensure a is positive
@@ -98,7 +98,7 @@ class GeneralizedHyperbolicTangent(BaseActivation):
         inplace: bool = False,
         **kwargs
     ):
-        super().__init__()
+        super().__init__(**kwargs)
 
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
@@ -160,7 +160,7 @@ class TrainableAmplitude(BaseActivation):
         inplace: bool = False,
         **kwargs
     ):
-        super().__init__()
+        super().__init__(**kwargs)
         self.base_activation = base_activation
 
         if learnable:
@@ -216,7 +216,7 @@ class ASSF(BaseActivation):
     def __init__(
         self, a: float = 1.0, learnable: bool = False, inplace: bool = False, **kwargs
     ):
-        super().__init__()
+        super().__init__(**kwargs)
 
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
@@ -264,7 +264,7 @@ class SVAF(BaseActivation):
     def __init__(
         self, a: float = 1.0, learnable: bool = False, inplace: bool = False, **kwargs
     ):
-        super().__init__()
+        super().__init__(**kwargs)
 
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
@@ -324,7 +324,7 @@ class TanhSoft(BaseActivation):
         inplace: bool = False,
         **kwargs
     ):
-        super().__init__()
+        super().__init__(**kwargs)
 
         if learnable:
             # Constrain parameters to their valid ranges
@@ -381,7 +381,7 @@ class TanhSoft1(BaseActivation):
     def __init__(
         self, a: float = 1.0, learnable: bool = False, inplace: bool = False, **kwargs
     ):
-        super().__init__()
+        super().__init__(**kwargs)
 
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
@@ -437,7 +437,7 @@ class TanhSoft2(BaseActivation):
         inplace: bool = False,
         **kwargs
     ):
-        super().__init__()
+        super().__init__(**kwargs)
 
         if learnable:
             self.b = nn.Parameter(Tensor([b]))
@@ -488,7 +488,7 @@ class TanhSoft3(BaseActivation):
     def __init__(
         self, a: float = 1.0, learnable: bool = False, inplace: bool = False, **kwargs
     ):
-        super().__init__()
+        super().__init__(**kwargs)
 
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
@@ -545,7 +545,7 @@ class PSigmoid(BaseActivation):
         inplace: bool = False,
         **kwargs
     ):
-        super().__init__()
+        super().__init__(**kwargs)
 
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
@@ -595,7 +595,7 @@ class PSF(BaseActivation):
     def __init__(
         self, m: float = 1.0, learnable: bool = False, inplace: bool = False, **kwargs
     ):
-        super().__init__()
+        super().__init__(**kwargs)
 
         if learnable:
             self.m = nn.Parameter(Tensor([m]))
@@ -654,7 +654,7 @@ class STACTanh(BaseActivation):
         inplace: bool = False,
         **kwargs
     ):
-        super().__init__()
+        super().__init__(**kwargs)
 
         if learnable:
             self.a = nn.Parameter(Tensor([abs(a)]))  # Ensure a is positive
