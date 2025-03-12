@@ -51,11 +51,13 @@ class SGT(BaseActivation):
         b: float = 1.1, 
         beta: float = 1.0, 
         learnable: bool = False, 
+        inplace: bool = False,
         **kwargs
     ):
         super().__init__(**kwargs)
         self.a = a
         self.b = b  
+        self.inplace = inplace
         
         if learnable:
             self.alpha = nn.Parameter(Tensor([alpha]))
