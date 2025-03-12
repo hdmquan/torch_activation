@@ -8,6 +8,7 @@ __all__ = []
 
 current_dir = os.path.dirname(__file__)
 
+# TODO: Remove the decorator in the future since we already have a base class.
 # This only registers decorated classes. Some undecorated are either untested or incomplete.
 _ACTIVATIONS = {}
 
