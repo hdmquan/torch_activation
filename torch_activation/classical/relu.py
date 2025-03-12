@@ -404,7 +404,7 @@ class ReLUN(BaseActivation):
     # TODO: Default to RELU6
     def __init__(self, n: float = 1.0, **kwargs):
         super().__init__(**kwargs)
-        self.n = nn.Parameter(Tensor([n]))
+        self.n = nn.Parameter(Tensor([n]), requires_grad=False)
         
 
     def _forward(self, x) -> Tensor:
