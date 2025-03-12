@@ -1,3 +1,6 @@
+Sources: https://arxiv.org/abs/2402.09092
+As of 12-Mar-2025, I (hdmquan) had revised everything until 3.6.21 (TRec). The rest are LLM generated (I know D: sorry). The un-implemented are single entry from Adaptive (4.). Documentation are completely incompleted.
+
 | Name | Implemented | Tested | Reviewed | Documented
 |------|------------|--------|---------|---------|
 | FCAF_Hidden | &check; | _ | _ | _ |
@@ -75,7 +78,7 @@
 | LSReLU | &check; | _ | _ | _ |
 | SQRT | &check; | _ | _ | _ |
 | SSAF | &check; | _ | _ | _ |
-| Binary | &check; | _ | _ | _ |
+| Binary | &check; | &check; | _ | _ |
 | BentIdentity | &check; | _ | _ | _ |
 | Mishra | &check; | _ | _ | _ |
 | SahaBora | &check; | _ | _ | _ |
