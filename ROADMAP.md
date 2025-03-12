@@ -1,3 +1,5 @@
+Sources: https://arxiv.org/abs/2402.09092
+
 | Name | Implemented | Tested | Reviewed | Documented
 |------|------------|--------|---------|---------|
 | FCAF_Hidden | &check; | _ | _ | _ |
