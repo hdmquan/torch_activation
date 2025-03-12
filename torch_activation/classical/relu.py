@@ -1488,10 +1488,7 @@ class TRec(BaseActivation):
         
 
     def _forward(self, x: Tensor) -> Tensor:
-        if self.inplace:
-            return x.masked_fill_(x <= self.a, 0)
-        else:
-            return torch.where(x > self.a, x, torch.zeros_like(x))
+        return torch.where(x > self.a, x, torch.zeros_like(x))
 
 
 @register_activation
