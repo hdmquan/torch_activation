@@ -849,29 +849,31 @@ class ASiLU(BaseActivation):
 
 # FIXME: Notation in paper is not clear, requires verification
 # Should be done in a few days. Contact author when done.
-# @register_activation
-# class SwAT(BaseActivation):
-#     r"""
-#     Applies the SwAT activation function:
+@register_activation
+class SwAT(BaseActivation):
+    r"""
+    Applies the SwAT activation function:
 
-#     :math:`\text{SwAT}(z) = z \cdot \frac{1}{1 + \exp(-\arctan(|z|))}`
+    :math:`\text{SwAT}(z) = z \cdot \frac{1}{1 + \exp(-\arctan(z))}`
 
-#     Shape:
-#         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
-#         - Output: :math:`(*)`, same shape as the input.
+    See: `https://drive.google.com/file/d/10g-lrsc4WhxU90zQLaBY9BuYconaj-vD/view?usp=sharing`
 
-#     Examples::
+    Shape:
+        - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
+        - Output: :math:`(*)`, same shape as the input.
 
-#         >>> m = SwAT()
-#         >>> x = torch.randn(2)
-#         >>> output = m(x)
-#     """
+    Examples::
 
-#     def __init__(self):
-#         super().__init__(**kwargs)
+        >>> m = SwAT()
+        >>> x = torch.randn(2)
+        >>> output = m(x)
+    """
 
-#     def _forward(self, x) -> Tensor:
-#         return x * torch.sigmoid(torch.arctan(torch.abs(x)))
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
+    def _forward(self, x) -> Tensor:
+        return x * torch.sigmoid(torch.arctan(x))
 
 
 @register_activation
