@@ -83,7 +83,7 @@ class SGT(BaseActivation):
             return x
         else:
             result = torch.zeros_like(x)
-            result[neg_mask] = self.a * torch.pow(x[pos_mask], self.alpha)
-            result[pos_mask] = self.b * torch.pow(x[neg_mask], self.beta)
+            result[neg_mask] = self.a * torch.pow(x[neg_mask], self.alpha)
+            result[pos_mask] = self.b * torch.pow(x[pos_mask], self.beta)
             
             return result
