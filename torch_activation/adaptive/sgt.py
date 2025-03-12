@@ -13,7 +13,7 @@ class SGT(BaseActivation):
     r"""
     Applies the SGT activation function:
 
-    :math:`\text{SGT}(x) = \begin{cases} ax^{\alpha}, x \geq 0 \\bx^{\beta}, x < 0 \end{cases}`
+    :math:`\text{SGT}(x) = \begin{cases} ax^{\alpha}, x < 0 \\bx^{\beta}, x \geq 0 \end{cases}`
 
      See: https://www.nature.com/articles/s41598-022-19020-y
 
