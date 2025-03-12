@@ -1,381 +1,381 @@
-| Name | Implemented | Tested | Reviewed |
-|------|------------|--------|---------|
-| FCAF_Hidden | &check; | _ | _ |
-| FCAF_Output | &check; | _ | _ |
-| CCAF | &check; | _ | _ |
-| SiLU | &check; | _ | _ |
-| CoLU | &check; | _ | _ |
-| Phish | &check; | _ | _ |
-| SinLU | &check; | _ | _ |
-| GELU | &check; | _ | _ |
-| SGELU | &check; | _ | _ |
-| CaLU | &check; | _ | _ |
-| LaLU | &check; | _ | _ |
-| TSSwish | &check; | _ | _ |
-| GSwish | &check; | _ | _ |
-| ESwish | &check; | _ | _ |
-| dSigmoid | &check; | _ | _ |
-| Gish | &check; | _ | _ |
-| Logish | &check; | _ | _ |
-| LogLogish | &check; | _ | _ |
-| ExpExpish | &check; | _ | _ |
-| SelfArctan | &check; | _ | _ |
-| pLogish | &check; | _ | _ |
-| Suish | &check; | _ | _ |
-| TSReLU | &check; | _ | _ |
-| TBSReLU | &check; | _ | _ |
-| LogSigmoid | &check; | _ | _ |
-| dSiLU | &check; | _ | _ |
-| DoubleSiLU | &check; | _ | _ |
-| MSiLU | &check; | _ | _ |
-| TSiLU | &check; | _ | _ |
-| ASiLU | &check; | _ | _ |
-| SwAT | &check; | _ | _ |
-| ReHSec | &check; | _ | _ |
-| LiSHT | &check; | _ | _ |
-| Mish | &check; | _ | _ |
-| Smish | &check; | _ | _ |
-| TanhExp | &check; | _ | _ |
-| Serf | &check; | _ | _ |
-| EANAF | &check; | _ | _ |
-| SinSig | &check; | _ | _ |
-| SiELU | &check; | _ | _ |
-| Sine | &check; | _ | _ |
-| CombHSine | &check; | _ | _ |
-| ModifiedArcsinh | &check; | _ | _ |
-| HyperSinh | &check; | _ | _ |
-| Arctid | &check; | _ | _ |
-| Cosine | &check; | _ | _ |
-| Cosid | &check; | _ | _ |
-| Sinp | &check; | _ | _ |
-| GCU | &check; | _ | _ |
-| ASU | &check; | _ | _ |
-| Sinc | &check; | _ | _ |
-| SSU | &check; | _ | _ |
-| DSU | &check; | _ | _ |
-| HcLSH | &check; | _ | _ |
-| TanhLinearUnit | &check; | _ | _ |
-| DifferenceELU | &check; | _ | _ |
-| PolynomialLinearUnit | &check; | _ | _ |
-| InversePolynomialLinearUnit | &check; | _ | _ |
-| PowerLinearUnit | &check; | _ | _ |
-| PowerFunctionLinearUnit | &check; | _ | _ |
-| FasterPowerFunctionLinearUnit | &check; | _ | _ |
-| ElasticAdaptivelyParametricCompoundedUnit | &check; | _ | _ |
-| LipschitzReLU | &check; | _ | _ |
-| ScaledExponentialLinearUnit | &check; | _ | _ |
-| LeakyScaledExponentialLinearUnit | &check; | _ | _ |
-| ScaledExponentiallyRegularizedLinearUnit | &check; | _ | _ |
-| ScaledScaledExponentialLinearUnit | &check; | _ | _ |
-| RSigELU | &check; | _ | _ |
-| HardSReLUE | &check; | _ | _ |
-| ExponentialLinearSigmoidSquashing | &check; | _ | _ |
-| HardExponentialLinearSigmoidSquashing | &check; | _ | _ |
-| RSigELUD | &check; | _ | _ |
-| LSReLU | &check; | _ | _ |
-| SQRT | &check; | _ | _ |
-| SSAF | &check; | _ | _ |
-| Binary | &check; | _ | _ |
-| BentIdentity | &check; | _ | _ |
-| Mishra | &check; | _ | _ |
-| SahaBora | &check; | _ | _ |
-| Logarithmic | &check; | _ | _ |
-| SPOCU | &check; | _ | _ |
-| PUAF | &check; | _ | _ |
-| ArandaOrdaz | &check; | _ | _ |
-| KDAC | &check; | _ | _ |
-| KWTA | &check; | _ | _ |
-| VBAF | &check; | _ | _ |
-| ETanh | &check; | _ | _ |
-| EvolvedTanhReLU | &check; | _ | _ |
-| EvolvedTanhLogReLU | &check; | _ | _ |
-| ReLU | &check; | _ | _ |
-| SReLU | &check; | _ | _ |
-| LReLU | &check; | _ | _ |
-| VLReLU | &check; | _ | _ |
-| RReLU | &check; | _ | _ |
-| OLReLU | &check; | _ | _ |
-| SoftsignRReLU | &check; | _ | _ |
-| SlReLU | &check; | _ | _ |
-| CReLU | &check; | _ | _ |
-| ReLUN | &check; | _ | _ |
-| SquaredReLU | &check; | _ | _ |
-| SineReLU | &check; | _ | _ |
-| Minsin | &check; | _ | _ |
-| VLU | &check; | _ | _ |
-| SRReLU | &check; | _ | _ |
-| NReLU | &check; | _ | _ |
-| RTReLU | &check; | _ | _ |
-| NLReLU | &check; | _ | _ |
-| SLU | &check; | _ | _ |
-| ReSP | &check; | _ | _ |
-| PReNU | &check; | _ | _ |
-| BReLU | &check; | _ | _ |
-| HardSigmoid | &check; | _ | _ |
-| HardTanh | &check; | _ | _ |
-| SvHardTanh | &check; | _ | _ |
-| ShHardTanh | &check; | _ | _ |
-| HardSwish | &check; | _ | _ |
-| TRec | &check; | _ | _ |
-| Hardshrink | &check; | _ | _ |
-| Softshrink | &check; | _ | _ |
-| BLReLU | &check; | _ | _ |
-| VReLU | &check; | _ | _ |
-| PanFunction | &check; | _ | _ |
-| AbsLU | &check; | _ | _ |
-| MReLU | &check; | _ | _ |
-| LSPTLU | &check; | _ | _ |
-| BiFiring | &check; | _ | _ |
-| BoundedBiFiring | &check; | _ | _ |
-| PiecewiseMexicanHat | &check; | _ | _ |
-| PiecewiseRadialBasisFunction | &check; | _ | _ |
-| SQNL | &check; | _ | _ |
-| SQLU | &check; | _ | _ |
-| Squish | &check; | _ | _ |
-| SqREU | &check; | _ | _ |
-| SqSoftplus | &check; | _ | _ |
-| LogSQNL | &check; | _ | _ |
-| SQMAX | &check; | _ | _ |
-| LinQ | &check; | _ | _ |
-| ISRLU | &check; | _ | _ |
-| ISRU | &check; | _ | _ |
-| MEF | &check; | _ | _ |
-| Softplus | &check; | _ | _ |
-| ParametricSoftplus | &check; | _ | _ |
-| SoftPlusPlus | &check; | _ | _ |
-| RandSoftplus | &check; | _ | _ |
-| Sigmoid | &check; | _ | _ |
-| Tanh | &check; | _ | _ |
-| ShiftedScaledSigmoid | &check; | _ | _ |
-| VariantSigmoidFunction | &check; | _ | _ |
-| STanh | &check; | _ | _ |
-| Arctan | &check; | _ | _ |
-| ArctanGR | &check; | _ | _ |
-| SigmoidAlgebraic | &check; | _ | _ |
-| TripleStateSigmoid | &check; | _ | _ |
-| ImprovedLogisticSigmoid | &check; | _ | _ |
-| SigLin | &check; | _ | _ |
-| PTanh | &check; | _ | _ |
-| SRS | &check; | _ | _ |
-| SC | &check; | _ | _ |
-| Hexpo | &check; | _ | _ |
-| Softsign | &check; | _ | _ |
-| SmoothStep | &check; | _ | _ |
-| Elliott | &check; | _ | _ |
-| SincSigmoid | &check; | _ | _ |
-| SigmoidGumbel | &check; | _ | _ |
-| NewSigmoid | &check; | _ | _ |
-| Root2sigmoid | &check; | _ | _ |
-| LogLog | &check; | _ | _ |
-| cLogLog | &check; | _ | _ |
-| cLogLogm | &check; | _ | _ |
-| SechSig | &check; | _ | _ |
-| pSechSig | &check; | _ | _ |
-| TanhSig | &check; | _ | _ |
-| pTanhSig | &check; | _ | _ |
-| MSAF | &check; | _ | _ |
-| SymMSAF | &check; | _ | _ |
-| Rootsig | &check; | _ | _ |
-| RootsigPlus | &check; | _ | _ |
-| SoftTanh | &check; | _ | _ |
-| SigmoidTanh | &check; | _ | _ |
-| NCU | &check; | _ | _ |
-| Triple | &check; | _ | _ |
-| SQU | &check; | _ | _ |
-| Polyexp | &check; | _ | _ |
-| Exponential | &check; | _ | _ |
-| Symexp | &check; | _ | _ |
-| Wave | &check; | _ | _ |
-| Softmax | &check; | _ | _ |
-| FracReLU | &check; | _ | _ |
-| FracSoftplus | &check; | _ | _ |
-| FracTanh | &check; | _ | _ |
-| FALU | &check; | _ | _ |
-| FracLReLU | &check; | _ | _ |
-| FracPReLU | &check; | _ | _ |
-| FracELU | &check; | _ | _ |
-| FracGELU1 | &check; | _ | _ |
-| FracGELU2 | &check; | _ | _ |
-| Swish | &check; | _ | _ |
-| AHAF | &check; | _ | _ |
-| PSSiLU | &check; | _ | _ |
-| ACONB | &check; | _ | _ |
-| ACONC | &check; | _ | _ |
-| PSGU | &check; | _ | _ |
-| TBSReLUl | &check; | _ | _ |
-| PATS | &check; | _ | _ |
-| AQuLU | &check; | _ | _ |
-| ErfAct | &check; | _ | _ |
-| PSerf | &check; | _ | _ |
-| Swim | &check; | _ | _ |
-| NActivation | &check; | _ | _ |
-| ALiSA | &check; | _ | _ |
-| LiSA | &check; | _ | _ |
-| MeLU | &check; | _ | _ |
-| MMeLU | &check; | _ | _ |
-| GaLU | &check; | _ | _ |
-| ABU | &check; | _ | _ |
-| MoGU | &check; | _ | _ |
-| FSA | &check; | _ | _ |
-| TCA | &check; | _ | _ |
-| TCAv2 | &check; | _ | _ |
-| APAF | &check; | _ | _ |
-| GABU | &check; | _ | _ |
-| DKNN | &check; | _ | _ |
-| RowdyActivation | &check; | _ | _ |
-| SLAF | &check; | _ | _ |
-| ChPAF | &check; | _ | _ |
-| LPAF | &check; | _ | _ |
-| HPAF | &check; | _ | _ |
-| ShiLU | &check; | _ | _ |
-| StarReLU | &check; | _ | _ |
-| DELU | &check; | _ | _ |
-| PReLU | &check; | _ | _ |
-| PReLUPlus | &check; | _ | _ |
-| MarReLU | &check; | _ | _ |
-| RPReLU | &check; | _ | _ |
-| LeLeLU | &check; | _ | _ |
-| PREU | &check; | _ | _ |
-| SMU | &check; | _ | _ |
-| SAU | &check; | _ | _ |
-| ProbAct | &check; | _ | _ |
-| ReLUProbAct | &check; | _ | _ |
-| AOAF | &check; | _ | _ |
-| DLReLU | &check; | _ | _ |
-| ExpDLReLU | &check; | _ | _ |
-| DReLU | &check; | _ | _ |
-| FReLU | &check; | _ | _ |
-| AdaptiveHardTanh | &check; | _ | _ |
-| AReLU | &check; | _ | _ |
-| DPReLU | &check; | _ | _ |
-| DualLine | &check; | _ | _ |
-| PiLU | &check; | _ | _ |
-| DPAF | &check; | _ | _ |
-| FPAF | &check; | _ | _ |
-| EPReLU | &check; | _ | _ |
-| PairedReLU | &check; | _ | _ |
-| Tent | &check; | _ | _ |
-| Hat | &check; | _ | _ |
-| RMAF | &check; | _ | _ |
-| PTELU | &check; | _ | _ |
-| TaLU | &check; | _ | _ |
-| PTaLU | &check; | _ | _ |
-| TanhLU | &check; | _ | _ |
-| TeLU | &check; | _ | _ |
-| TReLU | &check; | _ | _ |
-| TReLU2 | &check; | _ | _ |
-| ReLTanh | &check; | _ | _ |
-| BLU | &check; | _ | _ |
-| ReBLU | &check; | _ | _ |
-| SCMish | &check; | _ | _ |
-| SCSwish | &check; | _ | _ |
-| PSwish | &check; | _ | _ |
-| PELU | &check; | _ | _ |
-| EDELU | &check; | _ | _ |
-| AdaptiveCombination1 | &check; | _ | _ |
-| AdaptiveCombination2 | &check; | _ | _ |
-| FELU | &check; | _ | _ |
-| PFELU | &check; | _ | _ |
-| MPELU | &check; | _ | _ |
-| PE2ReLU | &check; | _ | _ |
-| PE2Id | &check; | _ | _ |
-| SoftExponential | &check; | _ | _ |
-| CELU | &check; | _ | _ |
-| ErfReLU | &check; | _ | _ |
-| PSELU | &check; | _ | _ |
-| LPSELU | &check; | _ | _ |
-| LPSELU_RP | &check; | _ | _ |
-| ShELU | &check; | _ | _ |
-| SvELU | &check; | _ | _ |
-| PShELU | &check; | _ | _ |
-| PSvELU | &check; | _ | _ |
-| TSwish | &check; | _ | _ |
-| RePSU | &check; | _ | _ |
-| PDELU | &check; | _ | _ |
-| EELU | &check; | _ | _ |
-| PFPLUS | &check; | _ | _ |
-| PVLU | &check; | _ | _ |
-| MollifiedAbsoluteValue | &check; | _ | _ |
-| SquarePlus | &check; | _ | _ |
-| StepPlus | &check; | _ | _ |
-| BipolarPlus | &check; | _ | _ |
-| LReLUPlus | &check; | _ | _ |
-| vReLUPlus | &check; | _ | _ |
-| SoftshrinkPlus | &check; | _ | _ |
-| PanPlus | &check; | _ | _ |
-| BReLUPlus | &check; | _ | _ |
-| SReLUPlus | &check; | _ | _ |
-| HardTanhPlus | &check; | _ | _ |
-| HardshrinkPlus | &check; | _ | _ |
-| MollifiedMeLUComponent | &check; | _ | _ |
-| TSAFPlus | &check; | _ | _ |
-| ELUPlus | &check; | _ | _ |
-| SwishPlus | &check; | _ | _ |
-| MishPlus | &check; | _ | _ |
-| LogishPlus | &check; | _ | _ |
-| SoftsignPlus | &check; | _ | _ |
-| SignReLUPlus | &check; | _ | _ |
-| CosLU | &check; | _ | _ |
-| LAAF | &check; | _ | _ |
-| AdaptiveSlopeTanh | &check; | _ | _ |
-| PSTanh | &check; | _ | _ |
-| SSinH | &check; | _ | _ |
-| SExp | &check; | _ | _ |
-| LAU | &check; | _ | _ |
-| AGumb | &check; | _ | _ |
-| AdaptiveSigmoid | &check; | _ | _ |
-| GeneralizedHyperbolicTangent | &check; | _ | _ |
-| TrainableAmplitude | &check; | _ | _ |
-| ASSF | &check; | _ | _ |
-| SVAF | &check; | _ | _ |
-| TanhSoft | &check; | _ | _ |
-| TanhSoft1 | &check; | _ | _ |
-| TanhSoft2 | &check; | _ | _ |
-| TanhSoft3 | &check; | _ | _ |
-| PSigmoid | &check; | _ | _ |
-| PSF | &check; | _ | _ |
-| STACTanh | &check; | _ | _ |
-| TAAF | _ | _ | _ |
-| tSoftmax | _ | _ | _ |
-| glSoftmax | _ | _ | _ |
-| gpSoftmax | _ | _ | _ |
-| ARBF | _ | _ | _ |
-| PGELU | _ | _ | _ |
-| PFTS | _ | _ | _ |
-| PFPM | _ | _ | _ |
-| GEU | _ | _ | _ |
-| SGT | _ | _ | _ |
-| RSign | _ | _ | _ |
-| P_SIG_RAMP | _ | _ | _ |
-| SAAAF | _ | _ | _ |
-| ScaledSoftsign | _ | _ | _ |
-| pSoftplus | _ | _ | _ |
-| UAF | _ | _ | _ |
-| LEAF | _ | _ | _ |
-| GReLU | _ | _ | _ |
-| MAF | _ | _ | _ |
-| ELUpSoftplus | _ | _ | _ |
-| GLN | _ | _ | _ |
-| APLU | _ | _ | _ |
-| SPLASH | _ | _ | _ |
-| MBA | _ | _ | _ |
-| AdaLU | _ | _ | _ |
-| TSAF | _ | _ | _ |
-| ARiA | _ | _ | _ |
-| MWF | _ | _ | _ |
-| Sincos | _ | _ | _ |
-| CSS | _ | _ | _ |
-| CatAF | _ | _ | _ |
-| Expcos | _ | _ | _ |
-| MTLU | _ | _ | _ |
-| CPN | _ | _ | _ |
-| LuTU | _ | _ | _ |
-| Maxout | _ | _ | _ |
-| PAU | _ | _ | _ |
-| RPAU | _ | _ | _ |
-| ERA | _ | _ | _ |
-| OPAU | _ | _ | _ |
-| SAF | _ | _ | _ |
-| TruG | _ | _ | _ |
-| NIN | _ | _ | _ |
-| SAVE-based | _ | _ | _ |
+| Name | Implemented | Tested | Reviewed | Documented
+|------|------------|--------|---------|---------|
+| FCAF_Hidden | &check; | _ | _ | _ |
+| FCAF_Output | &check; | _ | _ | _ |
+| CCAF | &check; | _ | _ | _ |
+| SiLU | &check; | _ | _ | _ |
+| CoLU | &check; | _ | _ | _ |
+| Phish | &check; | _ | _ | _ |
+| SinLU | &check; | _ | _ | _ |
+| GELU | &check; | _ | _ | _ |
+| SGELU | &check; | _ | _ | _ |
+| CaLU | &check; | _ | _ | _ |
+| LaLU | &check; | _ | _ | _ |
+| TSSwish | &check; | _ | _ | _ |
+| GSwish | &check; | _ | _ | _ |
+| ESwish | &check; | _ | _ | _ |
+| dSigmoid | &check; | _ | _ | _ |
+| Gish | &check; | _ | _ | _ |
+| Logish | &check; | _ | _ | _ |
+| LogLogish | &check; | _ | _ | _ |
+| ExpExpish | &check; | _ | _ | _ |
+| SelfArctan | &check; | _ | _ | _ |
+| pLogish | &check; | _ | _ | _ |
+| Suish | &check; | _ | _ | _ |
+| TSReLU | &check; | _ | _ | _ |
+| TBSReLU | &check; | _ | _ | _ |
+| LogSigmoid | &check; | _ | _ | _ |
+| dSiLU | &check; | _ | _ | _ |
+| DoubleSiLU | &check; | _ | _  _ ||
+| MSiLU | &check; | _ | _ | _ |
+| TSiLU | &check; | _ | _ | _ |
+| ASiLU | &check; | _ | _ | _ |
+| SwAT | &check; | _ | _ | _ |
+| ReHSec | &check; | _ | _ | _ |
+| LiSHT | &check; | _ | _ | _ |
+| Mish | &check; | _ | _ | _ |
+| Smish | &check; | _ | _ | _ |
+| TanhExp | &check; | _ | _ | _ |
+| Serf | &check; | _ | _ | _ |
+| EANAF | &check; | _ | _ | _ |
+| SinSig | &check; | _ | _ | _ |
+| SiELU | &check; | _ | _ | _ |
+| Sine | &check; | _ | _ | _ |
+| CombHSine | &check; | _ | _ | _ |
+| ModifiedArcsinh | &check; | _ | _ | _ |
+| HyperSinh | &check; | _ | _ | _ |
+| Arctid | &check; | _ | _ | _ |
+| Cosine | &check; | _ | _ | _ |
+| Cosid | &check; | _ | _ | _ |
+| Sinp | &check; | _ | _ | _ |
+| GCU | &check; | _ | _ | _ |
+| ASU | &check; | _ | _ | _ |
+| Sinc | &check; | _ | _ | _ |
+| SSU | &check; | _ | _ | _ |
+| DSU | &check; | _ | _ | _ |
+| HcLSH | &check; | _ | _ | _ |
+| TanhLinearUnit | &check; | _ | _ | _ |
+| DifferenceELU | &check; | _ | _ | _ |
+| PolynomialLinearUnit | &check; | _ | _ | _ |
+| InversePolynomialLinearUnit | &check; | _ | _ | _ |
+| PowerLinearUnit | &check; | _ | _ | _ |
+| PowerFunctionLinearUnit | &check; | _ | _ | _ |
+| FasterPowerFunctionLinearUnit | &check; | _ | _ | _ |
+| ElasticAdaptivelyParametricCompoundedUnit | &check; | _ | _ | _ |
+| LipschitzReLU | &check; | _ | _ | _ |
+| ScaledExponentialLinearUnit | &check; | _ | _ | _ |
+| LeakyScaledExponentialLinearUnit | &check; | _ | _ | _ |
+| ScaledExponentiallyRegularizedLinearUnit | &check; | _ | _ | _ |
+| ScaledScaledExponentialLinearUnit | &check; | _ | _ | _ |
+| RSigELU | &check; | _ | _ | _ |
+| HardSReLUE | &check; | _ | _ | _ |
+| ExponentialLinearSigmoidSquashing | &check; | _ | _ | _ |
+| HardExponentialLinearSigmoidSquashing | &check; | _ | _ | _ |
+| RSigELUD | &check; | _ | _ | _ |
+| LSReLU | &check; | _ | _ | _ |
+| SQRT | &check; | _ | _ | _ |
+| SSAF | &check; | _ | _ | _ |
+| Binary | &check; | _ | _ | _ |
+| BentIdentity | &check; | _ | _ | _ |
+| Mishra | &check; | _ | _ | _ |
+| SahaBora | &check; | _ | _ | _ |
+| Logarithmic | &check; | _ | _ | _ |
+| SPOCU | &check; | _ | _ | _ |
+| PUAF | &check; | _ | _ | _ |
+| ArandaOrdaz | &check; | _ | _ | _ |
+| KDAC | &check; | _ | _ | _ |
+| KWTA | &check; | _ | _ | _ |
+| VBAF | &check; | _ | _ | _ |
+| ETanh | &check; | _ | _ | _ |
+| EvolvedTanhReLU | &check; | _ | _ | _ |
+| EvolvedTanhLogReLU | &check; | _ | _ | _ |
+| ReLU | &check; | _ | _ | _ |
+| SReLU | &check; | _ | _ | _ |
+| LReLU | &check; | _ | _ | _ |
+| VLReLU | &check; | _ | _ | _ |
+| RReLU | &check; | _ | _ | _ |
+| OLReLU | &check; | _ | _ | _ |
+| SoftsignRReLU | &check; | _ | _ | _ |
+| SlReLU | &check; | _ | _ | _ |
+| CReLU | &check; | _ | _ | _ |
+| ReLUN | &check; | _ | _ | _ |
+| SquaredReLU | &check; | _ | _ | _ |
+| SineReLU | &check; | _ | _ | _ |
+| Minsin | &check; | _ | _ | _ |
+| VLU | &check; | _ | _ | _ |
+| SRReLU | &check; | _ | _ | _ |
+| NReLU | &check; | _ | _ | _ |
+| RTReLU | &check; | _ | _ | _ |
+| NLReLU | &check; | _ | _ | _ |
+| SLU | &check; | _ | _ | _ |
+| ReSP | &check; | _ | _ | _ |
+| PReNU | &check; | _ | _ | _ |
+| BReLU | &check; | _ | _ | _ |
+| HardSigmoid | &check; | _ | _ | _ |
+| HardTanh | &check; | _ | _ | _ |
+| SvHardTanh | &check; | _ | _ | _ |
+| ShHardTanh | &check; | _ | _ | _ |
+| HardSwish | &check; | _ | _ | _ |
+| TRec | &check; | _ | _ | _ |
+| Hardshrink | &check; | _ | _ | _ |
+| Softshrink | &check; | _ | _ | _ |
+| BLReLU | &check; | _ | _ | _ |
+| VReLU | &check; | _ | _ | _ |
+| PanFunction | &check; | _ | _ | _ |
+| AbsLU | &check; | _ | _ | _ |
+| MReLU | &check; | _ | _ | _ |
+| LSPTLU | &check; | _ | _ | _ |
+| BiFiring | &check; | _ | _ | _ |
+| BoundedBiFiring | &check; | _ | _ | _ |
+| PiecewiseMexicanHat | &check; | _ | _ | _ |
+| PiecewiseRadialBasisFunction | &check; | _ | _ | _ |
+| SQNL | &check; | _ | _ | _ |
+| SQLU | &check; | _ | _ | _ |
+| Squish | &check; | _ | _ | _ |
+| SqREU | &check; | _ | _ | _ |
+| SqSoftplus | &check; | _ | _ | _ |
+| LogSQNL | &check; | _ | _ | _ |
+| SQMAX | &check; | _ | _ | _ |
+| LinQ | &check; | _ | _ | _ |
+| ISRLU | &check; | _ | _ | _ |
+| ISRU | &check; | _ | _ | _ |
+| MEF | &check; | _ | _ | _ |
+| Softplus | &check; | _ | _ | _ |
+| ParametricSoftplus | &check; | _ | _ | _ |
+| SoftPlusPlus | &check; | _ | _ | _ |
+| RandSoftplus | &check; | _ | _ | _ |
+| Sigmoid | &check; | _ | _ | _ |
+| Tanh | &check; | _ | _ | _ |
+| ShiftedScaledSigmoid | &check; | _ | _ | _ |
+| VariantSigmoidFunction | &check; | _ | _ | _ |
+| STanh | &check; | _ | _ | _ |
+| Arctan | &check; | _ | _ | _ |
+| ArctanGR | &check; | _ | _ | _ |
+| SigmoidAlgebraic | &check; | _ | _ | _ |
+| TripleStateSigmoid | &check; | _ | _ | _ |
+| ImprovedLogisticSigmoid | &check; | _ | _ | _ |
+| SigLin | &check; | _ | _ | _ |
+| PTanh | &check; | _ | _ | _ |
+| SRS | &check; | _ | _ | _ |
+| SC | &check; | _ | _ | _ |
+| Hexpo | &check; | _ | _ | _ |
+| Softsign | &check; | _ | _ | _ |
+| SmoothStep | &check; | _ | _ | _ |
+| Elliott | &check; | _ | _ | _ |
+| SincSigmoid | &check; | _ | _ | _ | _ |
+| SigmoidGumbel | &check; | _ | _ | _ |
+| NewSigmoid | &check; | _ | _ | _ |
+| Root2sigmoid | &check; | _ | _ | _ |
+| LogLog | &check; | _ | _ | _ |
+| cLogLog | &check; | _ | _ | _ |
+| cLogLogm | &check; | _ | _ | _ |
+| SechSig | &check; | _ | _ | _ |
+| pSechSig | &check; | _ | _ | _ |
+| TanhSig | &check; | _ | _ | _ |
+| pTanhSig | &check; | _ | _ | _ |
+| MSAF | &check; | _ | _ | _ | _ |
+| SymMSAF | &check; | _ | _ | _ |
+| Rootsig | &check; | _ | _ | _ |
+| RootsigPlus | &check; | _ | _ | _ |
+| SoftTanh | &check; | _ | _ | _ |
+| SigmoidTanh | &check; | _ | _ | _ |
+| NCU | &check; | _ | _ | _ |
+| Triple | &check; | _ | _ | _ |
+| SQU | &check; | _ | _ | _ |
+| Polyexp | &check; | _ | _ | _ |
+| Exponential | &check; | _ | _ | _ |
+| Symexp | &check; | _ | _ | _ | _ |
+| Wave | &check; | _ | _ | _ | _ |
+| Softmax | &check; | _ | _ | _ |
+| FracReLU | &check; | _ | _ | _ |
+| FracSoftplus | &check; | _ | _ | _ |
+| FracTanh | &check; | _ | _ | _ | _ |
+| FALU | &check; | _ | _ | _ |
+| FracLReLU | &check; | _ | _ | _ |
+| FracPReLU | &check; | _ | _ | _ |
+| FracELU | &check; | _ | _ | _ |
+| FracGELU1 | &check; | _ | _ | _ |
+| FracGELU2 | &check; | _ | _ | _ |
+| Swish | &check; | _ | _ | _ |
+| AHAF | &check; | _ | _ | _ |
+| PSSiLU | &check; | _ | _ | _ |
+| ACONB | &check; | _ | _ | _ |
+| ACONC | &check; | _ | _ | _ |
+| PSGU | &check; | _ | _ | _ |
+| TBSReLUl | &check; | _ | _ | _ |
+| PATS | &check; | _ | _ | _ |
+| AQuLU | &check; | _ | _ | _ |
+| ErfAct | &check; | _ | _ | _ |
+| PSerf | &check; | _ | _ | _ | _ |
+| Swim | &check; | _ | _ | _ |
+| NActivation | &check; | _ | _ | _ |
+| ALiSA | &check; | _ | _ | _ |
+| LiSA | &check; | _ | _ | _ |
+| MeLU | &check; | _ | _ | _ |
+| MMeLU | &check; | _ | _ | _ |
+| GaLU | &check; | _ | _ | _ |
+| ABU | &check; | _ | _ | _ |
+| MoGU | &check; | _ | _ | _ |
+| FSA | &check; | _ | _ | _ |
+| TCA | &check; | _ | _ | _ |
+| TCAv2 | &check; | _ | _ | _ |
+| APAF | &check; | _ | _ | _ |
+| GABU | &check; | _ | _ | _ |
+| DKNN | &check; | _ | _ | _ |
+| RowdyActivation | &check; | _ | _ | _ |
+| SLAF | &check; | _ | _ | _ |
+| ChPAF | &check; | _ | _ | _ |
+| LPAF | &check; | _ | _ | _ |
+| HPAF | &check; | _ | _ | _ |
+| ShiLU | &check; | _ | _ | _ |
+| StarReLU | &check; | _ | _ | _ |
+| DELU | &check; | _ | _ | _ |
+| PReLU | &check; | _ | _ | _ |
+| PReLUPlus | &check; | _ | _ | _ |
+| MarReLU | &check; | _ | _ | _ |
+| RPReLU | &check; | _ | _ | _ |
+| LeLeLU | &check; | _ | _ | _ |
+| PREU | &check; | _ | _ | _ |
+| SMU | &check; | _ | _ | _ |
+| SAU | &check; | _ | _ | _ |
+| ProbAct | &check; | _ | _ | _ |
+| ReLUProbAct | &check; | _ | _ | _ |
+| AOAF | &check; | _ | _ | _ |
+| DLReLU | &check; | _ | _ | _ |
+| ExpDLReLU | &check; | _ | _ | _ |
+| DReLU | &check; | _ | _ | _ |
+| FReLU | &check; | _ | _ | _ |
+| AdaptiveHardTanh | &check; | _ | _ | _ |
+| AReLU | &check; | _ | _ | _ |
+| DPReLU | &check; | _ | _ | _ |
+| DualLine | &check; | _ | _ | _ | _ |
+| PiLU | &check; | _ | _ | _ | _ |
+| DPAF | &check; | _ | _ | _ |
+| FPAF | &check; | _ | _ | _ | _ |
+| EPReLU | &check; | _ | _ | _ |
+| PairedReLU | &check; | _ | _ | _ |
+| Tent | &check; | _ | _ | _ |
+| Hat | &check; | _ | _ | _ |
+| RMAF | &check; | _ | _ | _ |
+| PTELU | &check; | _ | _ | _ |
+| TaLU | &check; | _ | _ | _ |
+| PTaLU | &check; | _ | _ | _ |
+| TanhLU | &check; | _ | _ | _ |
+| TeLU | &check; | _ | _ | _ |
+| TReLU | &check; | _ | _ | _ |
+| TReLU2 | &check; | _ | _ | _ |
+| ReLTanh | &check; | _ | _ | _ |
+| BLU | &check; | _ | _ | _ |
+| ReBLU | &check; | _ | _ | _ |
+| SCMish | &check; | _ | _ | _ |
+| SCSwish | &check; | _ | _ | _ |
+| PSwish | &check; | _ | _ | _ |
+| PELU | &check; | _ | _ | _ |
+| EDELU | &check; | _ | _ | _ |
+| AdaptiveCombination1 | &check; | _ | _ | _ |
+| AdaptiveCombination2 | &check; | _ | _ | _ |
+| FELU | &check; | _ | _ | _ |
+| PFELU | &check; | _ | _ | _ |
+| MPELU | &check; | _ | _ | _ |
+| PE2ReLU | &check; | _ | _ | _ |
+| PE2Id | &check; | _ | _ | _ |
+| SoftExponential | &check; | _ | _ | _ |
+| CELU | &check; | _ | _ | _ |
+| ErfReLU | &check; | _ | _ | _ |
+| PSELU | &check; | _ | _ | _ |
+| LPSELU | &check; | _ | _ | _ |
+| LPSELU_RP | &check; | _ | _ | _ |
+| ShELU | &check; | _ | _ | _ |
+| SvELU | &check; | _ | _ | _ |
+| PShELU | &check; | _ | _ | _ |
+| PSvELU | &check; | _ | _ | _ |
+| TSwish | &check; | _ | _ | _ |
+| RePSU | &check; | _ | _ | _ |
+| PDELU | &check; | _ | _ | _ |
+| EELU | &check; | _ | _ | _ |
+| PFPLUS | &check; | _ | _ | _ |
+| PVLU | &check; | _ | _ | _ |
+| MollifiedAbsoluteValue | &check; | _ | _ | _ |
+| SquarePlus | &check; | _ | _ | _ |
+| StepPlus | &check; | _ | _ | _ |
+| BipolarPlus | &check; | _ | _ | _ |
+| LReLUPlus | &check; | _ | _ | _ |
+| vReLUPlus | &check; | _ | _ | _ |
+| SoftshrinkPlus | &check; | _ | _ | _ |
+| PanPlus | &check; | _ | _ | _ |
+| BReLUPlus | &check; | _ | _ | _ |
+| SReLUPlus | &check; | _ | _ | _ |
+| HardTanhPlus | &check; | _ | _ | _ |
+| HardshrinkPlus | &check; | _ | _ | _ |
+| MollifiedMeLUComponent | &check; | _ | _ | _ |
+| TSAFPlus | &check; | _ | _ | _ |
+| ELUPlus | &check; | _ | _ | _ |
+| SwishPlus | &check; | _ | _ | _ |
+| MishPlus | &check; | _ | _ | _ |
+| LogishPlus | &check; | _ | _ | _ |
+| SoftsignPlus | &check; | _ | _ | _ |
+| SignReLUPlus | &check; | _ | _ | _ |
+| CosLU | &check; | _ | _ | _ |
+| LAAF | &check; | _ | _ | _ |
+| AdaptiveSlopeTanh | &check; | _ | _ | _ |
+| PSTanh | &check; | _ | _ | _ |
+| SSinH | &check; | _ | _ | _ |
+| SExp | &check; | _ | _ | _ |
+| LAU | &check; | _ | _ | _ |
+| AGumb | &check; | _ | _ | _ |
+| AdaptiveSigmoid | &check; | _ | _ | _ |
+| GeneralizedHyperbolicTangent | &check; | _ | _ | _ |
+| TrainableAmplitude | &check; | _ | _ | _ |
+| ASSF | &check; | _ | _ | _ |
+| SVAF | &check; | _ | _ | _ | _ |
+| TanhSoft | &check; | _ | _ | _ |
+| TanhSoft1 | &check; | _ | _ | _ |
+| TanhSoft2 | &check; | _ | _ | _ |
+| TanhSoft3 | &check; | _ | _ | _ |
+| PSigmoid | &check; | _ | _ | _ |
+| PSF | &check; | _ | _ | _ |
+| STACTanh | &check; | _ | _ | _ |
+| TAAF | _ | _ | _ | _ |
+| tSoftmax | _ | _ | _ | _ |
+| glSoftmax | _ | _ | _ | _ |
+| gpSoftmax | _ | _ | _ | _ |
+| ARBF | _ | _ | _ | _ |
+| PGELU | _ | _ | _ | _ |
+| PFTS | _ | _ | _ | _ |
+| PFPM | _ | _ | _ | _ |
+| GEU | _ | _ | _ | _ |
+| SGT | _ | _ | _ | _ |
+| RSign | _ | _ | _ | _ |
+| P_SIG_RAMP | _ | _ | _ | _ |
+| SAAAF | _ | _ | _ | _ |
+| ScaledSoftsign | _ | _ | _ | _ |
+| pSoftplus | _ | _ | _ | _ |
+| UAF | _ | _ | _ | _ |
+| LEAF | _ | _ | _ | _ |
+| GReLU | _ | _ | _ | _ |
+| MAF | _ | _ | _ | _ |
+| ELUpSoftplus | _ | _ | _ | _ |
+| GLN | _ | _ | _ | _ |
+| APLU | _ | _ | _ | _ |
+| SPLASH | _ | _ | _ | _ |
+| MBA | _ | _ | _ | _ |
+| AdaLU | _ | _ | _ | _ |
+| TSAF | _ | _ | _ | _ |
+| ARiA | _ | _ | _ | _ |
+| MWF | _ | _ | _ | _ |
+| Sincos | _ | _ | _ | _ |
+| CSS | _ | _ | _ | _ |
+| CatAF | _ | _ | _ | _ |
+| Expcos | _ | _ | _ | _ |
+| MTLU | _ | _ | _ | _ |
+| CPN | _ | _ | _ | _ |
+| LuTU | _ | _ | _ | _ |
+| Maxout | _ | _ | _ | _ |
+| PAU | _ | _ | _ | _ |
+| RPAU | _ | _ | _ | _ |
+| ERA | _ | _ | _ | _ |
+| OPAU | _ | _ | _ | _ |
+| SAF | _ | _ | _ | _ |
+| TruG | _ | _ | _ | _ |
+| NIN | _ | _ | _ | _ |
+| SAVE-based | _ | _ | _ | _ |
