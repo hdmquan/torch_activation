@@ -22,7 +22,7 @@ class SGT(BaseActivation):
         alpha (float, optional): Exponent for the positive part of the input. Default: 1.0.
         b (float, optional): Scaling factor for the negative part of the input. Default: 1.0.
         beta (float, optional): Exponent for the negative part of the input. Default: 1.0.
-        learnable (bool, optional): optionally make b and d parameters trainable. Default: ``False``
+        learnable (bool, optional): optionally make alpha and beta parameters trainable. Default: ``False``
         inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
