@@ -70,20 +70,36 @@ class SGT(BaseActivation):
         pos_mask = x >= 0
         neg_mask = x < 0
         
-        if self.inplace:
-            x_pos = x.clone()
-            x_pos[neg_mask] = 0
-            x_neg = x.clone()
-            x_pos[pos_mask] = 0
-            
-            x_neg[neg_mask] = self.a * torch.pow(x_neg[neg_mask], self.alpha)
-            x_pos[pos_mask] = self.b * torch.pow(x_pos[pos_mask], self.beta)
-            
-            x.copy_(x_pos + x_neg)
-            return x
-        else:
-            result = torch.zeros_like(x)
-            result[neg_mask] = self.a * torch.pow(x[neg_mask], self.alpha)
-            result[pos_mask] = self.b * torch.pow(x[pos_mask], self.beta)
-            
-            return result
+        result = torch.zeros_like(x)
+        result[neg_mask] = self.a * torch.pow(x[neg_mask], self.alpha)
+        result[pos_mask] = self.b * torch.pow(x[pos_mask], self.beta)
+        
+        return result
+    
+    def _forward_inplace(self, x) -> Tensor:
+        pos_mask = x >= 0
+        neg_mask = ~pos_mask
+        
+        # Process negative values
+        if neg_mask.any():
+            x[neg_mask] = self.a * torch.pow(x[neg_mask], self.alpha)
+        
+        # Process positive values
+        if pos_mask.any():
+            x[pos_mask] = self.b * torch.pow(x[pos_mask], self.beta)
+        
+        return x
+
+
+
+
+if __name__ == "__main__":
+    from torch_activation.utils import plot_activation
+    activation_params = {
+        "SGT": {"a": [1, 2], "b": [1, 2], "alpha": [1, 2], "beta": [1, 2]}
+    }
+
+    for activation_name, params in activation_params.items():
+        # Get the class from its name
+        activation_class = globals()[activation_name]
+        plot_activation(activation_class, params)
