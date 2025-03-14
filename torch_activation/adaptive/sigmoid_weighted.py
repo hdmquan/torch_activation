@@ -827,3 +827,212 @@ class Swim(BaseActivation):
             return x
         else:
             return result
+
+
+@register_activation
+class Gpsoftmax(BaseActivation):
+    """
+    Generalized Power Softmax (gpsoftmax)
+
+    This activation function extends the traditional softmax using a power-based normalization.
+    It includes trainable parameters a, b, c, and d, which influence the transformation.
+
+    Attributes:
+        a (nn.Parameter or Tensor): Trainable parameter `a`.
+        b (nn.Parameter or Tensor): Trainable parameter `b`.
+        c (nn.Parameter or Tensor): Trainable parameter `c`.
+        d (nn.Parameter or Tensor): Trainable parameter `d`.
+        inplace (bool): If True, modifies the input tensor in place.
+    """
+
+    def __init__(
+            self,
+            input_shape: int,
+            a: float = 1.0,
+            b: float = 1.0,
+            c: float = 1.0,
+            d: float = 1.0,
+            learnable: bool = True,
+            inplace: bool = False,
+            **kwargs
+    ) -> None:
+        super().__init__(**kwargs)
+
+        def create_param(value: float) -> Tensor:
+            """Creates a learnable parameter if `learnable` is True; otherwise, returns a fixed tensor."""
+            tensor = torch.full((input_shape, 1), value, dtype=torch.float64)  # Initialize tensor with the given value
+            return nn.Parameter(torch.randn(input_shape)) if learnable else tensor  # Convert to parameter if learnable
+
+        # Initialize parameters (either as learnable or fixed tensors)
+        self.a: Tensor = create_param(a)
+        self.b: Tensor = create_param(b)
+        self.c: Tensor = create_param(c)
+        self.d: Tensor = create_param(d)
+        self.inplace: bool = inplace
+        self.input_size = input_shape
+
+    def _forward(self, x: Tensor) -> Tensor:
+        """
+        Computes the generalized Lehmer softmax transformation.
+
+        Args:
+            x (Tensor): Input tensor.
+
+        Returns:
+            Tensor: Softmax-transformed tensor.
+        """
+        result =  F.softmax(self.pnorm(x, self.a, self.b, self.c, self.d), dim=-1)
+        if self.inplace and hasattr(x, 'copy_'):
+            x.copy_(result)
+            return x
+        return result
+
+    def pnorm(self, x: Tensor, a: Tensor, b: Tensor, c: Tensor, d: Tensor) -> Tensor:
+        """
+        Applies Lehmer-based normalization:
+
+        PNORM(z_i) = (z_i - M_{a_i, b_i}) / GPM_{c_i, d_i}(z - M_{a_i, b_i})
+        """
+        glm_first: Tensor = self.gpm_func(x, a, b)
+        glm_second: Tensor = self.gpm_func(x - glm_first, c, d)
+        result: Tensor = (x - glm_first) / glm_second
+
+        if self.inplace and hasattr(x, 'copy_'):
+            x.copy_(result)
+            return x
+        return result
+
+    def gpm_func(self, x: Tensor, alpha: Tensor, beta: Tensor) -> Tensor:
+        """
+        Computes the Generalized Power Mean (GPM):
+
+        GPM_{\alpha, \beta}(x) = (ln( sum(\alpha^{\beta x_k}) ) - ln(N)) / (\beta ln(\alpha))
+        """
+        b: Tensor = torch.multiply(beta + 1, x)
+        log_alpha: Tensor = torch.log(torch.clamp(alpha, min=1e-8))
+        first_part: Tensor = torch.logsumexp(b * log_alpha, dim=-1)
+
+        second_part = torch.log(torch.Tensor([self.input_size]))
+
+        denom_part = torch.multiply(beta, log_alpha)
+        res: Tensor = (first_part - second_part) / denom_part
+        return res
+
+@register_activation
+class Glsoftmax(BaseActivation):
+    r"""
+    Generalized Lehmer Softmax (glsoftmax).
+
+    This is a softmax variant that applies a generalized Lehmer-based normalization
+    with trainable parameters `a`, `b`, `c`, and `d`.
+
+    Args:
+        input_shape (tuple[int, ...]): The shape of the input tensor.
+        a (float, optional): Initial value for parameter `a`. Default is 1.0.
+        b (float, optional): Initial value for parameter `b`. Default is 1.0.
+        c (float, optional): Initial value for parameter `c`. Default is 1.0.
+        d (float, optional): Initial value for parameter `d`. Default is 1.0.
+        learnable (bool, optional): Whether the parameters `a`, `b`, `c`, and `d` are trainable. Default is False.
+        inplace (bool, optional): Whether to perform operations in-place. Default is False.
+        **kwargs: Additional keyword arguments for the `BaseActivation` superclass.
+
+    Attributes:
+        a (Union[nn.Parameter, Tensor]): Trainable or fixed parameter `a`.
+        b (Union[nn.Parameter, Tensor]): Trainable or fixed parameter `b`.
+        c (Union[nn.Parameter, Tensor]): Trainable or fixed parameter `c`.
+        d (Union[nn.Parameter, Tensor]): Trainable or fixed parameter `d`.
+        inplace (bool): Flag indicating whether operations are performed in-place.
+
+    Methods:
+        _forward(x: Tensor) -> Tensor:
+            Computes the generalized Lehmer softmax transformation.
+
+        lnorm(x: Tensor, a: Tensor, b: Tensor, c: Tensor, d: Tensor) -> Tensor:
+            Applies Lehmer-based normalization.
+
+        glm_func(x: Tensor, alpha: Tensor, beta: Tensor) -> Tensor:
+            Computes the generalized Lehmer mean function.
+    """
+
+    def __init__(
+            self,
+            input_shape: tuple[int, ...],
+            a: float = 1.0,
+            b: float = 1.0,
+            c: float = 1.0,
+            d: float = 1.0,
+            learnable: bool = True,
+            inplace: bool = False,
+            **kwargs
+    ) -> None:
+        super().__init__(**kwargs)
+
+        def create_param(value: float) -> Tensor:
+            """Creates a learnable parameter if `learnable` is True; otherwise, returns a fixed tensor."""
+            tensor = torch.full((input_shape, 1), value, dtype=torch.float64)  # Initialize tensor with the given value
+            return nn.Parameter(torch.randn(input_shape)) if learnable else tensor  # Convert to parameter if learnable
+
+        # Initialize parameters (either as learnable or fixed tensors)
+        self.a: Tensor = create_param(a)
+        self.b: Tensor = create_param(b)
+        self.c: Tensor = create_param(c)
+        self.d: Tensor = create_param(d)
+        self.inplace: bool = inplace
+
+    def _forward(self, x: Tensor) -> Tensor:
+        """
+        Computes the generalized Lehmer softmax transformation.
+
+        Args:
+            x (Tensor): Input tensor.
+
+        Returns:
+            Tensor: Softmax-transformed tensor.
+        """
+        result =  F.softmax(self.lnorm(x, self.a, self.b, self.c, self.d), dim=-1)
+        if self.inplace and hasattr(x, 'copy_'):
+            x.copy_(result)
+            return x
+        return result
+
+    def lnorm(self, x: Tensor, a: Tensor, b: Tensor, c: Tensor, d: Tensor) -> Tensor:
+        """
+        Applies Lehmer-based normalization.
+
+        Args:
+            x (Tensor): Input tensor.
+            a (Tensor): Parameter `a`.
+            b (Tensor): Parameter `b`.
+            c (Tensor): Parameter `c`.
+            d (Tensor): Parameter `d`.
+
+        Returns:
+            Tensor: Normalized tensor.
+        """
+        glm_first: Tensor = self.glm_func(x, a, b)
+        glm_second: Tensor = self.glm_func(x - glm_first, c, d)
+        result: Tensor = (x - glm_first) / glm_second
+        return result
+
+    def glm_func(self, x: Tensor, alpha: Tensor, beta: Tensor) -> Tensor:
+        """
+        Computes the generalized Lehmer mean function.
+
+        Args:
+            x (Tensor): Input tensor.
+            alpha (Tensor): Alpha parameter.
+            beta (Tensor): Beta parameter.
+
+        Returns:
+            Tensor: Result of the generalized Lehmer mean function.
+        """
+        b: Tensor = torch.multiply(beta + 1, x)
+        log_alpha: Tensor = torch.log(torch.clamp(alpha, min=1e-8))  # Avoid log(0) or negative log issues
+        first_part: Tensor = torch.logsumexp(b * log_alpha, dim=-1)
+        b = torch.multiply(beta, x)
+        log_alpha = torch.log(torch.clamp(alpha, min=1e-8))
+        second_part: Tensor = torch.logsumexp(b * log_alpha, dim=-1)
+        res: Tensor = (first_part - second_part) / torch.log(torch.clamp(alpha, min=1e-8))
+        return res
+
+
