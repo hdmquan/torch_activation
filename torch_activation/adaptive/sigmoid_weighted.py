@@ -830,12 +830,33 @@ class Swim(BaseActivation):
 
 
 @register_activation
-class Gpsoftmax(BaseActivation):
+class GPSoftmax(BaseActivation):
     """
     Generalized Power Softmax (gpsoftmax)
 
     This activation function extends the traditional softmax using a power-based normalization.
     It includes trainable parameters a, b, c, and d, which influence the transformation.
+
+    :math:`f(z_j) = \frac{\exp(\text{PNORM}(z_j))}{\sum_{k=1}^{N} \exp(\text{PNORM}(z_k))}`
+
+    where PNORM is a generalized power-based normalization:
+    
+    :math:`\text{PNORM}(z_i) = \frac{z_i - M_{a_i, b_i}}{\text{GPM}_{c_i, d_i}(z - M_{a_i, b_i})}`
+    
+    :math:`M_{a_i, b_i} = \text{GPM}_{a_i, b_i}(z)`
+    
+    :math:`\text{GPM}_{\alpha, \beta}(x) = \frac{\ln\left(\sum_{k=1}^{N} \alpha^{\beta x_k}\right) - \ln(N)}{\beta \ln(\alpha)}`
+
+    
+    Args:
+        input_shape (int): The size of the input vector tensor, channel or feature size.
+        a (float, optional): Initial value for parameter `a`. Default is 1.0.
+        b (float, optional): Initial value for parameter `b`. Default is 1.0.
+        c (float, optional): Initial value for parameter `c`. Default is 1.0.
+        d (float, optional): Initial value for parameter `d`. Default is 1.0.
+        learnable (bool, optional): Whether the parameters `a`, `b`, `c`, and `d` are trainable. Default is False.
+        inplace (bool, optional): Whether to perform operations in-place. Default is False.
+        **kwargs: Additional keyword arguments for the `BaseActivation` superclass.
 
     Attributes:
         a (nn.Parameter or Tensor): Trainable parameter `a`.
@@ -843,6 +864,18 @@ class Gpsoftmax(BaseActivation):
         c (nn.Parameter or Tensor): Trainable parameter `c`.
         d (nn.Parameter or Tensor): Trainable parameter `d`.
         inplace (bool): If True, modifies the input tensor in place.
+        input_shape (int): The size of the input vector tensor, channel or feature size.
+    
+    Methods:
+        _forward(x: Tensor) -> Tensor:
+            Computes the generalized Lehmer softmax transformation.
+
+        pnorm(x: Tensor, a: Tensor, b: Tensor, c: Tensor, d: Tensor) -> Tensor:
+            Applies Lehmer-based normalization.
+
+        gpm_func(x: Tensor, alpha: Tensor, beta: Tensor) -> Tensor:
+            Computes the generalized Lehmer mean function.
+        
     """
 
     def __init__(
@@ -919,15 +952,26 @@ class Gpsoftmax(BaseActivation):
         return res
 
 @register_activation
-class Glsoftmax(BaseActivation):
+class GLSoftmax(BaseActivation):
     r"""
     Generalized Lehmer Softmax (glsoftmax).
 
     This is a softmax variant that applies a generalized Lehmer-based normalization
     with trainable parameters `a`, `b`, `c`, and `d`.
+    
+    :math:`f(z_j) = \frac{\exp(\text{LNORM}(z_j))}{\sum_{k=1}^{N} \exp(\text{LNORM}(z_k))}`
+
+    where LNORM is a generalized Lehmer-based normalization:
+    
+    :math:`\text{LNORM}(z_i) = \frac{z_i - M_{a_i, b_i}}{\text{GLM}_{c_i, d_i}(z - M_{a_i, b_i})}`
+    
+    :math:`M_{a_i, b_i} = \text{GLM}_{a_i, b_i}(z)`
+    
+    :math:`\text{GLM}_{\alpha, \beta}(x) = \frac{\ln \left( \frac{\sum_{k=1}^{N} \alpha^{(\beta+1)x_k}}{\sum_{k=1}^{N} \alpha^{\beta x_k}} \right)}{\ln(\alpha)}`
+
 
     Args:
-        input_shape (tuple[int, ...]): The shape of the input tensor.
+        input_shape (int): The size of the input vector tensor, channel or feature size.
         a (float, optional): Initial value for parameter `a`. Default is 1.0.
         b (float, optional): Initial value for parameter `b`. Default is 1.0.
         c (float, optional): Initial value for parameter `c`. Default is 1.0.
@@ -956,7 +1000,7 @@ class Glsoftmax(BaseActivation):
 
     def __init__(
             self,
-            input_shape: tuple[int, ...],
+            input_shape: int,
             a: float = 1.0,
             b: float = 1.0,
             c: float = 1.0,
