@@ -2147,7 +2147,8 @@ class LiReLU(BaseActivation):
         return x
 
 
-@register_activation
+# TODO: Cannot be tested currently because it have a weird requirement
+# @register_activation
 class DualReLU(BaseActivation):
     r"""
     Applies the DualReLU activation function. Where CReLU activation functions takes a single value and outputs 
@@ -2201,7 +2202,8 @@ class DualReLU(BaseActivation):
         return result
 
 
-@register_activation
+# TODO
+# @register_activation
 class OPLU(BaseActivation):
     r"""
     Applies the Orthogonal Permutation Liner Unit (OPLU) activation function. The OPLU is not applied
