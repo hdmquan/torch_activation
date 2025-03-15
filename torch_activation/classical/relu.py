@@ -382,6 +382,46 @@ class CReLU(BaseActivation):
         return F.relu(torch.cat((x, -x), dim=self.dim))
 
 
+# TODO: BAF mentioned in the same entry
+@register_activation
+class NCReLU(BaseActivation):
+    r"""
+    Applies the Negative Concatenated Rectified Linear Unit activation function.
+
+    :math:`\text{NCReLU}(x) = \text{ReLU}(x) \oplus -\text{ReLU}(-x)`
+
+
+    Args:
+        dim (int, optional): Dimension along which to concatenate in the output tensor. Default: 1
+        inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
+
+    Shape:
+        - Input: :math:`(*, C, *)` where :math:`*` means any number of additional dimensions
+        - Output: :math:`(*, 2C, *)`
+
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/CReLU.png
+
+    Examples::
+
+        >>> m = torch_activation.NCReLU()
+        >>> x = torch.randn(2, 3)
+        >>> output = m(x)
+
+        >>> m = torch_activation.NCReLU(inplace=True)
+        >>> x = torch.randn(2, 3, 4)
+        >>> m(x)
+    """
+
+    def __init__(self, dim: int = 0, **kwargs):
+        super().__init__(**kwargs)
+        self.dim = dim
+
+    def _forward(self, x) -> Tensor:
+        return torch.cat((F.relu(x), -F.relu(-x)), dim=self.dim)
+
+
 @register_activation
 class ReLUN(BaseActivation):
     r"""Applies the element-wise function:
@@ -2105,6 +2145,113 @@ class LiReLU(BaseActivation):
         x[mask_pos] += x[mask_pos]
         x[mask_neg] += x[mask_neg] * self.a
         return x
+
+
+@register_activation
+class DualReLU(BaseActivation):
+    r"""
+    Applies the DualReLU activation function. Where CReLU activation functions takes a single value and outputs 
+    a vector of two values, the DualReLU takes two values as an input and outputs a single value. The DualReLU 
+    is a two-dimensional activation function meant as a replacement of the tanh activation function for 
+    Quasi-Recurrent neural networks.
+
+    .. math::
+        \text{DualReLU}(z, z') = \max(0, z) - \max(0, z') = 
+        \begin{cases} 
+        0, & z \leq 0 \land z' \leq 0, \\
+        z, & z > 0 \land z' \leq 0, \\
+        -b, & z \leq 0 \land z' > 0, \\
+        a - b, & z > 0 \land z' > 0,
+        \end{cases}
+
+    Args:
+        inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
+
+    Shape:
+        - Input: :math:`(*, 2, *)` where :math:`*` means any number of dimensions
+        - Output: :math:`(*, 1, *)`
+
+    Examples::
+
+        >>> m = torch_activation.DualReLU()
+        >>> x = torch.randn(2, 2)  # Batch of 2 pairs of inputs
+        >>> output = m(x)  # Shape: (2, 1)
+
+        >>> m = torch_activation.DualReLU(inplace=True)
+        >>> x = torch.randn(3, 2, 4)
+        >>> m(x)  # Shape: (3, 1, 4)
+    """
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
+    def _forward(self, x: Tensor) -> Tensor:
+        size_2_dims = [i for i, s in enumerate(x.shape) if s == 2]
+        if not size_2_dims:
+            raise ValueError(
+                "Input tensor must have a dimension with size 2 for DualReLU"
+            )
+
+        dim = size_2_dims[0]
+
+        z, z_prime = torch.split(x, 1, dim=dim)
+
+        result = F.relu(z) - F.relu(z_prime)
+
+        return result
+
+
+@register_activation
+class OPLU(BaseActivation):
+    r"""
+    Applies the Orthogonal Permutation Liner Unit (OPLU) activation function. The OPLU is not applied
+    to a single neuron but always to a pair of neurons. First, the neurons are grouped into pairs,
+    and the OPLU takes two inputs and produces two outputs.
+
+    For neuron i:
+    .. math::
+        f(z_i, z_j) = \max(z_i, z_j)
+
+    For neuron j:
+    .. math::
+        f(z_i, z_j) = \min(z_i, z_j)
+
+    Args:
+        inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
+
+    Shape:
+        - Input: :math:`(*, 2n, *)` where :math:`*` means any number of dimensions and n is the number of pairs
+        - Output: :math:`(*, 2n, *)` same shape as the input
+
+    Examples::
+
+        >>> m = torch_activation.OPLU()
+        >>> x = torch.randn(4, 2)  # Batch of 2 pairs of inputs
+        >>> output = m(x)  # Shape: (4, 2)
+
+        >>> m = torch_activation.OPLU(inplace=True)
+        >>> x = torch.randn(3, 4, 2)  # 3 batches, 2 pairs
+        >>> m(x)  # Shape: (3, 4, 2)
+    """
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
+    def _forward(self, x: Tensor) -> Tensor:
+        if x.shape[-1] % 2 != 0:
+            raise ValueError(
+                "The last dimension of the input tensor must be even for OPLU"
+            )
+
+        shape = x.shape
+        x_reshaped = x.view(*shape[:-1], -1, 2)
+
+        max_vals = torch.max(x_reshaped, dim=-1, keepdim=True)[0]
+        min_vals = torch.min(x_reshaped, dim=-1, keepdim=True)[0]
+
+        result = torch.cat((max_vals, min_vals), dim=-1)
+
+        return result.view(*shape)
 
 
 if __name__ == "__main__":
