@@ -2058,6 +2058,11 @@ class SignReLU(BaseActivation):
 if __name__ == "__main__":
     from torch_activation.utils import plot_activation
 
+    seed = 42
+    torch.manual_seed(seed)
+    torch.cuda.manual_seed(seed)
+    torch.cuda.manual_seed_all(seed)
+
     activation_params = {
         "ReLU": {},
         "SReLU": {},
@@ -2095,6 +2100,7 @@ if __name__ == "__main__":
         "LSPTLU": {"a": [0.5, 1, 2]},
         "SoftModulusT": {},
         "SoftModulusQ": {},
+        "SignReLU": {"a": [0.5, 1, 2]},
         # "SCAA": {}  # NOTE: SCAA is not one-to-one.
     }
 
