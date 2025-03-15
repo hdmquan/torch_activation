@@ -2055,6 +2055,58 @@ class SignReLU(BaseActivation):
         return x
 
 
+@register_activation
+class LiReLU(BaseActivation):
+    r"""
+    Applies the Li-ReLU activation function, which is a combination of a linear function and ReLU:
+
+    .. math::
+        \text{Li-ReLU}(z) = 
+        \begin{cases} 
+        az + z, & z \geq 0, \\
+        az, & z < 0,
+        \end{cases}
+
+    where :math:`a` is a fixed parameter.
+
+    Args:
+        a (float, optional): Parameter controlling the linear component. Default: ``0.2``
+        inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
+
+    Shape:
+        - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
+        - Output: :math:`(*)`, same shape as the input.
+
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/LiReLU.png
+
+    Examples::
+
+        >>> m = torch_activation.LiReLU()
+        >>> x = torch.randn(2)
+        >>> output = m(x)
+
+        >>> m = torch_activation.LiReLU(a=0.5, inplace=True)
+        >>> x = torch.randn(2)
+        >>> m(x)
+    """
+
+    def __init__(self, a: float = 0.2, **kwargs):
+        super().__init__(**kwargs)
+        self.a = a
+
+    def _forward(self, x: Tensor) -> Tensor:
+        return torch.where(x >= 0, self.a * x + x, self.a * x)
+
+    def _forward_inplace(self, x: Tensor) -> Tensor:
+        mask_pos = x >= 0
+        mask_neg = x < 0
+        x[mask_pos] += x[mask_pos]
+        x[mask_neg] += x[mask_neg] * self.a
+        return x
+
+
 if __name__ == "__main__":
     from torch_activation.utils import plot_activation
 
@@ -2101,6 +2153,7 @@ if __name__ == "__main__":
         "SoftModulusT": {},
         "SoftModulusQ": {},
         "SignReLU": {"a": [0.5, 1, 2]},
+        "LiReLU": {},
         # "SCAA": {}  # NOTE: SCAA is not one-to-one.
     }
 
