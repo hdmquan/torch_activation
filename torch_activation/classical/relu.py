@@ -2228,10 +2228,6 @@ class OPLU(BaseActivation):
         >>> m = torch_activation.OPLU()
         >>> x = torch.randn(4, 2)  # Batch of 2 pairs of inputs
         >>> output = m(x)  # Shape: (4, 2)
-
-        >>> m = torch_activation.OPLU(inplace=True)
-        >>> x = torch.randn(3, 4, 2)  # 3 batches, 2 pairs
-        >>> m(x)  # Shape: (3, 4, 2)
     """
 
     def __init__(self, **kwargs):
@@ -2252,6 +2248,84 @@ class OPLU(BaseActivation):
         result = torch.cat((max_vals, min_vals), dim=-1)
 
         return result.view(*shape)
+
+
+# TODO: Questionable...
+@register_activation
+class EReLU(BaseActivation):
+    r"""
+    Applies the Elastic ReLU (EReLU) activation function, which slightly randomly changes the slope 
+    of the positive part of the ReLU during training.
+
+    .. math::
+        \text{EReLU}(z_i) = 
+        \begin{cases} 
+        k_i z_i, & z_i \geq 0, \\
+        0, & z_i < 0,
+        \end{cases}
+
+    where :math:`k_i` is sampled for each epoch and neuron i from the uniform distribution
+    :math:`k_i \sim U(1 - \alpha, 1 + \alpha)` where :math:`\alpha \in (0, 1)` is a parameter 
+    controlling the degree of response fluctuations.
+
+    During test phase, :math:`k_i` is set to its expected value :math:`E(k_i) = 1`, making 
+    the EReLU equivalent to the standard ReLU.
+
+    Args:
+        alpha (float, optional): Parameter controlling the degree of response fluctuations. Default: ``0.1``
+        training (bool, optional): Whether to use random sampling (training mode) or expected value (test mode). Default: ``True``
+        inplace (bool, optional): Can optionally do the operation in-place. Default: ``False``
+
+    Shape:
+        - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
+        - Output: :math:`(*)`, same shape as the input.
+
+    Examples::
+
+        >>> m = torch_activation.EReLU()
+        >>> x = torch.randn(2)
+        >>> output = m(x)  # Uses random k_i during training
+
+        >>> m = torch_activation.EReLU(alpha=0.2, training=False)
+        >>> x = torch.randn(2)
+        >>> output = m(x)  # Uses k_i = 1 (equivalent to standard ReLU)
+    """
+
+    def __init__(self, alpha: float = 0.1, training: bool = True, **kwargs):
+        super().__init__(**kwargs)
+        assert 0 < alpha < 1, "alpha must be in the range (0, 1)"
+        self.alpha = alpha
+        self.training = training
+
+    def _forward(self, x: Tensor) -> Tensor:
+        # Zero out negative values
+        pos_mask = x >= 0
+        result = torch.zeros_like(x)
+
+        if pos_mask.any():
+            if self.training:
+                # Sample k_i from U(1-alpha, 1+alpha) during training
+                k = torch.empty_like(x).uniform_(1 - self.alpha, 1 + self.alpha)
+                result[pos_mask] = k[pos_mask] * x[pos_mask]
+            else:
+                # Use expected value E(k_i) = 1 during testing
+                result[pos_mask] = x[pos_mask]
+
+        return result
+
+    def _forward_inplace(self, x: Tensor) -> Tensor:
+        # Zero out negative values
+        pos_mask = x >= 0
+        x[~pos_mask] = 0
+
+        if pos_mask.any():
+            if self.training:
+                # Sample k_i from U(1-alpha, 1+alpha) during training
+                k = torch.empty_like(x).uniform_(1 - self.alpha, 1 + self.alpha)
+                x[pos_mask] *= k[pos_mask]
+            # For testing, we keep x[pos_mask] unchanged since k_i = 1
+
+        return x
 
 
 if __name__ == "__main__":
