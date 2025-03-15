@@ -2004,6 +2004,57 @@ class SoftModulusT(BaseActivation):
         return x
 
 
+@register_activation
+class SignReLU(BaseActivation):
+    r"""
+    Applies the SignReLU activation function, which is a combination of ReLU and softsign:
+
+    .. math::
+        \text{SignReLU}(z) = 
+        \begin{cases} 
+        z, & z \geq 0, \\
+        a \frac{z}{|z|+1}, & z < 0,
+        \end{cases}
+
+    where :math:`a` is a fixed parameter. The SignReLU becomes ReLU for :math:`a = 0`.
+    This function is also sometimes referred to as DLU (Dual Linear Unit) in the literature.
+
+    Args:
+        a (float, optional): Parameter controlling the negative part. Default: ``1.0``
+        inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
+
+    Shape:
+        - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
+        - Output: :math:`(*)`, same shape as the input.
+
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/SignReLU.png
+
+    Examples::
+
+        >>> m = torch_activation.SignReLU()
+        >>> x = torch.randn(2)
+        >>> output = m(x)
+
+        >>> m = torch_activation.SignReLU(a=0.5, inplace=True)
+        >>> x = torch.randn(2)
+        >>> m(x)
+    """
+
+    def __init__(self, a: float = 1.0, **kwargs):
+        super().__init__(**kwargs)
+        self.a = a
+
+    def _forward(self, x: Tensor) -> Tensor:
+        return torch.where(x >= 0, x, self.a * (x / (torch.abs(x) + 1)))
+
+    def _forward_inplace(self, x: Tensor) -> Tensor:
+        mask_neg = x < 0
+        x[mask_neg] = self.a * x[mask_neg] / (torch.abs(x[mask_neg]) + 1)
+        return x
+
+
 if __name__ == "__main__":
     from torch_activation.utils import plot_activation
 
