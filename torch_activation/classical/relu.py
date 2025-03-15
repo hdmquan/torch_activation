@@ -6,6 +6,7 @@ from torch_activation.base import BaseActivation
 from torch import Tensor
 from torch_activation import register_activation
 
+
 @register_activation
 class ReLU(BaseActivation):
     r"""
@@ -28,16 +29,18 @@ class ReLU(BaseActivation):
         >>> x = torch.randn(2)
         >>> m(x)
     """
+
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        
+
     def _forward(self, x: Tensor) -> Tensor:
         return F.relu(x)
-    
+
     def _forward_inplace(self, x: Tensor) -> Tensor:
         return F.relu_(x)
 
-@register_activation    
+
+@register_activation
 class SReLU(BaseActivation):
     r"""
     A Shifted ReLU is a simple translation of a ReLU and is defined as:
@@ -61,13 +64,13 @@ class SReLU(BaseActivation):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        
 
     def _forward(self, x: Tensor) -> Tensor:
         return F.relu(x - 1.0)
-    
+
     def _forward_inplace(self, x: Tensor) -> Tensor:
         return F.relu_(x - 1.0)
+
 
 @register_activation
 class LReLU(BaseActivation):
@@ -95,17 +98,19 @@ class LReLU(BaseActivation):
         >>> x = torch.randn(2)
         >>> m(x)
     """
+
     def __init__(self, alpha: float = 0.01, **kwargs):
         super().__init__(**kwargs)
-        
+
         self.alpha = alpha
 
     def _forward(self, x: Tensor) -> Tensor:
         return F.leaky_relu(x, negative_slope=self.alpha)
-    
+
     def _forward_inplace(self, x: Tensor) -> Tensor:
         return F.leaky_relu_(x, negative_slope=self.alpha)
-        
+
+
 @register_activation
 class VLReLU(BaseActivation):
     r"""
@@ -134,17 +139,18 @@ class VLReLU(BaseActivation):
         >>> x = torch.randn(2)
         >>> m(x)
     """
+
     def __init__(self, alpha: float = 3.0, **kwargs):
         super().__init__(**kwargs)
-        
+
         self.alpha = alpha
 
     def _forward(self, x: Tensor) -> Tensor:
         return F.leaky_relu(x, negative_slope=self.alpha)
-    
+
     def _forward_inplace(self, x: Tensor) -> Tensor:
         return F.leaky_relu_(x, negative_slope=self.alpha)
-        
+
 
 @register_activation
 class RReLU(BaseActivation):
@@ -186,17 +192,22 @@ class RReLU(BaseActivation):
         >>> x = torch.randn(2)
         >>> m(x)
     """
+
     def __init__(self, lower: float = 0.125, upper: float = 0.333):
-        
+
         self.lower = lower
         self.upper = upper
 
     def _forward(self, x: Tensor) -> Tensor:
-        return F.leaky_relu_(x, negative_slope=torch.rand(x.shape).uniform_(self.lower, self.upper))
-    
+        return F.leaky_relu_(
+            x, negative_slope=torch.rand(x.shape).uniform_(self.lower, self.upper)
+        )
+
     def _forward_inplace(self, x: Tensor) -> Tensor:
-        return F.leaky_relu_(x, negative_slope=torch.rand(x.shape).uniform_(self.lower, self.upper))
-        
+        return F.leaky_relu_(
+            x, negative_slope=torch.rand(x.shape).uniform_(self.lower, self.upper)
+        )
+
 
 # FIXME: Does not pass test
 @register_activation
@@ -233,20 +244,22 @@ class OLReLU(BaseActivation):
         >>> x = torch.randn(2)
         >>> m(x)
     """
+
     def __init__(self, lower: float = 0.125, upper: float = 0.333, **kwargs):
         super().__init__(**kwargs)
         self.lower = lower
         self.upper = upper
-        
+
         # Calculate alpha according to the formula in the paper
         self.alpha = (upper + lower) / (upper - lower)
         self.negative_slope = torch.exp(-self.alpha)
 
     def _forward(self, x: Tensor) -> Tensor:
         return F.leaky_relu(x, negative_slope=self.negative_slope)
-    
+
     def _forward_inplace(self, x: Tensor) -> Tensor:
         return F.leaky_relu_(x, negative_slope=self.negative_slope)
+
 
 @register_activation
 class SoftsignRReLU(BaseActivation):
@@ -321,7 +334,7 @@ class SlReLU(BaseActivation):
 
     def __init__(self, alpha: float = 10.0, **kwargs):
         super().__init__(**kwargs)
-        
+
         self.alpha = alpha
 
     def _forward(self, x: Tensor) -> Tensor:
@@ -369,6 +382,46 @@ class CReLU(BaseActivation):
         return F.relu(torch.cat((x, -x), dim=self.dim))
 
 
+# TODO: BAF mentioned in the same entry
+@register_activation
+class NCReLU(BaseActivation):
+    r"""
+    Applies the Negative Concatenated Rectified Linear Unit activation function.
+
+    :math:`\text{NCReLU}(x) = \text{ReLU}(x) \oplus -\text{ReLU}(-x)`
+
+
+    Args:
+        dim (int, optional): Dimension along which to concatenate in the output tensor. Default: 1
+        inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
+
+    Shape:
+        - Input: :math:`(*, C, *)` where :math:`*` means any number of additional dimensions
+        - Output: :math:`(*, 2C, *)`
+
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/CReLU.png
+
+    Examples::
+
+        >>> m = torch_activation.NCReLU()
+        >>> x = torch.randn(2, 3)
+        >>> output = m(x)
+
+        >>> m = torch_activation.NCReLU(inplace=True)
+        >>> x = torch.randn(2, 3, 4)
+        >>> m(x)
+    """
+
+    def __init__(self, dim: int = 0, **kwargs):
+        super().__init__(**kwargs)
+        self.dim = dim
+
+    def _forward(self, x) -> Tensor:
+        return torch.cat((F.relu(x), -F.relu(-x)), dim=self.dim)
+
+
 @register_activation
 class ReLUN(BaseActivation):
     r"""Applies the element-wise function:
@@ -405,7 +458,6 @@ class ReLUN(BaseActivation):
     def __init__(self, n: float = 1.0, **kwargs):
         super().__init__(**kwargs)
         self.n = nn.Parameter(Tensor([n]), requires_grad=False)
-        
 
     def _forward(self, x) -> Tensor:
         if self.inplace:
@@ -447,7 +499,6 @@ class SquaredReLU(BaseActivation):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        
 
     def _forward(self, x) -> Tensor:
         if self.inplace:
@@ -494,7 +545,6 @@ class SineReLU(BaseActivation):
     def __init__(self, a: float = 1.0, **kwargs):
         super().__init__(**kwargs)
         self.a = a
-        
 
     def _forward(self, x: Tensor) -> Tensor:
         if self.inplace:
@@ -531,7 +581,6 @@ class Minsin(BaseActivation):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        
 
     def _forward(self, x: Tensor) -> Tensor:
         if self.inplace:
@@ -572,10 +621,10 @@ class VLU(BaseActivation):
         super().__init__(**kwargs)
         self.a = a
         self.b = b
-        
 
     def _forward(self, x: Tensor) -> Tensor:
         return torch.relu(x) + self.a * torch.sin(self.b * x)
+
 
 @register_activation
 class LReLU(BaseActivation):
@@ -617,7 +666,6 @@ class LReLU(BaseActivation):
     def __init__(self, a: float = 100.0, **kwargs):
         super().__init__(**kwargs)
         self.a = a
-        
 
     def _forward(self, x: Tensor) -> Tensor:
         if self.inplace:
@@ -667,7 +715,6 @@ class OLReLU(BaseActivation):
         super().__init__(**kwargs)
         assert l < u, "Lower bound must be less than upper bound"
         self.a = (u + l) / (u - l)
-        
 
     def _forward(self, x: Tensor) -> Tensor:
         if self.inplace:
@@ -720,12 +767,11 @@ class RReLU(BaseActivation):
         assert 0 < l < u, "Ensure 0 < l < u for the uniform distribution bounds."
         self.l = l
         self.u = u
-        
 
     def _forward(self, x: Tensor) -> Tensor:
         # Sample a_i from U(l, u)
         a = torch.empty_like(x).uniform_(self.l, self.u)
-        
+
         if self.inplace:
             return x.where(x >= 0, x.mul_(a))
         else:
@@ -771,7 +817,7 @@ class SRReLU(BaseActivation):
         >>> m(x)
     """
 
-    def __init__(self, l: float = 1/8, u: float = 1/3, **kwargs):
+    def __init__(self, l: float = 1 / 8, u: float = 1 / 3, **kwargs):
         super().__init__(**kwargs)
         assert 0 < l < u, "Ensure 0 < l < u for the uniform distribution bounds."
         self.l = l
@@ -781,10 +827,10 @@ class SRReLU(BaseActivation):
         a = torch.empty_like(x).uniform_(self.l, self.u)
 
         frac = 1 / torch.square(1 + x)
-        
+
         return torch.where(x >= 0, frac + x, frac + (a * x))
-    
-    
+
+
 @register_activation
 class NReLU(BaseActivation):
     r"""
@@ -793,8 +839,8 @@ class NReLU(BaseActivation):
     .. math::
         \text{NReLU}(z) = \max(0, z + a)
 
-    where :math:`a \sim N(0, \sigma(z))` is a stochastic parameter sampled from a Gaussian 
-    distribution with zero mean and variance :math:`\sigma(z)^2`, and :math:`\sigma(z)` is 
+    where :math:`a \sim N(0, \sigma(z))` is a stochastic parameter sampled from a Gaussian
+    distribution with zero mean and variance :math:`\sigma(z)^2`, and :math:`\sigma(z)` is
     the standard deviation of the inputs :math:`z`.
 
     NReLU was designed for use with Restricted Boltzmann machines.
@@ -823,21 +869,20 @@ class NReLU(BaseActivation):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        
 
     def _forward(self, x: Tensor) -> Tensor:
         with torch.no_grad():
             std = torch.std(x)
-        
+
         # Sample noise from Gaussian distribution with mean 0 and std = std(x)
         noise = torch.randn_like(x) * std
-        
+
         if self.inplace:
             x.add_(noise)
             return F.relu_(x)
         else:
             return F.relu(x + noise)
-        
+
 
 # TODO: Really really check this again. Should be correct, but I'm not sure.
 class SCAA(BaseActivation):
@@ -867,15 +912,17 @@ class SCAA(BaseActivation):
     def __init__(self, channels: int, kernel_size: int = 3, padding: int = 1, **kwargs):
         super().__init__(**kwargs)
         self.dw_conv = nn.Conv2d(
-            channels, 
-            channels, 
-            kernel_size=kernel_size, 
-            padding=padding, 
+            channels,
+            channels,
+            kernel_size=kernel_size,
+            padding=padding,
             groups=channels,
-            bias=False
+            bias=False,
         )
         # Initialize weights
-        nn.init.kaiming_normal_(self.dw_conv.weight, mode='fan_out', nonlinearity='relu')
+        nn.init.kaiming_normal_(
+            self.dw_conv.weight, mode="fan_out", nonlinearity="relu"
+        )
 
     def _forward(self, x: Tensor) -> Tensor:
         return torch.maximum(x, self.dw_conv(x))
@@ -921,12 +968,11 @@ class RTReLU(BaseActivation):
     def __init__(self, sigma: float = 0.75, **kwargs):
         super().__init__(**kwargs)
         self.sigma = sigma
-        
 
     def _forward(self, x: Tensor) -> Tensor:
         # Generate random translations from a normal distribution
         a = torch.randn_like(x) * self.sigma
-        
+
         if self.inplace:
             x.add_(a)
             return F.relu_(x)
@@ -967,7 +1013,6 @@ class NLReLU(BaseActivation):
     def __init__(self, a: float = 1.0, **kwargs):
         super().__init__(**kwargs)
         self.a = a
-        
 
     def _forward(self, x: Tensor) -> Tensor:
         return torch.log(self.a * F.relu(x) + 1.0)
@@ -1023,7 +1068,6 @@ class SLU(BaseActivation):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.c = 2 * torch.log(torch.tensor(2.0))
-        
 
     def _forward(self, x: Tensor) -> Tensor:
         if self.inplace:
@@ -1032,11 +1076,7 @@ class SLU(BaseActivation):
             return x
         else:
             # TODO: Performance
-            return torch.where(
-                x >= 0,
-                x,
-                2 * torch.log((torch.exp(x) + 1) / 2)
-            )
+            return torch.where(x >= 0, x, 2 * torch.log((torch.exp(x) + 1) / 2))
 
 
 @register_activation
@@ -1080,7 +1120,6 @@ class ReSP(BaseActivation):
         super().__init__(**kwargs)
         self.a = a
         self.ln2 = torch.log(torch.tensor(2.0))
-        
 
     def _forward(self, x: Tensor) -> Tensor:
         if self.inplace:
@@ -1090,9 +1129,7 @@ class ReSP(BaseActivation):
             return x
         else:
             return torch.where(
-                x >= 0,
-                self.a * x + self.ln2,
-                torch.log(1 + torch.exp(x))
+                x >= 0, self.a * x + self.ln2, torch.log(1 + torch.exp(x))
             )
 
 
@@ -1134,8 +1171,6 @@ class PReNU(BaseActivation):
     def __init__(self, a: float = 0.25, **kwargs):
         super().__init__(**kwargs)
         self.a = a
-        
-
 
     def _forward(self, x: Tensor) -> Tensor:
         # TODO: The mathematical definition does not have this step.
@@ -1184,7 +1219,6 @@ class BReLU(BaseActivation):
     def __init__(self, a: float = 1.0, **kwargs):
         super().__init__(**kwargs)
         self.a = a
-        
 
     def _forward(self, x: Tensor) -> Tensor:
         if self.inplace:
@@ -1193,7 +1227,7 @@ class BReLU(BaseActivation):
             return torch.clamp(x, 0, self.a)
 
 
-# NOTE: Hm... version? 
+# NOTE: Hm... version?
 @register_activation
 class HardSigmoid(BaseActivation):
     r"""
@@ -1232,7 +1266,6 @@ class HardSigmoid(BaseActivation):
         super().__init__(**kwargs)
         assert version in [1, 2], "version must be 1 or 2"
         self.version = version
-        
 
     def _forward(self, x: Tensor) -> Tensor:
         if self.version == 1:
@@ -1292,7 +1325,6 @@ class HardTanh(BaseActivation):
         super().__init__(**kwargs)
         self.a = a
         self.b = b
-        
 
     def _forward(self, x: Tensor) -> Tensor:
         if self.inplace:
@@ -1340,7 +1372,6 @@ class SvHardTanh(BaseActivation):
     def __init__(self, a: float = 0.0, **kwargs):
         super().__init__(**kwargs)
         self.a = a
-        
 
     def _forward(self, x: Tensor) -> Tensor:
         if self.inplace:
@@ -1348,7 +1379,8 @@ class SvHardTanh(BaseActivation):
             return x
         else:
             return torch.clamp(x, -1, 1) + self.a
-        
+
+
 @register_activation
 class ShHardTanh(BaseActivation):
     r"""
@@ -1388,7 +1420,6 @@ class ShHardTanh(BaseActivation):
     def __init__(self, a: float = 0.0, **kwargs):
         super().__init__(**kwargs)
         self.a = a
-        
 
     def _forward(self, x: Tensor) -> Tensor:
         if self.inplace:
@@ -1434,7 +1465,6 @@ class HardSwish(BaseActivation):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        
 
     def _forward(self, x: Tensor) -> Tensor:
         if self.inplace:
@@ -1484,7 +1514,6 @@ class TRec(BaseActivation):
     def __init__(self, a: float = 1.0, **kwargs):
         super().__init__(**kwargs)
         self.a = a
-        
 
     def _forward(self, x: Tensor) -> Tensor:
         return torch.where(x > self.a, x, torch.zeros_like(x))
@@ -1532,15 +1561,14 @@ class Hardshrink(BaseActivation):
         super().__init__(**kwargs)
         assert a > 0, "Threshold parameter 'a' must be positive"
         self.a = a
-        
 
     def _forward(self, x: Tensor) -> Tensor:
-        if self.inplace:
-            mask = (x >= -self.a) & (x <= self.a)
-            x.masked_fill_(mask, 0)
-            return x
-        else:
-            return torch.where((x >= -self.a) & (x <= self.a), torch.zeros_like(x), x)
+        return torch.where((x >= -self.a) & (x <= self.a), torch.zeros_like(x), x)
+
+    def _forward_inplace(self, x: Tensor) -> Tensor:
+        mask = (x >= -self.a) & (x <= self.a)
+        x.masked_fill_(mask, 0)
+        return x
 
 
 @register_activation
@@ -1585,28 +1613,23 @@ class Softshrink(BaseActivation):
         super().__init__(**kwargs)
         assert a > 0, "Threshold parameter 'a' must be positive"
         self.a = a
-        
 
     def _forward(self, x: Tensor) -> Tensor:
-        if self.inplace:
-            mask_pos = x > self.a
-            mask_neg = x < -self.a
-            mask_mid = ~(mask_pos | mask_neg)
-            
-            x[mask_pos] -= self.a
-            x[mask_neg] += self.a
-            x[mask_mid] = 0
-            return x
-        else:
-            return torch.where(
-                x > self.a,
-                x - self.a,
-                torch.where(
-                    x < -self.a,
-                    x + self.a,
-                    torch.zeros_like(x)
-                )
-            )
+        return torch.where(
+            x > self.a,
+            x - self.a,
+            torch.where(x < -self.a, x + self.a, torch.zeros_like(x)),
+        )
+
+    def _forward_inplace(self, x: Tensor) -> Tensor:
+        mask_pos = x > self.a
+        mask_neg = x < -self.a
+        mask_mid = ~(mask_pos | mask_neg)
+
+        x[mask_pos] -= self.a
+        x[mask_neg] += self.a
+        x[mask_mid] = 0
+        return x
 
 
 @register_activation
@@ -1653,27 +1676,19 @@ class BLReLU(BaseActivation):
         self.a = a
         self.b = b
         self.c = (1 - a) * b
-        
 
     def _forward(self, x: Tensor) -> Tensor:
-        if self.inplace:
-            mask_neg = x <= 0
-            mask_pos_large = x >= self.b
-            mask_mid = ~(mask_neg | mask_pos_large)
-            
-            x[mask_neg] *= self.a
-            x[mask_pos_large] = self.a * x[mask_pos_large] + self.c
-            return x
-        else:
-            return torch.where(
-                x <= 0,
-                self.a * x,
-                torch.where(
-                    x >= self.b,
-                    self.a * x + self.c,
-                    x
-                )
-            )
+        return torch.where(
+            x <= 0, self.a * x, torch.where(x >= self.b, self.a * x + self.c, x)
+        )
+
+    def _forward_inplace(self, x: Tensor) -> Tensor:
+        mask_neg = x <= 0
+        mask_pos_large = x >= self.b
+
+        x[mask_neg] *= self.a
+        x[mask_pos_large] = self.a * x[mask_pos_large] + self.c
+        return x
 
 
 @register_activation
@@ -1712,14 +1727,13 @@ class VReLU(BaseActivation):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        
 
     def _forward(self, x: Tensor) -> Tensor:
-        if self.inplace:
-            x.abs_()
-            return x
-        else:
-            return torch.abs(x)
+        return torch.abs(x)
+
+    def _forward_inplace(self, x: Tensor) -> Tensor:
+        x.abs_()
+        return x
 
 
 @register_activation
@@ -1761,28 +1775,23 @@ class PanFunction(BaseActivation):
     def __init__(self, a: float = 1.0, **kwargs):
         super().__init__(**kwargs)
         self.a = a
-        
 
     def _forward(self, x: Tensor) -> Tensor:
-        if self.inplace:
-            mask_pos = x >= self.a
-            mask_neg = x <= -self.a
-            mask_mid = ~(mask_pos | mask_neg)
-            
-            x[mask_pos] -= self.a
-            x[mask_neg] = -x[mask_neg] - self.a
-            x[mask_mid] = 0
-            return x
-        else:
-            return torch.where(
-                x >= self.a,
-                x - self.a,
-                torch.where(
-                    x <= -self.a,
-                    -x - self.a,
-                    torch.zeros_like(x)
-                )
-            )
+        return torch.where(
+            x >= self.a,
+            x - self.a,
+            torch.where(x <= -self.a, -x - self.a, torch.zeros_like(x)),
+        )
+
+    def _forward_inplace(self, x: Tensor) -> Tensor:
+        mask_pos = x >= self.a
+        mask_neg = x <= -self.a
+        mask_mid = ~(mask_pos | mask_neg)
+
+        x[mask_pos] -= self.a
+        x[mask_neg] = -x[mask_neg] - self.a
+        x[mask_mid] = 0
+        return x
 
 
 @register_activation
@@ -1826,19 +1835,18 @@ class AbsLU(BaseActivation):
         super().__init__(**kwargs)
         assert 0 <= a <= 1, "Parameter 'a' must be in the range [0, 1]"
         self.a = a
-        
 
     def _forward(self, x: Tensor) -> Tensor:
-        if self.inplace:
-            mask_neg = x < 0
-            x[mask_neg] = self.a * x[mask_neg].abs_()
-            return x
-        else:
-            return torch.where(x >= 0, x, self.a * torch.abs(x))
+        return torch.where(x >= 0, x, self.a * torch.abs(x))
+
+    def _forward_inplace(self, x: Tensor) -> Tensor:
+        mask_neg = x < 0
+        x[mask_neg] = self.a * x[mask_neg].abs_()
+        return x
 
 
 @register_activation
-class MReLU(BaseActivation):
+class mReLU(BaseActivation):
     r"""
     Applies the Mirrored Rectified Linear Unit activation function:
 
@@ -1859,29 +1867,24 @@ class MReLU(BaseActivation):
 
     Here is a plot of the function and its derivative:
 
-    .. image:: ../images/activation_images/MReLU.png
+    .. image:: ../images/activation_images/mReLU.png
 
     Examples::
 
-        >>> m = torch_activation.MReLU()
+        >>> m = torch_activation.mReLU()
         >>> x = torch.randn(2)
         >>> output = m(x)
 
-        >>> m = torch_activation.MReLU(inplace=True)
+        >>> m = torch_activation.mReLU(inplace=True)
         >>> x = torch.randn(2)
         >>> m(x)
     """
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        
 
     def _forward(self, x: Tensor) -> Tensor:
-        if self.inplace:
-            # Cannot be done fully in-place
-            return torch.minimum(F.relu(1 - x), F.relu(1 + x))
-        else:
-            return torch.minimum(F.relu(1 - x), F.relu(1 + x))
+        return torch.minimum(F.relu(1 - x), F.relu(1 + x))
 
 
 @register_activation
@@ -1924,37 +1927,417 @@ class LSPTLU(BaseActivation):
     def __init__(self, a: float = 1.0, **kwargs):
         super().__init__(**kwargs)
         self.a = a
-        
 
     def _forward(self, x: Tensor) -> Tensor:
-        if self.inplace:
-            mask_neg = x < 0
-            mask_mid = (0 <= x) & (x <= self.a)
-            mask_high = (self.a < x) & (x <= 2 * self.a)
-            mask_very_high = x > 2 * self.a
-            
-            x[mask_neg] *= 0.2
-            # No change for mask_mid (0 <= x <= a)
-            x[mask_high] = 2 * self.a - x[mask_high]
-            x[mask_very_high] = 0
-            return x
-        else:
-            return torch.where(
-                x < 0,
-                0.2 * x,
-                torch.where(
-                    x <= self.a,
-                    x,
-                    torch.where(
-                        x <= 2 * self.a,
-                        2 * self.a - x,
-                        torch.zeros_like(x)
-                    )
-                )
+        return torch.where(
+            x < 0,
+            0.2 * x,
+            torch.where(
+                x <= self.a,
+                x,
+                torch.where(x <= 2 * self.a, 2 * self.a - x, torch.zeros_like(x)),
+            ),
+        )
+
+    def _forward_inplace(self, x: Tensor) -> Tensor:
+        mask_neg = x < 0
+        mask_mid = (0 <= x) & (x <= self.a)
+        mask_high = (self.a < x) & (x <= 2 * self.a)
+        mask_very_high = x > 2 * self.a
+
+        x[mask_neg] *= 0.2
+        x[mask_mid] = x[mask_mid]
+        x[mask_high] = 2 * self.a - x[mask_high]
+        x[mask_very_high] = 0
+        return x
+
+
+@register_activation
+class SoftModulusQ(BaseActivation):
+    r"""
+    Applies the SoftModulusQ activation function, which is a quadratic approximation of the vReLU:
+
+    .. math::
+        \text{SoftModulusQ}(z) = 
+        \begin{cases} 
+        z^2 (2 - |z|), & |z| \leq 1, \\
+        |z|, & |z| > 1,
+        \end{cases}
+
+    Shape:
+        - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
+        - Output: :math:`(*)`, same shape as the input.
+
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/SoftModulusQ.png
+
+    Examples::
+
+        >>> m = torch_activation.SoftModulusQ()
+        >>> x = torch.randn(2)
+        >>> output = m(x)
+
+        >>> m = torch_activation.SoftModulusQ(inplace=True)
+        >>> x = torch.randn(2)
+        >>> m(x)
+    """
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
+    def _forward(self, x: Tensor) -> Tensor:
+        abs_x = torch.abs(x)
+        return torch.where(abs_x <= 1, x.pow(2) * (2 - abs_x), abs_x)
+
+    def _forward_inplace(self, x: Tensor) -> Tensor:
+        abs_x = torch.abs(x)
+        mask = abs_x <= 1
+        x[mask] = x[mask].pow(2) * (2 - abs_x[mask])
+        x[~mask] = abs_x[~mask]
+        return x
+
+
+@register_activation
+class SoftModulusT(BaseActivation):
+    r"""
+    Applies the SoftModulusT activation function, which is a tanh-based approximation of the vReLU:
+
+    .. math::
+        \text{SoftModulusT}(z) = z \cdot \tanh\left(\frac{z}{a}\right)
+
+    where :math:`a` is a predetermined parameter. When :math:`a = 1`, the SoftModulusT becomes
+    the LiSHT activation function.
+
+    Args:
+        a (float, optional): Parameter controlling the shape. Default: ``0.01``
+        inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
+
+    Shape:
+        - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
+        - Output: :math:`(*)`, same shape as the input.
+
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/SoftModulusT.png
+
+    Examples::
+
+        >>> m = torch_activation.SoftModulusT()
+        >>> x = torch.randn(2)
+        >>> output = m(x)
+
+        >>> m = torch_activation.SoftModulusT(a=0.1, inplace=True)
+        >>> x = torch.randn(2)
+        >>> m(x)
+    """
+
+    def __init__(self, a: float = 0.01, **kwargs):
+        super().__init__(**kwargs)
+        self.a = a
+
+    def _forward(self, x: Tensor) -> Tensor:
+        return x * torch.tanh(x / self.a)
+
+    def _forward_inplace(self, x: Tensor) -> Tensor:
+        x.mul_(torch.tanh(x / self.a))
+        return x
+
+
+@register_activation
+class SignReLU(BaseActivation):
+    r"""
+    Applies the SignReLU activation function, which is a combination of ReLU and softsign:
+
+    .. math::
+        \text{SignReLU}(z) = 
+        \begin{cases} 
+        z, & z \geq 0, \\
+        a \frac{z}{|z|+1}, & z < 0,
+        \end{cases}
+
+    where :math:`a` is a fixed parameter. The SignReLU becomes ReLU for :math:`a = 0`.
+    This function is also sometimes referred to as DLU (Dual Linear Unit) in the literature.
+
+    Args:
+        a (float, optional): Parameter controlling the negative part. Default: ``1.0``
+        inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
+
+    Shape:
+        - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
+        - Output: :math:`(*)`, same shape as the input.
+
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/SignReLU.png
+
+    Examples::
+
+        >>> m = torch_activation.SignReLU()
+        >>> x = torch.randn(2)
+        >>> output = m(x)
+
+        >>> m = torch_activation.SignReLU(a=0.5, inplace=True)
+        >>> x = torch.randn(2)
+        >>> m(x)
+    """
+
+    def __init__(self, a: float = 1.0, **kwargs):
+        super().__init__(**kwargs)
+        self.a = a
+
+    def _forward(self, x: Tensor) -> Tensor:
+        return torch.where(x >= 0, x, self.a * (x / (torch.abs(x) + 1)))
+
+    def _forward_inplace(self, x: Tensor) -> Tensor:
+        mask_neg = x < 0
+        x[mask_neg] = self.a * x[mask_neg] / (torch.abs(x[mask_neg]) + 1)
+        return x
+
+
+@register_activation
+class LiReLU(BaseActivation):
+    r"""
+    Applies the Li-ReLU activation function, which is a combination of a linear function and ReLU:
+
+    .. math::
+        \text{Li-ReLU}(z) = 
+        \begin{cases} 
+        az + z, & z \geq 0, \\
+        az, & z < 0,
+        \end{cases}
+
+    where :math:`a` is a fixed parameter.
+
+    Args:
+        a (float, optional): Parameter controlling the linear component. Default: ``0.2``
+        inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
+
+    Shape:
+        - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
+        - Output: :math:`(*)`, same shape as the input.
+
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/LiReLU.png
+
+    Examples::
+
+        >>> m = torch_activation.LiReLU()
+        >>> x = torch.randn(2)
+        >>> output = m(x)
+
+        >>> m = torch_activation.LiReLU(a=0.5, inplace=True)
+        >>> x = torch.randn(2)
+        >>> m(x)
+    """
+
+    def __init__(self, a: float = 0.2, **kwargs):
+        super().__init__(**kwargs)
+        self.a = a
+
+    def _forward(self, x: Tensor) -> Tensor:
+        return torch.where(x >= 0, self.a * x + x, self.a * x)
+
+    def _forward_inplace(self, x: Tensor) -> Tensor:
+        mask_pos = x >= 0
+        mask_neg = x < 0
+        x[mask_pos] += x[mask_pos]
+        x[mask_neg] += x[mask_neg] * self.a
+        return x
+
+
+# TODO: Cannot be tested currently because it have a weird requirement
+# @register_activation
+class DualReLU(BaseActivation):
+    r"""
+    Applies the DualReLU activation function. Where CReLU activation functions takes a single value and outputs 
+    a vector of two values, the DualReLU takes two values as an input and outputs a single value. The DualReLU 
+    is a two-dimensional activation function meant as a replacement of the tanh activation function for 
+    Quasi-Recurrent neural networks.
+
+    .. math::
+        \text{DualReLU}(z, z') = \max(0, z) - \max(0, z') = 
+        \begin{cases} 
+        0, & z \leq 0 \land z' \leq 0, \\
+        z, & z > 0 \land z' \leq 0, \\
+        -b, & z \leq 0 \land z' > 0, \\
+        a - b, & z > 0 \land z' > 0,
+        \end{cases}
+
+    Args:
+        inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
+
+    Shape:
+        - Input: :math:`(*, 2, *)` where :math:`*` means any number of dimensions
+        - Output: :math:`(*, 1, *)`
+
+    Examples::
+
+        >>> m = torch_activation.DualReLU()
+        >>> x = torch.randn(2, 2)  # Batch of 2 pairs of inputs
+        >>> output = m(x)  # Shape: (2, 1)
+
+        >>> m = torch_activation.DualReLU(inplace=True)
+        >>> x = torch.randn(3, 2, 4)
+        >>> m(x)  # Shape: (3, 1, 4)
+    """
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
+    def _forward(self, x: Tensor) -> Tensor:
+        size_2_dims = [i for i, s in enumerate(x.shape) if s == 2]
+        if not size_2_dims:
+            raise ValueError(
+                "Input tensor must have a dimension with size 2 for DualReLU"
             )
-        
+
+        dim = size_2_dims[0]
+
+        z, z_prime = torch.split(x, 1, dim=dim)
+
+        result = F.relu(z) - F.relu(z_prime)
+
+        return result
+
+
+# TODO
+# @register_activation
+class OPLU(BaseActivation):
+    r"""
+    Applies the Orthogonal Permutation Liner Unit (OPLU) activation function. The OPLU is not applied
+    to a single neuron but always to a pair of neurons. First, the neurons are grouped into pairs,
+    and the OPLU takes two inputs and produces two outputs.
+
+    For neuron i:
+    .. math::
+        f(z_i, z_j) = \max(z_i, z_j)
+
+    For neuron j:
+    .. math::
+        f(z_i, z_j) = \min(z_i, z_j)
+
+    Args:
+        inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
+
+    Shape:
+        - Input: :math:`(*, 2n, *)` where :math:`*` means any number of dimensions and n is the number of pairs
+        - Output: :math:`(*, 2n, *)` same shape as the input
+
+    Examples::
+
+        >>> m = torch_activation.OPLU()
+        >>> x = torch.randn(4, 2)  # Batch of 2 pairs of inputs
+        >>> output = m(x)  # Shape: (4, 2)
+    """
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
+    def _forward(self, x: Tensor) -> Tensor:
+        if x.shape[-1] % 2 != 0:
+            raise ValueError(
+                "The last dimension of the input tensor must be even for OPLU"
+            )
+
+        shape = x.shape
+        x_reshaped = x.view(*shape[:-1], -1, 2)
+
+        max_vals = torch.max(x_reshaped, dim=-1, keepdim=True)[0]
+        min_vals = torch.min(x_reshaped, dim=-1, keepdim=True)[0]
+
+        result = torch.cat((max_vals, min_vals), dim=-1)
+
+        return result.view(*shape)
+
+
+# TODO: Questionable...
+@register_activation
+class EReLU(BaseActivation):
+    r"""
+    Applies the Elastic ReLU (EReLU) activation function, which slightly randomly changes the slope 
+    of the positive part of the ReLU during training.
+
+    .. math::
+        \text{EReLU}(z_i) = 
+        \begin{cases} 
+        k_i z_i, & z_i \geq 0, \\
+        0, & z_i < 0,
+        \end{cases}
+
+    where :math:`k_i` is sampled for each epoch and neuron i from the uniform distribution
+    :math:`k_i \sim U(1 - \alpha, 1 + \alpha)` where :math:`\alpha \in (0, 1)` is a parameter 
+    controlling the degree of response fluctuations.
+
+    During test phase, :math:`k_i` is set to its expected value :math:`E(k_i) = 1`, making 
+    the EReLU equivalent to the standard ReLU.
+
+    Args:
+        alpha (float, optional): Parameter controlling the degree of response fluctuations. Default: ``0.1``
+        training (bool, optional): Whether to use random sampling (training mode) or expected value (test mode). Default: ``True``
+        inplace (bool, optional): Can optionally do the operation in-place. Default: ``False``
+
+    Shape:
+        - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
+        - Output: :math:`(*)`, same shape as the input.
+
+    Examples::
+
+        >>> m = torch_activation.EReLU()
+        >>> x = torch.randn(2)
+        >>> output = m(x)  # Uses random k_i during training
+
+        >>> m = torch_activation.EReLU(alpha=0.2, training=False)
+        >>> x = torch.randn(2)
+        >>> output = m(x)  # Uses k_i = 1 (equivalent to standard ReLU)
+    """
+
+    def __init__(self, alpha: float = 0.1, training: bool = True, **kwargs):
+        super().__init__(**kwargs)
+        assert 0 < alpha < 1, "alpha must be in the range (0, 1)"
+        self.alpha = alpha
+        self.training = training
+
+    def _forward(self, x: Tensor) -> Tensor:
+        # Zero out negative values
+        pos_mask = x >= 0
+        result = torch.zeros_like(x)
+
+        if pos_mask.any():
+            if self.training:
+                # Sample k_i from U(1-alpha, 1+alpha) during training
+                k = torch.empty_like(x).uniform_(1 - self.alpha, 1 + self.alpha)
+                result[pos_mask] = k[pos_mask] * x[pos_mask]
+            else:
+                # Use expected value E(k_i) = 1 during testing
+                result[pos_mask] = x[pos_mask]
+
+        return result
+
+    def _forward_inplace(self, x: Tensor) -> Tensor:
+        # Zero out negative values
+        pos_mask = x >= 0
+        x[~pos_mask] = 0
+
+        if pos_mask.any():
+            if self.training:
+                # Sample k_i from U(1-alpha, 1+alpha) during training
+                k = torch.empty_like(x).uniform_(1 - self.alpha, 1 + self.alpha)
+                x[pos_mask] *= k[pos_mask]
+            # For testing, we keep x[pos_mask] unchanged since k_i = 1
+
+        return x
+
+
 if __name__ == "__main__":
     from torch_activation.utils import plot_activation
+
+    seed = 42
+    torch.manual_seed(seed)
+    torch.cuda.manual_seed(seed)
+    torch.cuda.manual_seed_all(seed)
+
     activation_params = {
         "ReLU": {},
         "SReLU": {},
@@ -1988,8 +2371,12 @@ if __name__ == "__main__":
         "VReLU": {},
         "PanFunction": {"a": [0.5, 2]},
         "AbsLU": {"a": [0.2, 0.8]},
-        "MReLU": {},
+        "mReLU": {},
         "LSPTLU": {"a": [0.5, 1, 2]},
+        "SoftModulusT": {},
+        "SoftModulusQ": {},
+        "SignReLU": {"a": [0.5, 1, 2]},
+        "LiReLU": {},
         # "SCAA": {}  # NOTE: SCAA is not one-to-one.
     }
 
