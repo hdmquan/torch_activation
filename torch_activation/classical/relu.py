@@ -1827,15 +1827,15 @@ class mReLU(BaseActivation):
 
     Here is a plot of the function and its derivative:
 
-    .. image:: ../images/activation_images/MReLU.png
+    .. image:: ../images/activation_images/mReLU.png
 
     Examples::
 
-        >>> m = torch_activation.MReLU()
+        >>> m = torch_activation.mReLU()
         >>> x = torch.randn(2)
         >>> output = m(x)
 
-        >>> m = torch_activation.MReLU(inplace=True)
+        >>> m = torch_activation.mReLU(inplace=True)
         >>> x = torch.randn(2)
         >>> m(x)
     """
@@ -1912,6 +1912,98 @@ class LSPTLU(BaseActivation):
         return x
 
 
+@register_activation
+class SoftModulusQ(BaseActivation):
+    r"""
+    Applies the SoftModulusQ activation function, which is a quadratic approximation of the vReLU:
+
+    .. math::
+        \text{SoftModulusQ}(z) = 
+        \begin{cases} 
+        z^2 (2 - |z|), & |z| \leq 1, \\
+        |z|, & |z| > 1,
+        \end{cases}
+
+    Shape:
+        - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
+        - Output: :math:`(*)`, same shape as the input.
+
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/SoftModulusQ.png
+
+    Examples::
+
+        >>> m = torch_activation.SoftModulusQ()
+        >>> x = torch.randn(2)
+        >>> output = m(x)
+
+        >>> m = torch_activation.SoftModulusQ(inplace=True)
+        >>> x = torch.randn(2)
+        >>> m(x)
+    """
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
+    def _forward(self, x: Tensor) -> Tensor:
+        abs_x = torch.abs(x)
+        return torch.where(abs_x <= 1, x.pow(2) * (2 - abs_x), abs_x)
+
+    def _forward_inplace(self, x: Tensor) -> Tensor:
+        abs_x = torch.abs(x)
+        mask = abs_x <= 1
+        x[mask] = x[mask].pow(2) * (2 - abs_x[mask])
+        x[~mask] = abs_x[~mask]
+        return x
+
+
+@register_activation
+class SoftModulusT(BaseActivation):
+    r"""
+    Applies the SoftModulusT activation function, which is a tanh-based approximation of the vReLU:
+
+    .. math::
+        \text{SoftModulusT}(z) = z \cdot \tanh\left(\frac{z}{a}\right)
+
+    where :math:`a` is a predetermined parameter. When :math:`a = 1`, the SoftModulusT becomes
+    the LiSHT activation function.
+
+    Args:
+        a (float, optional): Parameter controlling the shape. Default: ``0.01``
+        inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
+
+    Shape:
+        - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
+        - Output: :math:`(*)`, same shape as the input.
+
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/SoftModulusT.png
+
+    Examples::
+
+        >>> m = torch_activation.SoftModulusT()
+        >>> x = torch.randn(2)
+        >>> output = m(x)
+
+        >>> m = torch_activation.SoftModulusT(a=0.1, inplace=True)
+        >>> x = torch.randn(2)
+        >>> m(x)
+    """
+
+    def __init__(self, a: float = 0.01, **kwargs):
+        super().__init__(**kwargs)
+        self.a = a
+
+    def _forward(self, x: Tensor) -> Tensor:
+        return x * torch.tanh(x / self.a)
+
+    def _forward_inplace(self, x: Tensor) -> Tensor:
+        x.mul_(torch.tanh(x / self.a))
+        return x
+
+
 if __name__ == "__main__":
     from torch_activation.utils import plot_activation
 
@@ -1948,8 +2040,10 @@ if __name__ == "__main__":
         "VReLU": {},
         "PanFunction": {"a": [0.5, 2]},
         "AbsLU": {"a": [0.2, 0.8]},
-        "MReLU": {},
+        "mReLU": {},
         "LSPTLU": {"a": [0.5, 1, 2]},
+        "SoftModulusT": {},
+        "SoftModulusQ": {},
         # "SCAA": {}  # NOTE: SCAA is not one-to-one.
     }
 
