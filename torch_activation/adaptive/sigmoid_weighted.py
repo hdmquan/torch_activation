@@ -1078,5 +1078,292 @@ class GLSoftmax(BaseActivation):
         second_part: Tensor = torch.logsumexp(b * log_alpha, dim=-1)
         res: Tensor = (first_part - second_part) / torch.log(torch.clamp(alpha, min=1e-8))
         return res
+        
 
+@register_activation
+class ARBF(BaseActivation):
+    r"""
+
+    Adaptive Radial Basis Function (ARBF) Model.
+
+    This class implements an adaptive radial basis function as described in [499].
+    The function is defined as:
+
+    \[
+    f(z_i) \exp\left( -\frac{(z_i - a_i)^2}{2 b_i^2} \right)
+    \]
+
+    where:
+    - \( a_i \) is an adaptive parameter controlling the **center** of the neuron.
+    - \( b_i \) is an adaptive parameter controlling the **width** of the neuron.
+    - \( z_i \) is the input variable.
+
+
+    Args:
+        input_shape (int): Size of the input vector tensor (feature size).
+        a (float, optional): Initial value for parameter `a`. Default is 1.0.
+        b (float, optional): Initial value for parameter `b`. Default is 1.0.
+        learnable (bool, optional): Whether `a` and `b` are trainable. Default is True.
+        inplace (bool, optional): Whether to perform operations in-place. Default is False.
+        **kwargs: Additional keyword arguments for BaseActivation.
+
+    Attributes:
+        a (Tensor or nn.Parameter): Trainable or fixed parameter `a`.
+        b (Tensor or nn.Parameter): Trainable or fixed parameter `b`.
+        inplace (bool): Whether operations are performed in-place.
+
+    Methods:
+        _forward(x: Tensor) -> Tensor:
+            Computes the Adaptive Radial Basis Function transformation.
+
+
+    """
+
+    def __init__(
+            self,
+            input_shape: int,
+            a: float = 1.0,
+            b: float = 1.0,
+            learnable: bool = True,
+            inplace: bool = False,
+            **kwargs
+    ) -> None:
+        super().__init__(**kwargs)
+
+        def create_param(value: float) -> Tensor:
+            """Creates a learnable parameter if `learnable` is True; otherwise, returns a fixed tensor."""
+            tensor = torch.full((input_shape, 1), value, dtype=torch.float64)  # Initialize tensor with the given value
+            return nn.Parameter(torch.randn(input_shape)) if learnable else tensor  # Convert to parameter if learnable
+
+        # Initialize parameters (either as learnable or fixed tensors)
+        self.a: Tensor = create_param(a)
+        self.b: Tensor = create_param(b)
+        self.inplace: bool = inplace
+
+    def _forward(self, x: Tensor) -> Tensor:
+        """
+        Computes the Adaptive Radial Basis Function transformation.
+
+        Args:
+            x (Tensor): Input tensor.
+
+        Returns:
+            Tensor: Transformed tensor.
+        """
+        result = torch.exp(-0.5 * torch.nn.functional.mse_loss(x, self.a, reduction="none") / torch.pow(self.b, 2))
+        if self.inplace and hasattr(x, 'copy_'):
+            x.copy_(result)
+            return x
+        return result
+
+
+@register_activation
+class PGELU(BaseActivation):
+    """
+    Parametric Gaussian Error Linear Unit (PGELU).
+
+    PGELU is an adaptive variant of GELU that incorporates noise injection.
+    It is defined as:
+
+    \[
+    f(z) = z \cdot \Phi\left(\frac{z}{a}\right)
+    \]
+
+    where:
+    - \( \Phi(z) \) is the **standard Gaussian cumulative distribution function (CDF)**.
+    - \( a \) is a **learnable parameter representing root mean square (RMS) noise**.
+
+    Args:
+        input_shape (int): Size of the input vector tensor (feature size).
+        a (float, optional): Initial value for parameter `a`. Default is 1.0.
+        learnable (bool, optional): Whether `a` is trainable. Default is True.
+        inplace (bool, optional): Whether to perform operations in-place. Default is False.
+        **kwargs: Additional keyword arguments for BaseActivation.
+
+    Attributes:
+        a (Tensor or nn.Parameter): Trainable or fixed parameter `a`.
+        inplace (bool): Whether operations are performed in-place.
+
+    Methods:
+        _forward(x: Tensor) -> Tensor:
+            Computes the Parametric GELU transformation.
+
+    """
+
+    def __init__(
+            self,
+            input_shape: int,
+            a: float = 1.0,
+            b: float = 1.0,
+            learnable: bool = True,
+            inplace: bool = False,
+            **kwargs
+    ) -> None:
+        super().__init__(**kwargs)
+
+        def create_param(value: float) -> Tensor:
+            """Creates a learnable parameter if `learnable` is True; otherwise, returns a fixed tensor."""
+            tensor = torch.full((input_shape, 1), value, dtype=torch.float64)  # Initialize tensor with the given value
+            return nn.Parameter(torch.randn(input_shape)) if learnable else tensor  # Convert to parameter if learnable
+
+        # Initialize parameters (either as learnable or fixed tensors)
+        self.a: Tensor = create_param(a)
+        self.b: Tensor = create_param(b)
+        self.inplace: bool = inplace
+
+    def _forward(self, x: Tensor) -> Tensor:
+        """
+        Computes the Adaptive Radial Basis Function transformation.
+
+        Args:
+            x (Tensor): Input tensor.
+
+        Returns:
+            Tensor: Transformed tensor.
+        """
+        result = x * 0.5 * (1 + torch.erf((x / self.a) / math.sqrt(2)))
+        if self.inplace and hasattr(x, 'copy_'):
+            x.copy_(result)
+            return x
+        return result
+
+@register_activation
+class PFTS(BaseActivation):
+    """
+    Parametric Flatted-T Swish (PFTS).
+
+    PFTS is an adaptive extension of the Flatted-T Swish (FTS). It is identical to FTS except
+    that the parameter T is adaptive.
+
+    The PFTS activation function is defined as:
+
+    f(z_i) = ReLU(z_i) * σ(z_i) * σ(z_i) + T_i =
+        {
+            z_i / (1 + exp(-z_i)) + T_i,  z_i >= 0,
+            T_i,                          z_i < 0,
+        }
+
+    where:
+    - ReLU(z_i) is the Rectified Linear Unit function applied to z_i.
+    - σ(z_i) is the sigmoid function applied to z_i, i.e., 1 / (1 + exp(-z_i)).
+    - T_i is a trainable parameter for each neuron i.
+
+    Args:
+        input_shape (int): Size of the input vector tensor (feature size).
+        T_i (float, optional): Initial value for parameter `T_i`. Default is -0.20.
+        learnable (bool, optional): Whether `T_i` is trainable. Default is True.
+        inplace (bool, optional): Whether to perform operations in-place. Default is False.
+        **kwargs: Additional keyword arguments for BaseActivation.
+
+    Attributes:
+        T_i (Tensor or nn.Parameter): Trainable or fixed parameter `T_i`.
+        inplace (bool): Whether operations are performed in-place.
+
+    Methods:
+        _forward(x: Tensor) -> Tensor:
+            Computes the Parametric Flatted-T Swish transformation.
+    """
+    def __init__(
+            self,
+            input_shape: int,
+            T: float = -0.2,
+            learnable: bool = True,
+            inplace: bool = False,
+            **kwargs
+    ) -> None:
+        super().__init__(**kwargs)
+
+        def create_param(value: float) -> Tensor:
+            """Creates a learnable parameter if `learnable` is True; otherwise, returns a fixed tensor."""
+            tensor = torch.full((input_shape, 1), value, dtype=torch.float64)  # Initialize tensor with the given value
+            return nn.Parameter(-0.2 * torch.ones(input_shape)) if learnable else tensor  # Convert to parameter if learnable
+
+        # Initialize parameters (either as learnable or fixed tensors)
+        self.T: Tensor = create_param(T)
+        self.inplace: bool = inplace
+
+    def _forward(self, x: Tensor) -> Tensor:
+        """
+        Computes the Parametric Flatted-T Swish transformation.
+
+        Args:
+            x (Tensor): Input tensor.
+
+        Returns:
+            Tensor: Transformed tensor.
+        """
+        result = torch.nn.functional.relu(x) * torch.nn.functional.sigmoid(x) + self.T
+        if self.inplace and hasattr(x, 'copy_'):
+            x.copy_(result)
+            return x
+        return result
+
+@register_activation
+class PFPM(BaseActivation):
+    """
+    Parametric Flatten-p Mish (PFPM).
+
+    PFPM is an Adaptive Activation Function (AAF).
+
+    The PFPM activation function is defined as:
+
+    f(z_i) = {
+        z_i * tanh(ln(1 + exp(z_i))) + p_i,  z_i >= 0,
+        p_i,                               z_i < 0,
+    }
+
+    where:
+    - z_i is the input to the activation function for neuron i.
+    - p_i is a trainable parameter for neuron i.
+
+    Args:
+        input_shape (int): Size of the input vector tensor (feature size).
+        p_i (float, optional): Initial value for parameter `p_i`. Default is 0.0.
+        learnable (bool, optional): Whether `p_i` is trainable. Default is True.
+        inplace (bool, optional): Whether to perform operations in-place. Default is False.
+        **kwargs: Additional keyword arguments for BaseActivation.
+
+    Attributes:
+        p_i (Tensor or nn.Parameter): Trainable or fixed parameter `p_i`.
+        inplace (bool): Whether operations are performed in-place.
+
+    Methods:
+        _forward(x: Tensor) -> Tensor:
+            Computes the Parametric Flatten-p Mish transformation.
+    """
+    def __init__(
+            self,
+            input_shape: int,
+            p: float = 1.0,
+            learnable: bool = True,
+            inplace: bool = False,
+            **kwargs
+    ) -> None:
+        super().__init__(**kwargs)
+
+        def create_param(value: float) -> Tensor:
+            """Creates a learnable parameter if `learnable` is True; otherwise, returns a fixed tensor."""
+            tensor = torch.full((input_shape, 1), value, dtype=torch.float64)  # Initialize tensor with the given value
+            return nn.Parameter(torch.randn(input_shape)) if learnable else tensor  # Convert to parameter if learnable
+
+        # Initialize parameters (either as learnable or fixed tensors)
+        self.p: Tensor = create_param(p)
+        self.inplace: bool = inplace
+
+    def _forward(self, x: Tensor) -> Tensor:
+        """
+        Computes the Parametric Flatten-p Mish .
+
+        Args:
+            x (Tensor): Input tensor.
+
+        Returns:
+            Tensor: Transformed tensor.
+        """
+        func = x * torch.tanh(torch.log(1 + torch.exp(x))) + self.p
+        result = torch.nn.functional.relu(x) * func + self.p
+        if self.inplace and hasattr(x, 'copy_'):
+            x.copy_(result)
+            return x
+        return result
 
