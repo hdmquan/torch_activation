@@ -1138,7 +1138,6 @@ class ARBF(BaseActivation):
         self.inplace: bool = inplace
 
     def _forward(self, x: Tensor) -> Tensor:
-
         result = torch.exp(-0.5 * torch.nn.functional.mse_loss(x, self.a, reduction="none") / torch.pow(self.b, 2))
         if self.inplace and hasattr(x, 'copy_'):
             x.copy_(result)
@@ -1197,7 +1196,6 @@ class PGELU(BaseActivation):
         self.inplace: bool = inplace
 
     def _forward(self, x: Tensor) -> Tensor:
-
         result = x * 0.5 * (1 + torch.erf((x / self.a) / math.sqrt(2)))
         if self.inplace and hasattr(x, 'copy_'):
             x.copy_(result)
@@ -1261,7 +1259,6 @@ class PFTS(BaseActivation):
         self.inplace: bool = inplace
 
     def _forward(self, x: Tensor) -> Tensor:
-
         result = torch.nn.functional.relu(x) * torch.nn.functional.sigmoid(x) + self.T
         if self.inplace and hasattr(x, 'copy_'):
             x.copy_(result)
@@ -1322,10 +1319,146 @@ class PFPM(BaseActivation):
         self.inplace: bool = inplace
 
     def _forward(self, x: Tensor) -> Tensor:
-
         func = x * torch.tanh(torch.log(1 + torch.exp(x))) + self.p
         result = torch.nn.functional.relu(x) * func + self.p
         if self.inplace and hasattr(x, 'copy_'):
             x.copy_(result)
             return x
         return result
+
+
+@register_activation
+class PSIGRAMP(BaseActivation):
+    """
+    Parametric Sigmoid-Ramp (P-SIG-RAMP).
+
+    P-SIG-RAMP is an Adaptive Activation Function (AAF) that combines the logistic sigmoid and a piecewise linear function.
+
+    The P-SIG-RAMP activation function is defined as:
+
+    .. math::
+        f(z_i) = a_i \sigma(z_i) + (1 - a_i) \cdot
+        \begin{cases}
+        1, & z_i \geq \frac{1}{2b_i}, \\
+        b_i z_i + \frac{1}{2}, & -\frac{1}{2b_i} < z_i < \frac{1}{2b_i}, \\
+        0, & z_i \leq -\frac{1}{2b_i},
+        \end{cases}
+
+    where:
+    - \( z_i \) is the input to the activation function for neuron \( i \).
+    - \( a_i \) is a trainable parameter constrained to \( [0,1] \).
+    - \( b_i \) is a trainable parameter.
+
+    Args:
+        input_shape (int): Size of the input vector tensor (feature size).
+        a_i (float, optional): Initial value for parameter \( a_i \). Default is 0.5.
+        b_i (float, optional): Initial value for parameter \( b_i \). Default is 1.0.
+        learnable (bool, optional): Whether \( a_i \) and \( b_i \) are trainable. Default is True.
+        inplace (bool, optional): Whether to perform operations in-place. Default is False.
+        **kwargs: Additional keyword arguments for BaseActivation.
+
+    Attributes:
+        a_i (Tensor or nn.Parameter): Trainable or fixed parameter \( a_i \).
+        b_i (Tensor or nn.Parameter): Trainable or fixed parameter \( b_i \).
+        inplace (bool): Whether operations are performed in-place.
+
+    Methods:
+        _forward(x: Tensor) -> Tensor:
+            Computes the Parametric Sigmoid-Ramp transformation.
+    """
+
+    def __init__(
+            self,
+            input_shape: int,
+            a: float = 0.5,
+            b: float = 1.0,
+            learnable: bool = True,
+            inplace: bool = False,
+            **kwargs
+    ) -> None:
+        super().__init__(**kwargs)
+
+        def create_param(value: float) -> Tensor:
+            tensor = torch.full((input_shape, 1), value, dtype=torch.float64)
+            return nn.Parameter(torch.randn(input_shape)) if learnable else tensor
+
+        self.a: Tensor = create_param(a)
+        self.b: Tensor = create_param(b)
+        self.inplace: bool = inplace
+
+    def _forward(self, x: Tensor) -> Tensor:
+        converted_a = torch.nn.functional.sigmoid(self.a)
+        relu_section = 0.5 * (
+                    torch.nn.functional.relu(2 * self.b * x + 1) - torch.nn.functional.relu(2 * self.b * x - 1))
+
+        result = converted_a * (torch.nn.functional.sigmoid(x)) + (1 - converted_a) * relu_section
+        if self.inplace and hasattr(x, 'copy_'):
+            x.copy_(result)
+            return x
+        return result
+
+
+
+
+@register_activation
+class RSIGN(BaseActivation):
+    """
+    React-Sign (RSign).
+
+    RSign is an Adaptive Activation Function (AAF) that introduces an adaptive threshold to the standard sign function.
+
+    The RSign activation function is defined as:
+
+    .. math::
+        f(z_i) =
+        \begin{cases}
+        1, & z_i \geq a_c, \\
+        -1, & z_i < a_c,
+        \end{cases}
+
+    where:
+    - \( z_i \) is the input to the activation function for neuron \( i \).
+    - \( a_c \) is an adaptive threshold parameter for each channel.
+
+    Args:
+        input_shape (int): Size of the input vector tensor (feature size).
+        a_c (float, optional): Initial value for threshold \( a_c \). Default is 0.0.
+        learnable (bool, optional): Whether \( a_c \) is trainable. Default is True.
+        inplace (bool, optional): Whether to perform operations in-place. Default is False.
+        **kwargs: Additional keyword arguments for BaseActivation.
+
+    Attributes:
+        a_c (Tensor or nn.Parameter): Trainable or fixed parameter \( a_c \).
+        inplace (bool): Whether operations are performed in-place.
+
+    Methods:
+        _forward(x: Tensor) -> Tensor:
+            Computes the React-Sign transformation.
+    """
+
+    def __init__(
+            self,
+            input_shape: int,
+            a: float = 0.5,
+            learnable: bool = True,
+            inplace: bool = False,
+            **kwargs
+    ) -> None:
+        super().__init__(**kwargs)
+
+        def create_param(value: float) -> Tensor:
+            tensor = torch.full((input_shape, 1), value, dtype=torch.float64)
+            return nn.Parameter(torch.randn(input_shape)) if learnable else tensor
+
+        self.a: Tensor = create_param(a)
+        self.inplace: bool = inplace
+
+    def _forward(self, x: Tensor) -> Tensor:
+        func1 = torch.sign(x - self.a)
+        result = torch.where(func1 == 0, torch.tensor(1), func1)
+        if self.inplace and hasattr(x, 'copy_'):
+            x.copy_(result)
+            return x
+        return result
+
+
