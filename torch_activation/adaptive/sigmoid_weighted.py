@@ -1265,7 +1265,7 @@ class PFTS(BaseActivation):
             return x
         return result
 
-
+# TODO: ADD torch.log1p here replace with torch.log(1 + x)
 @register_activation
 class PFPM(BaseActivation):
     """
@@ -1460,5 +1460,153 @@ class RSIGN(BaseActivation):
             x.copy_(result)
             return x
         return result
+
+@register_activation
+class MAF(BaseActivation):
+    """
+    Multiquadratic Activation Function (MAF).
+
+    MAF is an Adaptive Activation Function (AAF) that introduces trainable parameters to adjust the multiquadratic transformation.
+
+    The MAF activation function is defined as:
+
+    .. math::
+        f(z_i) = \sqrt{ \|z_i - a_i\|^2 + b_i^2 },
+
+    where:
+    - \( z_i \) is the input to the activation function for neuron \( i \).
+    - \( a_i \) is a trainable slope coefficient.
+    - \( b_i \) is a trainable bias coefficient.
+
+    Args:
+        input_shape (int): Size of the input vector tensor (feature size).
+        a_i (float, optional): Initial value for the trainable slope coefficient \( a_i \). Default is 0.0.
+        b_i (float, optional): Initial value for the trainable bias coefficient \( b_i \). Default is 1.0.
+        learnable (bool, optional): Whether \( a_i \) and \( b_i \) are trainable. Default is True.
+        inplace (bool, optional): Whether to perform operations in-place. Default is False.
+        **kwargs: Additional keyword arguments for BaseActivation.
+
+    Attributes:
+        a_i (Tensor or nn.Parameter): Trainable or fixed parameter \( a_i \).
+        b_i (Tensor or nn.Parameter): Trainable or fixed parameter \( b_i \).
+        inplace (bool): Whether operations are performed in-place.
+
+    Methods:
+        _forward(x: Tensor) -> Tensor:
+            Computes the Multiquadratic transformation.
+    """
+
+    def __init__(
+            self,
+            input_shape: int,
+            a: float = 0.5,
+            b: float = 1.0,
+            learnable: bool = True,
+            inplace: bool = False,
+            **kwargs
+    ) -> None:
+        super().__init__(**kwargs)
+
+        def create_param(value: float) -> Tensor:
+            tensor = torch.full((input_shape, 1), value, dtype=torch.float64)
+            return nn.Parameter(torch.randn(input_shape)) if learnable else tensor
+
+        self.a: Tensor = create_param(a)
+        self.b: Tensor = create_param(b)
+        self.inplace: bool = inplace
+
+    def _forward(self, x: Tensor) -> Tensor:
+        func1 = torch.nn.functional.mse_loss(x, self.a, reduction='none')
+        result = torch.sqrt(func1 + torch.pow(self.b, 2))
+        if self.inplace and hasattr(x, 'copy_'):
+            x.copy_(result)
+            return x
+        return result
+
+@register_activation
+class UAF(BaseActivation):
+    """
+    Universal Activation Function (UAF).
+
+    The Universal Activation Function (UAF) is a softplus-based Adaptive Activation Function (AAF)
+    that introduces trainable parameters to flexibly approximate various activation functions.
+
+    The UAF is defined as:
+
+    .. math::
+        f(z_i) = \ln \left(1 + \exp \left( a_i (z_i + b_i) + c_i z_i^2 \right) \right)
+               - \ln \left(1 + \exp \left( d_i (z_i - b_i) \right) \right) + e_i,
+
+    where:
+    - \( z_i \) is the input to the activation function for neuron \( i \).
+    - \( a_i, b_i, c_i, d_i, e_i \) are trainable parameters.
+
+    UAF is designed to approximate multiple well-known activation functions, including:
+    - Step function
+    - Logistic sigmoid
+    - Hyperbolic tangent (tanh)
+    - ReLU (Rectified Linear Unit)
+    - Leaky ReLU (LReLU)
+    - Gaussian function
+
+    Args:
+        input_shape (int): Size of the input tensor (feature size).
+        a_i (float, optional): Initial value for the trainable parameter \( a_i \). Default is 1.0.
+        b_i (float, optional): Initial value for the trainable parameter \( b_i \). Default is 0.0.
+        c_i (float, optional): Initial value for the trainable parameter \( c_i \). Default is 0.0.
+        d_i (float, optional): Initial value for the trainable parameter \( d_i \). Default is 1.0.
+        e_i (float, optional): Initial value for the trainable parameter \( e_i \). Default is 0.0.
+        learnable (bool, optional): Whether parameters \( a_i, b_i, c_i, d_i, e_i \) are trainable. Default is True.
+        inplace (bool, optional): Whether to perform operations in-place. Default is False.
+        **kwargs: Additional keyword arguments.
+
+    Attributes:
+        a_i (Tensor or nn.Parameter): Trainable or fixed parameter \( a_i \).
+        b_i (Tensor or nn.Parameter): Trainable or fixed parameter \( b_i \).
+        c_i (Tensor or nn.Parameter): Trainable or fixed parameter \( c_i \).
+        d_i (Tensor or nn.Parameter): Trainable or fixed parameter \( d_i \).
+        e_i (Tensor or nn.Parameter): Trainable or fixed parameter \( e_i \).
+        inplace (bool): Whether operations are performed in-place.
+
+    Methods:
+        _forward(x: Tensor) -> Tensor:
+            Computes the Universal Activation Function (UAF) transformation.
+    """
+
+    def __init__(
+            self,
+            input_shape: int,
+            a: float = 0.5,
+            b: float = 1.0,
+            c: float = 0.5,
+            d: float = 1.0,
+            e: float = 0.5,
+            learnable: bool = True,
+            inplace: bool = False,
+            **kwargs
+    ) -> None:
+        super().__init__(**kwargs)
+
+        def create_param(value: float) -> Tensor:
+            tensor = torch.full((input_shape, 1), value, dtype=torch.float64)
+            return nn.Parameter(torch.randn(input_shape)) if learnable else tensor
+
+        self.a: Tensor = create_param(a)
+        self.b: Tensor = create_param(b)
+        self.c: Tensor = create_param(c)
+        self.d: Tensor = create_param(d)
+        self.e: Tensor = create_param(e)
+        self.inplace: bool = inplace
+
+    def _forward(self, x: Tensor) -> Tensor:
+        term1 = torch.log1p(torch.exp(self.a * (x + self.b) + self.c * x ** 2))
+        term2 = torch.log1p(torch.exp(self.d * (x - self.b)))
+        result = term1 - term2 + self.e
+        if self.inplace and hasattr(x, 'copy_'):
+            x.copy_(result)
+            return x
+        return result
+
+
 
 
