@@ -767,7 +767,7 @@ class PSerf(BaseActivation):
 
     def _forward(self, x) -> Tensor:
         # Calculate softplus: ln(1 + exp(b*x))
-        softplus = torch.log(1 + torch.exp(torch.clamp(self.b * x, max=20)))
+        softplus = torch.log1p(torch.exp(torch.clamp(self.b * x, max=20)))
         result = x * torch.erf(self.a * softplus)
 
         if self.inplace and hasattr(x, 'copy_'):
@@ -1319,7 +1319,7 @@ class PFPM(BaseActivation):
         self.inplace: bool = inplace
 
     def _forward(self, x: Tensor) -> Tensor:
-        func = x * torch.tanh(torch.log(1 + torch.exp(x))) + self.p
+        func = x * torch.tanh(torch.log1p(torch.exp(x))) + self.p
         result = torch.nn.functional.relu(x) * func + self.p
         if self.inplace and hasattr(x, 'copy_'):
             x.copy_(result)
