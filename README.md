@@ -2,6 +2,8 @@
 
 PyTorch Activations is a collection of activation functions for the PyTorch library. This project aims to provide an easy-to-use solution for experimenting with different activation functions or simply adding variety to your models.
 
+![6 sample activation functions and its derivatives](images/image.png "6 sample activation functions and its derivatives")
+
 ## Installation
 
 You can install PyTorch Activations using pip:
