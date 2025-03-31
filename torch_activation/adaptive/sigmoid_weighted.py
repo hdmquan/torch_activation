@@ -1265,7 +1265,6 @@ class PFTS(BaseActivation):
             return x
         return result
 
-# TODO: ADD torch.log1p here replace with torch.log(1 + x)
 @register_activation
 class PFPM(BaseActivation):
     """
