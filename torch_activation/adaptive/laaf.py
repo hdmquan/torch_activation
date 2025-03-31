@@ -277,7 +277,7 @@ class LAU(BaseActivation):
         self.b = nn.Parameter(Tensor([b_init]))
 
     def _forward(self, x) -> Tensor:
-        return x * torch.log(1 + self.a * torch.sigmoid(self.b * x))
+        return x * torch.log1p(self.a * torch.sigmoid(self.b * x))
 
 
 @register_activation
