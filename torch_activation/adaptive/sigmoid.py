@@ -391,7 +391,7 @@ class TanhSoft1(BaseActivation):
     def _forward(self, x) -> Tensor:
         # Compute the TanhSoft-1 function
         tanh_term = torch.tanh(self.a * x)
-        softplus_term = torch.log(1 + torch.exp(x))
+        softplus_term = torch.log1p(torch.exp(x))
         result = tanh_term * softplus_term
 
         if self.inplace and hasattr(x, "copy_"):
@@ -498,7 +498,7 @@ class TanhSoft3(BaseActivation):
     def _forward(self, x) -> Tensor:
         # Compute the TanhSoft-3 function
         inner_term = torch.exp(x) * torch.tanh(self.a * x)
-        result = torch.log(1 + inner_term)
+        result = torch.log1p(inner_term)
 
         if self.inplace and hasattr(x, "copy_"):
             x.copy_(result)

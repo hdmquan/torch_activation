@@ -585,7 +585,7 @@ class LogishPlus(BaseActivation):
     def _forward(self, x) -> Tensor:
         abs_x_eps = torch.sqrt(x.pow(2) + self.epsilon)
         step_plus = 0.5 * (1 + x / abs_x_eps)
-        return x * torch.log(1 + step_plus)
+        return x * torch.log1p(step_plus)
 
 
 @register_activation

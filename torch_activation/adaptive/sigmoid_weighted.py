@@ -1265,7 +1265,6 @@ class PFTS(BaseActivation):
             return x
         return result
 
-# TODO: ADD torch.log1p here replace with torch.log(1 + x)
 @register_activation
 class PFPM(BaseActivation):
     """
@@ -1608,5 +1607,160 @@ class UAF(BaseActivation):
         return result
 
 
+
+@register_activation
+class GReLU(BaseActivation):
+    """
+    Generalized Rectified Linear Unit (GReLU)
+
+    The Generalized ReLU (GReLU) is a smooth and flexible activation function derived from the
+    Universal Activation Function (UAF) family. It introduces two trainable parameters to generalize
+    and extend the behavior of ReLU and related functions, offering better adaptability during training.
+
+    The GReLU is defined as:
+
+    .. math::
+        f(z_i) = \\frac{\\ln(1 + a_i^{b_i z_i})}{b_i \\ln(a_i)}
+
+    This is equivalent to the logarithmic formulation of:
+
+    .. math::
+        f(z_i) = \\frac{1}{b_i} \\log_{a_i} \\left( 1 + a_i^{b_i z_i} \\right)
+
+    where:
+    - \( z_i \) is the input to the activation function for neuron \( i \).
+    - \( a_i > 1 \) and \( b_i > 0 \) are trainable parameters constrained via softplus.
+
+    GReLU offers enhanced control over the non-linearity and smoothness of the activation, and can approximate
+    standard activations like:
+    - ReLU
+    - Exponential Linear Units
+    - Parametric ReLU-like curves
+    - Sigmoidal shapes (in shallow regimes)
+
+    Args:
+        input_shape (int): Size of the input tensor (feature size).
+        a (float, optional): Initial value for the trainable parameter \( a_i \). Default is 1.5.
+        b (float, optional): Initial value for the trainable parameter \( b_i \). Default is 0.5.
+        learnable (bool, optional): Whether parameters \( a_i \) and \( b_i \) are trainable. Default is True.
+        inplace (bool, optional): Whether to perform operations in-place. Default is False.
+        **kwargs: Additional keyword arguments passed to the base class.
+
+    Attributes:
+        a (Tensor or nn.Parameter): Trainable or fixed parameter \( a_i \), transformed with softplus to enforce \( a_i > 1 \).
+        b (Tensor or nn.Parameter): Trainable or fixed parameter \( b_i \), transformed with softplus to enforce \( b_i > 0 \).
+        inplace (bool): Whether operations are performed in-place.
+
+    Methods:
+        _forward(x: Tensor) -> Tensor:
+            Computes the GReLU activation transformation for the input tensor.
+    """
+
+
+    def __init__(
+            self,
+            input_shape: int,
+            a: float = 1.5,
+            b: float = 0.5,
+            learnable: bool = True,
+            inplace: bool = False,
+            **kwargs
+    ) -> None:
+        super().__init__(**kwargs)
+
+        def create_param(value: float) -> Tensor:
+            tensor = torch.full((input_shape, 1), value, dtype=torch.float64)
+            return nn.Parameter(torch.randn(input_shape)) if learnable else tensor
+
+        self.a: Tensor = create_param(a)
+        self.b: Tensor = create_param(b)
+        self.inplace: bool = inplace
+
+
+    def _forward(self, x: Tensor) -> Tensor:
+        # softplus ensures b > 0 and a > 1
+        a = 1 + F.softplus(self.a)
+        b = F.softplus(self.b)
+
+        term1 = torch.log1p(torch.exp(torch.log(a) * b * x))
+        term2 =  b * torch.log(a)
+        result = torch.exp(torch.log(term1) - torch.log(term2))
+        if self.inplace and hasattr(x, 'copy_'):
+            x.copy_(result)
+            return x
+        return result
+
+@register_activation
+class GLN(BaseActivation):
+    """
+    Global-Local Neuron (GLN)
+
+    The Global-Local Neuron (GLN) is an Adaptive Activation Function (AAF) that blends two distinct activation
+    functions using a convex combination. It is designed to capture both global and local nonlinearities
+    by mixing their outputs with a learnable gating mechanism.
+
+    The GLN is defined as:
+
+    .. math::
+        f(z_l) = \\sigma(a_l) \\cdot \\text{global}(z_l) + (1 - \\sigma(a_l)) \\cdot \\text{local}(z_l) - b_l
+
+    where:
+    - \( z_l \) is the input to the activation function at layer \( l \),
+    - \( a_l \) and \( b_l \) are trainable parameters specific to layer \( l \),
+    - \( \\sigma(a_l) \) is the sigmoid activation controlling the convex combination,
+    - \( \\text{global}(z_l) \) and \( \\text{local}(z_l) \) are predefined activation functions modeling global and local behavior respectively.
+
+    Common choices for the internal activations are:
+    - \( \\text{global}(z_l) = \\sin(z_l) \)
+    - \( \\text{local}(z_l) = \\tanh(z_l) \)
+
+    The GLN is especially useful in capturing complex hierarchical patterns by blending multiple activation dynamics.
+
+    Args:
+        input_shape (int): Size of the input tensor (feature size).
+        a (float, optional): Initial value for the trainable gating parameter \( a_l \). Default is 0.0.
+        b (float, optional): Initial value for the trainable bias parameter \( b_l \). Default is 0.0.
+        learnable (bool, optional): Whether parameters \( a_l \) and \( b_l \) are trainable. Default is True.
+        inplace (bool, optional): Whether to perform operations in-place. Default is False.
+        **kwargs: Additional keyword arguments passed to the base class.
+
+    Attributes:
+        a (Tensor or nn.Parameter): Trainable or fixed gating parameter \( a_l \).
+        b (Tensor or nn.Parameter): Trainable or fixed bias parameter \( b_l \).
+        inplace (bool): Whether operations are performed in-place.
+
+    Methods:
+        _forward(x: Tensor) -> Tensor:
+            Computes the GLN activation transformation by blending sin and tanh using a sigmoid gate.
+    """
+
+
+    def __init__(
+            self,
+            input_shape: int,
+            a: float = 1.0,
+            b: float = 1.0,
+            learnable: bool = True,
+            inplace: bool = False,
+            **kwargs
+    ) -> None:
+        super().__init__(**kwargs)
+
+        def create_param(value: float) -> Tensor:
+            tensor = torch.full((input_shape, 1), value, dtype=torch.float64)
+            return nn.Parameter(torch.randn(input_shape)) if learnable else tensor
+
+        self.a: Tensor = create_param(a)
+        self.b: Tensor = create_param(b)
+        self.inplace: bool = inplace
+
+
+    def _forward(self, x: Tensor) -> Tensor:
+
+        result = F.sigmoid(self.a) * torch.sin(x) + (1 - F.sigmoid(self.a)) * torch.tanh(x) - self.b
+        if self.inplace and hasattr(x, 'copy_'):
+            x.copy_(result)
+            return x
+        return result
 
 
