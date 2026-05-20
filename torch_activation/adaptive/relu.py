@@ -118,7 +118,7 @@ class DELU(BaseActivation):
     r"""
     Applies the DELU activation function:
 
-    :math:`\text{DELU}(x) = \begin{cases} \text{SiLU}(x), x \leqslant 0 \\x(n-1), \text{otherwise} \end{cases}`
+    :math:`\text{DELU}(x) = \begin{cases} \text{SiLU}(x), & x \leq 0 \\ (n + 0.5) \cdot x + |\exp(-x) - 1|, & x > 0 \end{cases}`
 
 
      See: https://doi.org/10.20944/preprints202301.0463.v1
@@ -2855,9 +2855,9 @@ class FELU(BaseActivation):
     r"""
     Applies the Fast Exponential Linear Unit function:
 
-    :math:`\text{FELU}(x) = \begin{cases} 
+    :math:`\text{FELU}(x) = \begin{cases}
         x, & x \geq 0 \\
-        a \cdot 2^{\frac{x}{\ln(2)}} - 1, & x < 0 
+        a \cdot \left(2^{\frac{x}{\ln(2)}} - 1\right), & x < 0
     \end{cases}`
 
     Args:
@@ -2909,9 +2909,9 @@ class PFELU(BaseActivation):
     r"""
     Applies the P+FELU function:
 
-    :math:`\text{P+FELU}(x) = \begin{cases} 
+    :math:`\text{P+FELU}(x) = \begin{cases}
         x + b, & x \geq 0 \\
-        a \cdot 2^{\frac{x}{\ln(2)}} - 1 + b, & x < 0 
+        a \cdot \left(2^{\frac{x}{\ln(2)}} - 1\right) + b, & x < 0
     \end{cases}`
 
     Args:
@@ -3153,10 +3153,10 @@ class SoftExponential(BaseActivation):
     r"""
     Applies the Soft Exponential activation function:
 
-    :math:`\text{SoftExponential}(x) = \begin{cases} 
-        \frac{\exp(x) - 1}{a} + a, & a > 0 \\
+    :math:`\text{SoftExponential}(x) = \begin{cases}
+        \frac{\exp(a \cdot x) - 1}{a} + a, & a > 0 \\
         x, & a = 0 \\
-        \frac{\ln(1 - a(x + a))}{-a}, & a < 0 
+        \frac{\ln(1 - a(x + a))}{-a}, & a < 0
     \end{cases}`
 
     Args:
