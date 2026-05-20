@@ -252,7 +252,7 @@ class OLReLU(BaseActivation):
 
         # Calculate alpha according to the formula in the paper
         self.alpha = (upper + lower) / (upper - lower)
-        self.negative_slope = float(torch.exp(-self.alpha))
+        self.negative_slope = float(torch.exp(torch.tensor(-self.alpha)))
 
     def _forward(self, x: Tensor) -> Tensor:
         return F.leaky_relu(x, negative_slope=self.negative_slope)

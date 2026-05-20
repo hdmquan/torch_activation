@@ -22,7 +22,13 @@ class BaseActivation(nn.Module, ABC):
 
     def forward(self, x):
         """Main dispatch method."""
-        return self._forward_inplace(x) if self.inplace else self._forward(x)
+        scalar = x.dim() == 0
+        if scalar:
+            x = x.unsqueeze(0)
+        out = self._forward_inplace(x) if self.inplace else self._forward(x)
+        if scalar:
+            out = out.squeeze(0)
+        return out
 
 
 # Example usage
