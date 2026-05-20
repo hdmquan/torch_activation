@@ -52,7 +52,7 @@ class AdaptiveSigmoid(BaseActivation):
     def _forward(self, x) -> Tensor:
         exp_neg = torch.exp((-self.a * x).clamp(max=88.0))
         denom1 = 1 - exp_neg
-        denom1 = denom1 + denom1.sign() * 1e-7
+        denom1 = denom1 + torch.where(denom1 >= 0, torch.ones_like(denom1), -torch.ones_like(denom1)) * 1e-7
         term1 = 2 / denom1
         term2 = 2 / (self.a * (1 + exp_neg))
         result = term1 - term2
@@ -110,10 +110,8 @@ class GeneralizedHyperbolicTangent(BaseActivation):
             self.b = Tensor([b])
 
     def _forward(self, x) -> Tensor:
-        # Compute the generalized hyperbolic tangent
-        numerator = 1 - torch.exp(-self.b * x)
-        denominator = 1 + torch.exp(-self.b * x)
-        result = self.a * (numerator / denominator)
+        exp_neg = torch.exp((-self.b * x).clamp(max=88.0))
+        result = self.a * (1 - exp_neg) / (1 + exp_neg)
 
         if self.inplace and hasattr(x, "copy_"):
             x.copy_(result)
@@ -393,7 +391,7 @@ class TanhSoft1(BaseActivation):
     def _forward(self, x) -> Tensor:
         # Compute the TanhSoft-1 function
         tanh_term = torch.tanh(self.a * x)
-        softplus_term = torch.log1p(torch.exp(x))
+        softplus_term = F.softplus(x)
         result = tanh_term * softplus_term
 
         if self.inplace and hasattr(x, "copy_"):
@@ -499,7 +497,7 @@ class TanhSoft3(BaseActivation):
 
     def _forward(self, x) -> Tensor:
         # Compute the TanhSoft-3 function
-        inner_term = torch.exp(x.clamp(max=88.0)) * torch.tanh(self.a * x)
+        inner_term = torch.exp(x.clamp(max=87.0)) * torch.tanh(self.a * x)
         result = torch.log1p(inner_term)
 
         if self.inplace and hasattr(x, "copy_"):
