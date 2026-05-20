@@ -498,7 +498,7 @@ class VBAF(BaseActivation):
 
     Applies the Volatility-Based Activation Function (VBAF):
 
-    :math:`\text{VBAF}(z_1, \ldots, z_n) = \frac{\sum_{j=1}^{n} (z_j - \bar{z})}{\bar{z}}`
+    :math:`\text{VBAF}(z_1, \ldots, z_n) = \frac{\sum_{j=1}^{n} |z_j - \bar{z}|}{|\bar{z}|}`
 
     where:
 
@@ -524,15 +524,6 @@ class VBAF(BaseActivation):
         # Unused
 
     def _forward(self, z) -> Tensor:
-        # Compute mean along the specified dimension
         z_mean = torch.mean(z, dim=self.dim, keepdim=True)
-
-        # Compute the sum of deviations from the mean
-        deviations_sum = torch.sum(z - z_mean, dim=self.dim, keepdim=True)
-
-        # Compute the volatility measure (sum of deviations divided by mean)
-        # Add small epsilon to avoid division by zero
-        eps = 1e-10
-        result = deviations_sum / (z_mean + eps)
-
-        return result
+        abs_dev_sum = torch.sum((z - z_mean).abs(), dim=self.dim, keepdim=True)
+        return abs_dev_sum / (z_mean.abs() + 1e-10)

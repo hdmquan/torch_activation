@@ -1050,7 +1050,7 @@ class GRA(BaseActivation):
         super().__init__(**kwargs)
         self.a = nn.Parameter(torch.ones(num_parameters))
         self.b = nn.Parameter(torch.ones(num_parameters))
-        self.c = nn.Parameter(torch.ones(num_parameters))
+        self.c = nn.Parameter(torch.full((num_parameters,), 2.0))
 
     def _forward(self, x) -> Tensor:
         a = self.a.abs().clamp(min=1e-6)
@@ -1238,7 +1238,7 @@ class KAF(BaseActivation):
         self.bound = bound
         d = torch.linspace(-bound, bound, D)
         self.register_buffer("d", d)
-        self.a = nn.Parameter(torch.zeros(D))
+        self.a = nn.Parameter(d / D)
 
     def extra_repr(self):
         return f"D={self.D}, gamma={self.gamma:.4f}, bound={self.bound:.4f}"
