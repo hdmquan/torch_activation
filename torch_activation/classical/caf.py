@@ -61,6 +61,8 @@ class FCAF_Hidden(BaseActivation):
     Applies the Fusion of Chaotic Activation Function for hidden units:
 
     .. math::
+        z_i = \sigma(x_i)
+
         f(z_{i+1}) = rz_i(1 - z_i) + z_i + a - \frac{b}{2\pi} \sin(2\pi z_i)
 
     Args:
@@ -108,6 +110,8 @@ class FCAF_Output(BaseActivation):
     Applies the Fusion of Chaotic Activation Function for output units:
 
     .. math::
+        z_i = \sigma(x_i)
+
         f(z_{i+1}) = rz_i(1 - z_i) + z_i + a - \frac{b}{2\pi} \sin(2\pi z_i) + \exp(-cz_i^2) + d
 
     Args:
@@ -164,9 +168,11 @@ class CCAF(BaseActivation):
     Applies the Cascade Chaotic Activation Function:
 
     .. math::
-        f(z_{i+1}) = a \cdot \sin(\pi \cdot b \cdot \sin(\pi z_i))
+        \tilde{z}_i = \tanh(z_i)
 
-    where :math:`a, b \in [0, 1]`.
+        f(\tilde{z}_{i+1}) = a \cdot \sin(\pi \cdot b \cdot \sin(\pi \tilde{z}_i))
+
+    where the input is normalized via tanh before applying the map, and :math:`a, b \in [0, 1]`.
 
     Args:
         a (float, optional): Amplitude parameter. Default: ``0.5``
