@@ -636,10 +636,10 @@ class Suish(BaseActivation):
 
 @register_activation
 class TSReLU(BaseActivation):
-    r"""
-    Applies the Tangent Sigmoid ReLU activation function:
+    r"""Tangent Sigmoid ReLU activation function.
 
-    :math:`\text{TSReLU}(z) = z \cdot \tanh(\sigma(z))`
+    .. math::
+        \text{TSReLU}(z) = z \cdot \tanh(\sigma(z))
 
     where :math:`\sigma` is the sigmoid function.
 
@@ -930,10 +930,12 @@ class LiSHT(BaseActivation):
 
 @register_activation
 class Mish(BaseActivation):
-    r"""
-    Applies the Mish activation function:
+    r"""Mish activation function.
 
-    :math:`\text{Mish}(z) = z \cdot \tanh(\text{softplus}(z)) = z \cdot \tanh(\ln(1 + \exp(z)))`
+    Proposed by Misra (2019) [1]_.
+
+    .. math::
+        \text{Mish}(z) = z \cdot \tanh(\text{softplus}(z)) = z \cdot \tanh(\ln(1 + \exp(z)))
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
@@ -944,6 +946,10 @@ class Mish(BaseActivation):
         >>> m = Mish()
         >>> x = torch.randn(2)
         >>> output = m(x)
+
+    References:
+        .. [1] Misra, D. (2019). Mish: A Self Regularized Non-Monotonic
+               Activation Function. arXiv:1908.08681.
     """
 
     def __init__(self, **kwargs):
@@ -1022,10 +1028,12 @@ class TanhExp(BaseActivation):
 
 @register_activation
 class Serf(BaseActivation):
-    r"""
-    Applies the Serf activation function:
+    r"""SERF activation function.
 
-    :math:`\text{Serf}(z) = z \cdot \text{erf}(\ln(1 + \exp(z)))`
+    Proposed by Nag et al. (2021) [1]_.
+
+    .. math::
+        \text{Serf}(z) = z \cdot \text{erf}(\ln(1 + \exp(z)))
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
@@ -1036,6 +1044,11 @@ class Serf(BaseActivation):
         >>> m = Serf()
         >>> x = torch.randn(2)
         >>> output = m(x)
+
+    References:
+        .. [1] Nag, S., Bhattacharyya, M. N., & Mukherjee, A. (2021).
+               SERF: Towards Better Training of Deep Neural Networks Using
+               Log-Softplus ERror Activation Function. arXiv:2108.09598.
     """
 
     def __init__(self, **kwargs):
