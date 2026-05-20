@@ -1131,7 +1131,7 @@ class ARBF(BaseActivation):
         self.inplace: bool = inplace
 
     def _forward(self, x: Tensor) -> Tensor:
-        result = torch.exp(-0.5 * torch.nn.functional.mse_loss(x, self.a, reduction="none") / torch.pow(self.b, 2))
+        result = torch.exp(-0.5 * (x - self.a) ** 2 / torch.pow(self.b, 2))
         if self.inplace and hasattr(x, 'copy_'):
             x.copy_(result)
             return x
@@ -1160,7 +1160,7 @@ class PGELU(BaseActivation):
         **kwargs: Additional keyword arguments for BaseActivation.
 
     Attributes:
-        a (Tensor or nn.Parameter): Trainable or fixed parameter `a`.
+        a (Tensor or nn.Parameter): Trainable or fixed parameter `a` (per-feature RMS noise).
         inplace (bool): Whether operations are performed in-place.
 
     Methods:
@@ -1173,7 +1173,6 @@ class PGELU(BaseActivation):
             self,
             input_shape: int,
             a: float = 1.0,
-            b: float = 1.0,
             learnable: bool = True,
             inplace: bool = False,
             **kwargs
@@ -1185,7 +1184,6 @@ class PGELU(BaseActivation):
             return nn.Parameter(torch.randn(input_shape)) if learnable else tensor
 
         self.a: Tensor = create_param(a)
-        self.b: Tensor = create_param(b)
         self.inplace: bool = inplace
 
     def _forward(self, x: Tensor) -> Tensor:
@@ -1507,8 +1505,7 @@ class MAF(BaseActivation):
         self.inplace: bool = inplace
 
     def _forward(self, x: Tensor) -> Tensor:
-        func1 = torch.nn.functional.mse_loss(x, self.a, reduction='none')
-        result = torch.sqrt(func1 + torch.pow(self.b, 2))
+        result = torch.sqrt((x - self.a) ** 2 + torch.pow(self.b, 2))
         if self.inplace and hasattr(x, 'copy_'):
             x.copy_(result)
             return x
