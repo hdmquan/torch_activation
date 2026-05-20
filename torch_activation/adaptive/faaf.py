@@ -66,22 +66,10 @@ class FracReLU(BaseActivation):
         self.eps = eps
 
     def _forward(self, x) -> Tensor:
-        # Clamp a to be in (0, 1) range for stability
         a_clamped = torch.clamp(self.a, 0.01, 0.99)
-        
-        # Only apply to positive values (like ReLU)
-        pos_mask = x > 0
-        result = torch.zeros_like(x)
-        
-        # Apply fractional operation only to positive values
-        if pos_mask.any():
-            x_pos = x[pos_mask]
-            # Add eps for numerical stability when x is close to zero
-            x_pos = x_pos + self.eps
-            gamma_term = torch.exp(torch.lgamma(2 - a_clamped))
-            result[pos_mask] = torch.pow(x_pos, 1 - a_clamped) / gamma_term
-            
-        return result
+        gamma_term = torch.exp(torch.lgamma(2 - a_clamped))
+        val_pos = torch.pow(torch.clamp(x, min=0) + self.eps, 1 - a_clamped) / gamma_term
+        return torch.where(x > 0, val_pos, torch.zeros_like(x))
 
 
 @register_activation
@@ -307,34 +295,11 @@ class FracLReLU(BaseActivation):
         self.eps = eps
 
     def _forward(self, x) -> Tensor:
-        # Clamp a to be in (0, 1) range for stability
         a_clamped = torch.clamp(self.a, 0.01, 0.99)
-        
-        # Calculate gamma term
         gamma_term = torch.exp(torch.lgamma(2 - a_clamped))
-        
-        # Create masks for positive and negative values
-        pos_mask = x >= 0
-        neg_mask = x < 0
-        
-        # Initialize result tensor
-        result = torch.zeros_like(x)
-        
-        # Apply to positive values
-        if pos_mask.any():
-            x_pos = x[pos_mask]
-            # Add eps for numerical stability when x is close to zero
-            x_pos = x_pos + self.eps
-            result[pos_mask] = torch.pow(x_pos, 1 - a_clamped) / gamma_term
-        
-        # Apply to negative values
-        if neg_mask.any():
-            x_neg = -x[neg_mask]  # Make positive for power operation
-            # Add eps for numerical stability when x is close to zero
-            x_neg = x_neg + self.eps
-            result[neg_mask] = -self.negative_slope * torch.pow(x_neg, 1 - a_clamped) / gamma_term
-            
-        return result
+        val_pos = torch.pow(torch.clamp(x, min=0) + self.eps, 1 - a_clamped) / gamma_term
+        val_neg = -self.negative_slope * torch.pow(torch.clamp(-x, min=0) + self.eps, 1 - a_clamped) / gamma_term
+        return torch.where(x >= 0, val_pos, val_neg)
 
 
 @register_activation
@@ -378,30 +343,10 @@ class FracPReLU(BaseActivation):
         # Calculate gamma term
         gamma_term = torch.exp(torch.lgamma(2 - a_clamped))
         
-        # Create masks for positive and negative values
-        pos_mask = x >= 0
-        neg_mask = x < 0
-        
-        # Initialize result tensor
-        result = torch.zeros_like(x)
-        
-        # Apply to positive values
-        if pos_mask.any():
-            x_pos = x[pos_mask]
-            # Add eps for numerical stability when x is close to zero
-            x_pos = x_pos + self.eps
-            result[pos_mask] = torch.pow(x_pos, 1 - a_clamped) / gamma_term
-        
-        # Apply to negative values
-        if neg_mask.any():
-            x_neg = -x[neg_mask]  # Make positive for power operation
-            # Add eps for numerical stability when x is close to zero
-            x_neg = x_neg + self.eps
-            # Use absolute value of b for stability
-            b_abs = torch.abs(self.b)
-            result[neg_mask] = -b_abs * torch.pow(x_neg, 1 - a_clamped) / gamma_term
-            
-        return result
+        b_abs = torch.abs(self.b)
+        val_pos = torch.pow(torch.clamp(x, min=0) + self.eps, 1 - a_clamped) / gamma_term
+        val_neg = -b_abs * torch.pow(torch.clamp(-x, min=0) + self.eps, 1 - a_clamped) / gamma_term
+        return torch.where(x >= 0, val_pos, val_neg)
 
 
 @register_activation
@@ -441,44 +386,22 @@ class FracELU(BaseActivation):
         self.eps = eps
 
     def _forward(self, x) -> Tensor:
-        # Clamp a to be in (0, 1) range for stability
         a_clamped = torch.clamp(self.a, 0.01, 0.99)
-        
-        # Create masks for positive and negative values
-        pos_mask = x >= 0
-        neg_mask = x < 0
-        
-        # Initialize result tensor
-        result = torch.zeros_like(x)
-        
-        # Apply to positive values
-        if pos_mask.any():
-            x_pos = x[pos_mask]
-            # Add eps for numerical stability when x is close to zero
-            x_pos = x_pos + self.eps
-            gamma_term = torch.exp(torch.lgamma(2 - a_clamped))
-            result[pos_mask] = torch.pow(x_pos, 1 - a_clamped) / gamma_term
-        
-        # Apply to negative values
-        if neg_mask.any():
-            x_neg = x[neg_mask]
-            
-            # First term: -b/Gamma(1-a) * x^(-a)
-            gamma_term_1 = torch.exp(torch.lgamma(1 - a_clamped))
-            first_term = -self.alpha / gamma_term_1 * torch.pow(torch.abs(x_neg) + self.eps, -a_clamped)
-            
-            # Second term: b * sum(...)
-            second_term = torch.zeros_like(x_neg)
-            for k in range(self.n_terms):
-                gamma_k_plus_1 = math.factorial(k)
-                gamma_k_plus_1_minus_a = torch.exp(torch.lgamma(k + 1 - a_clamped))
-                coef = 1 / gamma_k_plus_1 * gamma_k_plus_1_minus_a / gamma_k_plus_1
-                term = coef * torch.pow(torch.abs(x_neg) + self.eps, k - a_clamped)
-                second_term += term
-            
-            result[neg_mask] = self.alpha * second_term + first_term
-            
-        return result
+        gamma_term = torch.exp(torch.lgamma(2 - a_clamped))
+        val_pos = torch.pow(torch.clamp(x, min=0) + self.eps, 1 - a_clamped) / gamma_term
+
+        abs_x = torch.abs(x) + self.eps
+        gamma_term_1 = torch.exp(torch.lgamma(1 - a_clamped))
+        first_term = -self.alpha / gamma_term_1 * torch.pow(abs_x, -a_clamped)
+        second_term = torch.zeros_like(x)
+        for k in range(self.n_terms):
+            gamma_k_plus_1 = math.factorial(k)
+            gamma_k_plus_1_minus_a = torch.exp(torch.lgamma(torch.tensor(k + 1, dtype=x.dtype, device=x.device) - a_clamped))
+            coef = 1 / gamma_k_plus_1 * gamma_k_plus_1_minus_a / gamma_k_plus_1
+            second_term = second_term + coef * torch.pow(abs_x, k - a_clamped)
+        val_neg = self.alpha * second_term + first_term
+
+        return torch.where(x >= 0, val_pos, val_neg)
 
 # TODO: Forward pass failed: Can't call numpy() on Tensor that requires grad. Use tensor.detach().numpy() instead.
 # @register_activation

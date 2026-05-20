@@ -59,7 +59,7 @@ class CombHSine(BaseActivation):
 
     def _forward(self, z) -> Tensor:
         az = self.a * z
-        return torch.sinh(az) + torch.asinh(az)
+        return torch.sinh(az.clamp(-88.0, 88.0)) + torch.asinh(az)
 
 
 @register_activation
@@ -111,7 +111,7 @@ class HyperSinh(BaseActivation):
           # Unused
 
     def _forward(self, z) -> Tensor:
-        positive_part = torch.sinh(z) / 3.0
+        positive_part = torch.sinh(z.clamp(-88.0, 88.0)) / 3.0
         negative_part = torch.pow(z, 3) / 4.0
         return torch.where(z > 0, positive_part, negative_part)
 
@@ -137,7 +137,7 @@ class Arctid(BaseActivation):
           # Unused
 
     def _forward(self, z) -> Tensor:
-        return torch.atan(z) * torch.pow(2.0, -z)
+        return torch.atan(z) * torch.pow(2.0, -z.clamp(-126, 127))
 
 
 @register_activation
@@ -388,7 +388,8 @@ class HcLSH(BaseActivation):
           # Unused
 
     def _forward(self, z) -> Tensor:
-        log_cosh = torch.log(torch.cosh(z))
-        positive_part = log_cosh + (z * torch.cosh(z)) / 2.0
+        z_clamped = z.clamp(-88.0, 88.0)
+        log_cosh = torch.log(torch.cosh(z_clamped))
+        positive_part = log_cosh + (z * torch.cosh(z_clamped)) / 2.0
         negative_part = log_cosh + z
         return torch.where(z >= 0, positive_part, negative_part)

@@ -59,6 +59,7 @@ def plot_activation(
     y_range=None,
     preview=False,
     plot_derivative=True,
+    **kwargs,
 ):
     """
     Plot the activation function and optionally its derivative.
@@ -179,6 +180,10 @@ def plot_activation(
     if y_range[1] - y_range[0] > 3:
         y_range[0] = math.floor(y_range[0])
         y_range[1] = math.ceil(y_range[1])
+    MAX_Y_SPAN = 20
+    if y_range[1] - y_range[0] > MAX_Y_SPAN:
+        mid = (y_range[0] + y_range[1]) / 2
+        y_range = [mid - MAX_Y_SPAN / 2, mid + MAX_Y_SPAN / 2]
 
     fig.update_layout(
         paper_bgcolor="rgba(0,0,0,0)",
@@ -211,7 +216,8 @@ def plot_activation(
         fig.show()
 
     os.makedirs(save_dir, exist_ok=True)
-    file_name = os.path.join(save_dir, f"{activation.__name__}.png")
+    fmt = kwargs.get("fmt", "png")
+    file_name = os.path.join(save_dir, f"{activation.__name__}.{fmt}")
     pio.write_image(fig, file_name)
     print(f"Image saved as {file_name}")
 

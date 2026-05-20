@@ -443,8 +443,8 @@ class TBSReLUl(BaseActivation):
             self.a = Tensor([a])
 
     def _forward(self, x) -> Tensor:
-        # Calculate bipolar sigmoid: (1 - exp(-x)) / (1 + exp(-x))
-        bipolar_sigmoid = (1 - torch.exp(-x)) / (1 + torch.exp(-x))
+        exp_neg = torch.exp((-x).clamp(max=88.0))
+        bipolar_sigmoid = (1 - exp_neg) / (1 + exp_neg)
         result = x * torch.tanh(self.a * bipolar_sigmoid)
 
         if self.inplace and hasattr(x, 'copy_'):
@@ -831,7 +831,7 @@ class Swim(BaseActivation):
 
 @register_activation
 class GPSoftmax(BaseActivation):
-    """
+    r"""
     Generalized Power Softmax (gpsoftmax)
 
     This activation function extends the traditional softmax using a power-based normalization.
@@ -941,11 +941,11 @@ class GPSoftmax(BaseActivation):
 
         GPM_{\alpha, \beta}(x) = (ln( sum(\alpha^{\beta x_k}) ) - ln(N)) / (\beta ln(\alpha))
         """
-        b: Tensor = torch.multiply(beta + 1, x)
         log_alpha: Tensor = torch.log(torch.clamp(alpha, min=1e-8))
-        first_part: Tensor = torch.logsumexp(b * log_alpha, dim=-1)
+        b: Tensor = torch.multiply(beta + 1, x)
+        first_part: Tensor = torch.logsumexp(b * log_alpha, dim=-1, keepdim=True)
 
-        second_part = torch.log(torch.Tensor([self.input_size]))
+        second_part = torch.log(torch.tensor(float(self.input_size)))
 
         denom_part = torch.multiply(beta, log_alpha)
         res: Tensor = (first_part - second_part) / denom_part
@@ -1071,13 +1071,12 @@ class GLSoftmax(BaseActivation):
         Returns:
             Tensor: Result of the generalized Lehmer mean function.
         """
-        b: Tensor = torch.multiply(beta + 1, x)
         log_alpha: Tensor = torch.log(torch.clamp(alpha, min=1e-8))
-        first_part: Tensor = torch.logsumexp(b * log_alpha, dim=-1)
+        b: Tensor = torch.multiply(beta + 1, x)
+        first_part: Tensor = torch.logsumexp(b * log_alpha, dim=-1, keepdim=True)
         b = torch.multiply(beta, x)
-        log_alpha = torch.log(torch.clamp(alpha, min=1e-8))
-        second_part: Tensor = torch.logsumexp(b * log_alpha, dim=-1)
-        res: Tensor = (first_part - second_part) / torch.log(torch.clamp(alpha, min=1e-8))
+        second_part: Tensor = torch.logsumexp(b * log_alpha, dim=-1, keepdim=True)
+        res: Tensor = (first_part - second_part) / log_alpha
         return res
 
 
@@ -1147,7 +1146,7 @@ class ARBF(BaseActivation):
 
 @register_activation
 class PGELU(BaseActivation):
-    """
+    r"""
     Parametric Gaussian Error Linear Unit (PGELU).
 
     PGELU is an adaptive variant of GELU that incorporates noise injection.
@@ -1205,7 +1204,7 @@ class PGELU(BaseActivation):
 
 @register_activation
 class PFTS(BaseActivation):
-    """
+    r"""
     Parametric Flatted-T Swish (PFTS).
 
     PFTS is an adaptive extension of the Flatted-T Swish (FTS). It is identical to FTS except
@@ -1267,7 +1266,7 @@ class PFTS(BaseActivation):
 
 @register_activation
 class PFPM(BaseActivation):
-    """
+    r"""
     Parametric Flatten-p Mish (PFPM).
 
     PFPM is an Adaptive Activation Function (AAF).
@@ -1318,7 +1317,7 @@ class PFPM(BaseActivation):
         self.inplace: bool = inplace
 
     def _forward(self, x: Tensor) -> Tensor:
-        func = x * torch.tanh(torch.log1p(torch.exp(x))) + self.p
+        func = x * torch.tanh(torch.log1p(torch.exp(x)))
         result = torch.nn.functional.relu(x) * func + self.p
         if self.inplace and hasattr(x, 'copy_'):
             x.copy_(result)
@@ -1328,7 +1327,7 @@ class PFPM(BaseActivation):
 
 @register_activation
 class PSIGRAMP(BaseActivation):
-    """
+    r"""
     Parametric Sigmoid-Ramp (P-SIG-RAMP).
 
     P-SIG-RAMP is an Adaptive Activation Function (AAF) that combines the logistic sigmoid and a piecewise linear function.
@@ -1401,7 +1400,7 @@ class PSIGRAMP(BaseActivation):
 
 @register_activation
 class RSIGN(BaseActivation):
-    """
+    r"""
     React-Sign (RSign).
 
     RSign is an Adaptive Activation Function (AAF) that introduces an adaptive threshold to the standard sign function.
@@ -1462,7 +1461,7 @@ class RSIGN(BaseActivation):
 
 @register_activation
 class MAF(BaseActivation):
-    """
+    r"""
     Multiquadratic Activation Function (MAF).
 
     MAF is an Adaptive Activation Function (AAF) that introduces trainable parameters to adjust the multiquadratic transformation.
@@ -1524,7 +1523,7 @@ class MAF(BaseActivation):
 
 @register_activation
 class UAF(BaseActivation):
-    """
+    r"""
     Universal Activation Function (UAF).
 
     The Universal Activation Function (UAF) is a softplus-based Adaptive Activation Function (AAF)
@@ -1610,7 +1609,7 @@ class UAF(BaseActivation):
 
 @register_activation
 class GReLU(BaseActivation):
-    """
+    r"""
     Generalized Rectified Linear Unit (GReLU)
 
     The Generalized ReLU (GReLU) is a smooth and flexible activation function derived from the
@@ -1692,7 +1691,7 @@ class GReLU(BaseActivation):
 
 @register_activation
 class GLN(BaseActivation):
-    """
+    r"""
     Global-Local Neuron (GLN)
 
     The Global-Local Neuron (GLN) is an Adaptive Activation Function (AAF) that blends two distinct activation

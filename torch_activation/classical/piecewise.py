@@ -139,23 +139,11 @@ class PiecewiseMexicanHat(BaseActivation):
         self.const_term = 1 / (math.sqrt(3) * math.pi)
 
     def _forward(self, z) -> Tensor:
-        result = torch.zeros_like(z)
-        
-        # z < 0
-        neg_mask = z < 0
-        z_neg = z[neg_mask]
-        shifted_z_neg = z_neg + self.a
-        exp_term_neg = torch.exp(-(shifted_z_neg**2) / 2)
-        result[neg_mask] = self.const_term - 0.25 * (1 - shifted_z_neg**2) * exp_term_neg
-        
-        # z >= 0
-        pos_mask = z >= 0
-        z_pos = z[pos_mask]
-        shifted_z_pos = z_pos - self.a
-        exp_term_pos = torch.exp(-(shifted_z_pos**2) / 2)
-        result[pos_mask] = self.const_term - 0.25 * (1 - shifted_z_pos**2) * exp_term_pos
-        
-        return result
+        shifted_neg = z + self.a
+        val_neg = self.const_term - 0.25 * (1 - shifted_neg**2) * torch.exp(-(shifted_neg**2) / 2)
+        shifted_pos = z - self.a
+        val_pos = self.const_term - 0.25 * (1 - shifted_pos**2) * torch.exp(-(shifted_pos**2) / 2)
+        return torch.where(z < 0, val_neg, val_pos)
 
 
 @register_activation
@@ -187,21 +175,7 @@ class PiecewiseRadialBasisFunction(BaseActivation):
           # Unused
 
     def _forward(self, z) -> Tensor:
-        result = torch.zeros_like(z)
-        
-        # z >= a
-        upper_mask = z >= self.a
-        z_upper = z[upper_mask]
-        result[upper_mask] = torch.exp(-((z_upper - 2*self.a)**2) / (self.b**2))
-        
-        # -a < z < a
-        mid_mask = (z > -self.a) & (z < self.a)
-        z_mid = z[mid_mask]
-        result[mid_mask] = torch.exp(-(z_mid**2) / (self.b**2))
-        
-        # z <= -a
-        lower_mask = z <= -self.a
-        z_lower = z[lower_mask]
-        result[lower_mask] = torch.exp(-((z_lower + 2*self.a)**2) / (self.b**2))
-        
-        return result
+        val_upper = torch.exp(-((z - 2*self.a)**2) / (self.b**2))
+        val_mid = torch.exp(-(z**2) / (self.b**2))
+        val_lower = torch.exp(-((z + 2*self.a)**2) / (self.b**2))
+        return torch.where(z >= self.a, val_upper, torch.where(z <= -self.a, val_lower, val_mid))

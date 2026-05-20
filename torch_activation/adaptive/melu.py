@@ -58,12 +58,10 @@ class MeLU(BaseActivation):
 
     def _forward(self, x) -> Tensor:
         # PReLU part
-        prelu_out = F.prelu(x, self.prelu_weight)
-        
-        # Sum part
+        prelu_out = F.prelu(x, self.prelu_weight.to(x.dtype))
+
         sum_part = torch.zeros_like(x)
         for j in range(self.k-1):
-            # Calculate phi_b_j,c_j(z_i)
             phi = torch.clamp(self.c[j] - torch.abs(x - self.b[j]), min=0.0)
             sum_part += self.a[j] * phi
         
@@ -169,9 +167,8 @@ class GaLU(BaseActivation):
 
     def _forward(self, x) -> Tensor:
         # PReLU part
-        prelu_out = F.prelu(x, self.prelu_weight)
-        
-        # Sum part
+        prelu_out = F.prelu(x, self.prelu_weight.to(x.dtype))
+
         sum_part = torch.zeros_like(x)
         for j in range(self.k-1):
             # Calculate phi_b_j,c_j(z_i) for GaLU

@@ -132,6 +132,40 @@ class GEGLU(BaseActivation):
         return a * F.gelu(b)
 
 
+class ReGLU(BaseActivation):
+    r"""
+    Applies the Rectified Gated Linear Unit (ReGLU):
+
+    :math:`\text{ReGLU}(z, z') = z \otimes \text{ReLU}(z')`
+
+    where :math:`\otimes` is element-wise multiplication.
+
+    Args:
+        dim (int, optional): The dimension on which to split the input. Default: -1
+
+    Shape:
+        - Input: :math:`(*, N, *)` where `*` means any number of dimensions
+        - Output: :math:`(*, N/2, *)` where `*` means any number of dimensions
+
+    References:
+        .. [1] Shazeer. *GLU Variants Improve Transformer*. arXiv:2002.05202.
+
+    Examples::
+
+        >>> m = ReGLU()
+        >>> x = torch.randn(4, 2)
+        >>> output = m(x)
+    """
+
+    def __init__(self, dim: int = -1, **kwargs):
+        super().__init__(**kwargs)
+        self.dim = dim
+
+    def _forward(self, x: Tensor) -> Tensor:
+        a, b = split(x, self.dim)
+        return a * F.relu(b)
+
+
 class SwiGLU(BaseActivation):
     r"""
     Applies the Swish-GELU function:

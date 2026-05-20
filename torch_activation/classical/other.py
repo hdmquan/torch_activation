@@ -11,9 +11,9 @@ class Binary(BaseActivation):
     r"""
     Applies the Binary activation function:
 
-    :math:`\text{Binary}(z) = \begin{cases} 
-    0, & z < 0 \\
-    1, & z \geq 0 
+    :math:`\text{Binary}(z) = \begin{cases}
+    1, & a \leq z \leq b \\
+    0, & \text{otherwise}
     \end{cases}`
 
     Args:

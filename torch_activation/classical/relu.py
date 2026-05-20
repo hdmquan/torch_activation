@@ -46,7 +46,7 @@ class SReLU(BaseActivation):
     A Shifted ReLU is a simple translation of a ReLU and is defined as:
 
 
-    :math:`\text{SReLU}(x) = \text{max}(-1, x)`
+    :math:`\text{SReLU}(x) = \text{max}(0, x - 1)`
 
     See: http://arxiv.org/abs/1511.07289
 
@@ -193,8 +193,8 @@ class RReLU(BaseActivation):
         >>> m(x)
     """
 
-    def __init__(self, lower: float = 0.125, upper: float = 0.333):
-
+    def __init__(self, lower: float = 0.125, upper: float = 0.333, **kwargs):
+        super().__init__(**kwargs)
         self.lower = lower
         self.upper = upper
 
@@ -252,7 +252,7 @@ class OLReLU(BaseActivation):
 
         # Calculate alpha according to the formula in the paper
         self.alpha = (upper + lower) / (upper - lower)
-        self.negative_slope = torch.exp(-self.alpha)
+        self.negative_slope = float(torch.exp(-self.alpha))
 
     def _forward(self, x: Tensor) -> Tensor:
         return F.leaky_relu(x, negative_slope=self.negative_slope)
@@ -1299,7 +1299,7 @@ class HardTanh(BaseActivation):
 
     Args:
         a (float, optional): Lower bound of the linear region. Default: ``-1.0``
-        b (float, optional): Upper bound of the linear region. Default: ``1.0``
+        b (float, optional): Upper bound of the linear region. Default: ``11.0``
         inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
@@ -2328,6 +2328,463 @@ class EReLU(BaseActivation):
             # For testing, we keep x[pos_mask] unchanged since k_i = 1
 
         return x
+
+
+@register_activation
+class AppReLU(BaseActivation):
+    r"""
+    Applies the Approximated ReLU (AppReLU) activation function:
+
+    .. math::
+        \text{AppReLU}(z) =
+        \begin{cases}
+        a z^b, & z \geq 0, \\
+        0, & z < 0,
+        \end{cases}
+
+    Args:
+        a (float, optional): Scale parameter. Default: ``1.0``
+        b (float, optional): Power parameter. Default: ``1.0``
+
+    Shape:
+        - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
+        - Output: :math:`(*)`, same shape as the input.
+
+    References:
+        .. [1] Activation survey arXiv:2402.09092 Section 3.6.40.
+    """
+
+    def __init__(self, a: float = 1.0, b: float = 1.0, **kwargs):
+        super().__init__(**kwargs)
+        self.a = a
+        self.b = b
+
+    def _forward(self, x: Tensor) -> Tensor:
+        return torch.where(x >= 0, self.a * x.clamp(min=0) ** self.b, torch.zeros_like(x))
+
+
+@register_activation
+class ABReLU(BaseActivation):
+    r"""
+    Applies the Adaptive Bilateral ReLU (ABReLU) activation function:
+
+    .. math::
+        \text{ABReLU}(z_i) = \max(0, z_i - \bar{z})
+
+    where :math:`\bar{z}` is the mean of the input tensor.
+
+    Shape:
+        - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
+        - Output: :math:`(*)`, same shape as the input.
+
+    References:
+        .. [1] Activation survey arXiv:2402.09092 Section 3.6.42.
+    """
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
+    def _forward(self, x: Tensor) -> Tensor:
+        return F.relu(x - x.mean())
+
+
+@register_activation
+class DelayReLU(BaseActivation):
+    r"""
+    Applies the Delayed ReLU activation function:
+
+    .. math::
+        \text{DelayReLU}(z) = \max(0, z - a)
+
+    Args:
+        a (float, optional): Delay threshold. Default: ``0.5``
+
+    Shape:
+        - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
+        - Output: :math:`(*)`, same shape as the input.
+
+    References:
+        .. [1] Activation survey arXiv:2402.09092 Section 3.6.43.
+    """
+
+    def __init__(self, a: float = 0.5, **kwargs):
+        super().__init__(**kwargs)
+        self.a = a
+
+    def _forward(self, x: Tensor) -> Tensor:
+        return F.relu(x - self.a)
+
+
+@register_activation
+class DisReLU(BaseActivation):
+    r"""
+    Applies the Displaced ReLU (DisReLU) activation function:
+
+    .. math::
+        \text{DisReLU}(z) =
+        \begin{cases}
+        z, & z + a \geq 0, \\
+        -a, & z + a < 0,
+        \end{cases}
+
+    Args:
+        a (float, optional): Displacement parameter. Default: ``0.5``
+
+    Shape:
+        - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
+        - Output: :math:`(*)`, same shape as the input.
+
+    References:
+        .. [1] Activation survey arXiv:2402.09092 Section 3.6.44.
+    """
+
+    def __init__(self, a: float = 0.5, **kwargs):
+        super().__init__(**kwargs)
+        self.a = a
+
+    def _forward(self, x: Tensor) -> Tensor:
+        return torch.where(x + self.a >= 0, x, torch.full_like(x, -self.a))
+
+
+@register_activation
+class ModifiedLReLU(BaseActivation):
+    r"""
+    Applies the Modified Leaky ReLU activation function:
+
+    .. math::
+        \text{ModifiedLReLU}(z) =
+        \begin{cases}
+        z, & z + a > 0, \\
+        -az, & z + a \leq 0,
+        \end{cases}
+
+    Args:
+        a (float, optional): Leakage parameter. Default: ``0.1``
+
+    Shape:
+        - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
+        - Output: :math:`(*)`, same shape as the input.
+
+    References:
+        .. [1] Activation survey arXiv:2402.09092 Section 3.6.45.
+    """
+
+    def __init__(self, a: float = 0.1, **kwargs):
+        super().__init__(**kwargs)
+        self.a = a
+
+    def _forward(self, x: Tensor) -> Tensor:
+        return torch.where(x + self.a > 0, x, -self.a * x)
+
+
+@register_activation
+class FlattedTSwish(BaseActivation):
+    r"""
+    Applies the Flatted-T Swish activation function:
+
+    .. math::
+        \text{FlattedTSwish}(z) =
+        \begin{cases}
+        z \cdot \sigma(z) + T, & z \geq 0, \\
+        T, & z < 0,
+        \end{cases}
+
+    where :math:`\sigma` is the sigmoid function and :math:`T = -0.20`.
+
+    Shape:
+        - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
+        - Output: :math:`(*)`, same shape as the input.
+
+    References:
+        .. [1] Activation survey arXiv:2402.09092 Section 3.6.46.
+    """
+
+    T: float = -0.20
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
+    def _forward(self, x: Tensor) -> Tensor:
+        return torch.where(x >= 0, x * torch.sigmoid(x) + self.T, torch.full_like(x, self.T))
+
+
+@register_activation
+class OAF(BaseActivation):
+    r"""
+    Applies the Output Activation Function (OAF):
+
+    .. math::
+        \text{OAF}(z) =
+        \begin{cases}
+        z + z \cdot \sigma(z), & z \geq 0, \\
+        z \cdot \sigma(z), & z < 0,
+        \end{cases}
+
+    where :math:`\sigma` is the sigmoid function.
+
+    Shape:
+        - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
+        - Output: :math:`(*)`, same shape as the input.
+
+    References:
+        .. [1] Activation survey arXiv:2402.09092 Section 3.6.47.
+    """
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
+    def _forward(self, x: Tensor) -> Tensor:
+        sw = x * torch.sigmoid(x)
+        return torch.where(x >= 0, x + sw, sw)
+
+
+@register_activation
+class SurveyELU(BaseActivation):
+    r"""
+    Applies the survey variant of ELU where the alpha scales the denominator:
+
+    .. math::
+        \text{SurveyELU}(z) =
+        \begin{cases}
+        z, & z \geq 0, \\
+        \frac{\exp(z) - 1}{a}, & z < 0,
+        \end{cases}
+
+    Args:
+        a (float, optional): Denominator scale for negative part. Default: ``1.0``
+
+    Shape:
+        - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
+        - Output: :math:`(*)`, same shape as the input.
+
+    References:
+        .. [1] Activation survey arXiv:2402.09092 Section 3.6.48.
+    """
+
+    def __init__(self, a: float = 1.0, **kwargs):
+        super().__init__(**kwargs)
+        self.a = a
+
+    def _forward(self, x: Tensor) -> Tensor:
+        return torch.where(x >= 0, x, (torch.exp(x) - 1) / self.a)
+
+
+@register_activation
+class REU(BaseActivation):
+    r"""
+    Applies the Rectified Exponential Unit (REU) activation function:
+
+    .. math::
+        \text{REU}(z) =
+        \begin{cases}
+        z, & z \geq 0, \\
+        z \cdot \exp(z), & z < 0,
+        \end{cases}
+
+    Shape:
+        - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
+        - Output: :math:`(*)`, same shape as the input.
+
+    References:
+        .. [1] Activation survey arXiv:2402.09092 Section 3.6.49.
+    """
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
+    def _forward(self, x: Tensor) -> Tensor:
+        return torch.where(x >= 0, x, x * torch.exp(x))
+
+
+@register_activation
+class ADA(BaseActivation):
+    r"""
+    Applies the ADA activation function:
+
+    .. math::
+        \text{ADA}(z) =
+        \begin{cases}
+        \exp(-az + b), & z \geq 0, \\
+        0, & z < 0,
+        \end{cases}
+
+    Args:
+        a (float, optional): Decay rate for positive part. Default: ``1.0``
+        b (float, optional): Offset for positive part. Default: ``0.0``
+
+    Shape:
+        - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
+        - Output: :math:`(*)`, same shape as the input.
+
+    References:
+        .. [1] Activation survey arXiv:2402.09092 Section 3.6.50.
+    """
+
+    def __init__(self, a: float = 1.0, b: float = 0.0, **kwargs):
+        super().__init__(**kwargs)
+        self.a = a
+        self.b = b
+
+    def _forward(self, x: Tensor) -> Tensor:
+        return torch.where(x >= 0, torch.exp(-self.a * x + self.b), torch.zeros_like(x))
+
+
+@register_activation
+class LADA(BaseActivation):
+    r"""
+    Applies the LADA activation function:
+
+    .. math::
+        \text{LADA}(z) =
+        \begin{cases}
+        \exp(-az + b), & z \geq 0, \\
+        cz, & z < 0,
+        \end{cases}
+
+    Args:
+        a (float, optional): Decay rate for positive part. Default: ``1.0``
+        b (float, optional): Offset for positive part. Default: ``0.0``
+        c (float, optional): Slope for negative part. Default: ``0.1``
+
+    Shape:
+        - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
+        - Output: :math:`(*)`, same shape as the input.
+
+    References:
+        .. [1] Activation survey arXiv:2402.09092 Section 3.6.51.
+    """
+
+    def __init__(self, a: float = 1.0, b: float = 0.0, c: float = 0.1, **kwargs):
+        super().__init__(**kwargs)
+        self.a = a
+        self.b = b
+        self.c = c
+
+    def _forward(self, x: Tensor) -> Tensor:
+        return torch.where(x >= 0, torch.exp(-self.a * x + self.b), self.c * x)
+
+
+@register_activation
+class SigLU(BaseActivation):
+    r"""
+    Applies the Sigmoid Linear Unit variant (SigLU):
+
+    .. math::
+        \text{SigLU}(z) =
+        \begin{cases}
+        z, & z \geq 0, \\
+        \tanh(z), & z < 0,
+        \end{cases}
+
+    Shape:
+        - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
+        - Output: :math:`(*)`, same shape as the input.
+
+    References:
+        .. [1] Activation survey arXiv:2402.09092 Section 3.6.52.
+    """
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
+    def _forward(self, x: Tensor) -> Tensor:
+        return torch.where(x >= 0, x, torch.tanh(x))
+
+
+@register_activation
+class SaRa(BaseActivation):
+    r"""
+    Applies the SaRa activation function:
+
+    .. math::
+        \text{SaRa}(z) =
+        \begin{cases}
+        z, & z \geq 0, \\
+        \dfrac{z}{1 + a \exp(-bz)}, & z < 0,
+        \end{cases}
+
+    Args:
+        a (float, optional): Scale in denominator. Default: ``1.0``
+        b (float, optional): Rate in denominator. Default: ``1.0``
+
+    Shape:
+        - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
+        - Output: :math:`(*)`, same shape as the input.
+
+    References:
+        .. [1] Activation survey arXiv:2402.09092 Section 3.6.53.
+    """
+
+    def __init__(self, a: float = 1.0, b: float = 1.0, **kwargs):
+        super().__init__(**kwargs)
+        self.a = a
+        self.b = b
+
+    def _forward(self, x: Tensor) -> Tensor:
+        return torch.where(x >= 0, x, x / (1 + self.a * torch.exp(-self.b * x)))
+
+
+@register_activation
+class ShiftedReLU(BaseActivation):
+    r"""
+    Applies the Shifted ReLU activation function:
+
+    .. math::
+        \text{ShiftedReLU}(z) = \max(0, z + a)
+
+    Args:
+        a (float, optional): Shift parameter. Default: ``-0.5``
+
+    Shape:
+        - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
+        - Output: :math:`(*)`, same shape as the input.
+
+    References:
+        .. [1] Activation survey arXiv:2402.09092.
+    """
+
+    def __init__(self, a: float = -0.5, **kwargs):
+        super().__init__(**kwargs)
+        self.a = a
+
+    def _forward(self, x: Tensor) -> Tensor:
+        return F.relu(x + self.a)
+
+
+@register_activation
+class AllReLU(BaseActivation):
+    r"""
+    Applies the All-ReLU activation function, which applies a scaled ReLU on the negative part
+    with sign depending on layer parity:
+
+    .. math::
+        \text{AllReLU}(z_i) =
+        \begin{cases}
+        -a z_i, & z_i \leq 0 \text{ and } l \text{ even}, \\
+        a z_i, & z_i \leq 0 \text{ and } l \text{ odd}, \\
+        z_i, & z_i > 0,
+        \end{cases}
+
+    Args:
+        a (float, optional): Scale for negative part. Default: ``0.1``
+        layer (int, optional): Layer index (parity determines sign of negative response). Default: ``0``
+
+    Shape:
+        - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
+        - Output: :math:`(*)`, same shape as the input.
+
+    References:
+        .. [1] Activation survey arXiv:2402.09092 Section 4.34.
+    """
+
+    def __init__(self, a: float = 0.1, layer: int = 0, **kwargs):
+        super().__init__(**kwargs)
+        self.a = a
+        self.layer = layer
+
+    def _forward(self, x: Tensor) -> Tensor:
+        neg_scale = -self.a if self.layer % 2 == 0 else self.a
+        return torch.where(x > 0, x, neg_scale * x)
 
 
 if __name__ == "__main__":

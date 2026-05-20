@@ -630,9 +630,7 @@ class SC(BaseActivation):
         self.a = nn.Parameter(torch.tensor([a]), requires_grad=False)
 
     def _forward(self, z) -> Tensor:
-        numerator = 1 + torch.exp(self.a * z)
-        denominator = 1 + torch.exp(self.a * (z - 1))
-        return torch.log(numerator / denominator) / self.a
+        return (F.softplus(self.a * z) - F.softplus(self.a * (z - 1))) / self.a
 
 
 
@@ -688,18 +686,9 @@ class Hexpo(BaseActivation):
             self.d.requires_grad = False
 
     def _forward(self, z) -> Tensor:
-        pos_mask = z >= 0
-        
-        result = torch.empty_like(z)
-        
-        if pos_mask.any():
-            result[pos_mask] = -self.a * torch.exp(-z[pos_mask] / self.b) - 1
-        
-        neg_mask = ~pos_mask
-        if neg_mask.any():
-            result[neg_mask] = self.c * torch.exp(-z[neg_mask] / self.d) - 1
-        
-        return result
+        pos_val = -self.a * torch.exp((-z / self.b).clamp(max=88.0)) - 1
+        neg_val = self.c * torch.exp((-z / self.d).clamp(max=88.0)) - 1
+        return torch.where(z >= 0, pos_val, neg_val)
 
 
 @register_activation
@@ -848,7 +837,7 @@ class SigmoidGumbel(BaseActivation):
     r"""
     Applies the Sigmoid Gumbel activation function:
 
-    :math:`\text{SigmoidGumbel}(z) = \frac{1}{1 + \exp(-z) \exp(-\exp(-z))}`
+    :math:`\text{SigmoidGumbel}(z) = \frac{\exp(z)}{\exp(z) + \exp(-\exp(-z))}`
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
@@ -892,14 +881,9 @@ class NewSigmoid(BaseActivation):
         super().__init__(**kwargs)
 
     def _forward(self, z) -> Tensor:
-        exp_z = torch.exp(z)
-        exp_neg_z = torch.exp(-z)
-        exp_2z = torch.exp(2 * z)
-        exp_neg_2z = torch.exp(-2 * z)
-
-        numerator = exp_z - exp_neg_z
-        denominator = torch.sqrt(2 * (exp_2z + exp_neg_2z))
-
+        zc = z.clamp(-44.0, 44.0)
+        numerator = torch.exp(zc) - torch.exp(-zc)
+        denominator = torch.sqrt(2 * (torch.exp(2 * zc) + torch.exp(-2 * zc)))
         return numerator / denominator
 
 
@@ -922,7 +906,7 @@ class Root2sigmoid(BaseActivation):
     """
 
     def __init__(self, **kwargs):
-        super(Root2sigmoid, self).__init__()
+        super().__init__(**kwargs)
         self.r = torch.sqrt(torch.tensor(2.0))
 
     def _forward(self, z) -> Tensor:

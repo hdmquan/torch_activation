@@ -437,8 +437,8 @@ class LinQ(BaseActivation):
         lower_threshold = -2 + 2 * self.a
 
         upper_region = z >= upper_threshold
-        middle_region = (z > lower_threshold) & (z < upper_threshold)
-        lower_region = z <= lower_threshold
+        lower_region = (~upper_region) & (z <= lower_threshold)
+        middle_region = ~upper_region & ~lower_region
 
         result[upper_region] = (
             self.a * z[upper_region] + 1 - 2 * z[upper_region] + z[upper_region] ** 2
@@ -457,8 +457,8 @@ class LinQ(BaseActivation):
         lower_threshold = -2 + 2 * self.a
 
         upper_region = z >= upper_threshold
-        middle_region = (z > lower_threshold) & (z < upper_threshold)
-        lower_region = z <= lower_threshold
+        lower_region = (~upper_region) & (z <= lower_threshold)
+        middle_region = ~upper_region & ~lower_region
 
         z[upper_region] = (
             self.a * z[upper_region] + 1 - 2 * z[upper_region] + z[upper_region] ** 2
@@ -548,7 +548,7 @@ class ISRU(BaseActivation):
 
     def __init__(self, a: float = 1.0, **kwargs):
         super().__init__(**kwargs)
-        self.a = nn.Parameter(torch.tensor([a]))
+        self.a = nn.Parameter(torch.tensor(float(a)))
 
     def _forward(self, z):
         return z / torch.sqrt(1 + self.a * z**2)

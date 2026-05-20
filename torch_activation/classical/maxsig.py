@@ -750,19 +750,10 @@ class HardExponentialLinearSigmoidSquashing(BaseActivation):
 
     def _forward(self, x) -> Tensor:
         pos_mask = x >= 0
-        neg_mask = ~pos_mask
-        
-        result = torch.zeros_like(x)
         hard_sigmoid = torch.clamp((x + 1) / 2, 0, 1)
-        
-        # Positive part
-        result[pos_mask] = x[pos_mask] * hard_sigmoid[pos_mask]
-        
-        # Negative part
-        neg_x = x[neg_mask]
-        result[neg_mask] = (1 + torch.exp(-neg_x)) * hard_sigmoid[neg_mask]
-        
-        return result
+        exp_term = torch.where(pos_mask, torch.ones_like(x), 1 + torch.exp(torch.clamp(x, max=0)))
+        raw = torch.where(pos_mask, x * hard_sigmoid, exp_term * hard_sigmoid)
+        return torch.where(hard_sigmoid == 0, torch.zeros_like(x), raw)
 
 
 @register_activation
@@ -846,21 +837,38 @@ class LSReLU(BaseActivation):
         self.b = nn.Parameter(Tensor([b]))
 
     def _forward(self, x) -> Tensor:
-        result = torch.zeros_like(x)
-        
-        # Case 1: z <= 0
-        mask1 = x <= 0
-        neg_x = x[mask1]
-        result[mask1] = neg_x / (1 + torch.abs(neg_x))
-        
-        # Case 2: 0 <= z <= b
-        mask2 = (x > 0) & (x <= self.b)
-        result[mask2] = x[mask2]
-        
-        # Case 3: z >= b
-        mask3 = x > self.b
-        log_term = torch.log(self.a * x[mask3] + 1)
         offset = torch.abs(torch.log(self.a * self.b + 1) - self.b)
-        result[mask3] = log_term + offset
-        
-        return result
+        neg_out = x / (1 + torch.abs(x))
+        lin_out = x
+        log_out = torch.log(self.a * x + 1) + offset
+        return torch.where(x <= 0, neg_out, torch.where(x <= self.b, lin_out, log_out))
+
+
+@register_activation
+class Maxsig(BaseActivation):
+    r"""
+    Applies the Maxsig activation function:
+
+    :math:`\text{Maxsig}(z) = \max(z, \sigma(z))`
+
+    where :math:`\sigma` is the sigmoid function.
+
+    Shape:
+        - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
+        - Output: :math:`(*)`, same shape as the input.
+
+    References:
+        .. [1] Activation survey arXiv:2402.09092 Section 3.7.
+
+    Examples::
+
+        >>> m = Maxsig()
+        >>> x = torch.randn(2)
+        >>> output = m(x)
+    """
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
+    def _forward(self, x: Tensor) -> Tensor:
+        return torch.max(x, torch.sigmoid(x))

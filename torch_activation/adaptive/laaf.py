@@ -211,7 +211,7 @@ class SSinH(BaseActivation):
         self.b = nn.Parameter(Tensor([b_init]))
 
     def _forward(self, x) -> Tensor:
-        return self.a * torch.sinh(self.b * x)
+        return self.a * torch.sinh((self.b * x).clamp(-88.0, 88.0))
 
 
 @register_activation
@@ -244,7 +244,7 @@ class SExp(BaseActivation):
         self.b = nn.Parameter(Tensor([b_init]))
 
     def _forward(self, x) -> Tensor:
-        return self.a * (torch.exp(self.b * x) - 1)
+        return self.a * (torch.exp((self.b * x).clamp(max=88.0)) - 1)
 
 
 @register_activation
@@ -311,4 +311,4 @@ class AGumb(BaseActivation):
     def _forward(self, x) -> Tensor:
         # Ensure a is positive using softplus
         a = F.softplus(self.a_raw)
-        return 1 - (1 + a * torch.exp(x))**(-1)
+        return 1 - (1 + a * torch.exp(x.clamp(max=88.0)))**(-1)

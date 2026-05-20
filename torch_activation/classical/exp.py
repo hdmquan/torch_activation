@@ -61,7 +61,7 @@ class Exponential(BaseActivation):
           # Unused
 
     def _forward(self, z) -> Tensor:
-        return torch.exp(-z)
+        return torch.exp(-z.clamp(max=88.0))
 
 @register_activation
 class Symexp(BaseActivation):
@@ -86,7 +86,7 @@ class Symexp(BaseActivation):
           # Unused
 
     def _forward(self, z) -> Tensor:
-        return torch.sign(z) * (torch.exp(torch.abs(z)) - 1)
+        return torch.sign(z) * (torch.exp(torch.abs(z).clamp(max=88.0)) - 1)
 
 @register_activation
 class Wave(BaseActivation):

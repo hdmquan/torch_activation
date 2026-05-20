@@ -1,0 +1,37 @@
+repos:
+  - repo: https://github.com/psf/black
+    rev: 24.10.0
+    hooks:
+      - id: black
+        language_version: python3.10
+
+  - repo: https://github.com/PyCQA/isort
+    rev: 5.13.2
+    hooks:
+      - id: isort
+
+  - repo: https://github.com/PyCQA/flake8
+    rev: 7.1.1
+    hooks:
+      - id: flake8
+
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v1.11.2
+    hooks:
+      - id: mypy
+        additional_dependencies: [torch]
+
+  - repo: local
+    hooks:
+      - id: check-docstrings
+        name: check activation docstrings
+        entry: python scripts/check_docstrings.py
+        language: python
+        pass_filenames: false
+        types: [python]
+
+  - repo: https://github.com/PyCQA/doc8
+    rev: v1.1.1
+    hooks:
+      - id: doc8
+        args: [--max-line-length=100, "--ignore-path=docs/_build", "--ignore-path=docs/source/activations"]

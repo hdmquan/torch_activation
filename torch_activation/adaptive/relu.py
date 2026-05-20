@@ -1412,16 +1412,7 @@ class FPAF(BaseActivation):
             self.b = Tensor([b])
 
     def _forward(self, x) -> Tensor:
-        pos_mask = x >= 0
-        neg_mask = ~pos_mask
-        
-        result = torch.zeros_like(x)
-        if pos_mask.any():
-            result[pos_mask] = self.a * self.pos_activation(x[pos_mask])
-        if neg_mask.any():
-            result[neg_mask] = self.b * self.neg_activation(x[neg_mask])
-        
-        return result
+        return torch.where(x >= 0, self.a * self.pos_activation(x), self.b * self.neg_activation(x))
 
 
 @register_activation

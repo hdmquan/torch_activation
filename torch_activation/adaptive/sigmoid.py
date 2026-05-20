@@ -50,9 +50,11 @@ class AdaptiveSigmoid(BaseActivation):
             self.a = Tensor([abs(a)])
 
     def _forward(self, x) -> Tensor:
-        # Compute the adaptive sigmoid
-        term1 = 2 / (1 - torch.exp(-self.a * x))
-        term2 = 2 / (self.a * (1 + torch.exp(-self.a * x)))
+        exp_neg = torch.exp((-self.a * x).clamp(max=88.0))
+        denom1 = 1 - exp_neg
+        denom1 = denom1 + denom1.sign() * 1e-7
+        term1 = 2 / denom1
+        term2 = 2 / (self.a * (1 + exp_neg))
         result = term1 - term2
 
         if self.inplace and hasattr(x, "copy_"):
@@ -340,8 +342,8 @@ class TanhSoft(BaseActivation):
 
     def _forward(self, x) -> Tensor:
         # Compute the TanhSoft function
-        tanh_term = torch.tanh(self.a * x + self.b * torch.exp(self.c * x))
-        log_term = torch.log(self.d + torch.exp(x))
+        tanh_term = torch.tanh(self.a * x + self.b * torch.exp((self.c * x).clamp(max=88.0)))
+        log_term = torch.log(self.d + x.clamp(max=88.0).exp())
         result = tanh_term * log_term
 
         if self.inplace and hasattr(x, "copy_"):
@@ -448,7 +450,7 @@ class TanhSoft2(BaseActivation):
 
     def _forward(self, x) -> Tensor:
         # Compute the TanhSoft-2 function
-        tanh_term = torch.tanh(self.b * torch.exp(self.c * x))
+        tanh_term = torch.tanh(self.b * torch.exp((self.c * x).clamp(max=88.0)))
         result = x * tanh_term
 
         if self.inplace and hasattr(x, "copy_"):
@@ -497,7 +499,7 @@ class TanhSoft3(BaseActivation):
 
     def _forward(self, x) -> Tensor:
         # Compute the TanhSoft-3 function
-        inner_term = torch.exp(x) * torch.tanh(self.a * x)
+        inner_term = torch.exp(x.clamp(max=88.0)) * torch.tanh(self.a * x)
         result = torch.log1p(inner_term)
 
         if self.inplace and hasattr(x, "copy_"):

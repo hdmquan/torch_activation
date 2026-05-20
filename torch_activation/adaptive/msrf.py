@@ -485,7 +485,7 @@ class ELUPlus(BaseActivation):
 
     def _forward(self, x) -> Tensor:
         term1 = 0.5 * (x + torch.sqrt(x.pow(2) + self.epsilon))
-        elu_term = (torch.exp(x) - 1) / self.alpha
+        elu_term = (torch.exp(x.clamp(max=88.0)) - 1) / self.alpha
         term2 = 0.5 * (elu_term + torch.sqrt(elu_term.pow(2) + self.epsilon))
         return term1 + term2
 

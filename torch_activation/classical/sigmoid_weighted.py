@@ -67,7 +67,7 @@ class CoLU(BaseActivation):
     """
 
     def __init__(self, inplace=False, **kwargs):
-        super().__init__(**kwargs)
+        super().__init__(inplace=inplace, **kwargs)
 
     def _forward(self, x) -> Tensor:
         if self.inplace:
@@ -143,8 +143,8 @@ class SinLU(BaseActivation):
 
     def __init__(self, a: float = 1.0, b: float = 1.0, **kwargs):
         super().__init__(**kwargs)
-        self.alpha = nn.Parameter(Tensor([a]))
-        self.beta = nn.Parameter(Tensor([b]))
+        self.alpha = nn.Parameter(torch.tensor(float(a)))
+        self.beta = nn.Parameter(torch.tensor(float(b)))
 
     def _forward(self, x):
         result = x + self.alpha * torch.sin(self.beta * x)
@@ -208,7 +208,7 @@ class SGELU(BaseActivation):
 
     def __init__(self, a: float = 1.0, **kwargs):
         super().__init__(**kwargs)
-        self.a = nn.Parameter(Tensor([a]), requires_grad=False)
+        self.a = nn.Parameter(torch.tensor(float(a)), requires_grad=False)
 
     def _forward(self, x) -> Tensor:
         return self.a * x * torch.erf(x / math.sqrt(2))
@@ -301,7 +301,7 @@ class CoLU(BaseActivation):
     """
 
     def __init__(self, inplace=False, **kwargs):
-        super().__init__(**kwargs)
+        super().__init__(inplace=inplace, **kwargs)
 
     def _forward(self, x) -> Tensor:
         denominator = 1 - x * torch.exp(-(x + torch.exp(x)))
@@ -332,8 +332,8 @@ class TSSwish(BaseActivation):
 
     def __init__(self, a: float = 1.0, b: float = 2.0, **kwargs):
         super().__init__(**kwargs)
-        self.a = nn.Parameter(Tensor([a]))
-        self.b = nn.Parameter(Tensor([b]))
+        self.a = nn.Parameter(torch.tensor(float(a)))
+        self.b = nn.Parameter(torch.tensor(float(b)))
 
     def _forward(self, x) -> Tensor:
         # TODO: Memory
@@ -393,7 +393,7 @@ class ESwish(BaseActivation):
         super().__init__(**kwargs)
 
     def _forward(self, x) -> Tensor:
-        return torch.exp(-x) * torch.sigmoid(x)
+        return torch.exp((-x).clamp(max=88.0)) * torch.sigmoid(x)
 
 
 @register_activation
@@ -421,7 +421,7 @@ class dSigmoid(BaseActivation):
 
     def _forward(self, x) -> Tensor:
         sigmoid_x = torch.sigmoid(x)
-        return torch.exp(-x) * sigmoid_x * sigmoid_x
+        return torch.exp((-x).clamp(max=88.0)) * sigmoid_x * sigmoid_x
 
 
 @register_activation
@@ -577,8 +577,8 @@ class pLogish(BaseActivation):
 
     def __init__(self, a: float = 1.0, b: float = 10.0, **kwargs):
         super().__init__(**kwargs)
-        self.a = nn.Parameter(Tensor([a]), requires_grad=False)
-        self.b = nn.Parameter(Tensor([b]), requires_grad=False)
+        self.a = nn.Parameter(torch.tensor(float(a)), requires_grad=False)
+        self.b = nn.Parameter(torch.tensor(float(b)), requires_grad=False)
 
     def _forward(self, x) -> Tensor:
         return self.a * x * torch.log(1 + torch.sigmoid(self.b * x))
@@ -683,7 +683,7 @@ class TBSReLU(BaseActivation):
         super().__init__(**kwargs)
 
     def _forward(self, x) -> Tensor:
-        exp_neg_x = torch.exp(-x)
+        exp_neg_x = torch.exp((-x).clamp(max=88.0))
         bipolar_sigmoid = (1 - exp_neg_x) / (1 + exp_neg_x)
         return x * torch.tanh(bipolar_sigmoid)
 
@@ -773,7 +773,7 @@ class MSiLU(BaseActivation):
     r"""
     Applies the Modified SiLU activation function:
 
-    :math:`\text{MSiLU}(z) = z \cdot \sigma(z) + \exp\left(-\frac{z^2}{4}\right)`
+    :math:`\text{MSiLU}(z) = z \cdot \sigma(z) + \exp\left(\frac{-z^2 - 1}{4}\right)`
 
     where :math:`\sigma` is the sigmoid function.
 
@@ -827,7 +827,7 @@ class ASiLU(BaseActivation):
     r"""
     Applies the Arctan SiLU activation function:
 
-    :math:`\text{ASiLU}(z) = \arctan(z) \cdot \frac{1}{1 + \exp(-z)}`
+    :math:`\text{ASiLU}(z) = \arctan\left(z \cdot \frac{1}{1 + \exp(-z)}\right)`
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
@@ -984,8 +984,8 @@ class Smish(BaseActivation):
         self, a: float = 1.0, b: float = 1.0, learnable: bool = False, **kwargs
     ):
         super().__init__(**kwargs)
-        self.a = nn.Parameter(Tensor([a]))
-        self.b = nn.Parameter(Tensor([b]))
+        self.a = nn.Parameter(torch.tensor(float(a)))
+        self.b = nn.Parameter(torch.tensor(float(b)))
 
         if not learnable:
             self.a.requires_grad = False
@@ -1069,7 +1069,7 @@ class EANAF(BaseActivation):
         super().__init__(**kwargs)
 
     def _forward(self, x) -> Tensor:
-        exp_x = torch.exp(x)
+        exp_x = torch.exp(x.clamp(max=88.0))
         return x * (exp_x / (exp_x + 2))
 
 

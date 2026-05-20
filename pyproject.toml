@@ -17,6 +17,30 @@ scipy = "^1.15.2"
 kaleido = "0.2"
 sphinx = "8.0"
 
+[tool.poetry.group.dev.dependencies]
+pre-commit = "*"
+black = "*"
+flake8 = "*"
+mypy = "*"
+isort = "*"
+doc8 = "*"
+
+[tool.doc8]
+max-line-length = 100
+ignore-path = ["docs/_build", "docs/source/activations"]
+
+[tool.black]
+line-length = 100
+target-version = ["py310"]
+
+[tool.isort]
+profile = "black"
+line_length = 100
+
+[tool.mypy]
+python_version = "3.10"
+ignore_missing_imports = true
+
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"

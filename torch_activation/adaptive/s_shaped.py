@@ -130,29 +130,9 @@ class NActivation(BaseActivation):
         self.b = nn.Parameter(Tensor([init_b]))
 
     def _forward(self, x) -> Tensor:
-        # Calculate t_min and t_max
         t_min = torch.min(self.a, self.b)
         t_max = torch.max(self.a, self.b)
-        
-        # Create masks for the three regions
-        left_mask = x < t_min
-        middle_mask = (x >= t_min) & (x <= t_max)
-        right_mask = x > t_max
-        
-        # Initialize result tensor
-        result = torch.zeros_like(x)
-        
-        # Apply the three piecewise linear functions
-        if left_mask.any():
-            result[left_mask] = x[left_mask] - 2 * t_min
-        
-        if middle_mask.any():
-            result[middle_mask] = -x[middle_mask]
-        
-        if right_mask.any():
-            result[right_mask] = x[right_mask] - 2 * t_max
-        
-        return result
+        return torch.where(x < t_min, x - 2 * t_min, torch.where(x > t_max, x - 2 * t_max, -x))
 
 
 @register_activation
@@ -189,25 +169,7 @@ class ALiSA(BaseActivation):
         self.al = nn.Parameter(Tensor([init_al]))
 
     def _forward(self, x) -> Tensor:
-        # Create masks for the three regions
-        right_mask = x >= 1
-        left_mask = x <= 0
-        middle_mask = ~(right_mask | left_mask)
-        
-        # Initialize result tensor
-        result = torch.zeros_like(x)
-        
-        # Apply the three piecewise linear functions
-        if right_mask.any():
-            result[right_mask] = self.ar * x[right_mask] - self.ar + 1
-        
-        if middle_mask.any():
-            result[middle_mask] = x[middle_mask]
-        
-        if left_mask.any():
-            result[left_mask] = self.al * x[left_mask]
-        
-        return result
+        return torch.where(x >= 1, self.ar * x - self.ar + 1, torch.where(x <= 0, self.al * x, x))
 
 
 @register_activation
@@ -244,22 +206,4 @@ class LiSA(BaseActivation):
         self.al = al
 
     def _forward(self, x) -> Tensor:
-        # Create masks for the three regions
-        right_mask = x >= 1
-        left_mask = x <= 0
-        middle_mask = ~(right_mask | left_mask)
-        
-        # Initialize result tensor
-        result = torch.zeros_like(x)
-        
-        # Apply the three piecewise linear functions
-        if right_mask.any():
-            result[right_mask] = self.ar * x[right_mask] - self.ar + 1
-        
-        if middle_mask.any():
-            result[middle_mask] = x[middle_mask]
-        
-        if left_mask.any():
-            result[left_mask] = self.al * x[left_mask]
-        
-        return result
+        return torch.where(x >= 1, self.ar * x - self.ar + 1, torch.where(x <= 0, self.al * x, x))

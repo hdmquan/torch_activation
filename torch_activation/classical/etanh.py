@@ -31,7 +31,7 @@ class ETanh(BaseActivation):
           # Unused
 
     def _forward(self, z) -> Tensor:
-        return self.a * torch.exp(z) * torch.tanh(z)
+        return self.a * torch.exp(z.clamp(max=88.0)) * torch.tanh(z)
 
 
 @register_activation
