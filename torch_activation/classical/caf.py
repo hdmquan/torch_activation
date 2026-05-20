@@ -4,6 +4,7 @@ from torch import Tensor
 from torch_activation import register_activation
 from torch_activation.base import BaseActivation
 
+@register_activation
 class HCAF(BaseActivation):
     r"""
     Applies the Hybrid Chaotic Activation Function:
