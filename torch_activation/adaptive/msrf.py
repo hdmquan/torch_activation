@@ -1,6 +1,4 @@
 import torch
-import torch.nn as nn
-import torch.nn.functional as F
 from torch import Tensor
 
 from torch_activation import register_activation
@@ -41,7 +39,7 @@ class SquarePlus(BaseActivation):
     r"""
     Applies the SquarePlus function:
 
-    :math:`\text{SquarePlus}(z) = \frac{1}{2} (z + |z|_\epsilon) = \frac{1}{2} (z + \sqrt{z^2 + \epsilon})`
+    :math:`\text{SquarePlus}(z) = \frac{1}{2} (z + |z|_\epsilon) = \frac{1}{2} (z + \sqrt{z^2 + \epsilon})` # noqa: E501
 
     Args:
         epsilon (float, optional): Small constant for numerical stability. Default: 1e-6
@@ -133,7 +131,7 @@ class LReLUPlus(BaseActivation):
     :math:`\text{LReLUPlus}(z_i) = \frac{1}{2} (z_i + a_i z_i + |(1 - a_i) z_i|_\epsilon)`
 
     Args:
-        negative_slope (float or Tensor, optional): Controls the angle of the negative slope. Default: 0.01
+        negative_slope (float or Tensor, optional): Controls the angle of the negative slope. Default: 0.01 # noqa: E501
         epsilon (float, optional): Small constant for numerical stability. Default: 1e-6
 
     Shape:
@@ -192,7 +190,7 @@ class SoftshrinkPlus(BaseActivation):
     r"""
     Applies the Softshrink Plus function:
 
-    :math:`\text{SoftshrinkPlus}(z) = z + \frac{1}{2} \left(\sqrt{(z - a)^2 + \epsilon} - \sqrt{(z + a)^2 + \epsilon}\right)`
+    :math:`\text{SoftshrinkPlus}(z) = z + \frac{1}{2} \left(\sqrt{(z - a)^2 + \epsilon} - \sqrt{(z + a)^2 + \epsilon}\right)` # noqa: E501
 
     Args:
         lambda_val (float, optional): The lambda value for the Softshrink formulation. Default: 0.5
@@ -225,7 +223,7 @@ class PanPlus(BaseActivation):
     r"""
     Applies the Pan Plus function:
 
-    :math:`\text{PanPlus}(z) = -a + \frac{1}{2} \left(\sqrt{(z - a)^2 + \epsilon} + \sqrt{(z + a)^2 + \epsilon}\right)`
+    :math:`\text{PanPlus}(z) = -a + \frac{1}{2} \left(\sqrt{(z - a)^2 + \epsilon} + \sqrt{(z + a)^2 + \epsilon}\right)` # noqa: E501
 
     Args:
         a (float, optional): The 'a' parameter in the Pan Plus formulation. Default: 0.5
@@ -289,7 +287,7 @@ class SReLUPlus(BaseActivation):
     r"""
     Applies the S-shaped ReLU Plus function:
 
-    :math:`\text{SReLUPlus}(z_i) = a_i z_i + \frac{1}{2} (a_i - 1) (|z_i - t_i|_\epsilon - |z_i + t_i|_\epsilon)`
+    :math:`\text{SReLUPlus}(z_i) = a_i z_i + \frac{1}{2} (a_i - 1) (|z_i - t_i|_\epsilon - |z_i + t_i|_\epsilon)` # noqa: E501
 
     Args:
         a (float or Tensor, optional): The 'a' parameter in the SReLU Plus formulation. Default: 0.5
@@ -355,7 +353,7 @@ class HardshrinkPlus(BaseActivation):
     r"""
     Applies the Hardshrink Plus function:
 
-    :math:`\text{HardshrinkPlus}(z) = z \left(1 + \frac{1}{2} \left(\frac{z - a}{\sqrt{(z - a)^2 + \epsilon}} - \frac{z + a}{\sqrt{(z + a)^2 + \epsilon}}\right)\right)`
+    :math:`\text{HardshrinkPlus}(z) = z \left(1 + \frac{1}{2} \left(\frac{z - a}{\sqrt{(z - a)^2 + \epsilon}} - \frac{z + a}{\sqrt{(z + a)^2 + \epsilon}}\right)\right)` # noqa: E501
 
     Args:
         lambda_val (float, optional): The lambda value for the Hardshrink formulation. Default: 0.5
@@ -388,7 +386,7 @@ class MollifiedMeLUComponent(BaseActivation):
     r"""
     Applies the Mollified MeLU Component function:
 
-    :math:`\phi_{b_j c_j \text{Plus}}(z_i) = \frac{1}{2} \left(c_j - |z_i - b_j|_\epsilon + \sqrt{(c_j - |z_i - b_j|_\epsilon)^2 + \epsilon}\right)`
+    :math:`\phi_{b_j c_j \text{Plus}}(z_i) = \frac{1}{2} \left(c_j - |z_i - b_j|_\epsilon + \sqrt{(c_j - |z_i - b_j|_\epsilon)^2 + \epsilon}\right)` # noqa: E501
 
     Args:
         b (float, optional): The 'b' parameter in the MeLU formulation. Default: 0.0
@@ -423,7 +421,7 @@ class TSAFPlus(BaseActivation):
     r"""
     Applies the TSAF Plus function:
 
-    :math:`\text{TSAFPlus}(z_i) = \frac{1}{4} \left(|z_i - a_i + c_i|_\epsilon + |z_i - a_i|_\epsilon + |z_i + b_i - c_i|_\epsilon - |z_i - b_i|_\epsilon\right)`
+    :math:`\text{TSAFPlus}(z_i) = \frac{1}{4} \left(|z_i - a_i + c_i|_\epsilon + |z_i - a_i|_\epsilon + |z_i + b_i - c_i|_\epsilon - |z_i - b_i|_\epsilon\right)` # noqa: E501
 
     Args:
         a (float, optional): The 'a' parameter in the TSAF formulation. Default: 0.5
@@ -462,7 +460,7 @@ class ELUPlus(BaseActivation):
     r"""
     Applies the ELU Plus function:
 
-    :math:`\text{ELUPlus}(z) = \frac{1}{2} (z + |z|_\epsilon) + \frac{1}{2} \left(\frac{\exp(z) - 1}{a} + \sqrt{\left(\frac{\exp(z) - 1}{a}\right)^2 + \epsilon}\right)`
+    :math:`\text{ELUPlus}(z) = \frac{1}{2} (z + |z|_\epsilon) + \frac{1}{2} \left(\frac{\exp(z) - 1}{a} + \sqrt{\left(\frac{\exp(z) - 1}{a}\right)^2 + \epsilon}\right)` # noqa: E501
 
     Args:
         alpha (float, optional): The alpha value for the ELU formulation. Default: 1.0
@@ -496,7 +494,7 @@ class SwishPlus(BaseActivation):
     r"""
     Applies the Swish Plus function:
 
-    :math:`\text{SwishPlus}(z) = z \cdot \text{StepPlus}(z) = \frac{1}{2} \left(z + \frac{z^2}{|z|_\epsilon}\right)`
+    :math:`\text{SwishPlus}(z) = z \cdot \text{StepPlus}(z) = \frac{1}{2} \left(z + \frac{z^2}{|z|_\epsilon}\right)` # noqa: E501
 
     Args:
         epsilon (float, optional): Small constant for numerical stability. Default: 1e-6
@@ -624,7 +622,7 @@ class SignReLUPlus(BaseActivation):
     r"""
     Applies the SignReLU Plus function:
 
-    :math:`\text{SignReLUPlus}(z) = \frac{1}{2} (z + |z|_\epsilon) + \frac{z - |z|_\epsilon}{2 |1 - z|_\epsilon}`
+    :math:`\text{SignReLUPlus}(z) = \frac{1}{2} (z + |z|_\epsilon) + \frac{z - |z|_\epsilon}{2 |1 - z|_\epsilon}` # noqa: E501
 
     Args:
         epsilon (float, optional): Small constant for numerical stability. Default: 1e-6

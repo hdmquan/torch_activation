@@ -83,7 +83,7 @@ class FracSoftplus(BaseActivation):
 
     Approximated using a finite sum:
 
-    :math:`\text{FracSoftplus}(z_i) \approx \frac{1}{h^{a_i}} \sum_{n=0}^{N} \frac{(-1)^n \Gamma(a_i + 1) \ln(1 + \exp(z_i - nh))}{\Gamma(n + 1) \Gamma(1 - n + a_i)}`
+    :math:`\text{FracSoftplus}(z_i) \approx \frac{1}{h^{a_i}} \sum_{n=0}^{N} \frac{(-1)^n \Gamma(a_i + 1) \ln(1 + \exp(z_i - nh))}{\Gamma(n + 1) \Gamma(1 - n + a_i)}` # noqa: E501
 
     where :math:`a_i` is a trainable parameter.
 
@@ -145,7 +145,7 @@ class FracTanh(BaseActivation):
 
     Approximated using a finite sum:
 
-    :math:`\text{FracTanh}(z_i) \approx \frac{1}{h^{a_i}} \sum_{n=0}^{N} \frac{(-1)^n \Gamma(a_i + 1) \tanh(z_i - nh)}{\Gamma(n + 1) \Gamma(1 - n + a_i)}`
+    :math:`\text{FracTanh}(z_i) \approx \frac{1}{h^{a_i}} \sum_{n=0}^{N} \frac{(-1)^n \Gamma(a_i + 1) \tanh(z_i - nh)}{\Gamma(n + 1) \Gamma(1 - n + a_i)}` # noqa: E501
 
     where :math:`a_i` is a trainable parameter.
 
@@ -202,13 +202,13 @@ class FALU(BaseActivation):
 
     :math:`\text{FALU}(z_i) = D^{a_i} z_i \sigma(b_i z_i)`
 
-    where :math:`\sigma` is the sigmoid function, and :math:`a_i` and :math:`b_i` are trainable parameters.
+    where :math:`\sigma` is the sigmoid function, and :math:`a_i` and :math:`b_i` are trainable parameters. # noqa: E501
 
     For computational efficiency, an approximation is used:
 
-    :math:`\text{FALU}(z_i) \approx \begin{cases} 
+    :math:`\text{FALU}(z_i) \approx \begin{cases}
     g(z_i, b_i) + a_i \sigma(b_i z_i) (1 - g(z_i, b_i)), & a_i \in [0, 1] \\
-    g(z_i, b_i) + a_i \sigma(b_i z_i) (1 - 2h(z_i, b_i)), & a_i \in (1, 2] 
+    g(z_i, b_i) + a_i \sigma(b_i z_i) (1 - 2h(z_i, b_i)), & a_i \in (1, 2]
     \end{cases}`
 
     where:
@@ -253,9 +253,9 @@ class FracLReLU(BaseActivation):
     r"""
     Applies the Fractional Leaky ReLU function:
 
-    :math:`\text{FracLReLU}(z_i) = \begin{cases} 
+    :math:`\text{FracLReLU}(z_i) = \begin{cases}
     \frac{z_i^{1 - a_i}}{\Gamma(2 - a_i)}, & z_i \geq 0 \\
-    \frac{0.1 \cdot z_i^{1 - a_i}}{\Gamma(2 - a_i)}, & z_i < 0 
+    \frac{0.1 \cdot z_i^{1 - a_i}}{\Gamma(2 - a_i)}, & z_i < 0
     \end{cases}`
 
     where :math:`\Gamma` is the Gamma function and :math:`a_i` is a trainable parameter.
@@ -301,12 +301,12 @@ class FracPReLU(BaseActivation):
     r"""
     Applies the Fractional Parametric ReLU function:
 
-    :math:`\text{FracPReLU}(z_i) = \begin{cases} 
+    :math:`\text{FracPReLU}(z_i) = \begin{cases}
     \frac{z_i^{1 - a_i}}{\Gamma(2 - a_i)}, & z_i \geq 0 \\
-    \frac{b_i \cdot z_i^{1 - a_i}}{\Gamma(2 - a_i)}, & z_i < 0 
+    \frac{b_i \cdot z_i^{1 - a_i}}{\Gamma(2 - a_i)}, & z_i < 0
     \end{cases}`
 
-    where :math:`\Gamma` is the Gamma function, :math:`a_i` is a fixed parameter, and :math:`b_i` is a trainable parameter.
+    where :math:`\Gamma` is the Gamma function, :math:`a_i` is a fixed parameter, and :math:`b_i` is a trainable parameter. # noqa: E501
 
     Args:
         a_init (float, optional): Initial value for the parameter a. Default: 0.5
@@ -348,12 +348,12 @@ class FracELU(BaseActivation):
     r"""
     Applies the Fractional Exponential Linear Unit function:
 
-    :math:`\text{FracELU}(z_i) = \begin{cases} 
+    :math:`\text{FracELU}(z_i) = \begin{cases}
     \frac{z_i^{1 - a_i}}{\Gamma(2 - a_i)}, & z_i \geq 0 \\
-    b \sum_{k=0}^{N} \frac{1}{\Gamma(k + 1)} \frac{\Gamma(k + 1 - a_i)}{\Gamma(k + 1)} z_i^{k - a_i} - \frac{b}{\Gamma(1 - a_i)} z_i^{-a_i}, & z_i < 0 
+    b \sum_{k=0}^{N} \frac{1}{\Gamma(k + 1)} \frac{\Gamma(k + 1 - a_i)}{\Gamma(k + 1)} z_i^{k - a_i} - \frac{b}{\Gamma(1 - a_i)} z_i^{-a_i}, & z_i < 0 # noqa: E501
     \end{cases}`
 
-    where :math:`\Gamma` is the Gamma function, :math:`a_i` is a trainable parameter, and :math:`b` is a fixed parameter.
+    where :math:`\Gamma` is the Gamma function, :math:`a_i` is a trainable parameter, and :math:`b` is a fixed parameter. # noqa: E501
 
     Args:
         a_init (float, optional): Initial value for the trainable parameter a. Default: 0.5
@@ -402,18 +402,18 @@ class FracELU(BaseActivation):
         return torch.where(x > 0, val_pos, torch.where(x < 0, val_neg, torch.zeros_like(x)))
 
 
-# TODO: Forward pass failed: Can't call numpy() on Tensor that requires grad. Use tensor.detach().numpy() instead.
+# TODO: Forward pass failed: Can't call numpy() on Tensor that requires grad. Use tensor.detach().numpy() instead. # noqa: E501
 # @register_activation
 class FracSiLU1(BaseActivation):
     r"""
     Applies the Fractional SiLU Variant 1 function:
 
-    :math:`\text{FracSiLU1}(z_i) = \begin{cases} 
+    :math:`\text{FracSiLU1}(z_i) = \begin{cases}
     \frac{z_i^{1 - a_i}}{\Gamma(2 - a_i)}, & z_i \geq 0 \\
-    \sum_{k=0}^{N} \frac{(-1)^k + (2^{k+1} - 1) B_{k+1} \Gamma(k + 2)}{\Gamma(k + 2 - a_i) (k + 1)!} z_i^{k+1 - a_i}, & z_i < 0 
+    \sum_{k=0}^{N} \frac{(-1)^k + (2^{k+1} - 1) B_{k+1} \Gamma(k + 2)}{\Gamma(k + 2 - a_i) (k + 1)!} z_i^{k+1 - a_i}, & z_i < 0 # noqa: E501
     \end{cases}`
 
-    where :math:`\Gamma` is the Gamma function, :math:`B_n` is the n-th Bernoulli number, and :math:`a_i` is a trainable parameter.
+    where :math:`\Gamma` is the Gamma function, :math:`B_n` is the n-th Bernoulli number, and :math:`a_i` is a trainable parameter. # noqa: E501
 
     Args:
         a_init (float, optional): Initial value for the trainable parameter a. Default: 0.5
@@ -486,15 +486,15 @@ class FracSiLU1(BaseActivation):
         return result
 
 
-# TODO: Forward pass failed: Can't call numpy() on Tensor that requires grad. Use tensor.detach().numpy() instead.
+# TODO: Forward pass failed: Can't call numpy() on Tensor that requires grad. Use tensor.detach().numpy() instead. # noqa: E501
 # @register_activation
 class FracSiLU2(BaseActivation):
     r"""
     Applies the Fractional SiLU Variant 2 function:
 
-    :math:`\text{FracSiLU2}(z_i) = \sum_{k=0}^{N} \frac{(-1)^k + (2^{k+1} - 1) B_{k+1} \Gamma(k + 2)}{\Gamma(k + 2 - a_i) (k + 1)!} z_i^{k+1 - a_i}`
+    :math:`\text{FracSiLU2}(z_i) = \sum_{k=0}^{N} \frac{(-1)^k + (2^{k+1} - 1) B_{k+1} \Gamma(k + 2)}{\Gamma(k + 2 - a_i) (k + 1)!} z_i^{k+1 - a_i}` # noqa: E501
 
-    where :math:`\Gamma` is the Gamma function, :math:`B_n` is the n-th Bernoulli number, and :math:`a_i` is a trainable parameter.
+    where :math:`\Gamma` is the Gamma function, :math:`B_n` is the n-th Bernoulli number, and :math:`a_i` is a trainable parameter. # noqa: E501
 
     Args:
         a_init (float, optional): Initial value for the trainable parameter a. Default: 0.5
@@ -552,9 +552,9 @@ class FracGELU1(BaseActivation):
     r"""
     Applies the Fractional GELU Variant 1 function:
 
-    :math:`\text{FracGELU1}(z_i) = \begin{cases} 
+    :math:`\text{FracGELU1}(z_i) = \begin{cases}
     \frac{z_i^{1 - a_i}}{\Gamma(2 - a_i)}, & z_i \geq 0 \\
-    \frac{0.5 z_i^{1 - a_i}}{\Gamma(2 - a_i)} - \frac{1}{\sqrt{2\pi}} \sum_{k=0}^{N} \frac{1}{k!} \left(-\frac{1}{2}\right)^k \frac{\Gamma(2k + 3)}{\Gamma(2k + 3 - a_i)} z_i^{2k+1 - a_i}, & z_i < 0 
+    \frac{0.5 z_i^{1 - a_i}}{\Gamma(2 - a_i)} - \frac{1}{\sqrt{2\pi}} \sum_{k=0}^{N} \frac{1}{k!} \left(-\frac{1}{2}\right)^k \frac{\Gamma(2k + 3)}{\Gamma(2k + 3 - a_i)} z_i^{2k+1 - a_i}, & z_i < 0 # noqa: E501
     \end{cases}`
 
     where :math:`\Gamma` is the Gamma function and :math:`a_i` is a trainable parameter.
@@ -631,7 +631,7 @@ class FracGELU2(BaseActivation):
     r"""
     Applies the Fractional GELU Variant 2 function:
 
-    :math:`\text{FracGELU2}(z_i) = \frac{0.5 z_i^{1 - a_i}}{\Gamma(2 - a_i)} - \frac{1}{\sqrt{2\pi}} \sum_{k=0}^{N} \frac{1}{k!} \left(-\frac{1}{2}\right)^k \frac{\Gamma(2k + 3)}{\Gamma(2k + 3 - a_i)} z_i^{2k+1 - a_i}`
+    :math:`\text{FracGELU2}(z_i) = \frac{0.5 z_i^{1 - a_i}}{\Gamma(2 - a_i)} - \frac{1}{\sqrt{2\pi}} \sum_{k=0}^{N} \frac{1}{k!} \left(-\frac{1}{2}\right)^k \frac{\Gamma(2k + 3)}{\Gamma(2k + 3 - a_i)} z_i^{2k+1 - a_i}` # noqa: E501
 
     where :math:`\Gamma` is the Gamma function and :math:`a_i` is a trainable parameter.
 

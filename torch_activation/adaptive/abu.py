@@ -23,9 +23,9 @@ class ABU(BaseActivation):
     Args:
         activation_pool (list, optional): List of activation functions to blend.
             Default: [nn.Tanh(), nn.ELU(), nn.ReLU(), nn.SiLU(), nn.Identity()]
-        constrain_weights (str, optional): Method to constrain weights. Options: 'none', 'sum_to_one',
+        constrain_weights (str, optional): Method to constrain weights. Options: 'none', 'sum_to_one', # noqa: E501
             'abs_sum_to_one', 'clip_and_normalize', 'softmax'. Default: 'none'
-        init_weights (list, optional): Initial weights for each activation. If None, initialized to 1/n. Default: None
+        init_weights (list, optional): Initial weights for each activation. If None, initialized to 1/n. Default: None # noqa: E501
         bias (bool, optional): If True, adds a learnable bias term. Default: False
         init_bias (float, optional): Initial value for the bias term. Default: 0.0
 
@@ -105,15 +105,15 @@ class MoGU(BaseActivation):
     r"""
     Applies the Mixture of Gaussian Unit (MoGU) function:
 
-    :math:`\text{MoGU}(z_i) = \sum_{j=0}^{n} a_{i,j} \frac{1}{\sqrt{2\pi\sigma_{i,j}^2}} \exp\left(-\frac{(z_i-\mu_{i,j})^2}{2\sigma_{i,j}^2}\right)`
+    :math:`\text{MoGU}(z_i) = \sum_{j=0}^{n} a_{i,j} \frac{1}{\sqrt{2\pi\sigma_{i,j}^2}} \exp\left(-\frac{(z_i-\mu_{i,j})^2}{2\sigma_{i,j}^2}\right)` # noqa: E501
 
     where :math:`a_{i,j}`, :math:`\sigma_{i,j}`, and :math:`\mu_{i,j}` are trainable parameters.
 
     Args:
         n_gaussians (int, optional): Number of Gaussian components in the mixture. Default: 3
         init_a (float, optional): Initial value for the scale parameters a. Default: 1.0
-        init_sigma (float, optional): Initial value for the standard deviation parameters sigma. Default: 1.0
-        init_mu_spread (float, optional): Spread for initializing the mean parameters mu. Default: 2.0
+        init_sigma (float, optional): Initial value for the standard deviation parameters sigma. Default: 1.0 # noqa: E501
+        init_mu_spread (float, optional): Spread for initializing the mean parameters mu. Default: 2.0 # noqa: E501
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
@@ -268,16 +268,16 @@ class TCAv2(BaseActivation):
     r"""
     Applies the Trainable Compound Activation Variant 2 (TCAv2) function:
 
-    :math:`\text{TCAv2}(z_i) = \frac{\sum_{j=1}^{k} \exp(a_{i,j}) f_j(\exp(b_{i,j}) z_i + c_{i,j})}{\sum_{j=1}^{k} \exp(a_{i,j})}`
+    :math:`\text{TCAv2}(z_i) = \frac{\sum_{j=1}^{k} \exp(a_{i,j}) f_j(\exp(b_{i,j}) z_i + c_{i,j})}{\sum_{j=1}^{k} \exp(a_{i,j})}` # noqa: E501
 
-    where :math:`k` is the number of mixed functions, and :math:`a_{i,j}`, :math:`b_{i,j}`, and :math:`c_{i,j}`
+    where :math:`k` is the number of mixed functions, and :math:`a_{i,j}`, :math:`b_{i,j}`, and :math:`c_{i,j}` # noqa: E501
     are scaling and translation trainable parameters.
 
     Args:
         activation_pool (list, optional): List of activation functions to mix.
             Default: [nn.Tanh(), nn.ReLU(), nn.SiLU(), nn.Identity()]
         init_a (float, optional): Initial value for the vertical scaling parameters a. Default: 0.0
-        init_b (float, optional): Initial value for the horizontal scaling parameters b. Default: 0.0
+        init_b (float, optional): Initial value for the horizontal scaling parameters b. Default: 0.0 # noqa: E501
         init_c (float, optional): Initial value for the translation parameters c. Default: 0.0
 
     Shape:
@@ -328,7 +328,7 @@ class APAF(BaseActivation):
 
     :math:`\text{APAF}(z_i) = \frac{\sum_{j=0}^{n} a_{j,i} h_j(z_i)}{\sum_{j=0}^{n} a_{j,i}}`
 
-    where :math:`h_j` are activation functions from a pool and :math:`a_{j,i}` are trainable parameters.
+    where :math:`h_j` are activation functions from a pool and :math:`a_{j,i}` are trainable parameters. # noqa: E501
 
     Args:
         activation_pool (list, optional): List of activation functions to average.
@@ -378,7 +378,7 @@ class GABU(BaseActivation):
 
     :math:`\text{GABU}(z_i) = \sum_{j=0}^{n} \sigma(a_{j,i}) g_j(z_i)`
 
-    where :math:`g_j` are activation functions from a pool, :math:`\sigma` is the logistic sigmoid function,
+    where :math:`g_j` are activation functions from a pool, :math:`\sigma` is the logistic sigmoid function, # noqa: E501
     and :math:`a_{j,i}` are trainable parameters controlling the weight of each activation function.
 
     Args:
@@ -435,7 +435,7 @@ class DKNN(BaseActivation):
         activation_pool (list, optional): List of activation functions to use.
             Default: [nn.Tanh(), nn.ReLU(), nn.SiLU(), nn.Identity()]
         init_a (float, optional): Initial value for the vertical scaling parameters a. Default: 1.0
-        init_b (float, optional): Initial value for the horizontal scaling parameters b. Default: 1.0
+        init_b (float, optional): Initial value for the horizontal scaling parameters b. Default: 1.0 # noqa: E501
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
@@ -587,7 +587,7 @@ class ChPAF(BaseActivation):
     :math:`\text{ChPAF}(z) = \sum_{j=0}^{k} a_j C_j(z)`
 
     where :math:`a_j` are learnable parameters, :math:`k` is a fixed hyperparameter denoting the
-    maximum order of used Chebyshev polynomials, and :math:`C_j(z)` is a Chebyshev polynomial of order j.
+    maximum order of used Chebyshev polynomials, and :math:`C_j(z)` is a Chebyshev polynomial of order j. # noqa: E501
 
     Args:
         k (int, optional): Maximum order of Chebyshev polynomials. Default: 3
@@ -638,7 +638,7 @@ class LPAF(BaseActivation):
     :math:`\text{LPAF}(z) = \sum_{j=0}^{k} a_j G_j(z)`
 
     where :math:`a_j` are learnable parameters, :math:`k` is a fixed hyperparameter denoting the
-    maximum order of used Legendre polynomials, and :math:`G_j(z)` is a Legendre polynomial of order j.
+    maximum order of used Legendre polynomials, and :math:`G_j(z)` is a Legendre polynomial of order j. # noqa: E501
 
     Args:
         k (int, optional): Maximum order of Legendre polynomials. Default: 3
@@ -691,7 +691,7 @@ class HPAF(BaseActivation):
     :math:`\text{HPAF}(z) = \sum_{j=0}^{k} a_j H_j(z)`
 
     where :math:`a_j` are learnable parameters, :math:`k` is a fixed hyperparameter denoting the
-    maximum order of used Hermite polynomials, and :math:`H_j(z)` is a Hermite polynomial of order j.
+    maximum order of used Hermite polynomials, and :math:`H_j(z)` is a Hermite polynomial of order j. # noqa: E501
 
     Args:
         order (int, optional): Maximum order of Hermite polynomials. Default: 5

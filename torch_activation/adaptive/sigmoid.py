@@ -70,7 +70,7 @@ class GeneralizedHyperbolicTangent(BaseActivation):
     r"""
     Applies the Generalized Hyperbolic Tangent function:
 
-    :math:`\text{GeneralizedHyperbolicTangent}(x) = a \cdot \frac{1 - \exp(-b \cdot x)}{1 + \exp(-b \cdot x)}`
+    :math:`\text{GeneralizedHyperbolicTangent}(x) = a \cdot \frac{1 - \exp(-b \cdot x)}{1 + \exp(-b \cdot x)}` # noqa: E501
 
     Args:
         a (float, optional): Amplitude parameter. Default: 1.0
@@ -286,7 +286,7 @@ class TanhSoft(BaseActivation):
 
     :math:`\text{TanhSoft}(x) = \tanh(a \cdot x + b \cdot \exp(c \cdot x)) \cdot \ln(d + \exp(x))`
 
-    where :math:`a \in (-\infty, 1]`, :math:`b \in [0, \infty)`, :math:`c \in (0, \infty)`, :math:`d \in [0, 1]`.
+    where :math:`a \in (-\infty, 1]`, :math:`b \in [0, \infty)`, :math:`c \in (0, \infty)`, :math:`d \in [0, 1]`. # noqa: E501
 
     Args:
         a (float, optional): Parameter for linear term. Default: 0.5
@@ -610,10 +610,10 @@ class STACTanh(BaseActivation):
     r"""
     Applies the Slope and Threshold Adaptive Activation Function with tanh:
 
-    :math:`\text{STAC-tanh}(x) = \begin{cases} 
+    :math:`\text{STAC-tanh}(x) = \begin{cases}
         \tanh(-a) + b \cdot (x + a), & x < -a \\
         \tanh(x), & -a \leq x \leq a \\
-        \tanh(a) + b \cdot (x - a), & x > a 
+        \tanh(a) + b \cdot (x - a), & x > a
     \end{cases}`
 
     Args:

@@ -1,6 +1,5 @@
 import torch
 import torch.nn as nn
-import torch.nn.functional as F
 from torch import Tensor
 
 from torch_activation import register_activation
@@ -12,7 +11,7 @@ class SReLU(BaseActivation):
     r"""
     Applies the S-shaped Rectified Linear Unit (SReLU) function:
 
-    :math:`\text{SReLU}(z_i) = \begin{cases} 
+    :math:`\text{SReLU}(z_i) = \begin{cases}
     t^r_i + a^r_i(z_i - t^r_i), & z_i \geq t^r_i \\
     z_i, & t^r_i > z_i > t^l_i \\
     t^l_i + a^l_i(z_i - t^l_i), & z_i \leq t^l_i
@@ -25,7 +24,7 @@ class SReLU(BaseActivation):
         init_tl (float, optional): Initial value for the left threshold parameter tl. Default: -1.0
         init_ar (float, optional): Initial value for the right slope parameter ar. Default: 0.1
         init_al (float, optional): Initial value for the left slope parameter al. Default: 0.1
-        fix_init_epochs (int, optional): Number of epochs to keep parameters fixed at initialization. Default: 0
+        fix_init_epochs (int, optional): Number of epochs to keep parameters fixed at initialization. Default: 0 # noqa: E501
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
@@ -87,7 +86,7 @@ class NActivation(BaseActivation):
     r"""
     Applies the N-Activation function:
 
-    :math:`\text{N-Activation}(z_i) = \begin{cases} 
+    :math:`\text{N-Activation}(z_i) = \begin{cases}
     z_i - 2t_{i,min}, & z_i < t_{i,min} \\
     -z_i, & t_{i,min} \leq z_i \leq t_{i,max} \\
     z_i - 2t_{i,max}, & z_i > t_{i,max}
@@ -127,7 +126,7 @@ class ALiSA(BaseActivation):
     r"""
     Applies the Adaptive Linearized Sigmoidal Activation (ALiSA) function:
 
-    :math:`\text{ALiSA}(z_i) = \begin{cases} 
+    :math:`\text{ALiSA}(z_i) = \begin{cases}
     a^r_i z_i - a^r_i + 1, & z_i \geq 1 \\
     z_i, & 1 > z_i > 0 \\
     a^l_i z_i, & z_i \leq 0
@@ -164,7 +163,7 @@ class LiSA(BaseActivation):
     r"""
     Applies the Linearized Sigmoidal Activation (LiSA) function:
 
-    :math:`\text{LiSA}(z_i) = \begin{cases} 
+    :math:`\text{LiSA}(z_i) = \begin{cases}
     a^r z_i - a^r + 1, & z_i \geq 1 \\
     z_i, & 1 > z_i > 0 \\
     a^l z_i, & z_i \leq 0

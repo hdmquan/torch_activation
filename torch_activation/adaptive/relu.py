@@ -124,7 +124,7 @@ class DELU(BaseActivation):
     r"""
     Applies the DELU activation function:
 
-    :math:`\text{DELU}(x) = \begin{cases} \text{SiLU}(x), & x \leq 0 \\ (n + 0.5) \cdot x + |\exp(-x) - 1|, & x > 0 \end{cases}`
+    :math:`\text{DELU}(x) = \begin{cases} \text{SiLU}(x), & x \leq 0 \\ (n + 0.5) \cdot x + |\exp(-x) - 1|, & x > 0 \end{cases}` # noqa: E501
 
 
      See: https://doi.org/10.20944/preprints202301.0463.v1
@@ -207,7 +207,7 @@ class PReLU(BaseActivation):
             self.a = Tensor([a])
 
     def extra_repr(self):
-        a_val = self.a.item() if hasattr(self.a, 'item') else self.a
+        a_val = self.a.item() if hasattr(self.a, "item") else self.a
         return f"a={a_val:.4f}"
 
     def _forward(self, x) -> Tensor:
@@ -269,7 +269,7 @@ class MarReLU(BaseActivation):
     r"""
     Applies the Margin ReLU activation function:
 
-    :math:`\text{MarReLU}(x) = \max(x, a) = \begin{cases} x, & x - a \geq 0 \\ a, & x - a < 0 \end{cases}`
+    :math:`\text{MarReLU}(x) = \max(x, a) = \begin{cases} x, & x - a \geq 0 \\ a, & x - a < 0 \end{cases}` # noqa: E501
 
     Args:
         a (float, optional): Margin threshold. Default: 0.0
@@ -313,7 +313,7 @@ class RPReLU(BaseActivation):
     r"""
     Applies the React-PReLU activation function:
 
-    :math:`\text{RPReLU}(x) = \begin{cases} x - a + b, & x \geq a \\ c(x - a) + b, & x < a \end{cases}`
+    :math:`\text{RPReLU}(x) = \begin{cases} x - a + b, & x \geq a \\ c(x - a) + b, & x < a \end{cases}` # noqa: E501
 
     Args:
         a (float, optional): Threshold parameter. Default: 0.0
@@ -374,7 +374,7 @@ class LeLeLU(BaseActivation):
     r"""
     Applies the Leaky Learnable ReLU activation function:
 
-    :math:`\text{LeLeLU}(x) = \begin{cases} a \cdot x, & x \geq 0 \\ 0.01 \cdot a \cdot x, & x < 0 \end{cases}`
+    :math:`\text{LeLeLU}(x) = \begin{cases} a \cdot x, & x \geq 0 \\ 0.01 \cdot a \cdot x, & x < 0 \end{cases}` # noqa: E501
 
     Args:
         a (float, optional): Scaling factor. Default: 1.0
@@ -428,7 +428,7 @@ class PREU(BaseActivation):
     r"""
     Applies the Parametric Rectified Exponential Unit activation function:
 
-    :math:`\text{PREU}(x) = \begin{cases} a \cdot x, & x \geq 0 \\ a \cdot x \cdot \exp(b \cdot x), & x < 0 \end{cases}`
+    :math:`\text{PREU}(x) = \begin{cases} a \cdot x, & x \geq 0 \\ a \cdot x \cdot \exp(b \cdot x), & x < 0 \end{cases}` # noqa: E501
 
     Args:
         a (float, optional): Scaling factor. Default: 1.0
@@ -483,7 +483,7 @@ class RTReLU(BaseActivation):
     r"""
     Applies the Randomly Translational PReLU activation function:
 
-    :math:`\text{RT-PReLU}(x) = \begin{cases} x, & x + b \geq 0 \\ \frac{x}{a}, & x + b < 0 \end{cases}`
+    :math:`\text{RT-PReLU}(x) = \begin{cases} x, & x + b \geq 0 \\ \frac{x}{a}, & x + b < 0 \end{cases}` # noqa: E501
 
     where :math:`b \sim N(0, \sigma^2)`
 
@@ -595,7 +595,7 @@ class SAU(BaseActivation):
     r"""
     Applies the Smooth Activation Unit function:
 
-    :math:`\text{SAU}(x) = (\text{PReLU}_{a} * \phi_{b})(x) = x \left(a + (1-a) \cdot \Phi(bx)\right) + \frac{1-a}{\sqrt{2\pi}} \exp\left(-\frac{b^2 x^2}{2}\right)`
+    :math:`\text{SAU}(x) = (\text{PReLU}_{a} * \phi_{b})(x) = x \left(a + (1-a) \cdot \Phi(bx)\right) + \frac{1-a}{\sqrt{2\pi}} \exp\left(-\frac{b^2 x^2}{2}\right)` # noqa: E501
 
     where :math:`\Phi(z) = \frac{1 + \text{erf}(z/\sqrt{2})}{2}` is the standard normal CDF.
 
@@ -630,7 +630,7 @@ class SAU(BaseActivation):
 
     def _forward(self, x) -> Tensor:
         phi = (1 + torch.erf(self.b * x / math.sqrt(2))) / 2
-        gauss = (1 - self.a) / math.sqrt(2 * math.pi) * torch.exp(-self.b ** 2 * x ** 2 / 2)
+        gauss = (1 - self.a) / math.sqrt(2 * math.pi) * torch.exp(-self.b**2 * x**2 / 2)
         return x * (self.a + (1 - self.a) * phi) + gauss
 
 
@@ -644,7 +644,7 @@ class ProbAct(BaseActivation):
     where :math:`e \sim N(0, 1)` and :math:`g(x)` is a base activation function.
 
     Args:
-        base_activation (callable, optional): Base activation function. Default: ``torch.nn.functional.relu``
+        base_activation (callable, optional): Base activation function. Default: ``torch.nn.functional.relu`` # noqa: E501
         sigma (float, optional): Standard deviation of the noise. Default: 0.1
         learnable (bool, optional): optionally make ``sigma`` trainable. Default: ``False``
         inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
@@ -802,7 +802,7 @@ class DLReLU(BaseActivation):
     r"""
     Applies the Dynamic Leaky ReLU function:
 
-    :math:`\text{DLReLU}(x) = \begin{cases} x, & x \geq 0 \\ a \cdot b_t \cdot x, & x < 0 \end{cases}`
+    :math:`\text{DLReLU}(x) = \begin{cases} x, & x \geq 0 \\ a \cdot b_t \cdot x, & x < 0 \end{cases}` # noqa: E501
 
     where :math:`b_t = \text{MSE}_{t-1}` is the mean squared error from the previous iteration.
 
@@ -864,9 +864,9 @@ class ExpDLReLU(BaseActivation):
     r"""
     Applies the Exponential Dynamic Leaky ReLU function:
 
-    :math:`\text{exp-DLReLU}(x) = \begin{cases} x, & x \geq 0 \\ a \cdot c_t \cdot x, & x < 0 \end{cases}`
+    :math:`\text{exp-DLReLU}(x) = \begin{cases} x, & x \geq 0 \\ a \cdot c_t \cdot x, & x < 0 \end{cases}` # noqa: E501
 
-    where :math:`c_t = \exp(-\text{MSE}_{t-1})` is the exponential of the negative mean squared error from the previous iteration.
+    where :math:`c_t = \exp(-\text{MSE}_{t-1})` is the exponential of the negative mean squared error from the previous iteration. # noqa: E501
 
     Args:
         a (float, optional): Scaling factor. Default: 0.01
@@ -970,7 +970,7 @@ class FReLU(BaseActivation):
     r"""
     Applies the Flexible ReLU function:
 
-    :math:`\text{FReLU}(x) = \text{ReLU}(x) + b = \begin{cases} x + b, & x \geq 0 \\ b, & x < 0 \end{cases}`
+    :math:`\text{FReLU}(x) = \text{ReLU}(x) + b = \begin{cases} x + b, & x \geq 0 \\ b, & x < 0 \end{cases}` # noqa: E501
 
     Args:
         b (float, optional): Bias parameter. Default: 0.0
@@ -1076,9 +1076,9 @@ class AReLU(BaseActivation):
     r"""
     Applies the Attention-based ReLU function:
 
-    :math:`\text{AReLU}(x) = \begin{cases} (1 + \sigma(b)) \cdot x, & x \geq 0 \\ C(a) \cdot x, & x < 0 \end{cases}`
+    :math:`\text{AReLU}(x) = \begin{cases} (1 + \sigma(b)) \cdot x, & x \geq 0 \\ C(a) \cdot x, & x < 0 \end{cases}` # noqa: E501
 
-    where :math:`\sigma` is the sigmoid function and :math:`C(a)` is a function of parameter :math:`a`.
+    where :math:`\sigma` is the sigmoid function and :math:`C(a)` is a function of parameter :math:`a`. # noqa: E501
 
     Args:
         a (float, optional): Parameter for negative slope. Default: 0.9
@@ -1191,7 +1191,7 @@ class DualLine(BaseActivation):
     r"""
     Applies the Dual Line activation function:
 
-    :math:`\text{DualLine}(x) = \begin{cases} a \cdot x + m, & x \geq 0 \\ b \cdot x + m, & x < 0 \end{cases}`
+    :math:`\text{DualLine}(x) = \begin{cases} a \cdot x + m, & x \geq 0 \\ b \cdot x + m, & x < 0 \end{cases}` # noqa: E501
 
     Args:
         a (float, optional): Slope for positive values. Default: 1.0
@@ -1250,7 +1250,7 @@ class PiLU(BaseActivation):
     r"""
     Applies the Piecewise Linear Unit function:
 
-    :math:`\text{PiLU}(x) = \begin{cases} a \cdot x + c(1 - a), & x \geq c \\ b \cdot x + c(1 - b), & x < c \end{cases}`
+    :math:`\text{PiLU}(x) = \begin{cases} a \cdot x + c(1 - a), & x \geq c \\ b \cdot x + c(1 - b), & x < c \end{cases}` # noqa: E501
 
     Args:
         a (float, optional): Slope for values above threshold. Default: 1.0
@@ -1312,14 +1312,14 @@ class DPAF(BaseActivation):
     r"""
     Applies the Dual Parametric Activation Function:
 
-    :math:`\text{DPAF}(x) = \begin{cases} a \cdot g(x) + m, & x \geq 0 \\ g(x) + m, & x < 0 \end{cases}`
+    :math:`\text{DPAF}(x) = \begin{cases} a \cdot g(x) + m, & x \geq 0 \\ g(x) + m, & x < 0 \end{cases}` # noqa: E501
 
     where :math:`g(x)` is a base activation function.
 
     Args:
         a (float, optional): Scaling factor for positive values. Default: 1.0
         m (float, optional): Bias term. Default: 0.0
-        base_activation (callable, optional): Base activation function. Default: ``torch.nn.functional.relu``
+        base_activation (callable, optional): Base activation function. Default: ``torch.nn.functional.relu`` # noqa: E501
         learnable (bool, optional): optionally make parameters trainable. Default: ``False``
         inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
@@ -1374,15 +1374,15 @@ class FPAF(BaseActivation):
     r"""
     Applies the Fully Parameterized Activation Function:
 
-    :math:`\text{FPAF}(x) = \begin{cases} a \cdot g_1(x), & x \geq 0 \\ b \cdot g_2(x), & x < 0 \end{cases}`
+    :math:`\text{FPAF}(x) = \begin{cases} a \cdot g_1(x), & x \geq 0 \\ b \cdot g_2(x), & x < 0 \end{cases}` # noqa: E501
 
     where :math:`g_1(x)` and :math:`g_2(x)` are base activation functions.
 
     Args:
         a (float, optional): Scaling factor for positive values. Default: 1.0
         b (float, optional): Scaling factor for negative values. Default: 1.0
-        pos_activation (callable, optional): Activation for positive values. Default: ``torch.nn.functional.relu``
-        neg_activation (callable, optional): Activation for negative values. Default: ``torch.nn.functional.relu``
+        pos_activation (callable, optional): Activation for positive values. Default: ``torch.nn.functional.relu`` # noqa: E501
+        neg_activation (callable, optional): Activation for negative values. Default: ``torch.nn.functional.relu`` # noqa: E501
         learnable (bool, optional): optionally make parameters trainable. Default: ``False``
 
     Shape:
@@ -1391,7 +1391,7 @@ class FPAF(BaseActivation):
 
     Examples::
 
-        >>> m = torch_activation.FPAF(a=1.0, b=0.5, pos_activation=torch.tanh, neg_activation=torch.sigmoid)
+        >>> m = torch_activation.FPAF(a=1.0, b=0.5, pos_activation=torch.tanh, neg_activation=torch.sigmoid) # noqa: E501
         >>> x = torch.randn(2)
         >>> output = m(x)
 
@@ -1428,7 +1428,7 @@ class EPReLU(BaseActivation):
     r"""
     Applies the Elastic PReLU function:
 
-    :math:`\text{EPReLU}(x) = \begin{cases} k \cdot x, & x \geq 0 \\ \frac{x}{a}, & x < 0 \end{cases}`
+    :math:`\text{EPReLU}(x) = \begin{cases} k \cdot x, & x \geq 0 \\ \frac{x}{a}, & x < 0 \end{cases}` # noqa: E501
 
     where :math:`k \sim U(1 - \alpha, 1 + \alpha)` is sampled from a uniform distribution.
 
@@ -1487,7 +1487,7 @@ class PairedReLU(BaseActivation):
     r"""
     Applies the Paired ReLU function:
 
-    :math:`\text{PairedReLU}(x) = \begin{pmatrix} \max(a \cdot x - b, 0) \\ \max(c \cdot x - d, 0) \end{pmatrix}`
+    :math:`\text{PairedReLU}(x) = \begin{pmatrix} \max(a \cdot x - b, 0) \\ \max(c \cdot x - d, 0) \end{pmatrix}` # noqa: E501
 
     Args:
         a (float, optional): Scaling factor for first component. Default: 0.5
@@ -1594,11 +1594,11 @@ class Hat(BaseActivation):
     r"""
     Applies the Hat activation function:
 
-    :math:`\text{Hat}(x) = \begin{cases} 
+    :math:`\text{Hat}(x) = \begin{cases}
         0, & x < 0 \\
         x, & 0 \leq x \leq \frac{a}{2} \\
         a - x, & \frac{a}{2} \leq x \leq a \\
-        0, & x > a 
+        0, & x > a
     \end{cases}`
 
     Args:
@@ -1723,7 +1723,7 @@ class PTELU(BaseActivation):
     r"""
     Applies the Parametric Tanh Exponential Linear Unit function:
 
-    :math:`\text{PTELU}(x) = \begin{cases} x, & x \geq 0 \\ a \cdot \tanh(b \cdot x), & x < 0 \end{cases}`
+    :math:`\text{PTELU}(x) = \begin{cases} x, & x \geq 0 \\ a \cdot \tanh(b \cdot x), & x < 0 \end{cases}` # noqa: E501
 
     Args:
         a (float, optional): Scaling factor for negative values. Default: 1.0
@@ -1777,10 +1777,10 @@ class TaLU(BaseActivation):
     r"""
     Applies the Tangent Linear Unit function:
 
-    :math:`\text{TaLU}(x) = \begin{cases} 
+    :math:`\text{TaLU}(x) = \begin{cases}
         x, & x \geq 0 \\
         \tanh(x), & a < x < 0 \\
-        \tanh(a), & x \leq a 
+        \tanh(a), & x \leq a
     \end{cases}`
 
     Args:
@@ -1844,10 +1844,10 @@ class PTaLU(BaseActivation):
     r"""
     Applies the Parametric Tangent Linear Unit function:
 
-    :math:`\text{PTaLU}(x) = \begin{cases} 
+    :math:`\text{PTaLU}(x) = \begin{cases}
         x, & x \geq b \\
         \tanh(x), & a < x < b \\
-        \tanh(a), & x \leq a 
+        \tanh(a), & x \leq a
     \end{cases}`
 
     Args:
@@ -2100,10 +2100,10 @@ class ReLTanh(BaseActivation):
     r"""
     Applies the Rectified Linear Tanh function:
 
-    :math:`\text{ReLTanh}(x) = \begin{cases} 
+    :math:`\text{ReLTanh}(x) = \begin{cases}
         \tanh'(a)(x - a) + \tanh(a), & x \leq a \\
         \tanh(x), & a < x < b \\
-        \tanh'(b)(x - b) + \tanh(b), & x \geq b 
+        \tanh'(b)(x - b) + \tanh(b), & x \geq b
     \end{cases}`
 
     where :math:`\tanh'(x) = \frac{4}{(\exp(x) + \exp(-x))^2}` is the derivative of tanh.
@@ -2241,9 +2241,9 @@ class ReBLU(BaseActivation):
     r"""
     Applies the Rectified Bendable Linear Unit function:
 
-    :math:`\text{ReBLU}(x) = \begin{cases} 
+    :math:`\text{ReBLU}(x) = \begin{cases}
         a \cdot \sqrt{x^2 + 1} - 1 + x, & x > 0 \\
-        0, & x \leq 0 
+        0, & x \leq 0
     \end{cases}`
 
     where :math:`a \in [-1, 1]` controls the bendability.
@@ -2289,13 +2289,13 @@ class ReBLU(BaseActivation):
 
 
 @register_activation
-class DELU(BaseActivation):
+class DELU(BaseActivation):  # noqa: F811
     r"""
     Applies the DELU activation function:
 
-    :math:`\text{DELU}(x) = \begin{cases} 
+    :math:`\text{DELU}(x) = \begin{cases}
         (a + 0.5) \cdot x + |\exp(-x) - 1|, & x \geq 0 \\
-        x \cdot \sigma(x), & x < 0 
+        x \cdot \sigma(x), & x < 0
     \end{cases}`
 
     where :math:`\sigma(x)` is the sigmoid function.
@@ -2448,9 +2448,9 @@ class PSwish(BaseActivation):
     r"""
     Applies the Parametric Swish activation function:
 
-    :math:`\text{p-swish}(x) = \begin{cases} 
+    :math:`\text{p-swish}(x) = \begin{cases}
         a \cdot x \cdot \sigma(b \cdot x), & x \leq c \\
-        x, & x > c 
+        x, & x > c
     \end{cases}`
 
     where :math:`\sigma(x)` is the sigmoid function.
@@ -2514,9 +2514,9 @@ class PELU(BaseActivation):
     r"""
     Applies the Parametric Exponential Linear Unit function:
 
-    :math:`\text{PELU}(x) = \begin{cases} 
+    :math:`\text{PELU}(x) = \begin{cases}
         \frac{a}{b} \cdot x, & x \geq 0 \\
-        a \cdot \left(\exp\left(\frac{x}{b}\right) - 1\right), & x < 0 
+        a \cdot \left(\exp\left(\frac{x}{b}\right) - 1\right), & x < 0
     \end{cases}`
 
     Args:
@@ -2579,9 +2579,9 @@ class EDELU(BaseActivation):
     r"""
     Applies the Extended Exponential Linear Unit function:
 
-    :math:`\text{EDELU}(x) = \begin{cases} 
+    :math:`\text{EDELU}(x) = \begin{cases}
         x, & x \geq c \\
-        \frac{\exp(a \cdot x) - 1}{b}, & x < c 
+        \frac{\exp(a \cdot x) - 1}{b}, & x < c
     \end{cases}`
 
     where :math:`b \cdot c = \exp(a \cdot c) - 1` to ensure continuity at :math:`x = c`.
@@ -2709,7 +2709,7 @@ class AdaptiveCombination2(BaseActivation):
     :note: This is a temporary naming.
     Applies an adaptive combination of activation functions with sigmoid gating:
 
-    :math:`\text{AdaptiveCombination2}(x) = \sigma(a \cdot x) \cdot \text{PReLU}(x) + (1 - \sigma(a \cdot x)) \cdot \text{PELU}(x)`
+    :math:`\text{AdaptiveCombination2}(x) = \sigma(a \cdot x) \cdot \text{PReLU}(x) + (1 - \sigma(a \cdot x)) \cdot \text{PELU}(x)` # noqa: E501
 
     where :math:`\sigma(x)` is the sigmoid function.
 
@@ -2894,9 +2894,9 @@ class MPELU(BaseActivation):
     r"""
     Applies the Multiple Parametric Exponential Linear Unit function:
 
-    :math:`\text{MPELU}(x) = \begin{cases} 
+    :math:`\text{MPELU}(x) = \begin{cases}
         x, & x \geq 0 \\
-        a \cdot (\exp(b \cdot x) - 1), & x < 0 
+        a \cdot (\exp(b \cdot x) - 1), & x < 0
     \end{cases}`
 
     Args:
@@ -2951,7 +2951,7 @@ class PE2ReLU(BaseActivation):
     r"""
     Applies the P-E2-ReLU function:
 
-    :math:`\text{P-E2-ReLU}(x) = a \cdot \text{ReLU}(x) + b \cdot \text{ELU}(x) + (1 - a - b) \cdot (-\text{ELU}(-x))`
+    :math:`\text{P-E2-ReLU}(x) = a \cdot \text{ReLU}(x) + b \cdot \text{ELU}(x) + (1 - a - b) \cdot (-\text{ELU}(-x))` # noqa: E501
 
     Args:
         a (float, optional): Weight for ReLU component. Default: 0.4
@@ -3146,9 +3146,9 @@ class CELU(BaseActivation):
     r"""
     Applies the Continuously Differentiable ELU function:
 
-    :math:`\text{CELU}(x) = \begin{cases} 
+    :math:`\text{CELU}(x) = \begin{cases}
         x, & x \geq 0 \\
-        a \cdot \left(\exp\left(\frac{x}{a}\right) - 1\right), & x < 0 
+        a \cdot \left(\exp\left(\frac{x}{a}\right) - 1\right), & x < 0
     \end{cases}`
 
     Args:
@@ -3193,9 +3193,9 @@ class ErfReLU(BaseActivation):
     r"""
     Applies the Erf-based ReLU function:
 
-    :math:`\text{ErfReLU}(x) = \begin{cases} 
+    :math:`\text{ErfReLU}(x) = \begin{cases}
         x, & x \geq 0 \\
-        a \cdot \text{erf}(x), & x < 0 
+        a \cdot \text{erf}(x), & x < 0
     \end{cases}`
 
     where :math:`\text{erf}(x)` is the error function.
@@ -3242,9 +3242,9 @@ class PSELU(BaseActivation):
     r"""
     Applies the Parametric Scaled Exponential Linear Unit function:
 
-    :math:`\text{PSELU}(x) = \begin{cases} 
+    :math:`\text{PSELU}(x) = \begin{cases}
         a \cdot x, & x \geq 0 \\
-        a \cdot b \cdot (\exp(x) - 1), & x < 0 
+        a \cdot b \cdot (\exp(x) - 1), & x < 0
     \end{cases}`
 
     Args:
@@ -3302,9 +3302,9 @@ class LPSELU(BaseActivation):
     r"""
     Applies the Leaky Parametric Scaled Exponential Linear Unit function:
 
-    :math:`\text{LPSELU}(x) = \begin{cases} 
+    :math:`\text{LPSELU}(x) = \begin{cases}
         a \cdot x, & x \geq 0 \\
-        a \cdot b \cdot (\exp(x) - 1) + c \cdot x, & x < 0 
+        a \cdot b \cdot (\exp(x) - 1) + c \cdot x, & x < 0
     \end{cases}`
 
     Args:
@@ -3366,9 +3366,9 @@ class LPSELU_RP(BaseActivation):
     r"""
     Applies the Leaky Parametric Scaled Exponential Linear Unit with Reposition Parameter function:
 
-    :math:`\text{LPSELU\_RP}(x) = \begin{cases} 
+    :math:`\text{LPSELU\_RP}(x) = \begin{cases}
         a \cdot x + m, & x \geq 0 \\
-        a \cdot b \cdot (\exp(x) - 1) + c \cdot x + m, & x < 0 
+        a \cdot b \cdot (\exp(x) - 1) + c \cdot x + m, & x < 0
     \end{cases}`
 
     Args:
@@ -3434,9 +3434,9 @@ class ShELU(BaseActivation):
     r"""
     Applies the Shifted ELU (horizontal) function:
 
-    :math:`\text{ShELU}(x) = \begin{cases} 
+    :math:`\text{ShELU}(x) = \begin{cases}
         x + b, & x + b \geq 0 \\
-        a \cdot (\exp(x + b) - 1), & x + b < 0 
+        a \cdot (\exp(x + b) - 1), & x + b < 0
     \end{cases}`
 
     Args:
@@ -3494,9 +3494,9 @@ class SvELU(BaseActivation):
     r"""
     Applies the Shifted ELU (vertical) function:
 
-    :math:`\text{SvELU}(x) = \begin{cases} 
+    :math:`\text{SvELU}(x) = \begin{cases}
         x + b, & x \geq 0 \\
-        a \cdot (\exp(x) - 1) + b, & x < 0 
+        a \cdot (\exp(x) - 1) + b, & x < 0
     \end{cases}`
 
     Args:
@@ -3554,9 +3554,9 @@ class PShELU(BaseActivation):
     r"""
     Applies the PELU with Horizontal Shift function:
 
-    :math:`\text{PShELU}(x) = \begin{cases} 
+    :math:`\text{PShELU}(x) = \begin{cases}
         \frac{a}{b} \cdot (x + c), & x + c \geq 0 \\
-        a \cdot \left(\exp\left(\frac{x + c}{b}\right) - 1\right), & x + c < 0 
+        a \cdot \left(\exp\left(\frac{x + c}{b}\right) - 1\right), & x + c < 0
     \end{cases}`
 
     Args:
@@ -3620,9 +3620,9 @@ class PSvELU(BaseActivation):
     r"""
     Applies the PELU with Vertical Shift function:
 
-    :math:`\text{PSvELU}(x) = \begin{cases} 
+    :math:`\text{PSvELU}(x) = \begin{cases}
         \frac{a}{b} \cdot x + c, & x \geq 0 \\
-        a \cdot \left(\exp\left(\frac{x}{b}\right) - 1\right) + c, & x < 0 
+        a \cdot \left(\exp\left(\frac{x}{b}\right) - 1\right) + c, & x < 0
     \end{cases}`
 
     Args:
@@ -3684,9 +3684,9 @@ class TSwish(BaseActivation):
     r"""
     Applies the Tunable Swish function:
 
-    :math:`\text{T-swish}(x) = \begin{cases} 
+    :math:`\text{T-swish}(x) = \begin{cases}
         x, & x \geq c \\
-        a \cdot x \cdot \sigma(b \cdot x), & x < c 
+        a \cdot x \cdot \sigma(b \cdot x), & x < c
     \end{cases}`
 
     where :math:`\sigma(x)` is the sigmoid function.
@@ -3751,15 +3751,15 @@ class RePSU(BaseActivation):
     :math:`\text{RePSU}(x) = a \cdot \text{RePSKU}(x) + (1 - a) \cdot \text{RePSHU}(x)`
 
     where:
-    
-    :math:`\text{RePSKU}(x) = \begin{cases} 
+
+    :math:`\text{RePSKU}(x) = \begin{cases}
         \frac{x - b}{1 + \exp\left(-\text{sgn}(x - c) \frac{|x - c|^{d}}{e}\right)}, & x \geq b \\
-        0, & x < b 
+        0, & x < b
     \end{cases}`
-    
-    :math:`\text{RePSHU}(x) = \begin{cases} 
+
+    :math:`\text{RePSHU}(x) = \begin{cases}
         2x - \text{RePSKU}(x), & x \geq b \\
-        0, & x < b 
+        0, & x < b
     \end{cases}`
 
     Args:
@@ -3834,9 +3834,9 @@ class PDELU(BaseActivation):
     r"""
     Applies the Parametric Deformable Exponential Linear Unit function:
 
-    :math:`\text{PDELU}(x) = \begin{cases} 
+    :math:`\text{PDELU}(x) = \begin{cases}
         x, & x \geq 0 \\
-        a \cdot \left[1 + (1 - b) \cdot x\right]^{\frac{1}{1 - b}} - 1, & x < 0 
+        a \cdot \left[1 + (1 - b) \cdot x\right]^{\frac{1}{1 - b}} - 1, & x < 0
     \end{cases}`
 
     Args:
@@ -3903,9 +3903,9 @@ class EELU(BaseActivation):
     r"""
     Applies the Elastic Exponential Linear Unit function:
 
-    :math:`\text{EELU}(x) = \begin{cases} 
+    :math:`\text{EELU}(x) = \begin{cases}
         k \cdot x, & x \geq 0 \\
-        a \cdot (\exp(b \cdot x) - 1), & x < 0 
+        a \cdot (\exp(b \cdot x) - 1), & x < 0
     \end{cases}`
 
     where :math:`k \sim \text{truncated } N(1, \sigma^2)` and :math:`\sigma \sim U(0, \epsilon)`.
@@ -3978,7 +3978,7 @@ class PFPLUS(BaseActivation):
 
     :math:`\text{PFPLUS}(x) = a \cdot x \cdot (1 - b \cdot x)^{H(x) - 1}`
 
-    where :math:`H(x) = \begin{cases} 1, & x \geq 0 \\ 0, & x < 0 \end{cases}` is the Heaviside step function.
+    where :math:`H(x) = \begin{cases} 1, & x \geq 0 \\ 0, & x < 0 \end{cases}` is the Heaviside step function. # noqa: E501
 
     Args:
         a (float, optional): Scale parameter. Default: 1.0

@@ -7,7 +7,7 @@ class BaseActivation(nn.Module, ABC):
     """
     Abstract base class for activation functions with optional in-place support.
 
-    - If `inplace=True`, but the subclass does not implement `_forward_inplace()`, it raises `NotImplementedError`.
+    - If `inplace=True`, but the subclass does not implement `_forward_inplace()`, it raises `NotImplementedError`. # noqa: E501
     """
 
     def __init__(self, inplace=False):
@@ -42,7 +42,7 @@ class BaseActivation(nn.Module, ABC):
 class MyActivation(BaseActivation):
     '''
     My activation function. Define as:
-    
+
     :math:`y = x * 2`
 
     Args:

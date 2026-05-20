@@ -1,12 +1,8 @@
-from typing import Tuple
-
 import torch
-import torch.nn as nn
 import torch.nn.functional as F
 from torch import Tensor
 
 import torch_activation as tac
-from torch_activation import register_activation
 from torch_activation.base import BaseActivation
 from torch_activation.utils import split
 
@@ -174,7 +170,7 @@ class SwiGLU(BaseActivation):
 
     :math:`\text{SwiGLU}(z, z') = z \otimes \text{swish}(z')`
 
-    where :math:`\text{swish}(x) = x \cdot \sigma(x)` and :math:`\otimes` is element-wise multiplication.
+    where :math:`\text{swish}(x) = x \cdot \sigma(x)` and :math:`\otimes` is element-wise multiplication. # noqa: E501
 
     Args:
         dim (int, optional): The dimension on which to split the input. Default: -1

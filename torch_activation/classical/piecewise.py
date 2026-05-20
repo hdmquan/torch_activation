@@ -1,7 +1,6 @@
 import math
 
 import torch
-import torch.nn as nn
 from torch import Tensor
 
 from torch_activation import register_activation
@@ -13,17 +12,17 @@ class BiFiring(BaseActivation):
     r"""
     Applies the Bi-Firing activation function (bfire):
 
-    :math:`\text{BiFiring}(z) = \begin{cases} 
+    :math:`\text{BiFiring}(z) = \begin{cases}
     z - \frac{a}{2}, & z > a \\
     \frac{z^2}{2a}, & -a \leq z \leq a \\
-    -z - \frac{a}{2}, & z < -a 
+    -z - \frac{a}{2}, & z < -a
     \end{cases}`
 
     A smoothed variant of vReLU that becomes vReLU as a→0.
 
     Args:
         a (float, optional): smoothing hyperparameter. Default: ``1.0``
-        inplace (bool, optional): parameter kept for API consistency, but operation 
+        inplace (bool, optional): parameter kept for API consistency, but operation
                                  cannot be done in-place. Default: ``False``
 
     Shape:
@@ -59,7 +58,7 @@ class BoundedBiFiring(BaseActivation):
     r"""
     Applies the Bounded Bi-Firing activation function (bbfire):
 
-    :math:`\text{BoundedBiFiring}(z) = \begin{cases} 
+    :math:`\text{BoundedBiFiring}(z) = \begin{cases}
     b, & z < -b - \frac{a}{2} \\
     -z - \frac{a}{2}, & -b - \frac{a}{2} \leq z < -a \\
     \frac{z^2}{2a}, & -a \leq z \leq a \\
@@ -73,7 +72,7 @@ class BoundedBiFiring(BaseActivation):
     Args:
         a (float, optional): smoothing hyperparameter. Default: ``1.0``
         b (float, optional): bounding hyperparameter. Default: ``5.0``
-        inplace (bool, optional): parameter kept for API consistency, but operation 
+        inplace (bool, optional): parameter kept for API consistency, but operation
                                  cannot be done in-place. Default: ``False``
 
     Shape:
@@ -118,14 +117,14 @@ class PiecewiseMexicanHat(BaseActivation):
     r"""
     Applies the Piecewise Mexican-Hat activation function (PMAF):
 
-    :math:`\text{PMAF}(z) = \begin{cases} 
+    :math:`\text{PMAF}(z) = \begin{cases}
     \frac{1}{\sqrt{3}\pi} - \frac{1}{4}(1-(z+a)^2) \exp(-\frac{(z+a)^2}{2}), & z < 0 \\
     \frac{1}{\sqrt{3}\pi} - \frac{1}{4}(1-(z-a)^2) \exp(-\frac{(z-a)^2}{2}), & z \geq 0
     \end{cases}`
 
     Args:
         a (float, optional): shape parameter. Default: ``4.0``
-        inplace (bool, optional): parameter kept for API consistency, but operation 
+        inplace (bool, optional): parameter kept for API consistency, but operation
                                  cannot be done in-place. Default: ``False``
 
     Shape:
@@ -152,7 +151,7 @@ class PiecewiseRadialBasisFunction(BaseActivation):
     r"""
     Applies the Piecewise Radial Basis Function (PRBF):
 
-    :math:`\text{PRBF}(z) = \begin{cases} 
+    :math:`\text{PRBF}(z) = \begin{cases}
     \exp(-\frac{(z-2a)^2}{b^2}), & z \geq a \\
     \exp(-\frac{z^2}{b^2}), & -a < z < a \\
     \exp(-\frac{(z+2a)^2}{b^2}), & z \leq -a
@@ -161,7 +160,7 @@ class PiecewiseRadialBasisFunction(BaseActivation):
     Args:
         a (float, optional): shape parameter. Default: ``3.0``
         b (float, optional): scale parameter. Default: ``1.0``
-        inplace (bool, optional): parameter kept for API consistency, but operation 
+        inplace (bool, optional): parameter kept for API consistency, but operation
                                  cannot be done in-place. Default: ``False``
 
     Shape:

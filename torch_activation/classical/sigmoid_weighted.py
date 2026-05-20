@@ -164,7 +164,7 @@ class GELU(BaseActivation):
     r"""
     Applies the Gaussian Error Linear Unit activation function:
 
-    :math:`\text{GELU}(z) = z \cdot \Phi(z) = z \cdot \frac{1}{2} \left( 1 + \text{erf}\left(\frac{z}{\sqrt{2}}\right) \right)`
+    :math:`\text{GELU}(z) = z \cdot \Phi(z) = z \cdot \frac{1}{2} \left( 1 + \text{erf}\left(\frac{z}{\sqrt{2}}\right) \right)` # noqa: E501
 
     This is a wrapper around PyTorch's native F.gelu implementation.
 
@@ -220,7 +220,7 @@ class CaLU(BaseActivation):
     r"""
     Applies the Cauchy Linear Unit activation function:
 
-    :math:`\text{CaLU}(z) = z \cdot \Phi_{\text{Cauchy}}(z) = z \cdot \left( \frac{\arctan(z)}{\pi} + \frac{1}{2} \right)`
+    :math:`\text{CaLU}(z) = z \cdot \Phi_{\text{Cauchy}}(z) = z \cdot \left( \frac{\arctan(z)}{\pi} + \frac{1}{2} \right)` # noqa: E501
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
@@ -245,9 +245,9 @@ class LaLU(BaseActivation):
     r"""
     Applies the Laplace Linear Unit activation function:
 
-    :math:`\text{LaLU}(z) = z \cdot \Phi_{\text{Laplace}}(z) = z \cdot \begin{cases} 
-    1 - \frac{1}{2} \exp(-z), & z \geq 0 \\ 
-    \frac{1}{2} \exp(z), & z < 0 
+    :math:`\text{LaLU}(z) = z \cdot \Phi_{\text{Laplace}}(z) = z \cdot \begin{cases}
+    1 - \frac{1}{2} \exp(-z), & z \geq 0 \\
+    \frac{1}{2} \exp(z), & z < 0
     \end{cases}`
 
     Shape:
@@ -277,7 +277,7 @@ class LaLU(BaseActivation):
 
 # TODO: The paper mis-typed it as LaLU. Contact the author about it.
 @register_activation
-class CoLU(BaseActivation):
+class CoLU(BaseActivation):  # noqa: F811
     r"""
     Applies the Collapsing Linear Unit activation function:
 
@@ -314,7 +314,7 @@ class TSSwish(BaseActivation):
     r"""
     Applies the Triple State Swish activation function:
 
-    :math:`\text{TSS}(z) = z \cdot \frac{1}{1 + \exp(-z)} \left( \frac{1}{1 + \exp(-z)} + \frac{1}{1 + \exp(-z+a)} + \frac{1}{1 + \exp(-z+b)} \right)`
+    :math:`\text{TSS}(z) = z \cdot \frac{1}{1 + \exp(-z)} \left( \frac{1}{1 + \exp(-z)} + \frac{1}{1 + \exp(-z+a)} + \frac{1}{1 + \exp(-z+b)} \right)` # noqa: E501
 
     Args:
         a (float, optional): First shift parameter. Default: 1.0
@@ -586,7 +586,7 @@ class pLogish(BaseActivation):
 
 
 @register_activation
-class Phish(BaseActivation):
+class Phish(BaseActivation):  # noqa: F811
     r"""
     Applies the Phish activation function:
 
@@ -749,7 +749,7 @@ class DoubleSiLU(BaseActivation):
     r"""
     Applies the Double SiLU activation function:
 
-    :math:`\text{DoubleSiLU}(z) = z \cdot \frac{1}{1 + \exp\left(-z \cdot \frac{1}{1 + \exp(-z)}\right)}`
+    :math:`\text{DoubleSiLU}(z) = z \cdot \frac{1}{1 + \exp\left(-z \cdot \frac{1}{1 + \exp(-z)}\right)}` # noqa: E501
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
@@ -801,7 +801,7 @@ class TSiLU(BaseActivation):
     r"""
     Applies the Hyperbolic Tangent Sigmoid-Weighted Linear Unit activation function:
 
-    :math:`\text{TSiLU}(z) = \tanh\!\left(z \cdot \sigma(z)\right) = \frac{\exp\left(z \cdot \sigma(z)\right) - \exp\left(-z \cdot \sigma(z)\right)}{\exp\left(z \cdot \sigma(z)\right) + \exp\left(-z \cdot \sigma(z)\right)}`
+    :math:`\text{TSiLU}(z) = \tanh\!\left(z \cdot \sigma(z)\right) = \frac{\exp\left(z \cdot \sigma(z)\right) - \exp\left(-z \cdot \sigma(z)\right)}{\exp\left(z \cdot \sigma(z)\right) + \exp\left(-z \cdot \sigma(z)\right)}` # noqa: E501
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
@@ -1117,7 +1117,7 @@ class SiELU(BaseActivation):
     r"""
     Applies the Gaussian Error Linear Unit with Sigmoid Activation Functions:
 
-    :math:`\text{SiELU}(z) = z \cdot \sigma\!\left(2\sqrt{\frac{2}{\pi}}\left(z + 0.044715\, z^3\right)\right)`
+    :math:`\text{SiELU}(z) = z \cdot \sigma\!\left(2\sqrt{\frac{2}{\pi}}\left(z + 0.044715\, z^3\right)\right)` # noqa: E501
 
     where :math:`\sigma` is the sigmoid function.
 

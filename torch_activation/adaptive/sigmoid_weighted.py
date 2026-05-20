@@ -47,7 +47,7 @@ class Swish(BaseActivation):
             self.a = Tensor([a])
 
     def extra_repr(self):
-        a_val = self.a.item() if hasattr(self.a, 'item') else self.a
+        a_val = self.a.item() if hasattr(self.a, "item") else self.a
         return f"a={a_val:.4f}"
 
     def _forward(self, x) -> Tensor:
@@ -518,10 +518,10 @@ class AQuLU(BaseActivation):
     r"""
     Applies the Adaptive Quadratic Linear Unit function:
 
-    :math:`\text{AQuLU}(x) = \begin{cases} 
+    :math:`\text{AQuLU}(x) = \begin{cases}
         x, & x \geq \frac{1 - b}{a} \\
         a \cdot x^2 + b \cdot x, & -\frac{b}{a} \leq x < \frac{1 - b}{a} \\
-        0, & x < -\frac{b}{a} 
+        0, & x < -\frac{b}{a}
     \end{cases}`
 
     Args:
@@ -830,7 +830,7 @@ class GPSoftmax(BaseActivation):
 
     :math:`M_{a_i, b_i} = \text{GPM}_{a_i, b_i}(z)`
 
-    :math:`\text{GPM}_{\alpha, \beta}(x) = \frac{\ln\left(\sum_{k=1}^{N} \alpha^{\beta x_k}\right) - \ln(N)}{\beta \ln(\alpha)}`
+    :math:`\text{GPM}_{\alpha, \beta}(x) = \frac{\ln\left(\sum_{k=1}^{N} \alpha^{\beta x_k}\right) - \ln(N)}{\beta \ln(\alpha)}` # noqa: E501
 
 
     Args:
@@ -839,7 +839,7 @@ class GPSoftmax(BaseActivation):
         b (float, optional): Initial value for parameter `b`. Default is 1.0.
         c (float, optional): Initial value for parameter `c`. Default is 1.0.
         d (float, optional): Initial value for parameter `d`. Default is 1.0.
-        learnable (bool, optional): Whether the parameters `a`, `b`, `c`, and `d` are trainable. Default is False.
+        learnable (bool, optional): Whether the parameters `a`, `b`, `c`, and `d` are trainable. Default is False. # noqa: E501
         inplace (bool, optional): Whether to perform operations in-place. Default is False.
         **kwargs: Additional keyword arguments for the `BaseActivation` superclass.
 
@@ -877,7 +877,7 @@ class GPSoftmax(BaseActivation):
         super().__init__(**kwargs)
 
         def create_param(value: float) -> Tensor:
-            """Creates a learnable parameter if `learnable` is True; otherwise, returns a fixed tensor."""
+            """Creates a learnable parameter if `learnable` is True; otherwise, returns a fixed tensor."""  # noqa: E501
             tensor = torch.full(
                 (input_shape, 1), value, dtype=torch.float64
             )  # Initialize tensor with the given value
@@ -957,7 +957,7 @@ class GLSoftmax(BaseActivation):
 
     :math:`M_{a_i, b_i} = \text{GLM}_{a_i, b_i}(z)`
 
-    :math:`\text{GLM}_{\alpha, \beta}(x) = \frac{\ln \left( \frac{\sum_{k=1}^{N} \alpha^{(\beta+1)x_k}}{\sum_{k=1}^{N} \alpha^{\beta x_k}} \right)}{\ln(\alpha)}`
+    :math:`\text{GLM}_{\alpha, \beta}(x) = \frac{\ln \left( \frac{\sum_{k=1}^{N} \alpha^{(\beta+1)x_k}}{\sum_{k=1}^{N} \alpha^{\beta x_k}} \right)}{\ln(\alpha)}` # noqa: E501
 
 
     Args:
@@ -966,7 +966,7 @@ class GLSoftmax(BaseActivation):
         b (float, optional): Initial value for parameter `b`. Default is 1.0.
         c (float, optional): Initial value for parameter `c`. Default is 1.0.
         d (float, optional): Initial value for parameter `d`. Default is 1.0.
-        learnable (bool, optional): Whether the parameters `a`, `b`, `c`, and `d` are trainable. Default is False.
+        learnable (bool, optional): Whether the parameters `a`, `b`, `c`, and `d` are trainable. Default is False. # noqa: E501
         inplace (bool, optional): Whether to perform operations in-place. Default is False.
         **kwargs: Additional keyword arguments for the `BaseActivation` superclass.
 
@@ -1002,7 +1002,7 @@ class GLSoftmax(BaseActivation):
         super().__init__(**kwargs)
 
         def create_param(value: float) -> Tensor:
-            """Creates a learnable parameter if `learnable` is True; otherwise, returns a fixed tensor."""
+            """Creates a learnable parameter if `learnable` is True; otherwise, returns a fixed tensor."""  # noqa: E501
             tensor = torch.full(
                 (input_shape, 1), value, dtype=torch.float64
             )  # Initialize tensor with the given value
@@ -1320,7 +1320,7 @@ class PSIGRAMP(BaseActivation):
     r"""
     Parametric Sigmoid-Ramp (P-SIG-RAMP).
 
-    P-SIG-RAMP is an Adaptive Activation Function (AAF) that combines the logistic sigmoid and a piecewise linear function.
+    P-SIG-RAMP is an Adaptive Activation Function (AAF) that combines the logistic sigmoid and a piecewise linear function. # noqa: E501
 
     The P-SIG-RAMP activation function is defined as:
 
@@ -1393,7 +1393,7 @@ class RSIGN(BaseActivation):
     r"""
     React-Sign (RSign).
 
-    RSign is an Adaptive Activation Function (AAF) that introduces an adaptive threshold to the standard sign function.
+    RSign is an Adaptive Activation Function (AAF) that introduces an adaptive threshold to the standard sign function. # noqa: E501
 
     The RSign activation function is defined as:
 
@@ -1455,7 +1455,7 @@ class MAF(BaseActivation):
     r"""
     Multiquadratic Activation Function (MAF).
 
-    MAF is an Adaptive Activation Function (AAF) that introduces trainable parameters to adjust the multiquadratic transformation.
+    MAF is an Adaptive Activation Function (AAF) that introduces trainable parameters to adjust the multiquadratic transformation. # noqa: E501
 
     The MAF activation function is defined as:
 
@@ -1469,8 +1469,8 @@ class MAF(BaseActivation):
 
     Args:
         input_shape (int): Size of the input vector tensor (feature size).
-        a_i (float, optional): Initial value for the trainable slope coefficient \( a_i \). Default is 0.0.
-        b_i (float, optional): Initial value for the trainable bias coefficient \( b_i \). Default is 1.0.
+        a_i (float, optional): Initial value for the trainable slope coefficient \( a_i \). Default is 0.0. # noqa: E501
+        b_i (float, optional): Initial value for the trainable bias coefficient \( b_i \). Default is 1.0. # noqa: E501
         learnable (bool, optional): Whether \( a_i \) and \( b_i \) are trainable. Default is True.
         inplace (bool, optional): Whether to perform operations in-place. Default is False.
         **kwargs: Additional keyword arguments for BaseActivation.
@@ -1545,7 +1545,7 @@ class UAF(BaseActivation):
         c_i (float, optional): Initial value for the trainable parameter \( c_i \). Default is 0.0.
         d_i (float, optional): Initial value for the trainable parameter \( d_i \). Default is 1.0.
         e_i (float, optional): Initial value for the trainable parameter \( e_i \). Default is 0.0.
-        learnable (bool, optional): Whether parameters \( a_i, b_i, c_i, d_i, e_i \) are trainable. Default is True.
+        learnable (bool, optional): Whether parameters \( a_i, b_i, c_i, d_i, e_i \) are trainable. Default is True. # noqa: E501
         inplace (bool, optional): Whether to perform operations in-place. Default is False.
         **kwargs: Additional keyword arguments.
 
@@ -1604,7 +1604,7 @@ class GReLU(BaseActivation):
 
     The Generalized ReLU (GReLU) is a smooth and flexible activation function derived from the
     Universal Activation Function (UAF) family. It introduces two trainable parameters to generalize
-    and extend the behavior of ReLU and related functions, offering better adaptability during training.
+    and extend the behavior of ReLU and related functions, offering better adaptability during training. # noqa: E501
 
     The GReLU is defined as:
 
@@ -1620,7 +1620,7 @@ class GReLU(BaseActivation):
     - \( z_i \) is the input to the activation function for neuron \( i \).
     - \( a_i > 1 \) and \( b_i > 0 \) are trainable parameters constrained via softplus.
 
-    GReLU offers enhanced control over the non-linearity and smoothness of the activation, and can approximate
+    GReLU offers enhanced control over the non-linearity and smoothness of the activation, and can approximate # noqa: E501
     standard activations like:
     - ReLU
     - Exponential Linear Units
@@ -1631,13 +1631,13 @@ class GReLU(BaseActivation):
         input_shape (int): Size of the input tensor (feature size).
         a (float, optional): Initial value for the trainable parameter \( a_i \). Default is 1.5.
         b (float, optional): Initial value for the trainable parameter \( b_i \). Default is 0.5.
-        learnable (bool, optional): Whether parameters \( a_i \) and \( b_i \) are trainable. Default is True.
+        learnable (bool, optional): Whether parameters \( a_i \) and \( b_i \) are trainable. Default is True. # noqa: E501
         inplace (bool, optional): Whether to perform operations in-place. Default is False.
         **kwargs: Additional keyword arguments passed to the base class.
 
     Attributes:
-        a (Tensor or nn.Parameter): Trainable or fixed parameter \( a_i \), transformed with softplus to enforce \( a_i > 1 \).
-        b (Tensor or nn.Parameter): Trainable or fixed parameter \( b_i \), transformed with softplus to enforce \( b_i > 0 \).
+        a (Tensor or nn.Parameter): Trainable or fixed parameter \( a_i \), transformed with softplus to enforce \( a_i > 1 \). # noqa: E501
+        b (Tensor or nn.Parameter): Trainable or fixed parameter \( b_i \), transformed with softplus to enforce \( b_i > 0 \). # noqa: E501
         inplace (bool): Whether operations are performed in-place.
 
     Methods:
@@ -1683,32 +1683,32 @@ class GLN(BaseActivation):
     r"""
     Global-Local Neuron (GLN)
 
-    The Global-Local Neuron (GLN) is an Adaptive Activation Function (AAF) that blends two distinct activation
-    functions using a convex combination. It is designed to capture both global and local nonlinearities
+    The Global-Local Neuron (GLN) is an Adaptive Activation Function (AAF) that blends two distinct activation # noqa: E501
+    functions using a convex combination. It is designed to capture both global and local nonlinearities # noqa: E501
     by mixing their outputs with a learnable gating mechanism.
 
     The GLN is defined as:
 
     .. math::
-        f(z_l) = \\sigma(a_l) \\cdot \\text{global}(z_l) + (1 - \\sigma(a_l)) \\cdot \\text{local}(z_l) - b_l
+        f(z_l) = \\sigma(a_l) \\cdot \\text{global}(z_l) + (1 - \\sigma(a_l)) \\cdot \\text{local}(z_l) - b_l # noqa: E501
 
     where:
     - \( z_l \) is the input to the activation function at layer \( l \),
     - \( a_l \) and \( b_l \) are trainable parameters specific to layer \( l \),
     - \( \\sigma(a_l) \) is the sigmoid activation controlling the convex combination,
-    - \( \\text{global}(z_l) \) and \( \\text{local}(z_l) \) are predefined activation functions modeling global and local behavior respectively.
+    - \( \\text{global}(z_l) \) and \( \\text{local}(z_l) \) are predefined activation functions modeling global and local behavior respectively. # noqa: E501
 
     Common choices for the internal activations are:
     - \( \\text{global}(z_l) = \\sin(z_l) \)
     - \( \\text{local}(z_l) = \\tanh(z_l) \)
 
-    The GLN is especially useful in capturing complex hierarchical patterns by blending multiple activation dynamics.
+    The GLN is especially useful in capturing complex hierarchical patterns by blending multiple activation dynamics. # noqa: E501
 
     Args:
         input_shape (int): Size of the input tensor (feature size).
-        a (float, optional): Initial value for the trainable gating parameter \( a_l \). Default is 0.0.
-        b (float, optional): Initial value for the trainable bias parameter \( b_l \). Default is 0.0.
-        learnable (bool, optional): Whether parameters \( a_l \) and \( b_l \) are trainable. Default is True.
+        a (float, optional): Initial value for the trainable gating parameter \( a_l \). Default is 0.0. # noqa: E501
+        b (float, optional): Initial value for the trainable bias parameter \( b_l \). Default is 0.0. # noqa: E501
+        learnable (bool, optional): Whether parameters \( a_l \) and \( b_l \) are trainable. Default is True. # noqa: E501
         inplace (bool, optional): Whether to perform operations in-place. Default is False.
         **kwargs: Additional keyword arguments passed to the base class.
 
@@ -1719,7 +1719,7 @@ class GLN(BaseActivation):
 
     Methods:
         _forward(x: Tensor) -> Tensor:
-            Computes the GLN activation transformation by blending sin and tanh using a sigmoid gate.
+            Computes the GLN activation transformation by blending sin and tanh using a sigmoid gate. # noqa: E501
     """
 
     def __init__(

@@ -1,7 +1,6 @@
 import math
 
 import torch
-import torch.nn as nn
 from torch import Tensor
 
 from torch_activation import register_activation
@@ -20,7 +19,7 @@ class Softplus(BaseActivation):
 
     Args:
         beta (float, optional): controls the smoothness of the approximation. Default: ``1.0``
-        threshold (float, optional): values above this revert to a linear function. Default: ``20.0``
+        threshold (float, optional): values above this revert to a linear function. Default: ``20.0`` # noqa: E501
         inplace (bool, optional): parameter kept for API consistency, but softplus operation
                                  cannot be done in-place. Default: ``False``
 
@@ -54,7 +53,7 @@ class ParametricSoftplus(BaseActivation):
         a (float, optional): scaling parameter. Default: ``1.5``
         b (float, optional): shifting parameter. Default: ``0.693`` (ln(2))
         beta (float, optional): controls the smoothness of the approximation. Default: ``1.0``
-        threshold (float, optional): values above this revert to a linear function. Default: ``20.0``
+        threshold (float, optional): values above this revert to a linear function. Default: ``20.0`` # noqa: E501
         inplace (bool, optional): parameter kept for API consistency, but operation
                                  cannot be done in-place. Default: ``False``
 
@@ -91,7 +90,7 @@ class SoftPlusPlus(BaseActivation):
     Args:
         a (float, optional): scaling parameter for the input in softplus term. Default: ``1.0``
         b (float, optional): scaling parameter for the linear term. Default: ``2.0``
-        threshold (float, optional): values above this revert to a linear function. Default: ``20.0``
+        threshold (float, optional): values above this revert to a linear function. Default: ``20.0`` # noqa: E501
         inplace (bool, optional): parameter kept for API consistency, but operation
                                  cannot be done in-place. Default: ``False``
 
@@ -134,7 +133,7 @@ class RandSoftplus(BaseActivation):
     Args:
         a (float, optional): interpolation parameter between ReLU and softplus. Default: ``0.5``
         beta (float, optional): controls the smoothness of the softplus. Default: ``1.0``
-        threshold (float, optional): values above this revert to a linear function. Default: ``20.0``
+        threshold (float, optional): values above this revert to a linear function. Default: ``20.0`` # noqa: E501
         inplace (bool, optional): parameter kept for API consistency, but operation
                                  cannot be done in-place. Default: ``False``
 

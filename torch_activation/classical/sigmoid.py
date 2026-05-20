@@ -172,7 +172,7 @@ class STanh(BaseActivation):
 
     :math:`\text{STanh}(z) = a \tanh(bz)`
 
-    :note: Lecun et al. (1998) suggested that the scaling factor \( a \) should be 1.7159 and the slope parameter \( b \) should be 2/3.
+    :note: Lecun et al. (1998) suggested that the scaling factor \( a \) should be 1.7159 and the slope parameter \( b \) should be 2/3. # noqa: E501
 
     Args:
         a (float, optional): Scale parameter. Default: 1.7159
@@ -213,7 +213,7 @@ class STanh(BaseActivation):
 #     r"""
 #     Applies the Bi-Modal Derivative Sigmoid activation function:
 
-#     :math:`\text{BiModalDerivativeSigmoid}(z) = \frac{a}{1 + \exp(-bz)} - \frac{1}{2} \left( \frac{1}{1 + \exp(-z)} + \frac{1}{1 + \exp(-z-b)} \right)`
+#     :math:`\text{BiModalDerivativeSigmoid}(z) = \frac{a}{1 + \exp(-bz)} - \frac{1}{2} \left( \frac{1}{1 + \exp(-z)} + \frac{1}{1 + \exp(-z-b)} \right)` # noqa: E501
 
 #     Args:
 #         b (float, optional): Shift parameter. Default: 1.0
@@ -315,7 +315,7 @@ class SigmoidAlgebraic(BaseActivation):
     r"""
     Applies the Sigmoid Algebraic activation function:
 
-    :math:`\text{SigmoidAlgebraic}(z) = \frac{1}{1 + \exp\left(-\frac{z(1 + a|z|)}{1 + |z|(1 + a|z|)}\right)}`
+    :math:`\text{SigmoidAlgebraic}(z) = \frac{1}{1 + \exp\left(-\frac{z(1 + a|z|)}{1 + |z|(1 + a|z|)}\right)}` # noqa: E501
     :note: \( a > 0 \).
     Args:
         a (float, optional): Shape parameter. Default: 1.0
@@ -354,9 +354,9 @@ class TripleStateSigmoid(BaseActivation):
     r"""
     Applies the Triple State Sigmoid activation function:
 
-    :math:`\text{TripleStateSigmoid}(z) = \frac{1}{1 + \exp(-z)} + \frac{1}{1 + \exp(-z+a)} + \frac{1}{1 + \exp(-z+b)}`
+    :math:`\text{TripleStateSigmoid}(z) = \frac{1}{1 + \exp(-z)} + \frac{1}{1 + \exp(-z+a)} + \frac{1}{1 + \exp(-z+b)}` # noqa: E501
 
-    :note: The default values of \( a \) and \( b \) are 20.0 and 40.0, respectively, as suggested in the paper.
+    :note: The default values of \( a \) and \( b \) are 20.0 and 40.0, respectively, as suggested in the paper. # noqa: E501
     (https://www.sciencedirect.com/science/article/abs/pii/S0957417420307557).
 
     Args:
@@ -392,15 +392,15 @@ class ImprovedLogisticSigmoid(BaseActivation):
     r"""
     Applies the Improved Logistic Sigmoid activation function:
 
-    :math:`\text{ImprovedLogisticSigmoid}(z) = \begin{cases} 
-    a(z-b) + \sigma(b), & z \geq b \\ 
-    \sigma(z), & -b < z < b \\ 
-    a(z+b) + \sigma(-b), & z \leq -b 
+    :math:`\text{ImprovedLogisticSigmoid}(z) = \begin{cases}
+    a(z-b) + \sigma(b), & z \geq b \\
+    \sigma(z), & -b < z < b \\
+    a(z+b) + \sigma(-b), & z \leq -b
     \end{cases}`
 
-    This activation function was designed to address the vanishing gradient problem 
-    of the standard logistic sigmoid. It behaves like the standard sigmoid in the middle region 
-    but has a linear response in the saturation regions, allowing for non-zero gradients 
+    This activation function was designed to address the vanishing gradient problem
+    of the standard logistic sigmoid. It behaves like the standard sigmoid in the middle region
+    but has a linear response in the saturation regions, allowing for non-zero gradients
     even for large input magnitudes.
 
     The parameter 'a' controls the slope of the linear regions and should satisfy:
@@ -408,8 +408,8 @@ class ImprovedLogisticSigmoid(BaseActivation):
 
     This ensures the function remains smooth at the transition points.
 
-    The output range is :math:`(-\infty, \infty)`, unlike the standard sigmoid which is bounded 
-    to :math:`(0, 1)`. Research has shown this activation function has higher convergence speed 
+    The output range is :math:`(-\infty, \infty)`, unlike the standard sigmoid which is bounded
+    to :math:`(0, 1)`. Research has shown this activation function has higher convergence speed
     than the standard logistic sigmoid.
 
     Args:
@@ -474,7 +474,7 @@ class SigLin(BaseActivation):
 
     :math:`\text{SigLin}(z) = \sigma(z) + az`
 
-    :note: The authors of the study (https://link.springer.com/article/10.1007/s13748-020-00218-y) evaluated the SigLin activation function using linear coefficients of 0, 0.05, 0.1, and 0.15.
+    :note: The authors of the study (https://link.springer.com/article/10.1007/s13748-020-00218-y) evaluated the SigLin activation function using linear coefficients of 0, 0.05, 0.1, and 0.15. # noqa: E501
 
     Args:
         a (float, optional): Linear coefficient. Default: 0.1
@@ -504,9 +504,9 @@ class PTanh(BaseActivation):
     r"""
     Applies the Penalized Hyperbolic Tangent activation function:
 
-    :math:`\text{PTanh}(z) = \begin{cases} 
-    \tanh(z), & z \geq 0 \\ 
-    \frac{\tanh(z)}{a}, & z < 0 
+    :math:`\text{PTanh}(z) = \begin{cases}
+    \tanh(z), & z \geq 0 \\
+    \frac{\tanh(z)}{a}, & z < 0
     \end{cases}`
 
     :note: a must be greater than 1.0
@@ -620,9 +620,9 @@ class Hexpo(BaseActivation):
     r"""
     Applies the Hexpo activation function:
 
-    :math:`\text{Hexpo}(z) = \begin{cases} 
-    -a \exp\left(-\frac{z}{b}\right) - 1, & z \geq 0 \\ 
-    c \exp\left(-\frac{z}{d}\right) - 1, & z < 0 
+    :math:`\text{Hexpo}(z) = \begin{cases}
+    -a \exp\left(-\frac{z}{b}\right) - 1, & z \geq 0 \\
+    c \exp\left(-\frac{z}{d}\right) - 1, & z < 0
     \end{cases}`
 
     :note: a, b, c and d could be trainable parameters, but could lead to vanishing gradients
@@ -632,7 +632,7 @@ class Hexpo(BaseActivation):
         b (float, optional): Positive decay parameter. Default: 1.0
         c (float, optional): Negative scale parameter. Default: 1.0
         d (float, optional): Negative decay parameter. Default: 1.0
-        learnable (bool, optional): If True, the parameters are learnable. Default: False (recommended)
+        learnable (bool, optional): If True, the parameters are learnable. Default: False (recommended) # noqa: E501
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
@@ -703,10 +703,10 @@ class SmoothStep(BaseActivation):
     r"""
     Applies the Smooth Step activation function:
 
-    :math:`\text{SmoothStep}(z) = \begin{cases} 
-    1, & z \geq \frac{a}{2} \\ 
-    \frac{2}{a^3} z^3 - \frac{3}{2a} z + \frac{1}{2}, & -\frac{a}{2} \leq z \leq \frac{a}{2} \\ 
-    0, & z \leq -\frac{a}{2} 
+    :math:`\text{SmoothStep}(z) = \begin{cases}
+    1, & z \geq \frac{a}{2} \\
+    \frac{2}{a^3} z^3 - \frac{3}{2a} z + \frac{1}{2}, & -\frac{a}{2} \leq z \leq \frac{a}{2} \\
+    0, & z \leq -\frac{a}{2}
     \end{cases}`
 
     Args:
@@ -787,7 +787,7 @@ class SincSigmoid(BaseActivation):
 
     :math:`\text{SincSigmoid}(z) = \text{sinc}(\sigma(z))`
 
-    where :math:`\text{sinc}(x) = \frac{\sin(\pi x)}{\pi x}` if :math:`x \neq 0`, and 1 if :math:`x = 0`.
+    where :math:`\text{sinc}(x) = \frac{\sin(\pi x)}{\pi x}` if :math:`x \neq 0`, and 1 if :math:`x = 0`. # noqa: E501
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
@@ -876,7 +876,7 @@ class Root2sigmoid(BaseActivation):
     r"""
     Applies the Root2sigmoid activation function:
 
-    :math:`\text{Root2sigmoid}(z) = \frac{\sqrt{2}^z - \sqrt{2}^{-z}}{2 \cdot \sqrt{2} \cdot \sqrt{2 \cdot (\sqrt{2}^{2z} + \sqrt{2}^{-2z})}}`
+    :math:`\text{Root2sigmoid}(z) = \frac{\sqrt{2}^z - \sqrt{2}^{-z}}{2 \cdot \sqrt{2} \cdot \sqrt{2 \cdot (\sqrt{2}^{2z} + \sqrt{2}^{-2z})}}` # noqa: E501
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
@@ -1189,7 +1189,7 @@ class Rootsig(BaseActivation):
 # class UnnamedSigmoid1(BaseActivation):
 #     # TODO: Ask someone about this name.
 #     r"""
-#     :note: The name "UnnamedSigmoid1" derived from the first entry in "3.2.25 Rootsig and others" entry. I named it this way because the curve resembles the Rootsig but not as soft
+#     :note: The name "UnnamedSigmoid1" derived from the first entry in "3.2.25 Rootsig and others" entry. I named it this way because the curve resembles the Rootsig but not as soft # noqa: E501
 
 #     Applies the RootsigPlus activation function:
 
@@ -1223,8 +1223,8 @@ class Rootsig(BaseActivation):
 class RootsigPlus(BaseActivation):
     # TODO: Ask someone about this name.
     r"""
-    :note: The name "RootsigPlus" derived from the second entry in "3.2.25 Rootsig and others" entry, found in the `Estimates of the number of hidden units and variation with respect
-    to half-spaces` paper. I named it this way because the curve resembles the Tanh but softer and not as soft as Rootsig.
+    :note: The name "RootsigPlus" derived from the second entry in "3.2.25 Rootsig and others" entry, found in the `Estimates of the number of hidden units and variation with respect # noqa: E501
+    to half-spaces` paper. I named it this way because the curve resembles the Tanh but softer and not as soft as Rootsig. # noqa: E501
     Applies the Radical Tanh activation function:
 
     :math:`\text{RootsigPlus}(z) = \frac{az}{1 + |az|}`
@@ -1256,8 +1256,8 @@ class RootsigPlus(BaseActivation):
 class SoftTanh(BaseActivation):
     # TODO: Ask someone about this name.
     r"""
-    :note: The name "RadicalTanh" derived from the third entry in "3.2.25 Rootsig and others" entry, found in the `Estimates of the number of hidden units and variation with respect
-    to half-spaces` paper. I named it this way because the curve resembles the Tanh but softer and not as soft as RootsigPlus.
+    :note: The name "RadicalTanh" derived from the third entry in "3.2.25 Rootsig and others" entry, found in the `Estimates of the number of hidden units and variation with respect # noqa: E501
+    to half-spaces` paper. I named it this way because the curve resembles the Tanh but softer and not as soft as RootsigPlus. # noqa: E501
     Applies the SoftTanh activation function:
 
     :math:`\text{SoftTanh}(z) = \frac{az}{\sqrt{1 + a^2z^2}}`
@@ -1290,9 +1290,9 @@ class SigmoidTanh(BaseActivation):
     r"""
     Applies the Sigmoid-Tanh Combinations activation function:
 
-    :math:`\text{SigmoidTanh}(z) = \begin{cases} 
-    g(z), & z \geq 0 \\ 
-    h(z), & z < 0 
+    :math:`\text{SigmoidTanh}(z) = \begin{cases}
+    g(z), & z \geq 0 \\
+    h(z), & z < 0
     \end{cases}`
 
     where g(z) and h(z) are user-defined functions, defaulting to sigmoid and tanh respectively.
@@ -1310,7 +1310,7 @@ class SigmoidTanh(BaseActivation):
         >>> m = tac.SigmoidTanh()
         >>> x = torch.randn(2)
         >>> output = m(x)
-        
+
         >>> # Custom functions
         >>> import torch.nn.functional as F
         >>> m = tac.SigmoidTanh(g_func=F.relu, h_func=torch.sigmoid)

@@ -16,7 +16,7 @@
 #      See: https://doi.org/10.20944/preprints202301.0463.v1
 
 #     Args:
-#         activations (Iterable[nn.Module]): List of activation functions. Default: [nn.ReLU, nn.Sigmoid, nn.Tanh, nn.Softsign]
+#         activations (Iterable[nn.Module]): List of activation functions. Default: [nn.ReLU, nn.Sigmoid, nn.Tanh, nn.Softsign] # noqa: E501
 
 #     Shape:
 #         - Input: :math:`(*)` where :math:`*` means any number of additional dimensions.
@@ -67,7 +67,7 @@
 #      See: https://doi.org/10.20944/preprints202301.0463.v1
 
 #     Args:
-#         activations (Iterable[nn.Module]): List of activation functions. Default: [nn.ReLU, nn.Sigmoid, nn.Tanh, nn.Softsign]
+#         activations (Iterable[nn.Module]): List of activation functions. Default: [nn.ReLU, nn.Sigmoid, nn.Tanh, nn.Softsign] # noqa: E501
 
 #     Shape:
 #         - Input: :math:`(*)` where :math:`*` means any number of additional dimensions.

@@ -12,12 +12,12 @@ class TanhLinearUnit(BaseActivation):
     r"""
     Applies the Tanh Linear Unit activation function:
 
-    :math:`\text{TanhLinearUnit}(z) = \begin{cases} 
+    :math:`\text{TanhLinearUnit}(z) = \begin{cases}
     z, & z \geq 0 \\
-    \frac{2}{1 + \exp(-z)} - 1, & z < 0 
-    \end{cases} = \begin{cases} 
+    \frac{2}{1 + \exp(-z)} - 1, & z < 0
+    \end{cases} = \begin{cases}
     z, & z \geq 0 \\
-    \tanh\left(\frac{z}{2}\right), & z < 0 
+    \tanh\left(\frac{z}{2}\right), & z < 0
     \end{cases}`
 
     Shape:
@@ -85,9 +85,9 @@ class DifferenceELU(BaseActivation):
     r"""
     Applies the Difference ELU activation function:
 
-    :math:`\text{DifferenceELU}(z) = \begin{cases} 
+    :math:`\text{DifferenceELU}(z) = \begin{cases}
     z, & z \geq 0 \\
-    a(z\exp(z) - b\exp(bz)), & z < 0 
+    a(z\exp(z) - b\exp(bz)), & z < 0
     \end{cases}`
 
     Args:
@@ -127,9 +127,9 @@ class PolynomialLinearUnit(BaseActivation):
     r"""
     Applies the Polynomial Linear Unit activation function:
 
-    :math:`\text{PolynomialLinearUnit}(z) = \begin{cases} 
+    :math:`\text{PolynomialLinearUnit}(z) = \begin{cases}
     z, & z \geq 0 \\
-    \frac{1}{1 - z} - 1, & z < 0 
+    \frac{1}{1 - z} - 1, & z < 0
     \end{cases}`
 
     Shape:
@@ -165,9 +165,9 @@ class InversePolynomialLinearUnit(BaseActivation):
     r"""
     Applies the Inverse Polynomial Linear Unit activation function:
 
-    :math:`\text{InversePolynomialLinearUnit}(z) = \begin{cases} 
+    :math:`\text{InversePolynomialLinearUnit}(z) = \begin{cases}
     z, & z \geq 0 \\
-    \frac{1}{1 + |z|^a}, & z < 0 
+    \frac{1}{1 + |z|^a}, & z < 0
     \end{cases}`
 
     Args:
@@ -205,9 +205,9 @@ class PowerLinearUnit(BaseActivation):
     r"""
     Applies the Power Linear Unit activation function:
 
-    :math:`\text{PowerLinearUnit}(z) = \begin{cases} 
+    :math:`\text{PowerLinearUnit}(z) = \begin{cases}
     z, & z \geq 0 \\
-    (1 - z)^{-a} - 1, & z < 0 
+    (1 - z)^{-a} - 1, & z < 0
     \end{cases}`
 
     Args:
@@ -247,7 +247,7 @@ class PowerFunctionLinearUnit(BaseActivation):
     r"""
     Applies the Power Function Linear Unit activation function:
 
-    :math:`\text{PowerFunctionLinearUnit}(z) = z \cdot \frac{1}{2} \left( 1 + \frac{z}{\sqrt{1 + z^2}} \right)`
+    :math:`\text{PowerFunctionLinearUnit}(z) = z \cdot \frac{1}{2} \left( 1 + \frac{z}{\sqrt{1 + z^2}} \right)` # noqa: E501
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
@@ -272,9 +272,9 @@ class FasterPowerFunctionLinearUnit(BaseActivation):
     r"""
     Applies the Faster Power Function Linear Unit activation function:
 
-    :math:`\text{FasterPowerFunctionLinearUnit}(z) = \begin{cases} 
+    :math:`\text{FasterPowerFunctionLinearUnit}(z) = \begin{cases}
     z, & z \geq 0 \\
-    z + \frac{z^2}{\sqrt{1 + z^2}}, & z < 0 
+    z + \frac{z^2}{\sqrt{1 + z^2}}, & z < 0
     \end{cases}`
 
     Shape:
@@ -307,15 +307,15 @@ class ElasticAdaptivelyParametricCompoundedUnit(BaseActivation):
     r"""
     Applies the Elastic Adaptively Parametric Compounded Unit activation function:
 
-    :math:`\text{ElasticAdaptivelyParametricCompoundedUnit}(z_i) = \begin{cases} 
+    :math:`\text{ElasticAdaptivelyParametricCompoundedUnit}(z_i) = \begin{cases}
     b_i z_i, & z_i \geq 0 \\
-    a_i z_i \cdot \tanh(\ln(1 + \exp(a_{i}z_{i}))), & z_i < 0 
+    a_i z_i \cdot \tanh(\ln(1 + \exp(a_{i}z_{i}))), & z_i < 0
     \end{cases}`
 
     Args:
         a (float or Tensor, optional): Negative slope parameter. Default: 1.0
         b (float or Tensor, optional): Positive slope parameter. Default: 1.0
-        num_parameters (int, optional): Number of parameters if using per-channel parameterization. Default: 1
+        num_parameters (int, optional): Number of parameters if using per-channel parameterization. Default: 1 # noqa: E501
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
@@ -326,7 +326,7 @@ class ElasticAdaptivelyParametricCompoundedUnit(BaseActivation):
         >>> m = ElasticAdaptivelyParametricCompoundedUnit(a=0.5, b=1.5)
         >>> x = torch.randn(2)
         >>> output = m(x)
-        
+
         >>> # Per-channel parameterization
         >>> m = ElasticAdaptivelyParametricCompoundedUnit(num_parameters=3)
         >>> x = torch.randn(3, 5)
@@ -433,9 +433,9 @@ class ScaledExponentialLinearUnit(BaseActivation):
     r"""
     Applies the Scaled Exponential Linear Unit activation function:
 
-    :math:`\text{ScaledExponentialLinearUnit}(z) = \begin{cases} 
+    :math:`\text{ScaledExponentialLinearUnit}(z) = \begin{cases}
     az, & z \geq 0 \\
-    ab(\exp(z) - 1), & z < 0 
+    ab(\exp(z) - 1), & z < 0
     \end{cases}`
 
     Args:
@@ -474,9 +474,9 @@ class LeakyScaledExponentialLinearUnit(BaseActivation):
     r"""
     Applies the Leaky Scaled Exponential Linear Unit activation function:
 
-    :math:`\text{LeakyScaledExponentialLinearUnit}(z) = \begin{cases} 
+    :math:`\text{LeakyScaledExponentialLinearUnit}(z) = \begin{cases}
     az, & z \geq 0 \\
-    ab(\exp(z) - 1) + acz, & z < 0 
+    ab(\exp(z) - 1) + acz, & z < 0
     \end{cases}`
 
     Args:
@@ -520,9 +520,9 @@ class ScaledExponentiallyRegularizedLinearUnit(BaseActivation):
     r"""
     Applies the Scaled Exponentially Regularized Linear Unit activation function:
 
-    :math:`\text{ScaledExponentiallyRegularizedLinearUnit}(z) = \begin{cases} 
+    :math:`\text{ScaledExponentiallyRegularizedLinearUnit}(z) = \begin{cases}
     az, & z \geq 0 \\
-    abz\exp(z), & z < 0 
+    abz\exp(z), & z < 0
     \end{cases}`
 
     Args:
@@ -564,9 +564,9 @@ class ScaledScaledExponentialLinearUnit(BaseActivation):
     r"""
     Applies the Scaled Scaled Exponential Linear Unit activation function:
 
-    :math:`\text{ScaledScaledExponentialLinearUnit}(z) = \begin{cases} 
+    :math:`\text{ScaledScaledExponentialLinearUnit}(z) = \begin{cases}
     az, & z \geq 0 \\
-    ab(\exp(cz) - 1), & z < 0 
+    ab(\exp(cz) - 1), & z < 0
     \end{cases}`
 
     Args:
@@ -610,10 +610,10 @@ class RSigELU(BaseActivation):
     r"""
     Applies the RSigELU activation function:
 
-    :math:`\text{RSigELU}(z) = \begin{cases} 
+    :math:`\text{RSigELU}(z) = \begin{cases}
     z \cdot \frac{1}{1 + \exp(-z)} a + z, & 1 < z < \infty \\
     z, & 0 \geq z \geq 1 \\
-    a(\exp(z) - 1), & -\infty < z < 0 
+    a(\exp(z) - 1), & -\infty < z < 0
     \end{cases}`
 
     Args:
@@ -655,9 +655,9 @@ class HardSReLUE(BaseActivation):
     r"""
     Applies the Hard SReLUE activation function:
 
-    :math:`\text{HardSReLUE}(z) = \begin{cases} 
+    :math:`\text{HardSReLUE}(z) = \begin{cases}
     az \cdot \max\left(0, \min\left(1, \frac{z+1}{2} + z\right)\right), & z \geq 0 \\
-    a(\exp(z) - 1), & z < 0 
+    a(\exp(z) - 1), & z < 0
     \end{cases}`
 
     Args:
@@ -700,9 +700,9 @@ class ExponentialLinearSigmoidSquashing(BaseActivation):
     r"""
     Applies the Exponential Linear Sigmoid Squashing activation function:
 
-    :math:`\text{ExponentialLinearSigmoidSquashing}(z) = \begin{cases} 
+    :math:`\text{ExponentialLinearSigmoidSquashing}(z) = \begin{cases}
     \frac{z}{1 + \exp(-z)}, & z \geq 0 \\
-    \frac{\exp(z) - 1}{1 + \exp(-z)}, & z < 0 
+    \frac{\exp(z) - 1}{1 + \exp(-z)}, & z < 0
     \end{cases}`
 
     Shape:
@@ -741,7 +741,7 @@ class HardExponentialLinearSigmoidSquashing(BaseActivation):
     r"""
     Applies the Hard Exponential Linear Sigmoid Squashing activation function:
 
-    :math:`\text{HardExponentialLinearSigmoidSquashing}(z) = \begin{cases} 
+    :math:`\text{HardExponentialLinearSigmoidSquashing}(z) = \begin{cases}
     z \cdot \max\left(0, \min\left(\frac{z+1}{2}, 1\right)\right), & z \geq 0 \\
     (\exp(z) - 1) \cdot \max\left(0, \min\left(\frac{z+1}{2}, 1\right)\right), & z < 0
     \end{cases}`
@@ -773,10 +773,10 @@ class RSigELUD(BaseActivation):
     r"""
     Applies the RSigELUD activation function:
 
-    :math:`\text{RSigELUD}(z) = \begin{cases} 
+    :math:`\text{RSigELUD}(z) = \begin{cases}
     z \cdot \frac{1}{1 + \exp(-z)} a + z, & 1 < z < \infty \\
     z, & 0 \leq z \leq 1 \\
-    b(\exp(z) - 1), & -\infty < z < 0 
+    b(\exp(z) - 1), & -\infty < z < 0
     \end{cases}`
 
     Args:
@@ -820,10 +820,10 @@ class LSReLU(BaseActivation):
     r"""
     Applies the LSReLU activation function:
 
-    :math:`\text{LSReLU}(z) = \begin{cases} 
+    :math:`\text{LSReLU}(z) = \begin{cases}
     \frac{z}{1 + |z|}, & z \leq 0 \\
     z, & 0 \leq z \leq b \\
-    \log(az + 1) + |\log(ab + 1) - b|, & z \geq b 
+    \log(az + 1) + |\log(ab + 1) - b|, & z \geq b
     \end{cases}`
 
     Args:

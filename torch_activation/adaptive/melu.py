@@ -1,5 +1,3 @@
-import math
-
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -22,8 +20,8 @@ class MeLU(BaseActivation):
     and :math:`a_{i,j}` are trainable parameters, :math:`b_j` and :math:`c_j` are fixed constants.
 
     Args:
-        k (int, optional): Number of trainable parameters (k-1 for the sum and one for PReLU). Default: 4
-        init_negative_slope (float, optional): Initial value for the PReLU negative slope. Default: 0.01
+        k (int, optional): Number of trainable parameters (k-1 for the sum and one for PReLU). Default: 4 # noqa: E501
+        init_negative_slope (float, optional): Initial value for the PReLU negative slope. Default: 0.01 # noqa: E501
         init_a (float, optional): Initial value for the trainable parameters a. Default: 0.0
 
     Shape:
@@ -74,15 +72,15 @@ class MMeLU(BaseActivation):
     r"""
     Applies the Modified Mexican ReLU (MMeLU) function:
 
-    :math:`\text{MMeLU}(z_i) = a_i \cdot \max(b_i - |z_i - c_i|, 0) + (1 - a_i) \cdot \text{ReLU}(z_i)`
+    :math:`\text{MMeLU}(z_i) = a_i \cdot \max(b_i - |z_i - c_i|, 0) + (1 - a_i) \cdot \text{ReLU}(z_i)` # noqa: E501
 
-    where :math:`a_i \in [0, 1]`, :math:`b_i \in \mathbb{R}^+`, and :math:`c_i \in \mathbb{R}` are trainable parameters.
+    where :math:`a_i \in [0, 1]`, :math:`b_i \in \mathbb{R}^+`, and :math:`c_i \in \mathbb{R}` are trainable parameters. # noqa: E501
 
     Args:
         init_a (float, optional): Initial value for parameter a. Default: 0.5
         init_b (float, optional): Initial value for parameter b. Default: 1.0
         init_c (float, optional): Initial value for parameter c. Default: 0.0
-        inplace (bool, optional): Can optionally do the operation in-place for ReLU. Default: ``False``
+        inplace (bool, optional): Can optionally do the operation in-place for ReLU. Default: ``False`` # noqa: E501
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
@@ -130,8 +128,8 @@ class GaLU(BaseActivation):
     and :math:`a_{i,j}` are trainable parameters, :math:`b_j` and :math:`c_j` are fixed constants.
 
     Args:
-        k (int, optional): Number of trainable parameters (k-1 for the sum and one for PReLU). Default: 4
-        init_negative_slope (float, optional): Initial value for the PReLU negative slope. Default: 0.01
+        k (int, optional): Number of trainable parameters (k-1 for the sum and one for PReLU). Default: 4 # noqa: E501
+        init_negative_slope (float, optional): Initial value for the PReLU negative slope. Default: 0.01 # noqa: E501
         init_a (float, optional): Initial value for the trainable parameters a. Default: 0.0
 
     Shape:

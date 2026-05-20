@@ -6,9 +6,9 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-import torch_activation as ta
-from scripts.tag_activations import tag_all
-from torch_activation.utils import plot_activation
+import torch_activation as ta  # noqa: E402
+from scripts.tag_activations import tag_all  # noqa: E402
+from torch_activation.utils import plot_activation  # noqa: E402
 
 MODULE_TO_FAMILY = {
     "torch_activation.classical.relu": "ReLU",

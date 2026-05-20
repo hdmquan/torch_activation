@@ -64,16 +64,16 @@ class LAAF(BaseActivation):
 
     :math:`\text{LAAF}(x) = g(a \cdot x)`
 
-    where :math:`a` is a trainable parameter for each neuron and :math:`g` is any activation function.
+    where :math:`a` is a trainable parameter for each neuron and :math:`g` is any activation function. # noqa: E501
 
     See: https://doi.org/10.1016/j.cma.2020.113028
 
     Args:
-        activation (str, optional): The activation function to use. Options: 'sigmoid', 'tanh', 'relu', 'leaky_relu'. Default: 'sigmoid'
+        activation (str, optional): The activation function to use. Options: 'sigmoid', 'tanh', 'relu', 'leaky_relu'. Default: 'sigmoid' # noqa: E501
         a_init (float, optional): Initial value for the trainable parameter a. Default: 1.0
         leaky_slope (float, optional): Leakiness parameter for LeakyReLU. Default: 0.01
-        fixed_n (float, optional): Fixed parameter to accelerate convergence. If > 1, applies g(n*a*x). Default: 1.0
-        inplace (bool, optional): Can optionally do the operation in-place when possible. Default: ``False``
+        fixed_n (float, optional): Fixed parameter to accelerate convergence. If > 1, applies g(n*a*x). Default: 1.0 # noqa: E501
+        inplace (bool, optional): Can optionally do the operation in-place when possible. Default: ``False`` # noqa: E501
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
@@ -106,7 +106,7 @@ class LAAF(BaseActivation):
 
         if self.activation not in ["sigmoid", "tanh", "relu", "leaky_relu"]:
             raise ValueError(
-                f"Unsupported activation: {activation}. Choose from 'sigmoid', 'tanh', 'relu', 'leaky_relu'"
+                f"Unsupported activation: {activation}. Choose from 'sigmoid', 'tanh', 'relu', 'leaky_relu'"  # noqa: E501
             )
 
     def _forward(self, x) -> Tensor:
@@ -259,7 +259,7 @@ class LAU(BaseActivation):
 
     :math:`\text{LAU}(x) = x \cdot \ln(1 + a \cdot \sigma(b \cdot x))`
 
-    where :math:`a` and :math:`b` are trainable parameters and :math:`\sigma` is the sigmoid function.
+    where :math:`a` and :math:`b` are trainable parameters and :math:`\sigma` is the sigmoid function. # noqa: E501
 
     Args:
         a_init (float, optional): Initial value for the trainable parameter a. Default: 1.0

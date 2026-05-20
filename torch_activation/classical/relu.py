@@ -122,7 +122,7 @@ class VLReLU(BaseActivation):
     .. math::
         \text{VLReLU}(x) = \max(0, x) + \alpha \min(0, x)
 
-    :note: This is a variant of the LReLU activation function where the slope is fixed at 3.0. While almost identical to the LReLU, but some researchers consider it to be a separate case.
+    :note: This is a variant of the LReLU activation function where the slope is fixed at 3.0. While almost identical to the LReLU, but some researchers consider it to be a separate case. # noqa: E501
 
     Args:
         alpha (float, optional): The slope for negative inputs. Default: ``3.0``
@@ -161,8 +161,8 @@ class RReLU(BaseActivation):
     Applies the Randomized Leaky ReLU activation function:
 
     .. math::
-        \text{RReLU}(z_i) = 
-        \begin{cases} 
+        \text{RReLU}(z_i) =
+        \begin{cases}
         z_i, & z_i \geq 0, \\
         z_i a_i, & z_i < 0,
         \end{cases}
@@ -171,11 +171,11 @@ class RReLU(BaseActivation):
     :math:`a_i \sim U(l, u)` where :math:`l < u` and :math:`l, u \in (0, \infty)`.
 
     See: https://arxiv.org/abs/2303.01360
-    
+
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
-    
+
     Args:
         lower (float, optional): Lower bound of the uniform distribution (default: 0.125).
         upper (float, optional): Upper bound of the uniform distribution (default: 1/3).
@@ -215,19 +215,19 @@ class OLReLU(BaseActivation):
     Applies the Optimized Leaky ReLU (OLReLU) activation function:
 
     .. math::
-        f(z) = 
-        \begin{cases} 
+        f(z) =
+        \begin{cases}
         z, & z \geq 0, \\
         z \cdot \exp(-\alpha), & z < 0,
         \end{cases}
 
-    where :math:`\alpha = \frac{u + l}{u - l}` and :math:`u` and :math:`l` are hyperparameters 
+    where :math:`\alpha = \frac{u + l}{u - l}` and :math:`u` and :math:`l` are hyperparameters
     of the bounds of the RReLU.
-    
+
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
-    
+
     Args:
         lower (float, optional): Lower bound parameter l (default: 0.125).
         upper (float, optional): Upper bound parameter u (default: 1/3).
@@ -266,8 +266,8 @@ class SoftsignRReLU(BaseActivation):
     The Softsign Randomized Leaky ReLU (S-RReLU) is defined as:
 
     .. math::
-        `\text{S-RReLU}(z_i) = 
-        \begin{cases} 
+        `\text{S-RReLU}(z_i) =
+        \begin{cases}
         \frac{1}{(1+z_i)^2} + z_i, &  z_i \geq 0, \\
         \frac{1}{(1+z_i)^2} + a_i z_i, & z_i < 0,
         \end{cases}`
@@ -276,25 +276,25 @@ class SoftsignRReLU(BaseActivation):
     :math:`a_i \sim U(l, u)` where :math:`l < u` and :math:`l, u \in (0, \infty)`.
 
     See: http://dx.doi.org/10.1007/s00521-023-08565-2
-    
+
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
-    
+
     Args:
         l (float, optional): Lower bound of the uniform distribution (default: 1/8).
         u (float, optional): Upper bound of the uniform distribution (default: 1/3).
     """
 
-    def __init__(self, l: float = 1 / 8, u: float = 1 / 3, **kwargs):
+    def __init__(self, lower: float = 1 / 8, u: float = 1 / 3, **kwargs):
         super().__init__(**kwargs)
-        assert 0 < l < u, "Ensure 0 < l < u for the uniform distribution bounds."
-        self.l = l
+        assert 0 < lower < u, "Ensure 0 < l < u for the uniform distribution bounds."
+        self.lower = lower
         self.u = u
 
     # TODO: There should be a better way to implement this
     def _forward(self, x: Tensor) -> Tensor:
-        a = torch.empty_like(x).uniform_(self.l, self.u)
+        a = torch.empty_like(x).uniform_(self.lower, self.u)
         denom = (1 + x).pow(2).clamp(min=1e-7)
         common_term = 1 / denom
         return torch.where(x >= 0, common_term + x, common_term + a * x)
@@ -306,13 +306,13 @@ class SlReLU(BaseActivation):
     The Sloped ReLU (SlReLU) is defined as:
 
     .. math::
-        \text{SlReLU}(z_i) = 
-        \begin{cases} 
+        \text{SlReLU}(z_i) =
+        \begin{cases}
         \alpha \cdot z_i, & z_i \geq 0, \\
         0, & z_i < 0,
         \end{cases}
 
-    where :math:`z_i` is the input to the activation function and :math:`\alpha` is a scaling factor.
+    where :math:`z_i` is the input to the activation function and :math:`\alpha` is a scaling factor. # noqa: E501
     This is essentially a scaled ReLU that multiplies positive inputs by alpha.
 
     Args:
@@ -561,15 +561,15 @@ class Minsin(BaseActivation):
     Applies the element-wise function:
 
     .. math::`\text{Minsin}(x) =
-        \begin{cases} 
+        \begin{cases}
         \sin(x), & \text{if } x \geq 0 \\
-        x, & \text{if } x < 0 
+        x, & \text{if } x < 0
         \end{cases}`
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
-        
+
     Here is a plot of the function:
 
     .. image:: ../images/activation_images/Minsin.png
@@ -629,13 +629,13 @@ class VLU(BaseActivation):
 
 
 @register_activation
-class LReLU(BaseActivation):
+class LReLU(BaseActivation):  # noqa: F811
     r"""
     Applies the Leaky ReLU activation function.
 
     .. math::
-        \text{LReLU}(z) = 
-        \begin{cases} 
+        \text{LReLU}(z) =
+        \begin{cases}
         z, & z \geq 0, \\
         \frac{z}{a}, & z < 0,
         \end{cases}
@@ -676,13 +676,13 @@ class LReLU(BaseActivation):
             return torch.where(x >= 0, x, x / self.a)
 
 
-class OLReLU(BaseActivation):
+class OLReLU(BaseActivation):  # noqa: F811
     r"""
     Applies the Optimized Leaky ReLU activation function.
 
     .. math::
-        \text{OLReLU}(z) = 
-        \begin{cases} 
+        \text{OLReLU}(z) =
+        \begin{cases}
         z, & z \geq 0, \\
         z \cdot \exp(-a), & z < 0,
         \end{cases}
@@ -713,10 +713,10 @@ class OLReLU(BaseActivation):
         >>> m(x)
     """
 
-    def __init__(self, l: float = 3.0, u: float = 8.0, **kwargs):
+    def __init__(self, lower: float = 3.0, u: float = 8.0, **kwargs):
         super().__init__(**kwargs)
-        assert l < u, "Lower bound must be less than upper bound"
-        self.a = (u + l) / (u - l)
+        assert lower < u, "Lower bound must be less than upper bound"
+        self.a = (u + lower) / (u - lower)
 
     def _forward(self, x: Tensor) -> Tensor:
         import math
@@ -729,13 +729,13 @@ class OLReLU(BaseActivation):
 
 
 @register_activation
-class RReLU(BaseActivation):
+class RReLU(BaseActivation):  # noqa: F811
     r"""
     Applies the Randomized Leaky ReLU activation function.
 
     .. math::
-        \text{RReLU}(z_i) = 
-        \begin{cases} 
+        \text{RReLU}(z_i) =
+        \begin{cases}
         z_i, & z_i \geq 0, \\
         z_i a_i, & z_i < 0,
         \end{cases}
@@ -767,14 +767,14 @@ class RReLU(BaseActivation):
         >>> m(x)
     """
 
-    def __init__(self, l: float = 3.0, u: float = 8.0, **kwargs):
+    def __init__(self, lower: float = 3.0, u: float = 8.0, **kwargs):
         super().__init__(**kwargs)
-        assert 0 < l < u, "Ensure 0 < l < u for the uniform distribution bounds."
-        self.l = l
+        assert 0 < lower < u, "Ensure 0 < l < u for the uniform distribution bounds."
+        self.lower = lower
         self.u = u
 
     def _forward(self, x: Tensor) -> Tensor:
-        a = torch.empty_like(x).uniform_(self.l, self.u)
+        a = torch.empty_like(x).uniform_(self.lower, self.u)
 
         if self.inplace:
             return x.where(x >= 0, x.div_(a))
@@ -796,11 +796,11 @@ class SRReLU(BaseActivation):
 
     where :math:`a_i` is sampled for each epoch and neuron i from the uniform distribution
     :math:`a_i \sim U(l, u)` where :math:`l < u` and :math:`l, u \in (0, \infty)`.
-    
+
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
-    
+
     Args:
         l (float, optional): Lower bound of the uniform distribution (default: 1/8).
         u (float, optional): Upper bound of the uniform distribution (default: 1/3).
@@ -821,14 +821,14 @@ class SRReLU(BaseActivation):
         >>> m(x)
     """
 
-    def __init__(self, l: float = 1 / 8, u: float = 1 / 3, **kwargs):
+    def __init__(self, lower: float = 1 / 8, u: float = 1 / 3, **kwargs):
         super().__init__(**kwargs)
-        assert 0 < l < u, "Ensure 0 < l < u for the uniform distribution bounds."
-        self.l = l
+        assert 0 < lower < u, "Ensure 0 < l < u for the uniform distribution bounds."
+        self.lower = lower
         self.u = u
 
     def _forward(self, x: Tensor) -> Tensor:
-        a = torch.empty_like(x).uniform_(self.l, self.u)
+        a = torch.empty_like(x).uniform_(self.lower, self.u)
         frac = 1 / torch.square(1 + x).clamp(min=1e-7)
         return torch.where(x >= 0, frac + x, frac + (a * x))
 
@@ -935,8 +935,8 @@ class RTReLU(BaseActivation):
     Applies the Randomly Translational ReLU activation function:
 
     .. math::
-        \text{RT-ReLU}(z_i) = 
-        \begin{cases} 
+        \text{RT-ReLU}(z_i) =
+        \begin{cases}
         z_i + a_i, & z_i + a_i \geq 0, \\
         0, & z_i + a_i < 0,
         \end{cases}
@@ -1034,8 +1034,8 @@ class SLU(BaseActivation):
     Applies the Softplus Linear Unit activation function:
 
     .. math::
-        \text{SLU}(z) = 
-        \begin{cases} 
+        \text{SLU}(z) =
+        \begin{cases}
         az, & z \geq 0, \\
         b \ln(\exp(z) + 1) - c, & z < 0,
         \end{cases}
@@ -1043,15 +1043,15 @@ class SLU(BaseActivation):
     which simplifies to:
 
     .. math::
-        \text{SLU}(z) = 
-        \begin{cases} 
+        \text{SLU}(z) =
+        \begin{cases}
         z, & z \geq 0, \\
         2 \ln(\frac{\exp(z) + 1}{2}), & z < 0,
         \end{cases}
 
     where :math:`a=1, b=2, c=2\ln(2)`.
 
-    :note: Parameter is fixed to ensure that the function is continuous, differentiable at 0 and avoid vanishing or exploding gradients.
+    :note: Parameter is fixed to ensure that the function is continuous, differentiable at 0 and avoid vanishing or exploding gradients. # noqa: E501
 
     Args:
         inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
@@ -1095,8 +1095,8 @@ class ReSP(BaseActivation):
     Applies the Rectified Softplus activation function:
 
     .. math::
-        \text{ReSP}(z) = 
-        \begin{cases} 
+        \text{ReSP}(z) =
+        \begin{cases}
         az + \ln(2), & z \geq 0, \\
         \ln(1 + \exp(z)), & z < 0,
         \end{cases}
@@ -1147,8 +1147,8 @@ class PReNU(BaseActivation):
     Applies the Parametric Rectified Non-linear Unit activation function:
 
     .. math::
-        \text{PReNU}(z) = 
-        \begin{cases} 
+        \text{PReNU}(z) =
+        \begin{cases}
         z - a \ln(z + 1), & z \geq 0, \\
         0, & z < 0,
         \end{cases}
@@ -1302,8 +1302,8 @@ class HardTanh(BaseActivation):
     Applies the HardTanh activation function:
 
     .. math::
-        \text{HardTanh}(z) = 
-        \begin{cases} 
+        \text{HardTanh}(z) =
+        \begin{cases}
         a, & z < a, \\
         z, & a \leq z \leq b, \\
         b, & z > b,
@@ -1353,8 +1353,8 @@ class SvHardTanh(BaseActivation):
     Applies the Shifted HardTanh activation function:
 
     .. math::
-        \text{SvHardTanh}(z) = 
-        \begin{cases} 
+        \text{SvHardTanh}(z) =
+        \begin{cases}
         -1 + a, & z < -1, \\
         z + a, & -1 \leq z \leq 1, \\
         1 + a, & z > 1,
@@ -1401,8 +1401,8 @@ class ShHardTanh(BaseActivation):
     Applies the Shifted HardTanh activation function:
 
     .. math::
-        \text{ShHardTanh}(z) = 
-        \begin{cases} 
+        \text{ShHardTanh}(z) =
+        \begin{cases}
         -1, & z < -1 - a, \\
         z, & -1 - a \leq z \leq 1 - a, \\
         1, & z > 1 - a,
@@ -1448,8 +1448,8 @@ class HardSwish(BaseActivation):
     Applies the Hard Swish activation function:
 
     .. math::
-        \text{Hard swish}(z) = z \cdot 
-        \begin{cases} 
+        \text{Hard swish}(z) = z \cdot
+        \begin{cases}
         0, & z \leq -3, \\
         1, & z \geq 3, \\
         \frac{z}{6} + \frac{1}{2}, & -3 < z < 3,
@@ -1496,8 +1496,8 @@ class TRec(BaseActivation):
     Applies the Truncated Rectified activation function:
 
     .. math::
-        \text{TRec}(z) = 
-        \begin{cases} 
+        \text{TRec}(z) =
+        \begin{cases}
         z, & z > a, \\
         0, & z \leq a,
         \end{cases}
@@ -1539,8 +1539,8 @@ class Hardshrink(BaseActivation):
     Applies the Hardshrink activation function:
 
     .. math::
-        \text{Hardshrink}(z) = 
-        \begin{cases} 
+        \text{Hardshrink}(z) =
+        \begin{cases}
         z, & z > a, \\
         0, & -a \leq z \leq a, \\
         z, & z < -a,
@@ -1591,8 +1591,8 @@ class Softshrink(BaseActivation):
     Applies the Softshrink activation function:
 
     .. math::
-        \text{Softshrink}(z) = 
-        \begin{cases} 
+        \text{Softshrink}(z) =
+        \begin{cases}
         z - a, & z > a, \\
         0, & -a \leq z \leq a, \\
         z + a, & z < -a,
@@ -1652,8 +1652,8 @@ class BLReLU(BaseActivation):
     Applies the Bounded Leaky ReLU activation function:
 
     .. math::
-        \text{BLReLU}(z) = 
-        \begin{cases} 
+        \text{BLReLU}(z) =
+        \begin{cases}
         az, & z \leq 0, \\
         z, & 0 < z < b, \\
         az + c, & z \geq b,
@@ -1662,7 +1662,7 @@ class BLReLU(BaseActivation):
     where :math:`c = (1 - a)b`.
 
     Args:
-        a (float, optional): Slope parameter for negative and large positive inputs. Default: ``0.1``
+        a (float, optional): Slope parameter for negative and large positive inputs. Default: ``0.1`` # noqa: E501
         b (float, optional): Upper bound of the linear region. Default: ``1.0``
         inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
@@ -1709,8 +1709,8 @@ class VReLU(BaseActivation):
     Applies the V-shaped ReLU activation function:
 
     .. math::
-        \text{vReLU}(z) = |z| = 
-        \begin{cases} 
+        \text{vReLU}(z) = |z| =
+        \begin{cases}
         z, & z \geq 0, \\
         -z, & z < 0,
         \end{cases}
@@ -1754,8 +1754,8 @@ class PanFunction(BaseActivation):
     Applies the Pan activation function:
 
     .. math::
-        \text{Pan function}(z) = 
-        \begin{cases} 
+        \text{Pan function}(z) =
+        \begin{cases}
         z - a, & z \geq a, \\
         0, & -a < z < a, \\
         -z - a, & z \leq -a,
@@ -1812,8 +1812,8 @@ class AbsLU(BaseActivation):
     Applies the Absolute Linear Unit activation function:
 
     .. math::
-        \text{AbsLU}(z) = 
-        \begin{cases} 
+        \text{AbsLU}(z) =
+        \begin{cases}
         z, & z \geq 0, \\
         a|z|, & z < 0,
         \end{cases}
@@ -1863,8 +1863,8 @@ class mReLU(BaseActivation):
     Applies the Mirrored Rectified Linear Unit activation function:
 
     .. math::
-        \text{mReLU}(z) = \min(\text{ReLU}(1 - z), \text{ReLU}(1 + z)) = 
-        \begin{cases} 
+        \text{mReLU}(z) = \min(\text{ReLU}(1 - z), \text{ReLU}(1 + z)) =
+        \begin{cases}
         1 + z, & -1 \leq z \leq 0, \\
         1 - z, & 0 < z \leq 1, \\
         0, & \text{otherwise},
@@ -1905,8 +1905,8 @@ class LSPTLU(BaseActivation):
     Applies the Linear Symmetric Piecewise Triangular Linear Unit activation function:
 
     .. math::
-        \text{LSPTLU}(z) = 
-        \begin{cases} 
+        \text{LSPTLU}(z) =
+        \begin{cases}
         0.2z, & z < 0, \\
         z, & 0 \leq z \leq a, \\
         2a - z, & a < z \leq 2a, \\
@@ -1970,8 +1970,8 @@ class SoftModulusQ(BaseActivation):
     Applies the SoftModulusQ activation function, which is a quadratic approximation of the vReLU:
 
     .. math::
-        \text{SoftModulusQ}(z) = 
-        \begin{cases} 
+        \text{SoftModulusQ}(z) =
+        \begin{cases}
         z^2 (2 - |z|), & |z| \leq 1, \\
         |z|, & |z| > 1,
         \end{cases}
@@ -2062,8 +2062,8 @@ class SignReLU(BaseActivation):
     Applies the SignReLU activation function, which is a combination of ReLU and softsign:
 
     .. math::
-        \text{SignReLU}(z) = 
-        \begin{cases} 
+        \text{SignReLU}(z) =
+        \begin{cases}
         z, & z \geq 0, \\
         a \frac{z}{|z|+1}, & z < 0,
         \end{cases}
@@ -2113,8 +2113,8 @@ class LiReLU(BaseActivation):
     Applies the Li-ReLU activation function, which is a combination of a linear function and ReLU:
 
     .. math::
-        \text{Li-ReLU}(z) = 
-        \begin{cases} 
+        \text{Li-ReLU}(z) =
+        \begin{cases}
         az + z, & z \geq 0, \\
         az, & z < 0,
         \end{cases}
@@ -2163,14 +2163,14 @@ class LiReLU(BaseActivation):
 # @register_activation
 class DualReLU(BaseActivation):
     r"""
-    Applies the DualReLU activation function. Where CReLU activation functions takes a single value and outputs 
-    a vector of two values, the DualReLU takes two values as an input and outputs a single value. The DualReLU 
-    is a two-dimensional activation function meant as a replacement of the tanh activation function for 
+    Applies the DualReLU activation function. Where CReLU activation functions takes a single value and outputs # noqa: E501
+    a vector of two values, the DualReLU takes two values as an input and outputs a single value. The DualReLU # noqa: E501
+    is a two-dimensional activation function meant as a replacement of the tanh activation function for # noqa: E501
     Quasi-Recurrent neural networks.
 
     .. math::
-        \text{DualReLU}(z, z') = \max(0, z) - \max(0, z') = 
-        \begin{cases} 
+        \text{DualReLU}(z, z') = \max(0, z) - \max(0, z') =
+        \begin{cases}
         0, & z \leq 0 \land z' \leq 0, \\
         z, & z > 0 \land z' \leq 0, \\
         -b, & z \leq 0 \land z' > 0, \\
@@ -2216,7 +2216,7 @@ class DualReLU(BaseActivation):
 # @register_activation
 class OPLU(BaseActivation):
     r"""
-    Applies the Orthogonal Permutation Liner Unit (OPLU) activation function. The OPLU is not applied
+    Applies the Orthogonal Permutation Liner Unit (OPLU) activation function. The OPLU is not applied # noqa: E501
     to a single neuron but always to a pair of neurons. First, the neurons are grouped into pairs,
     and the OPLU takes two inputs and produces two outputs.
 
@@ -2232,7 +2232,7 @@ class OPLU(BaseActivation):
         inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
-        - Input: :math:`(*, 2n, *)` where :math:`*` means any number of dimensions and n is the number of pairs
+        - Input: :math:`(*, 2n, *)` where :math:`*` means any number of dimensions and n is the number of pairs # noqa: E501
         - Output: :math:`(*, 2n, *)` same shape as the input
 
     Examples::
@@ -2264,26 +2264,26 @@ class OPLU(BaseActivation):
 @register_activation
 class EReLU(BaseActivation):
     r"""
-    Applies the Elastic ReLU (EReLU) activation function, which slightly randomly changes the slope 
+    Applies the Elastic ReLU (EReLU) activation function, which slightly randomly changes the slope
     of the positive part of the ReLU during training.
 
     .. math::
-        \text{EReLU}(z_i) = 
-        \begin{cases} 
+        \text{EReLU}(z_i) =
+        \begin{cases}
         k_i z_i, & z_i \geq 0, \\
         0, & z_i < 0,
         \end{cases}
 
     where :math:`k_i` is sampled for each epoch and neuron i from the uniform distribution
-    :math:`k_i \sim U(1 - \alpha, 1 + \alpha)` where :math:`\alpha \in (0, 1)` is a parameter 
+    :math:`k_i \sim U(1 - \alpha, 1 + \alpha)` where :math:`\alpha \in (0, 1)` is a parameter
     controlling the degree of response fluctuations.
 
-    During test phase, :math:`k_i` is set to its expected value :math:`E(k_i) = 1`, making 
+    During test phase, :math:`k_i` is set to its expected value :math:`E(k_i) = 1`, making
     the EReLU equivalent to the standard ReLU.
 
     Args:
-        alpha (float, optional): Parameter controlling the degree of response fluctuations. Default: ``0.1``
-        training (bool, optional): Whether to use random sampling (training mode) or expected value (test mode). Default: ``True``
+        alpha (float, optional): Parameter controlling the degree of response fluctuations. Default: ``0.1`` # noqa: E501
+        training (bool, optional): Whether to use random sampling (training mode) or expected value (test mode). Default: ``True`` # noqa: E501
         inplace (bool, optional): Can optionally do the operation in-place. Default: ``False``
 
     Shape:
@@ -2775,7 +2775,7 @@ class AllReLU(BaseActivation):
 
     Args:
         a (float, optional): Scale for negative part. Default: ``0.1``
-        layer (int, optional): Layer index (parity determines sign of negative response). Default: ``0``
+        layer (int, optional): Layer index (parity determines sign of negative response). Default: ``0`` # noqa: E501
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.

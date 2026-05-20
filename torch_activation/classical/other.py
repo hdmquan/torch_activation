@@ -1,5 +1,3 @@
-import math
-
 import torch
 import torch.nn as nn
 from torch import Tensor
@@ -83,7 +81,7 @@ class Mishra(BaseActivation):
     r"""
     Applies the Mishra activation function:
 
-    :math:`\text{Mishra}(z) = \frac{1}{2} \cdot \frac{z}{1 + |z|} + \frac{z}{2} \cdot \frac{1}{1 + |z|}`
+    :math:`\text{Mishra}(z) = \frac{1}{2} \cdot \frac{z}{1 + |z|} + \frac{z}{2} \cdot \frac{1}{1 + |z|}` # noqa: E501
 
     Args:
         inplace (bool, optional): parameter kept for API consistency, but Mishra operation
@@ -141,15 +139,15 @@ class Logarithmic(BaseActivation):
     r"""
     Applies the Logarithmic activation function (LAF):
 
-    :math:`\text{Logarithmic}(z) = \begin{cases} 
+    :math:`\text{Logarithmic}(z) = \begin{cases}
     \ln(z) + 1, & z \geq 0 \\
-    -\ln(-z) + 1, & z < 0 
+    -\ln(-z) + 1, & z < 0
     \end{cases}`
 
     Also known as symlog in some literature.
 
     Args:
-        inplace (bool, optional): parameter kept for API consistency, but logarithmic operation 
+        inplace (bool, optional): parameter kept for API consistency, but logarithmic operation
                                  cannot be done in-place. Default: ``False``
 
     Shape:
@@ -179,13 +177,13 @@ class SPOCU(BaseActivation):
     :math:`\text{SPOCU}(z) = a \cdot h(z)^c + b - a \cdot h(b)`
 
     where:
-    
-    :math:`h(x) = \begin{cases} 
+
+    :math:`h(x) = \begin{cases}
     r(d), & x \geq d \\
     r(x), & 0 \leq x < d \\
-    x, & x < 0 
+    x, & x < 0
     \end{cases}`
-    
+
     and :math:`r(x) = x^3 - \frac{2x^4 + x^5}{2}`
 
     Args:
@@ -193,7 +191,7 @@ class SPOCU(BaseActivation):
         b (float, optional): parameter in range (0,1). Default: ``0.5``
         c (float, optional): exponent parameter. Default: ``1.0``
         d (float, optional): threshold parameter in range [1,∞). Default: ``1.0``
-        inplace (bool, optional): parameter kept for API consistency, but SPOCU operation 
+        inplace (bool, optional): parameter kept for API consistency, but SPOCU operation
                                  cannot be done in-place. Default: ``False``
 
     Shape:
@@ -242,10 +240,10 @@ class PUAF(BaseActivation):
     r"""
     Applies the Polynomial Universal Activation Function (PUAF):
 
-    :math:`\text{PUAF}(z) = \begin{cases} 
+    :math:`\text{PUAF}(z) = \begin{cases}
     z^a, & z > c \\
     z^a \cdot \frac{(c+z)^b}{(c+z)^b+(c-z)^b}, & |z| \leq c \\
-    0, & z < -c 
+    0, & z < -c
     \end{cases}`
 
     Can approximate various activation functions based on parameter settings:
@@ -257,7 +255,7 @@ class PUAF(BaseActivation):
         a (float, optional): exponent parameter. Default: ``1.0``
         b (float, optional): exponent parameter. Default: ``5.0``
         c (float, optional): threshold parameter. Default: ``10.0``
-        inplace (bool, optional): parameter kept for API consistency, but PUAF operation 
+        inplace (bool, optional): parameter kept for API consistency, but PUAF operation
                                  cannot be done in-place. Default: ``False``
 
     Shape:
@@ -325,39 +323,39 @@ class ArandaOrdaz(BaseActivation):
 @register_activation
 class KDAC(BaseActivation):
     r"""
-    :note: Adapted from `https://github.com/pyy-copyto/KDAC/blob/4541ffed1a964dfff9b8243a89c38a61e85860f5/KDAC.py`
+    :note: Adapted from `https://github.com/pyy-copyto/KDAC/blob/4541ffed1a964dfff9b8243a89c38a61e85860f5/KDAC.py` # noqa: E501
     Applies the Knowledge Discovery Activation Function (KDAC):
 
-    :math:`\text{KDAC}(z) = p \cdot (1 - h_{max}(p, r)) + r \cdot h_{max}(p, r) + k \cdot h_{max}(p, r) \cdot (1 - h_{max}(p, r))`
+    :math:`\text{KDAC}(z) = p \cdot (1 - h_{max}(p, r)) + r \cdot h_{max}(p, r) + k \cdot h_{max}(p, r) \cdot (1 - h_{max}(p, r))` # noqa: E501
 
     where:
-    
+
     :math:`h_{max}(x, y) = \text{clip}\left(\frac{1}{2} - \frac{1}{2} \frac{x - y}{c}\right)`
-    
+
     :math:`\text{clip}(x) = \begin{cases}
     0, & x \leq 0 \\
     x, & 0 < x < 1 \\
     1, & x \geq 1
     \end{cases}`
-    
+
     :math:`p = az`
-    
+
     :math:`q = h_{min}(bz, s)`
-    
+
     :math:`r = \begin{cases}
     p, & z > 0 \\
     bz \cdot (1 - q) + s \cdot h_{min}(q, s) + k \cdot q \cdot (1 - q), & z \leq 0
     \end{cases}`
-    
+
     :math:`s = \tanh(z)`
-    
+
     :math:`h_{min}(x, y) = \text{clip}\left(\frac{1}{2} + \frac{1}{2} \frac{x - y}{c}\right)`
 
     Args:
         a (float, optional): trainable parameter, must be positive. Default: ``0.1``
         b (float, optional): trainable parameter, must be positive. Default: ``0.1``
         c (float, optional): fixed parameter. Default: ``0.01``
-        inplace (bool, optional): parameter kept for API consistency, but KDAC operation 
+        inplace (bool, optional): parameter kept for API consistency, but KDAC operation
                                  cannot be done in-place. Default: ``False``
 
     Shape:
@@ -414,17 +412,17 @@ class KWTA(BaseActivation):
     0, & \text{otherwise}
     \end{cases}`
 
-    This activation function keeps the k largest elements of the input unchanged and sets all other elements to zero.
+    This activation function keeps the k largest elements of the input unchanged and sets all other elements to zero. # noqa: E501
     It was introduced to improve adversarial robustness.
 
     Args:
         k (int or float, optional): If int, specifies the exact number of elements to keep.
-                                   If float between 0 and 1, specifies the fraction of elements to keep.
+                                   If float between 0 and 1, specifies the fraction of elements to keep. # noqa: E501
                                    Default: ``0.2``
         dim (int, optional): The dimension along which to find the k largest elements.
                             If None, the operation is applied to the flattened tensor.
                             Default: ``None``
-        inplace (bool, optional): parameter kept for API consistency, but k-WTA operation 
+        inplace (bool, optional): parameter kept for API consistency, but k-WTA operation
                                  cannot be done in-place. Default: ``False``
 
     Shape:
@@ -479,7 +477,6 @@ class KWTA(BaseActivation):
             scatter_dim = self.dim
             expand_dims = [1] * len(z.shape)
             expand_dims[scatter_dim] = k
-            dim_indices = torch.arange(k).view(expand_dims).expand_as(indices)
             mask.scatter_(scatter_dim, indices, torch.ones_like(indices, dtype=torch.bool))
 
             # Apply the mask to get the result
@@ -490,11 +487,11 @@ class KWTA(BaseActivation):
 @register_activation
 class VBAF(BaseActivation):
     r"""
-    :note: The implementation of this activation function is based on limited information from the literature.
-           The original papers don't provide complete details on how this function should be applied in neural networks.
+    :note: The implementation of this activation function is based on limited information from the literature. # noqa: E501
+           The original papers don't provide complete details on how this function should be applied in neural networks. # noqa: E501
 
     :todo: Verify this implementation against more detailed descriptions if they become available.
-           Currently unclear whether VBAF should be applied only to inputs or also to intermediate representations.
+           Currently unclear whether VBAF should be applied only to inputs or also to intermediate representations. # noqa: E501
 
     Applies the Volatility-Based Activation Function (VBAF):
 
@@ -504,8 +501,8 @@ class VBAF(BaseActivation):
 
     :math:`\bar{z} = \frac{\sum_{j=1}^{n} z_j}{n}`
 
-    This activation function was designed for time-series forecasting and was used in LSTM neural networks.
-    It takes multiple inputs (a sequence of values) and produces a single output based on their volatility.
+    This activation function was designed for time-series forecasting and was used in LSTM neural networks. # noqa: E501
+    It takes multiple inputs (a sequence of values) and produces a single output based on their volatility. # noqa: E501
 
     Args:
         dim (int, optional): The dimension along which to compute the mean and volatility.
@@ -514,7 +511,7 @@ class VBAF(BaseActivation):
                                  cannot be done in-place. Default: ``False``
 
     Shape:
-        - Input: :math:`(*, N)`, where :math:`*` means any number of dimensions and N is the sequence length.
+        - Input: :math:`(*, N)`, where :math:`*` means any number of dimensions and N is the sequence length. # noqa: E501
         - Output: :math:`(*, 1)`, with the last dimension reduced to size 1.
     """
 

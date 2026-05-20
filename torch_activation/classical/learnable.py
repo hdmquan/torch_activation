@@ -60,7 +60,7 @@ class tSoftmax(BaseActivation):
         - Output: :math:`(*)`, same shape as the input.
 
     References:
-        .. [1] Hinton, G. et al. *Distilling the Knowledge in a Neural Network*. NeurIPS Workshop, 2015.
+        .. [1] Hinton, G. et al. *Distilling the Knowledge in a Neural Network*. NeurIPS Workshop, 2015. # noqa: E501
     """
 
     def __init__(self, dim: int = -1, init_t: float = 1.0, **kwargs):
@@ -91,7 +91,7 @@ class GEU(BaseActivation):
         - Output: :math:`(*)`, same shape as the input.
 
     References:
-        .. [1] Hendrycks, D. & Gimpel, K. *Gaussian Error Linear Units (GELUs)*. arXiv:1606.08415, 2016.
+        .. [1] Hendrycks, D. & Gimpel, K. *Gaussian Error Linear Units (GELUs)*. arXiv:1606.08415, 2016. # noqa: E501
     """
 
     def __init__(self, **kwargs):
@@ -205,7 +205,7 @@ class LEAF(BaseActivation):
     r"""
     Applies the Learnable Extended Activation Function (LEAF):
 
-    :math:`\text{LEAF}(x) = \alpha \cdot \max(x, 0) + \beta \cdot \min(x, 0) \cdot \sigma(\gamma \cdot x)`
+    :math:`\text{LEAF}(x) = \alpha \cdot \max(x, 0) + \beta \cdot \min(x, 0) \cdot \sigma(\gamma \cdot x)` # noqa: E501
 
     where :math:`\alpha, \beta, \gamma` are learnable parameters.
 
@@ -684,7 +684,7 @@ class LuTU(BaseActivation):
         - Output: :math:`(*)`, same shape as the input.
 
     References:
-        .. [1] Activation Functions in Deep Learning: A Comprehensive Survey. arXiv:2109.14545, 2021.
+        .. [1] Activation Functions in Deep Learning: A Comprehensive Survey. arXiv:2109.14545, 2021. # noqa: E501
     """
 
     def __init__(self, n_anchors: int = 16, x_min: float = -4.0, x_max: float = 4.0, **kwargs):
@@ -740,7 +740,7 @@ class PAU(BaseActivation):
     r"""
     Applies the Padé Activation Unit (PAU):
 
-    :math:`\text{PAU}(x) = \frac{P(x)}{Q(x)} = \frac{\sum_{i=0}^{m} a_i x^i}{1 + \sum_{j=1}^{n} |b_j| x^{2j}}`
+    :math:`\text{PAU}(x) = \frac{P(x)}{Q(x)} = \frac{\sum_{i=0}^{m} a_i x^i}{1 + \sum_{j=1}^{n} |b_j| x^{2j}}` # noqa: E501
 
     where the denominator uses absolute values to avoid poles.
 
@@ -879,11 +879,11 @@ class OPAU(BaseActivation):
                arXiv:2106.09693, 2021.
     """
 
-    def __init__(self, k: int = 3, l: int = 2, **kwargs):
+    def __init__(self, k: int = 3, denom_deg: int = 2, **kwargs):
         super().__init__(**kwargs)
         self.c = nn.Parameter(torch.zeros(k + 1))
         self.c.data[1] = 1.0
-        self.d = nn.Parameter(torch.zeros(l))
+        self.d = nn.Parameter(torch.zeros(denom_deg))
 
     @staticmethod
     def _hermite(x, n):
@@ -1254,7 +1254,7 @@ class RTPReLU(BaseActivation):
     r"""
     Applies the Random Threshold PReLU (RTPReLU):
 
-    During training, each element uses a stochastic threshold :math:`b_i \sim \mathcal{N}(0, \sigma^2)`:
+    During training, each element uses a stochastic threshold :math:`b_i \sim \mathcal{N}(0, \sigma^2)`: # noqa: E501
 
     :math:`\text{RTPReLU}(z_i) = z_i \text{ if } z_i + b_i \geq 0,\; \text{else } z_i / a`
 

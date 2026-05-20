@@ -1,5 +1,4 @@
 import torch
-import torch.nn as nn
 from torch import Tensor
 
 from torch_activation import register_activation
@@ -11,9 +10,9 @@ class SQRT(BaseActivation):
     r"""
     Applies the Square-root-based activation function (SQRT):
 
-    :math:`\text{SQRT}(z) = \begin{cases} 
+    :math:`\text{SQRT}(z) = \begin{cases}
     \sqrt{z}, & z \geq 0 \\
-    -\sqrt{-z}, & z < 0 
+    -\sqrt{-z}, & z < 0
     \end{cases}`
 
     Shape:
@@ -38,9 +37,9 @@ class SSAF(BaseActivation):
     r"""
     Applies the S-shaped activation function (SSAF), a parametric variant of SQRT:
 
-    :math:`\text{SSAF}(z) = \begin{cases} 
+    :math:`\text{SSAF}(z) = \begin{cases}
     \sqrt{2az}, & z \geq 0 \\
-    -\sqrt{-2az}, & z < 0 
+    -\sqrt{-2az}, & z < 0
     \end{cases}`
 
     where :math:`a` is a fixed parameter.
