@@ -8,8 +8,8 @@ ACTIVATION_NAME = "ScaledExponentialLinearUnit"
 
 def scalar_ref(x: float) -> float:
     import math
-    a = 1.67326
-    b = 1.0
+    a = 1.0507009873554804934193
+    b = 1.6732631921033945073073
     if x >= 0:
         return a * x
     else:

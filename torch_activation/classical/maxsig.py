@@ -434,8 +434,8 @@ class ScaledExponentialLinearUnit(BaseActivation):
     \end{cases}`
 
     Args:
-        a (float, optional): Scale parameter. Default: 1.67326
-        b (float, optional): Alpha parameter. Default: 1.0
+        a (float, optional): Scale parameter (λ). Default: 1.0507009873554804934193
+        b (float, optional): Alpha parameter (α). Default: 1.6732631921033945073073
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
@@ -448,7 +448,7 @@ class ScaledExponentialLinearUnit(BaseActivation):
         >>> output = m(x)
     """
 
-    def __init__(self, a: float = 1.67326, b: float = 1.0, **kwargs):
+    def __init__(self, a: float = 1.0507009873554804934193, b: float = 1.6732631921033945073073, **kwargs):
         super().__init__(**kwargs)
         self.a = a
         self.b = b
