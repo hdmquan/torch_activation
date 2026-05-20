@@ -547,19 +547,19 @@ class PTanh(BaseActivation):
         self.a = nn.Parameter(torch.tensor([a]), requires_grad=False)
 
     def _forward(self, z) -> Tensor:
-        # Turned the thing from 1 line to 10 just to not use where :D
+        a = self.a.to(z.dtype)
         tanh_z = torch.tanh(z)
-        
+
         neg_mask = z < 0
-        
+
         result = tanh_z.clone()
 
         if neg_mask.any():
             if self.a != 0:
-                result[neg_mask] = tanh_z[neg_mask] / self.a
+                result[neg_mask] = tanh_z[neg_mask] / a
             else:
                 result[neg_mask] = float('inf') * torch.sign(tanh_z[neg_mask])
-        
+
         return result
 
 

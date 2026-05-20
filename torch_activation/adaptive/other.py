@@ -65,27 +65,29 @@ class SGT(BaseActivation):
             self.beta = Tensor([beta])
 
     def _forward(self, x) -> Tensor:
+        alpha = self.alpha.to(x.dtype) if isinstance(self.alpha, Tensor) else self.alpha
+        beta = self.beta.to(x.dtype) if isinstance(self.beta, Tensor) else self.beta
         pos_mask = x >= 0
         neg_mask = x < 0
-        
+
         result = torch.zeros_like(x)
-        result[neg_mask] = self.a * torch.pow(x[neg_mask], self.alpha)
-        result[pos_mask] = self.b * torch.pow(x[pos_mask], self.beta)
-        
+        result[neg_mask] = self.a * torch.pow(x[neg_mask], alpha)
+        result[pos_mask] = self.b * torch.pow(x[pos_mask], beta)
+
         return result
-    
+
     def _forward_inplace(self, x) -> Tensor:
+        alpha = self.alpha.to(x.dtype) if isinstance(self.alpha, Tensor) else self.alpha
+        beta = self.beta.to(x.dtype) if isinstance(self.beta, Tensor) else self.beta
         pos_mask = x >= 0
         neg_mask = ~pos_mask
-        
-        # Process negative values
+
         if neg_mask.any():
-            x[neg_mask] = self.a * torch.pow(x[neg_mask], self.alpha)
-        
-        # Process positive values
+            x[neg_mask] = self.a * torch.pow(x[neg_mask], alpha)
+
         if pos_mask.any():
-            x[pos_mask] = self.b * torch.pow(x[pos_mask], self.beta)
-        
+            x[pos_mask] = self.b * torch.pow(x[pos_mask], beta)
+
         return x
 
 

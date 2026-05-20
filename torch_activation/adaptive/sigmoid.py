@@ -664,34 +664,29 @@ class STACTanh(BaseActivation):
             self.b = Tensor([b])
 
     def _forward(self, x) -> Tensor:
-        # Precompute constants
-        tanh_a = torch.tanh(self.a)
-        tanh_neg_a = torch.tanh(-self.a)
+        a = self.a.to(x.dtype) if isinstance(self.a, Tensor) else x.new_tensor(self.a)
+        b = self.b.to(x.dtype) if isinstance(self.b, Tensor) else x.new_tensor(self.b)
+        tanh_a = torch.tanh(a)
+        tanh_neg_a = torch.tanh(-a)
 
-        # Create masks for different regions
-        mask_lower = x < -self.a
-        mask_middle = (x >= -self.a) & (x <= self.a)
-        mask_upper = x > self.a
+        mask_lower = x < -a
+        mask_middle = (x >= -a) & (x <= a)
+        mask_upper = x > a
 
         if self.inplace:
-            # Create a copy to avoid modifying during computation
             result = x.clone()
 
-            # Apply different functions to different regions
-            result[mask_lower] = tanh_neg_a + self.b * (x[mask_lower] + self.a)
+            result[mask_lower] = tanh_neg_a + b * (x[mask_lower] + a)
             result[mask_middle] = torch.tanh(x[mask_middle])
-            result[mask_upper] = tanh_a + self.b * (x[mask_upper] - self.a)
+            result[mask_upper] = tanh_a + b * (x[mask_upper] - a)
 
-            # Copy back to original tensor
             x.copy_(result)
             return x
         else:
-            # Initialize result tensor
             result = torch.zeros_like(x)
 
-            # Apply different functions to different regions
-            result[mask_lower] = tanh_neg_a + self.b * (x[mask_lower] + self.a)
+            result[mask_lower] = tanh_neg_a + b * (x[mask_lower] + a)
             result[mask_middle] = torch.tanh(x[mask_middle])
-            result[mask_upper] = tanh_a + self.b * (x[mask_upper] - self.a)
+            result[mask_upper] = tanh_a + b * (x[mask_upper] - a)
 
             return result

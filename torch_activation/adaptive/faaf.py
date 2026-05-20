@@ -569,17 +569,15 @@ class FracGELU1(BaseActivation):
         self.sqrt_2pi = math.sqrt(2 * math.pi)
 
     def _forward(self, x) -> Tensor:
-        # Clamp a to be in (0, 1) range for stability
-        a_clamped = torch.clamp(self.a, 0.01, 0.99)
-        
+        a_clamped = torch.clamp(self.a, 0.01, 0.99).to(x.dtype)
+
         pos_mask = x > 0
         neg_mask = x < 0
 
         result = torch.zeros_like(x)
 
         if pos_mask.any():
-            x_pos = x[pos_mask]
-            x_pos = x_pos + self.eps
+            x_pos = x[pos_mask] + self.eps
             gamma_term = torch.exp(torch.lgamma(2 - a_clamped))
             result[pos_mask] = torch.pow(x_pos, 1 - a_clamped) / gamma_term
 

@@ -431,40 +431,42 @@ class LinQ(BaseActivation):
         self.a = nn.Parameter(torch.tensor([a]))
 
     def _forward(self, z):
+        a = self.a.to(z.dtype)
         result = torch.empty_like(z)
-        upper_threshold = 2 - 2 * self.a
-        lower_threshold = -2 + 2 * self.a
+        upper_threshold = 2 - 2 * a
+        lower_threshold = -2 + 2 * a
 
         upper_region = z >= upper_threshold
         lower_region = (~upper_region) & (z <= lower_threshold)
         middle_region = ~upper_region & ~lower_region
 
         result[upper_region] = (
-            self.a * z[upper_region] + 1 - 2 * z[upper_region] + z[upper_region] ** 2
+            a * z[upper_region] + 1 - 2 * z[upper_region] + z[upper_region] ** 2
         )
         result[middle_region] = (
             0.25 * z[middle_region] * (4 - torch.abs(z[middle_region]))
         )
         result[lower_region] = (
-            self.a * z[lower_region] - 1 - 2 * z[lower_region] + z[lower_region] ** 2
+            a * z[lower_region] - 1 - 2 * z[lower_region] + z[lower_region] ** 2
         )
 
         return result
 
     def _forward_inplace(self, z):
-        upper_threshold = 2 - 2 * self.a
-        lower_threshold = -2 + 2 * self.a
+        a = self.a.to(z.dtype)
+        upper_threshold = 2 - 2 * a
+        lower_threshold = -2 + 2 * a
 
         upper_region = z >= upper_threshold
         lower_region = (~upper_region) & (z <= lower_threshold)
         middle_region = ~upper_region & ~lower_region
 
         z[upper_region] = (
-            self.a * z[upper_region] + 1 - 2 * z[upper_region] + z[upper_region] ** 2
+            a * z[upper_region] + 1 - 2 * z[upper_region] + z[upper_region] ** 2
         )
         z[middle_region] = 0.25 * z[middle_region] * (4 - torch.abs(z[middle_region]))
         z[lower_region] = (
-            self.a * z[lower_region] - 1 - 2 * z[lower_region] + z[lower_region] ** 2
+            a * z[lower_region] - 1 - 2 * z[lower_region] + z[lower_region] ** 2
         )
 
         return z

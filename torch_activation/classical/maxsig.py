@@ -110,13 +110,14 @@ class DifferenceELU(BaseActivation):
         self.b = nn.Parameter(Tensor([b]))
 
     def _forward(self, x) -> Tensor:
+        a, b = self.a.to(x.dtype), self.b.to(x.dtype)
         pos_mask = x >= 0
         neg_mask = ~pos_mask
-        
+
         result = x.clone()
         neg_x = x[neg_mask]
-        result[neg_mask] = self.a * (neg_x * torch.exp(neg_x) - self.b * torch.exp(self.b * neg_x))
-        
+        result[neg_mask] = a * (neg_x * torch.exp(neg_x) - b * torch.exp(b * neg_x))
+
         return result
 
 
@@ -187,13 +188,14 @@ class InversePolynomialLinearUnit(BaseActivation):
         self.a = nn.Parameter(Tensor([a]))
 
     def _forward(self, x) -> Tensor:
+        a = self.a.to(x.dtype)
         pos_mask = x >= 0
         neg_mask = ~pos_mask
-        
+
         result = x.clone()
         neg_x = x[neg_mask]
-        result[neg_mask] = 1 / (1 + torch.abs(neg_x).pow(self.a))
-        
+        result[neg_mask] = 1 / (1 + torch.abs(neg_x).pow(a))
+
         return result
 
 
@@ -226,16 +228,16 @@ class PowerLinearUnit(BaseActivation):
         self.a = nn.Parameter(Tensor([a]))
 
     def _forward(self, x) -> Tensor:
+        a = self.a.to(x.dtype)
         pos_mask = x >= 0
         neg_mask = ~pos_mask
-        
+
         result = x.clone()
         neg_x = x[neg_mask]
-        
-        # Ensure numerical stability by clamping values
+
         neg_x = torch.clamp(neg_x, min=-0.999)
-        result[neg_mask] = torch.pow(1 - neg_x, -self.a) - 1
-        
+        result[neg_mask] = torch.pow(1 - neg_x, -a) - 1
+
         return result
 
 
@@ -343,37 +345,37 @@ class ElasticAdaptivelyParametricCompoundedUnit(BaseActivation):
 
     def _forward(self, x) -> Tensor:
         if self.num_parameters == 1:
+            a, b = self.a.to(x.dtype), self.b.to(x.dtype)
             pos_mask = x >= 0
             neg_mask = ~pos_mask
-            
+
             result = torch.zeros_like(x)
-            result[pos_mask] = self.b * x[pos_mask]
-            
+            result[pos_mask] = b * x[pos_mask]
+
             neg_x = x[neg_mask]
-            softplus = torch.log(1 + torch.exp(self.a * neg_x))
-            result[neg_mask] = self.a * neg_x * torch.tanh(softplus)
-            
+            softplus = torch.log(1 + torch.exp(a * neg_x))
+            result[neg_mask] = a * neg_x * torch.tanh(softplus)
+
             return result
         else:
-            # Handle per-channel parameterization
+            a = self.a.to(x.dtype)
+            b = self.b.to(x.dtype)
             pos_mask = x >= 0
             neg_mask = ~pos_mask
-            
+
             result = torch.zeros_like(x)
-            
+
             for i in range(self.num_parameters):
-                # Apply positive part
                 channel_pos_mask = pos_mask.narrow(0, i, 1).squeeze(0)
                 if channel_pos_mask.any():
-                    result.narrow(0, i, 1)[channel_pos_mask] = self.b[i] * x.narrow(0, i, 1)[channel_pos_mask]
-                
-                # Apply negative part
+                    result.narrow(0, i, 1)[channel_pos_mask] = b[i] * x.narrow(0, i, 1)[channel_pos_mask]
+
                 channel_neg_mask = neg_mask.narrow(0, i, 1).squeeze(0)
                 if channel_neg_mask.any():
                     neg_x = x.narrow(0, i, 1)[channel_neg_mask]
-                    softplus = torch.log(1 + torch.exp(self.a[i] * neg_x))
-                    result.narrow(0, i, 1)[channel_neg_mask] = self.a[i] * neg_x * torch.tanh(softplus)
-            
+                    softplus = torch.log(1 + torch.exp(a[i] * neg_x))
+                    result.narrow(0, i, 1)[channel_neg_mask] = a[i] * neg_x * torch.tanh(softplus)
+
             return result
 
 
@@ -495,15 +497,16 @@ class LeakyScaledExponentialLinearUnit(BaseActivation):
         self.c = nn.Parameter(Tensor([c]))
 
     def _forward(self, x) -> Tensor:
+        a, b, c = self.a.to(x.dtype), self.b.to(x.dtype), self.c.to(x.dtype)
         pos_mask = x >= 0
         neg_mask = ~pos_mask
-        
+
         result = torch.zeros_like(x)
-        result[pos_mask] = self.a * x[pos_mask]
-        
+        result[pos_mask] = a * x[pos_mask]
+
         neg_x = x[neg_mask]
-        result[neg_mask] = self.a * self.b * (torch.exp(neg_x) - 1) + self.a * self.c * neg_x
-        
+        result[neg_mask] = a * b * (torch.exp(neg_x) - 1) + a * c * neg_x
+
         return result
 
 
@@ -538,15 +541,16 @@ class ScaledExponentiallyRegularizedLinearUnit(BaseActivation):
         self.b = nn.Parameter(Tensor([b]))
 
     def _forward(self, x) -> Tensor:
+        a, b = self.a.to(x.dtype), self.b.to(x.dtype)
         pos_mask = x >= 0
         neg_mask = ~pos_mask
-        
+
         result = torch.zeros_like(x)
-        result[pos_mask] = self.a * x[pos_mask]
-        
+        result[pos_mask] = a * x[pos_mask]
+
         neg_x = x[neg_mask]
-        result[neg_mask] = self.a * self.b * neg_x * torch.exp(neg_x)
-        
+        result[neg_mask] = a * b * neg_x * torch.exp(neg_x)
+
         return result
 
 
@@ -583,15 +587,16 @@ class ScaledScaledExponentialLinearUnit(BaseActivation):
         self.c = nn.Parameter(Tensor([c]))
 
     def _forward(self, x) -> Tensor:
+        a, b, c = self.a.to(x.dtype), self.b.to(x.dtype), self.c.to(x.dtype)
         pos_mask = x >= 0
         neg_mask = ~pos_mask
-        
+
         result = torch.zeros_like(x)
-        result[pos_mask] = self.a * x[pos_mask]
-        
+        result[pos_mask] = a * x[pos_mask]
+
         neg_x = x[neg_mask]
-        result[neg_mask] = self.a * self.b * (torch.exp(self.c * neg_x) - 1)
-        
+        result[neg_mask] = a * b * (torch.exp(c * neg_x) - 1)
+
         return result
 
 
@@ -625,20 +630,18 @@ class RSigELU(BaseActivation):
         self.a = nn.Parameter(Tensor([a]))
 
     def _forward(self, x) -> Tensor:
+        a = self.a.to(x.dtype)
         result = torch.zeros_like(x)
-        
-        # Case 1: 1 < z < infinity
+
         mask1 = x > 1
-        result[mask1] = x[mask1] * torch.sigmoid(x[mask1]) * self.a + x[mask1]
-        
-        # Case 2: 0 <= z <= 1
+        result[mask1] = x[mask1] * torch.sigmoid(x[mask1]) * a + x[mask1]
+
         mask2 = (x >= 0) & (x <= 1)
         result[mask2] = x[mask2]
-        
-        # Case 3: -infinity < z < 0
+
         mask3 = x < 0
-        result[mask3] = self.a * (torch.exp(x[mask3]) - 1)
-        
+        result[mask3] = a * (torch.exp(x[mask3]) - 1)
+
         return result
 
 
@@ -671,20 +674,19 @@ class HardSReLUE(BaseActivation):
         self.a = nn.Parameter(Tensor([a]))
 
     def _forward(self, x) -> Tensor:
+        a = self.a.to(x.dtype)
         pos_mask = x >= 0
         neg_mask = ~pos_mask
-        
+
         result = torch.zeros_like(x)
-        
-        # Positive part
+
         pos_x = x[pos_mask]
         hard_sigmoid = torch.clamp((pos_x + 1) / 2 + pos_x, 0, 1)
-        result[pos_mask] = self.a * pos_x * hard_sigmoid
-        
-        # Negative part
+        result[pos_mask] = a * pos_x * hard_sigmoid
+
         neg_x = x[neg_mask]
-        result[neg_mask] = self.a * (torch.exp(neg_x) - 1)
-        
+        result[neg_mask] = a * (torch.exp(neg_x) - 1)
+
         return result
 
 
@@ -793,20 +795,18 @@ class RSigELUD(BaseActivation):
         self.b = nn.Parameter(Tensor([b]))
 
     def _forward(self, x) -> Tensor:
+        a, b = self.a.to(x.dtype), self.b.to(x.dtype)
         result = torch.zeros_like(x)
-        
-        # Case 1: 1 < z < infinity
+
         mask1 = x > 1
-        result[mask1] = x[mask1] * torch.sigmoid(x[mask1]) * self.a + x[mask1]
-        
-        # Case 2: 0 <= z <= 1
+        result[mask1] = x[mask1] * torch.sigmoid(x[mask1]) * a + x[mask1]
+
         mask2 = (x >= 0) & (x <= 1)
         result[mask2] = x[mask2]
-        
-        # Case 3: -infinity < z < 0
+
         mask3 = x < 0
-        result[mask3] = self.b * (torch.exp(x[mask3]) - 1)
-        
+        result[mask3] = b * (torch.exp(x[mask3]) - 1)
+
         return result
 
 

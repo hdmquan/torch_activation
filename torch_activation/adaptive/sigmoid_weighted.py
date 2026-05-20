@@ -571,35 +571,29 @@ class AQuLU(BaseActivation):
             self.b = Tensor([b])
 
     def _forward(self, x) -> Tensor:
-        # Calculate thresholds
-        upper_threshold = (1 - self.b) / self.a
-        lower_threshold = -self.b / self.a
+        a = self.a.to(x.dtype) if isinstance(self.a, Tensor) else x.new_tensor(self.a)
+        b = self.b.to(x.dtype) if isinstance(self.b, Tensor) else x.new_tensor(self.b)
+        upper_threshold = (1 - b) / a
+        lower_threshold = -b / a
 
-        # Create masks for different regions
         mask_upper = x >= upper_threshold
         mask_middle = (x >= lower_threshold) & (x < upper_threshold)
         mask_lower = x < lower_threshold
 
         if self.inplace:
-            # Create a copy to avoid modifying during computation
             result = x.clone()
 
-            # Apply different functions to different regions
             result[mask_upper] = x[mask_upper]
-            result[mask_middle] = self.a * x[mask_middle] ** 2 + self.b * x[mask_middle]
+            result[mask_middle] = a * x[mask_middle] ** 2 + b * x[mask_middle]
             result[mask_lower] = 0
 
-            # Copy back to original tensor
             x.copy_(result)
             return x
         else:
-            # Initialize result tensor
             result = torch.zeros_like(x)
 
-            # Apply different functions to different regions
             result[mask_upper] = x[mask_upper]
-            result[mask_middle] = self.a * x[mask_middle] ** 2 + self.b * x[mask_middle]
-            # result[mask_lower] is already 0
+            result[mask_middle] = a * x[mask_middle] ** 2 + b * x[mask_middle]
 
             return result
 

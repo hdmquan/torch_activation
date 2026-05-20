@@ -1642,35 +1642,28 @@ class Hat(BaseActivation):
             self.a = Tensor([a])
 
     def _forward(self, x) -> Tensor:
-        half_a = self.a / 2
-        
+        a = self.a.to(x.dtype) if isinstance(self.a, Tensor) else x.new_tensor(self.a)
+        half_a = a / 2
+
         if self.inplace:
-            # Create a copy to avoid modifying the original during computation
             result = x.clone()
-            
-            # Set values for different regions
+
             result[x < 0] = 0
-            mask_middle = (x >= half_a) & (x <= self.a)
-            result[mask_middle] = self.a - x[mask_middle]
-            result[x > self.a] = 0
-            
-            # Copy back to original tensor if needed
-            if self.inplace:
-                x.copy_(result)
-                return x
-            return result
+            mask_middle = (x >= half_a) & (x <= a)
+            result[mask_middle] = a - x[mask_middle]
+            result[x > a] = 0
+
+            x.copy_(result)
+            return x
         else:
-            # Create masks for different regions
             mask_lower = (x >= 0) & (x < half_a)
-            mask_middle = (x >= half_a) & (x <= self.a)
-            
-            # Initialize with zeros
+            mask_middle = (x >= half_a) & (x <= a)
+
             result = torch.zeros_like(x)
-            
-            # Set values for different regions
+
             result[mask_lower] = x[mask_lower]
-            result[mask_middle] = self.a - x[mask_middle]
-            
+            result[mask_middle] = a - x[mask_middle]
+
             return result
 
 
@@ -2184,47 +2177,40 @@ class ReLTanh(BaseActivation):
         return 4 / (torch.exp(x) + torch.exp(-x))**2
 
     def _forward(self, x) -> Tensor:
-        tanh_a = torch.tanh(self.a)
-        tanh_b = torch.tanh(self.b)
-        tanh_deriv_a = self._tanh_derivative(self.a)
-        tanh_deriv_b = self._tanh_derivative(self.b)
-        
-        # Linear approximation at a
-        lower_linear = tanh_deriv_a * (x - self.a) + tanh_a
-        
-        # Linear approximation at b
-        upper_linear = tanh_deriv_b * (x - self.b) + tanh_b
-        
+        a = self.a.to(x.dtype) if isinstance(self.a, Tensor) else x.new_tensor(self.a)
+        b = self.b.to(x.dtype) if isinstance(self.b, Tensor) else x.new_tensor(self.b)
+        tanh_a = torch.tanh(a)
+        tanh_b = torch.tanh(b)
+        tanh_deriv_a = self._tanh_derivative(a)
+        tanh_deriv_b = self._tanh_derivative(b)
+
+        lower_linear = tanh_deriv_a * (x - a) + tanh_a
+        upper_linear = tanh_deriv_b * (x - b) + tanh_b
+
         if self.inplace:
-            # Create a copy to avoid modifying during computation
             result = x.clone()
-            
-            # Apply different functions to different regions
-            mask_lower = x <= self.a
-            mask_middle = (x > self.a) & (x < self.b)
-            mask_upper = x >= self.b
-            
+
+            mask_lower = x <= a
+            mask_middle = (x > a) & (x < b)
+            mask_upper = x >= b
+
             result[mask_lower] = lower_linear[mask_lower]
             result[mask_middle] = torch.tanh(x[mask_middle])
             result[mask_upper] = upper_linear[mask_upper]
-            
-            # Copy back to original tensor
+
             x.copy_(result)
             return x
         else:
-            # Create masks for different regions
-            mask_lower = x <= self.a
-            mask_middle = (x > self.a) & (x < self.b)
-            mask_upper = x >= self.b
-            
-            # Initialize result tensor
+            mask_lower = x <= a
+            mask_middle = (x > a) & (x < b)
+            mask_upper = x >= b
+
             result = torch.zeros_like(x)
-            
-            # Apply different functions to different regions
+
             result[mask_lower] = lower_linear[mask_lower]
             result[mask_middle] = torch.tanh(x[mask_middle])
             result[mask_upper] = upper_linear[mask_upper]
-            
+
             return result
 
 
@@ -3943,29 +3929,22 @@ class PDELU(BaseActivation):
             self.b = Tensor([min(max(b, 0), 0.999)])
 
     def _forward(self, x) -> Tensor:
+        a = self.a.to(x.dtype) if isinstance(self.a, Tensor) else x.new_tensor(self.a)
+        b = self.b.to(x.dtype) if isinstance(self.b, Tensor) else x.new_tensor(self.b)
         if self.inplace:
             mask = x < 0
             if mask.any():
-                base = 1 + (1 - self.b) * x[mask]
-                # Ensure base is positive to avoid complex numbers
-                base = torch.clamp(base, min=1e-6)
-                power = 1 / (1 - self.b)
-                x[mask] = self.a * torch.pow(base, power) - 1
+                base = torch.clamp(1 + (1 - b) * x[mask], min=1e-6)
+                x[mask] = a * torch.pow(base, 1 / (1 - b)) - 1
             return x
         else:
-            positive_part = x
-            
-            # Calculate negative part
             negative_mask = x < 0
             negative_part = torch.zeros_like(x)
             if negative_mask.any():
-                base = 1 + (1 - self.b) * x[negative_mask]
-                # Ensure base is positive to avoid complex numbers
-                base = torch.clamp(base, min=1e-6)
-                power = 1 / (1 - self.b)
-                negative_part[negative_mask] = self.a * torch.pow(base, power) - 1
-            
-            return torch.where(x >= 0, positive_part, negative_part)
+                base = torch.clamp(1 + (1 - b) * x[negative_mask], min=1e-6)
+                negative_part[negative_mask] = a * torch.pow(base, 1 / (1 - b)) - 1
+
+            return torch.where(x >= 0, x, negative_part)
 
 
 @register_activation
