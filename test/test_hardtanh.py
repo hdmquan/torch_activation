@@ -10,7 +10,7 @@ ACTIVATION_NAME = "HardTanh"
 
 
 def scalar_ref(x: float) -> float:
-    a, b = -1.0, 11.0
+    a, b = -1.0, 1.0
     return min(max(x, a), b)
 
 

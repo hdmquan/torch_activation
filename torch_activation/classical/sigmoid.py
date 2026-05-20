@@ -1115,16 +1115,14 @@ class MSAF(BaseActivation):
         super().__init__(**kwargs)
         if b is None:
             b = [1.0, 2.0]
-        self.a = nn.Parameter(torch.tensor([a]), requires_grad=False)
-        self.b = nn.Parameter(torch.tensor(b), requires_grad=False)
+        self.register_buffer("a", torch.tensor([a]))
+        self.b = nn.Parameter(torch.tensor(b))
+
+    def extra_repr(self):
+        return f"K={len(self.b)}, b={self.b.data.tolist()}"
 
     def _forward(self, z) -> Tensor:
-        result = self.a.expand_as(z)
-
-        for k in range(len(self.b)):
-            result = result + torch.sigmoid(z - self.b[k])
-
-        return result
+        return self.a + torch.sigmoid(z.unsqueeze(-1) - self.b).sum(-1)
 
 
 @register_activation

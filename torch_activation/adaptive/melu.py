@@ -57,6 +57,9 @@ class MeLU(BaseActivation):
         self.register_buffer("b", b)
         self.register_buffer("c", c)
 
+    def extra_repr(self):
+        return f"k={self.k}, prelu_weight={self.prelu_weight.item():.4f}"
+
     def _forward(self, x) -> Tensor:
         prelu_out = F.prelu(x, self.prelu_weight.to(x.dtype))
         sum_part = torch.zeros_like(x)

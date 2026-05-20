@@ -65,6 +65,9 @@ class SReLU(BaseActivation):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
+    def extra_repr(self):
+        return "shift=1.0"
+
     def _forward(self, x: Tensor) -> Tensor:
         return F.relu(x - 1.0)
 
@@ -1310,7 +1313,7 @@ class HardTanh(BaseActivation):
 
     Args:
         a (float, optional): Lower bound of the linear region. Default: ``-1.0``
-        b (float, optional): Upper bound of the linear region. Default: ``11.0``
+        b (float, optional): Upper bound of the linear region. Default: ``1.0``
         inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
@@ -1332,7 +1335,7 @@ class HardTanh(BaseActivation):
         >>> m(x)
     """
 
-    def __init__(self, a: float = -1.0, b: float = 11.0, **kwargs):
+    def __init__(self, a: float = -1.0, b: float = 1.0, **kwargs):
         super().__init__(**kwargs)
         self.a = a
         self.b = b

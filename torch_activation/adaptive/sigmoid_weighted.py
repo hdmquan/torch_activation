@@ -46,6 +46,10 @@ class Swish(BaseActivation):
         else:
             self.a = Tensor([a])
 
+    def extra_repr(self):
+        a_val = self.a.item() if hasattr(self.a, 'item') else self.a
+        return f"a={a_val:.4f}"
+
     def _forward(self, x) -> Tensor:
         result = x * torch.sigmoid(self.a * x)
 

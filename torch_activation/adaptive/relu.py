@@ -205,6 +205,10 @@ class PReLU(BaseActivation):
         else:
             self.a = Tensor([a])
 
+    def extra_repr(self):
+        a_val = self.a.item() if hasattr(self.a, 'item') else self.a
+        return f"a={a_val:.4f}"
+
     def _forward(self, x) -> Tensor:
         if self.inplace:
             mask = x < 0

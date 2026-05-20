@@ -759,9 +759,14 @@ class PAU(BaseActivation):
 
     def __init__(self, m: int = 5, n: int = 4, **kwargs):
         super().__init__(**kwargs)
+        self.m = m
+        self.n = n
         self.a = nn.Parameter(torch.zeros(m + 1))
         self.a.data[1] = 1.0
         self.b = nn.Parameter(torch.zeros(n))
+
+    def extra_repr(self):
+        return f"m={self.m}, n={self.n}"
 
     def _forward(self, x) -> Tensor:
         num = torch.zeros_like(x)
@@ -1228,10 +1233,15 @@ class KAF(BaseActivation):
 
     def __init__(self, D: int = 20, gamma: float = 1.0, bound: float = 3.0, **kwargs):
         super().__init__(**kwargs)
+        self.D = D
         self.gamma = gamma
+        self.bound = bound
         d = torch.linspace(-bound, bound, D)
         self.register_buffer("d", d)
         self.a = nn.Parameter(torch.zeros(D))
+
+    def extra_repr(self):
+        return f"D={self.D}, gamma={self.gamma:.4f}, bound={self.bound:.4f}"
 
     def _forward(self, x) -> Tensor:
         diff = x.unsqueeze(-1) - self.d
