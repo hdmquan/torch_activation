@@ -1296,7 +1296,9 @@ class DYReLU(BaseActivation):
     def __init__(self, K: int = 2, **kwargs):
         super().__init__(**kwargs)
         self.K = K
-        self.a = nn.Parameter(torch.randn(K) * 0.1)
+        a_init = torch.zeros(K)
+        a_init[0] = 1.0
+        self.a = nn.Parameter(a_init)
         self.b = nn.Parameter(torch.zeros(K))
 
     def _forward(self, x) -> Tensor:
