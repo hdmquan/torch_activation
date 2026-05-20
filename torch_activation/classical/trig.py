@@ -11,7 +11,7 @@ class Sine(BaseActivation):
     r"""
     Applies the Sine activation function:
 
-    :math:`\text{Sine}(z) = \sin(\pi \cdot z)`
+    :math:`\text{Sine}(z) = \sin(\omega \cdot z)`
 
     Args:
         omega (float, optional): frequency of the sine wave. Default: ``math.pi``
