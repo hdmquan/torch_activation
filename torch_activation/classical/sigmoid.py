@@ -910,8 +910,9 @@ class Root2sigmoid(BaseActivation):
         self.r = torch.sqrt(torch.tensor(2.0))
 
     def _forward(self, z) -> Tensor:
-        numerator = torch.pow(self.r, z) - torch.pow(self.r, -z)
-        denominator = 2 * self.r * (torch.sqrt(2 * (torch.pow(self.r, 2 * z) + torch.pow(self.r, -2 * z))))
+        zc = z.clamp(-253.0, 253.0)
+        numerator = torch.pow(self.r, zc) - torch.pow(self.r, -zc)
+        denominator = 2 * self.r * (torch.sqrt(2 * (torch.pow(self.r, 2 * zc) + torch.pow(self.r, -2 * zc))))
         return numerator / denominator
 
 
