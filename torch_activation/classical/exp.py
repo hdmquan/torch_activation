@@ -61,7 +61,7 @@ class Exponential(BaseActivation):
           # Unused
 
     def _forward(self, z) -> Tensor:
-        return torch.exp(-z.clamp(max=88.0))
+        return torch.exp((-z).clamp(max=88.0))
 
 @register_activation
 class Symexp(BaseActivation):
