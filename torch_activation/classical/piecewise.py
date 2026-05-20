@@ -91,7 +91,7 @@ class BoundedBiFiring(BaseActivation):
         
         # z < -b - a/2
         lower_bound_mask = z < (-self.b - self.a/2)
-        result[lower_bound_mask] = -self.b
+        result[lower_bound_mask] = self.b
         
         # -b - a/2 <= z < -a
         lower_mid_mask = (z >= (-self.b - self.a/2)) & (z < -self.a)
