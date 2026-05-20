@@ -1,3 +1,4 @@
+import math
 from typing import Callable
 
 import torch
@@ -594,7 +595,9 @@ class SAU(BaseActivation):
     r"""
     Applies the Smooth Activation Unit function:
 
-    :math:`\text{SAU}(x) = (\text{PReLU}_{a} * \phi_{b})(x) = \frac{1}{2b \sqrt{\pi}} \exp\left(-\frac{b^2 x^2}{2}\right) + \frac{1}{2}\left(1 - \frac{a}{x} + \frac{x \cdot \text{erf}(b x / \sqrt{2})}{2}\right)`
+    :math:`\text{SAU}(x) = (\text{PReLU}_{a} * \phi_{b})(x) = x \left(a + (1-a) \cdot \Phi(bx)\right) + \frac{1-a}{\sqrt{2\pi}} \exp\left(-\frac{b^2 x^2}{2}\right)`
+
+    where :math:`\Phi(z) = \frac{1 + \text{erf}(z/\sqrt{2})}{2}` is the standard normal CDF.
 
     Args:
         a (float, optional): PReLU parameter. Default: 1.0
@@ -626,17 +629,9 @@ class SAU(BaseActivation):
             self.b = Tensor([b])
 
     def _forward(self, x) -> Tensor:
-        # Handle potential division by zero
-        safe_x = torch.where(x == 0, torch.ones_like(x) * 1e-10, x)
-
-        term1 = (
-            1 / (2 * self.b * torch.sqrt(torch.tensor(torch.pi))) * torch.exp(-self.b**2 * x**2 / 2)
-        )
-        term2 = 0.5 * (
-            1 - self.a / safe_x + x * torch.erf(self.b * x / torch.sqrt(torch.tensor(2.0)))
-        )
-
-        return term1 + term2
+        phi = (1 + torch.erf(self.b * x / math.sqrt(2))) / 2
+        gauss = (1 - self.a) / math.sqrt(2 * math.pi) * torch.exp(-self.b ** 2 * x ** 2 / 2)
+        return x * (self.a + (1 - self.a) * phi) + gauss
 
 
 @register_activation
