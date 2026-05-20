@@ -1480,8 +1480,8 @@ class EPReLU(BaseActivation):
 
         if self.inplace:
             mask = x < 0
-            x[~mask].mul_(k[~mask])
-            x[mask].div_(self.a)
+            x[~mask] = x[~mask] * k[~mask]
+            x[mask] = x[mask] / self.a
             return x
         else:
             return torch.where(x >= 0, k * x, x / self.a)
