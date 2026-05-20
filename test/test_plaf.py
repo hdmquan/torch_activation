@@ -13,7 +13,7 @@ def scalar_ref(x: float) -> float:
     if x >= 1:
         return x - offset
     elif x < -1:
-        return -x - offset
+        return x + offset
     else:
         return (1 / d) * (abs(x) ** d) * (1 if x >= 0 else -1)
 

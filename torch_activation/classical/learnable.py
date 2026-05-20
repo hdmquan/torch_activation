@@ -1342,7 +1342,7 @@ class PLAF(BaseActivation):
     :math:`\text{PLAF}(z) = \begin{cases}
     z - (1 - 1/d), & z \geq 1, \\
     (1/d)|z|^d \cdot \text{sign}(z), & -1 \leq z < 1, \\
-    -z - (1 - 1/d), & z < -1,
+    z + (1 - 1/d), & z < -1,
     \end{cases}`
 
     Args:
@@ -1365,7 +1365,7 @@ class PLAF(BaseActivation):
         offset = 1 - 1 / d
         mid = (1 / d) * x.abs() ** d * x.sign()
         return torch.where(x >= 1, x - offset,
-               torch.where(x < -1, -x - offset, mid))
+               torch.where(x < -1, x + offset, mid))
 
 
 @register_activation
