@@ -784,10 +784,10 @@ class SRReLU(BaseActivation):
     The Softsign Randomized Leaky ReLU (S-RReLU) is defined as:
 
     .. math::
-        \text{S-RReLU}(z_i) = 
-        \begin{cases} 
-        z_i, & z_i \geq 0, \\
-        \frac{z_i}{a_i}, & z_i < 0,
+        \text{S-RReLU}(z_i) =
+        \begin{cases}
+        \frac{1}{(1+z_i)^2} + z_i, & z_i \geq 0, \\
+        \frac{1}{(1+z_i)^2} + a_i z_i, & z_i < 0,
         \end{cases}
 
     where :math:`a_i` is sampled for each epoch and neuron i from the uniform distribution
@@ -2142,8 +2142,8 @@ class LiReLU(BaseActivation):
     def _forward_inplace(self, x: Tensor) -> Tensor:
         mask_pos = x >= 0
         mask_neg = x < 0
-        x[mask_pos] += x[mask_pos]
-        x[mask_neg] += x[mask_neg] * self.a
+        x[mask_pos] *= 1 + self.a
+        x[mask_neg] *= self.a
         return x
 
 
