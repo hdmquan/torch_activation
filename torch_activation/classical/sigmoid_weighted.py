@@ -800,7 +800,7 @@ class TSiLU(BaseActivation):
     r"""
     Applies the Hyperbolic Tangent Sigmoid-Weighted Linear Unit activation function:
 
-    :math:`\text{TSiLU}(z) = \frac{\exp\left(\frac{z}{1 + \exp(-z)}\right) - \exp\left(-\frac{z}{1 + \exp(-z)}\right)}{\exp\left(\frac{z}{1 + \exp(-z)}\right) + \exp\left(\frac{z}{1 + \exp(-z)}\right)}`
+    :math:`\text{TSiLU}(z) = \tanh\!\left(z \cdot \sigma(z)\right) = \frac{\exp\left(z \cdot \sigma(z)\right) - \exp\left(-z \cdot \sigma(z)\right)}{\exp\left(z \cdot \sigma(z)\right) + \exp\left(-z \cdot \sigma(z)\right)}`
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
@@ -1105,7 +1105,7 @@ class SiELU(BaseActivation):
     r"""
     Applies the Gaussian Error Linear Unit with Sigmoid Activation Functions:
 
-    :math:`\text{SiELU}(z) = z \cdot \sigma\left(\sqrt{\frac{2}{\pi}} z + 0.044715 z^3\right)`
+    :math:`\text{SiELU}(z) = z \cdot \sigma\!\left(2\sqrt{\frac{2}{\pi}}\left(z + 0.044715\, z^3\right)\right)`
 
     where :math:`\sigma` is the sigmoid function.
 
