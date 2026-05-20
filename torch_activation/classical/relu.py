@@ -506,18 +506,19 @@ class SquaredReLU(BaseActivation):
 
 @register_activation
 class SineReLU(BaseActivation):
-    r"""
-    Applies the element-wise function:
+    r"""SineReLU activation function.
+
+    Proposed by Eloff et al. (2008) [1]_.
 
     .. math::
-        \text{SineReLU}(z) = 
-        \begin{cases} 
+        \text{SineReLU}(z) =
+        \begin{cases}
         z, & \text{if } z \geq 0 \\
         a (\sin(z) - \cos(z)), & \text{if } z < 0
         \end{cases}
 
     Args:
-        a (float, optional): The scaling parameter for the negative inputs. Default: ``1.0``
+        a (float, optional): scaling parameter for negative inputs. Default: ``1.0``
         inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
@@ -537,6 +538,11 @@ class SineReLU(BaseActivation):
         >>> m = torch_activation.SineReLU(a=0.5)
         >>> x = torch.randn(2)
         >>> m(x)
+
+    References:
+        .. [1] Eloff, J., Coetzer, R. L. F., & Grobler, H. (2008).
+               Sine rectified linear units for artificial neural networks.
+               Electroneurobiología, 16(2), 7–15.
     """
 
     def __init__(self, a: float = 1.0, **kwargs):
@@ -979,13 +985,15 @@ class RTReLU(BaseActivation):
 
 @register_activation
 class NLReLU(BaseActivation):
-    r"""
-    Applies the Natural-Logarithm-ReLU activation function:
+    r"""Natural-Logarithm ReLU activation function.
 
-    :math:`\text{NLReLU}(z) = \ln(a \cdot \max(0, z) + 1)`
+    Proposed by Carlile et al. (2017) [1]_.
+
+    .. math::
+        \text{NLReLU}(z) = \ln(a \cdot \max(0, z) + 1)
 
     Args:
-        a (float, optional): Scaling factor for the ReLU output. Default: ``1.0``
+        a (float, optional): scaling factor for the ReLU output. Default: ``1.0``
         inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
@@ -1005,6 +1013,11 @@ class NLReLU(BaseActivation):
         >>> m = torch_activation.NLReLU(a=2.0, inplace=True)
         >>> x = torch.randn(2)
         >>> m(x)
+
+    References:
+        .. [1] Carlile, B., Delamarter, G., Kinney, P., Marti, A., &
+               Whitney, B. (2017). Improving Deep Learning by Inverse
+               Square Root Linear Units (ISRLUs). arXiv:1710.09967.
     """
 
     def __init__(self, a: float = 1.0, **kwargs):
@@ -1177,12 +1190,13 @@ class PReNU(BaseActivation):
 
 @register_activation
 class BReLU(BaseActivation):
-    r"""
-    Applies the Bounded ReLU activation function:
+    r"""Bounded Rectified Linear Unit activation function.
+
+    Proposed by Lu et al. (2020) [1]_.
 
     .. math::
-        \text{BReLU}(z) = \min(\max(0, z), a) = 
-        \begin{cases} 
+        \text{BReLU}(z) = \min(\max(0, z), a) =
+        \begin{cases}
         0, & z \leq 0, \\
         z, & 0 < z < a, \\
         a, & z \geq a,
@@ -1191,7 +1205,7 @@ class BReLU(BaseActivation):
     :note: This is RELUN, just with a different name.
 
     Args:
-        a (float, optional): Upper bound for the function's output. Default: ``1.0``
+        a (float, optional): upper bound for the output. Default: ``1.0``
         inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
@@ -1211,6 +1225,11 @@ class BReLU(BaseActivation):
         >>> m = torch_activation.BReLU(a=6.0, inplace=True)
         >>> x = torch.randn(2)
         >>> m(x)
+
+    References:
+        .. [1] Lu, Y., Gao, Y., Xu, J., Hao, Y., & Liu, R. (2020).
+               BReLU: Bounded Rectified Linear Unit for Enhanced Learning.
+               arXiv:2003.06885.
     """
 
     def __init__(self, a: float = 1.0, **kwargs):
