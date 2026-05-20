@@ -728,7 +728,7 @@ class SmoothStep(BaseActivation):
     \end{cases}`
 
     Args:
-        a (float, optional): Width parameter. Default: 2.0
+        a (float, optional): Width parameter. Default: 1.0
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
@@ -837,7 +837,7 @@ class SigmoidGumbel(BaseActivation):
     r"""
     Applies the Sigmoid Gumbel activation function:
 
-    :math:`\text{SigmoidGumbel}(z) = \frac{\exp(z)}{\exp(z) + \exp(-\exp(-z))}`
+    :math:`\text{SigmoidGumbel}(z) = \sigma(z) \cdot \exp(-\exp(-z))`
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
@@ -864,7 +864,7 @@ class NewSigmoid(BaseActivation):
     r"""
     Applies the New Sigmoid activation function:
 
-    :math:`\text{NewSigmoid}(z) = \frac{\exp(z) - \exp(-z)}{2(\exp(2z) + \exp(-2z))}`
+    :math:`\text{NewSigmoid}(z) = \frac{\exp(z) - \exp(-z)}{\sqrt{2(\exp(2z) + \exp(-2z))}}`
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
