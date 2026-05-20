@@ -295,12 +295,9 @@ class SoftsignRReLU(BaseActivation):
 
     # TODO: There should be a better way to implement this
     def _forward(self, x: Tensor) -> Tensor:
-        # Sample a_i from U(l, u)
         a = torch.empty_like(x).uniform_(self.l, self.u)
-
-        common_term = 1 / (1 + x).pow(2)
-
-        # Apply the activation function using torch.where
+        denom = (1 + x).pow(2).clamp(min=1e-7)
+        common_term = 1 / denom
         return torch.where(x >= 0, common_term + x, common_term + a * x)
 
 
@@ -827,9 +824,7 @@ class SRReLU(BaseActivation):
 
     def _forward(self, x: Tensor) -> Tensor:
         a = torch.empty_like(x).uniform_(self.l, self.u)
-
-        frac = 1 / torch.square(1 + x)
-
+        frac = 1 / torch.square(1 + x).clamp(min=1e-7)
         return torch.where(x >= 0, frac + x, frac + (a * x))
 
 
