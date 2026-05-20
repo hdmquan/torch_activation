@@ -239,10 +239,10 @@ class SqSoftplus(BaseActivation):
     r"""
     Applies the SqSoftplus (Square Softplus) activation function:
 
-    :math:`\text{SqSoftplus}(z) = \begin{cases} 
-    z, & z > \frac{1}{2} \\ 
-    z + \frac{(z + \frac{1}{2})^2}{2}, & -\frac{1}{2} \leq z \leq \frac{1}{2} \\ 
-    0, & z < -\frac{1}{2} 
+    :math:`\text{SqSoftplus}(z) = \begin{cases}
+    z, & z > \frac{1}{2} \\
+    z + \frac{(z - \frac{1}{2})^2}{2}, & -\frac{1}{2} \leq z \leq \frac{1}{2} \\
+    0, & z < -\frac{1}{2}
     \end{cases}`
 
     Args:
@@ -274,7 +274,7 @@ class SqSoftplus(BaseActivation):
 
         result[gtHalf] = z[gtHalf]
         result[betweenNegHalfAndHalf] = (
-            z[betweenNegHalfAndHalf] + ((z[betweenNegHalfAndHalf] + 0.5) ** 2) / 2
+            z[betweenNegHalfAndHalf] + ((z[betweenNegHalfAndHalf] - 0.5) ** 2) / 2
         )
         result[ltNegHalf] = 0
 
@@ -285,9 +285,8 @@ class SqSoftplus(BaseActivation):
         betweenNegHalfAndHalf = (z >= -0.5) & (z <= 0.5)
         ltNegHalf = z < -0.5
 
-        # No change needed for z > 0.5
         z[betweenNegHalfAndHalf] = (
-            z[betweenNegHalfAndHalf] + ((z[betweenNegHalfAndHalf] + 0.5) ** 2) / 2
+            z[betweenNegHalfAndHalf] + ((z[betweenNegHalfAndHalf] - 0.5) ** 2) / 2
         )
         z[ltNegHalf] = 0
 
