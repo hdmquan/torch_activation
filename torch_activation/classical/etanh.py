@@ -28,7 +28,6 @@ class ETanh(BaseActivation):
     def __init__(self, a: float = 1.0, **kwargs):
         super().__init__(**kwargs)
         self.a = a
-          # Unused
 
     def _forward(self, z) -> Tensor:
         return self.a * torch.exp(z.clamp(max=88.0)) * torch.tanh(z)
@@ -57,7 +56,6 @@ class EvolvedTanhReLU(BaseActivation):
     def __init__(self, a: float = 1.0, **kwargs):
         super().__init__(**kwargs)
         self.a = a
-          # Unused
 
     def _forward(self, z) -> Tensor:
         return self.a * torch.tanh(z**2) + torch.relu(z)
@@ -83,7 +81,6 @@ class EvolvedTanhLogReLU(BaseActivation):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-          # Unused
 
     def _forward(self, z) -> Tensor:
         # Handle potential negative values for log

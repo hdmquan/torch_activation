@@ -740,8 +740,8 @@ class RReLU(BaseActivation):
         z_i a_i, & z_i < 0,
         \end{cases}
 
-    where :math:`a_i` is sampled from a uniform distribution :math:`U(l, u)`,
-    with recommended values :math:`U(3, 8)`.
+    where the negative slope :math:`1/a_i` is derived from :math:`a_i` sampled from
+    a uniform distribution :math:`U(l, u)`, with recommended values :math:`U(3, 8)`.
 
     Args:
         l (float, optional): Lower bound of the uniform distribution. Default: ``3.0``
@@ -774,13 +774,12 @@ class RReLU(BaseActivation):
         self.u = u
 
     def _forward(self, x: Tensor) -> Tensor:
-        # Sample a_i from U(l, u)
         a = torch.empty_like(x).uniform_(self.l, self.u)
 
         if self.inplace:
-            return x.where(x >= 0, x.mul_(a))
+            return x.where(x >= 0, x.div_(a))
         else:
-            return torch.where(x >= 0, x, x * a)
+            return torch.where(x >= 0, x, x / a)
 
 
 @register_activation
@@ -874,11 +873,12 @@ class NReLU(BaseActivation):
         super().__init__(**kwargs)
 
     def _forward(self, x: Tensor) -> Tensor:
-        with torch.no_grad():
-            std = torch.std(x)
-
-        # Sample noise from Gaussian distribution with mean 0 and std = std(x)
-        noise = torch.randn_like(x) * std
+        if self.training:
+            with torch.no_grad():
+                std = torch.std(x)
+            noise = torch.randn_like(x) * std
+        else:
+            noise = torch.zeros_like(x)
 
         if self.inplace:
             x.add_(noise)
@@ -973,8 +973,10 @@ class RTReLU(BaseActivation):
         self.sigma = sigma
 
     def _forward(self, x: Tensor) -> Tensor:
-        # Generate random translations from a normal distribution
-        a = torch.randn_like(x) * self.sigma
+        if self.training:
+            a = torch.randn_like(x) * self.sigma
+        else:
+            a = torch.zeros_like(x)
 
         if self.inplace:
             x.add_(a)
