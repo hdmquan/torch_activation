@@ -26,7 +26,7 @@ class TestNumerical:
         m = _get_module()
         x = torch.randn(4, 6)
         a, b = x.chunk(2, dim=-1)
-        expected = a * b * torch.sigmoid(b)
+        expected = a * torch.sigmoid(a) * b
         assert torch.allclose(m(x), expected, atol=1e-5)
 
 

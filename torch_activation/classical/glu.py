@@ -98,7 +98,7 @@ class GReLU(BaseActivation):
 
     def _forward(self, x: Tensor) -> Tensor:
         a, b = split(x, self.dim)
-        return a * F.relu(b)
+        return F.relu(a) * b
 
 
 class GEGLU(BaseActivation):
@@ -129,7 +129,7 @@ class GEGLU(BaseActivation):
 
     def _forward(self, x: Tensor) -> Tensor:
         a, b = split(x, self.dim)
-        return a * F.gelu(b)
+        return F.gelu(a) * b
 
 
 class ReGLU(BaseActivation):
@@ -163,7 +163,7 @@ class ReGLU(BaseActivation):
 
     def _forward(self, x: Tensor) -> Tensor:
         a, b = split(x, self.dim)
-        return a * F.relu(b)
+        return F.relu(a) * b
 
 
 class SwiGLU(BaseActivation):
@@ -194,5 +194,5 @@ class SwiGLU(BaseActivation):
 
     def _forward(self, x: Tensor) -> Tensor:
         a, b = split(x, self.dim)
-        return a * tac.Swish()(b)
+        return tac.Swish()(a) * b
 
