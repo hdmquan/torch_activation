@@ -21,8 +21,8 @@ class SReLU(BaseActivation):
 
     Args:
         init_tr (float, optional): Initial value for the right threshold parameter tr. Default: 1.0
-        init_tl (float, optional): Initial value for the left threshold parameter tl. Default: 0.0
-        init_ar (float, optional): Initial value for the right slope parameter ar. Default: 1.0
+        init_tl (float, optional): Initial value for the left threshold parameter tl. Default: -1.0
+        init_ar (float, optional): Initial value for the right slope parameter ar. Default: 0.1
         init_al (float, optional): Initial value for the left slope parameter al. Default: 0.1
         fix_init_epochs (int, optional): Number of epochs to keep parameters fixed at initialization. Default: 0
 
@@ -32,13 +32,13 @@ class SReLU(BaseActivation):
 
     Examples::
 
-        >>> m = SReLU(init_tr=1.0, init_tl=0.0, init_ar=1.0, init_al=0.1)
+        >>> m = SReLU(init_tr=1.0, init_tl=-1.0, init_ar=0.1, init_al=0.1)
         >>> x = torch.randn(2)
         >>> output = m(x)
     """
 
-    def __init__(self, init_tr: float = 1.0, init_tl: float = 0.0, 
-                 init_ar: float = 1.0, init_al: float = 0.1,
+    def __init__(self, init_tr: float = 1.0, init_tl: float = -1.0,
+                 init_ar: float = 0.1, init_al: float = 0.1,
                  fix_init_epochs: int = 0, **kwargs):
         super().__init__(**kwargs)
         self.tr = nn.Parameter(Tensor([init_tr]))
@@ -55,37 +55,21 @@ class SReLU(BaseActivation):
         self.init_al = init_al
 
     def _forward(self, x) -> Tensor:
-        # Use fixed parameters during initial epochs if specified
         if self.current_epoch < self.fix_init_epochs and self.training:
-            tr = self.init_tr
-            tl = self.init_tl
-            ar = self.init_ar
-            al = self.init_al
+            tr = torch.tensor(self.init_tr, dtype=x.dtype, device=x.device)
+            tl = torch.tensor(self.init_tl, dtype=x.dtype, device=x.device)
+            ar = torch.tensor(self.init_ar, dtype=x.dtype, device=x.device)
+            al = torch.tensor(self.init_al, dtype=x.dtype, device=x.device)
         else:
             tr = self.tr
             tl = self.tl
             ar = self.ar
             al = self.al
-        
-        # Create masks for the three regions
-        right_mask = x >= tr
-        left_mask = x <= tl
-        middle_mask = ~(right_mask | left_mask)
-        
-        # Initialize result tensor
-        result = torch.zeros_like(x)
-        
-        # Apply the three piecewise linear functions
-        if right_mask.any():
-            result[right_mask] = tr + ar * (x[right_mask] - tr)
-        
-        if middle_mask.any():
-            result[middle_mask] = x[middle_mask]
-        
-        if left_mask.any():
-            result[left_mask] = tl + al * (x[left_mask] - tl)
-        
-        return result
+        return torch.where(
+            x >= tr,
+            tr + ar * (x - tr),
+            torch.where(x <= tl, tl + al * (x - tl), x)
+        )
     
     def train(self, mode=True, **kwargs):
         super(SReLU, self).train(mode)

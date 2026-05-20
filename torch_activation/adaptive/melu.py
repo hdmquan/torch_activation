@@ -45,26 +45,20 @@ class MeLU(BaseActivation):
         # Trainable parameters a_i,j
         self.a = nn.Parameter(torch.full((k-1,), init_a))
         
-        # Fixed parameters b_j and c_j
-        # Initialize them recursively as mentioned in the paper
-        self.b = torch.zeros(k-1)
-        self.c = torch.zeros(k-1)
-        
-        # Initialize b_j and c_j recursively
-        # This is a simple initialization scheme; the paper may have a more specific one
+        b = torch.zeros(k-1)
+        c = torch.zeros(k-1)
         for j in range(k-1):
-            self.b[j] = j * 2.0 / (k-1) - 1.0  # Spread between -1 and 1
-            self.c[j] = 1.0 / (j+1)            # Decreasing values
+            b[j] = j * 2.0 / (k-1) - 1.0
+            c[j] = 1.0 / (j+1)
+        self.register_buffer('b', b)
+        self.register_buffer('c', c)
 
     def _forward(self, x) -> Tensor:
-        # PReLU part
         prelu_out = F.prelu(x, self.prelu_weight.to(x.dtype))
-
         sum_part = torch.zeros_like(x)
         for j in range(self.k-1):
             phi = torch.clamp(self.c[j] - torch.abs(x - self.b[j]), min=0.0)
-            sum_part += self.a[j] * phi
-        
+            sum_part = sum_part + self.a[j] * phi
         return prelu_out + sum_part
 
 
@@ -96,8 +90,8 @@ class MMeLU(BaseActivation):
 
     def __init__(self, init_a: float = 0.5, init_b: float = 1.0, init_c: float = 0.0, **kwargs):
         super().__init__(**kwargs)
-        self.a_raw = nn.Parameter(Tensor([init_a]))
-        self.b_raw = nn.Parameter(Tensor([init_b]))
+        self.a_raw = nn.Parameter(torch.logit(Tensor([init_a])))
+        self.b_raw = nn.Parameter(torch.log(torch.exp(Tensor([init_b])) - 1))
         self.c = nn.Parameter(Tensor([init_c]))
         
 
@@ -155,28 +149,22 @@ class GaLU(BaseActivation):
         # Trainable parameters a_i,j
         self.a = nn.Parameter(torch.full((k-1,), init_a))
         
-        # Fixed parameters b_j and c_j
-        # Initialize them similarly to MeLU
-        self.b = torch.zeros(k-1)
-        self.c = torch.zeros(k-1)
-        
-        # Initialize b_j and c_j
+        b = torch.zeros(k-1)
+        c = torch.zeros(k-1)
         for j in range(k-1):
-            self.b[j] = j * 2.0 / (k-1) - 1.0  # Spread between -1 and 1
-            self.c[j] = 1.0 / (j+1)            # Decreasing values
+            b[j] = j * 2.0 / (k-1) - 1.0
+            c[j] = 1.0 / (j+1)
+        self.register_buffer('b', b)
+        self.register_buffer('c', c)
 
     def _forward(self, x) -> Tensor:
-        # PReLU part
         prelu_out = F.prelu(x, self.prelu_weight.to(x.dtype))
-
         sum_part = torch.zeros_like(x)
         for j in range(self.k-1):
-            # Calculate phi_b_j,c_j(z_i) for GaLU
             term1 = torch.clamp(self.c[j] - torch.abs(x - self.b[j]), min=0.0)
             term2 = torch.clamp(torch.abs(x - self.b[j] - 2*self.c[j]) - self.c[j], max=0.0)
             phi = term1 + term2
-            sum_part += self.a[j] * phi
-        
+            sum_part = sum_part + self.a[j] * phi
         return prelu_out + sum_part
 
 
