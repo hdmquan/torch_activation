@@ -1911,30 +1911,11 @@ class PTaLU(BaseActivation):
 
     def _forward(self, x) -> Tensor:
         tanh_a = torch.tanh(self.a)
-        
-        if self.inplace:
-            mask_middle = (x < self.b) & (x > self.a)
-            mask_lower = x <= self.a
-            
-            x[mask_middle] = torch.tanh(x[mask_middle])
-            x[mask_lower] = tanh_a
-            
-            return x
-        else:
-            # Create masks for different regions
-            mask_upper = x >= self.b
-            mask_middle = (x < self.b) & (x > self.a)
-            mask_lower = x <= self.a
-            
-            # Initialize result tensor
-            result = torch.zeros_like(x)
-            
-            # Apply different functions to different regions
-            result[mask_upper] = x[mask_upper]
-            result[mask_middle] = torch.tanh(x[mask_middle])
-            result[mask_lower] = tanh_a
-            
-            return result
+        tanh_b = torch.tanh(self.b)
+        upper = x - self.b + tanh_b
+        middle = torch.tanh(x)
+        lower = tanh_a.expand_as(x)
+        return torch.where(x >= self.b, upper, torch.where(x > self.a, middle, lower))
 
 
 @register_activation
@@ -2702,23 +2683,15 @@ class EDELU(BaseActivation):
             self.c = Tensor([c])
 
     def _forward(self, x) -> Tensor:
-        # Calculate b to ensure continuity at x = c
-        # b*c = exp(a*c) - 1 => b = (exp(a*c) - 1) / c
-        # Handle the case where c is close to zero
-        if abs(self.c.item()) < 1e-6:
-            b = self.a  # lim_{c->0} (exp(a*c) - 1) / c = a
-        else:
-            b = (torch.exp(self.a * self.c) - 1) / self.c
-        
+        near_zero = (self.c.abs() < 1e-6).float().detach()
+        safe_c = self.c + near_zero
+        b = (1 - near_zero) * torch.expm1(self.a * self.c) / safe_c + near_zero * self.a
+        negative_part = torch.expm1(self.a * x) / b
         if self.inplace:
             mask = x < self.c
-            # Negative part: (exp(a*x) - 1) / b
-            x[mask] = (torch.exp(self.a * x[mask]) - 1) / b
+            x[mask] = negative_part[mask]
             return x
-        else:
-            # Negative part: (exp(a*x) - 1) / b
-            negative_part = (torch.exp(self.a * x) - 1) / b
-            return torch.where(x >= self.c, x, negative_part)
+        return torch.where(x >= self.c, x, negative_part)
 
 
 @register_activation
@@ -3879,17 +3852,17 @@ class RePSU(BaseActivation):
     """
 
     def __init__(
-        self, 
-        a: float = 0.5, 
-        b: float = 0.0, 
-        c: float = 0.0, 
-        d: float = 1.0, 
-        e: float = 1.0, 
-        learnable: bool = False, 
+        self,
+        a: float = 0.8,
+        b: float = 0.0,
+        c: float = 0.0,
+        d: float = 1.0,
+        e: float = 1.0,
+        learnable: bool = False,
         inplace: bool = False
     , **kwargs):
         super().__init__(**kwargs)
-        
+
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
             self.b = nn.Parameter(Tensor([b]))
@@ -3903,38 +3876,21 @@ class RePSU(BaseActivation):
             self.d = Tensor([d])
             self.e = Tensor([e])
 
-    def _repsku(self, x):
-        # Only compute for x >= b
-        mask = x >= self.b
-        result = torch.zeros_like(x)
-        
-        if mask.any():
-            x_masked = x[mask]
-            diff = x_masked - self.c
-            sign = torch.sign(diff)
-            power_term = torch.pow(torch.abs(diff), self.d) / self.e
-            denom = 1 + torch.exp(-sign * power_term)
-            result[mask] = (x_masked - self.b) / denom
-            
-        return result
+    def _repsku_val(self, x):
+        diff = x - self.c
+        sign = torch.sign(diff)
+        power_term = torch.pow(torch.abs(diff) + 1e-8, self.d) / self.e
+        denom = 1 + torch.exp(-sign * power_term)
+        return (x - self.b) / denom
 
     def _forward(self, x) -> Tensor:
-        # Calculate RePSKU
-        repsku = self._repsku(x)
-        
-        # Calculate RePSHU
-        repshu = torch.zeros_like(x)
-        mask = x >= self.b
-        repshu[mask] = 2 * x[mask] - repsku[mask]
-        
-        # Combine
+        repsku = torch.where(x >= self.b, self._repsku_val(x), torch.zeros_like(x))
+        repshu = torch.where(x >= self.b, 2 * x - repsku, torch.zeros_like(x))
         result = self.a * repsku + (1 - self.a) * repshu
-        
         if self.inplace and hasattr(x, 'copy_'):
             x.copy_(result)
             return x
-        else:
-            return result
+        return result
 
 
 @register_activation
