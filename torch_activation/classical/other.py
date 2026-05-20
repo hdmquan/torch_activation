@@ -386,23 +386,21 @@ class KDAC(BaseActivation):
     def _negative_region(self, z):
         s = torch.tanh(z)
         q = self._h_min(self.b * z, s)
-        return self.b * z * (1 - q) + s * self._h_min(q, s) + self.c * q * (1 - q)
+        return self.b * z * (1 - q) + s * self._h_min(q, s) + self.a * q * (1 - q)
 
     def _positive_region(self, z):
         return self.a * z
 
     def _forward(self, z) -> Tensor:
         p = self.a * z
-        
-        # Calculate r based on condition z > 0
+
         pos_mask = z > 0
         r = torch.zeros_like(z)
         r[pos_mask] = p[pos_mask]
         r[~pos_mask] = self._negative_region(z[~pos_mask])
-        
-        # Calculate final output
+
         h = self._h_max(p, r)
-        return p * (1 - h) + r * h + self.c * h * (1 - h)
+        return p * (1 - h) + r * h + self.a * h * (1 - h)
 
 
 @register_activation
