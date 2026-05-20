@@ -388,8 +388,8 @@ class HcLSH(BaseActivation):
           # Unused
 
     def _forward(self, z) -> Tensor:
-        z_clamped = z.clamp(-88.0, 88.0)
+        z_clamped = z.clamp(-84.0, 84.0)
         log_cosh = torch.log(torch.cosh(z_clamped))
-        positive_part = log_cosh + (z * torch.cosh(z_clamped)) / 2.0
+        positive_part = log_cosh + (z_clamped * torch.cosh(z_clamped)) / 2.0
         negative_part = log_cosh + z
         return torch.where(z >= 0, positive_part, negative_part)
