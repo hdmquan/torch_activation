@@ -1317,8 +1317,7 @@ class PFPM(BaseActivation):
         self.inplace: bool = inplace
 
     def _forward(self, x: Tensor) -> Tensor:
-        func = x * torch.tanh(torch.log1p(torch.exp(x)))
-        result = torch.nn.functional.relu(x) * func + self.p
+        result = torch.nn.functional.relu(x) * torch.tanh(torch.log1p(torch.exp(x))) + self.p
         if self.inplace and hasattr(x, 'copy_'):
             x.copy_(result)
             return x

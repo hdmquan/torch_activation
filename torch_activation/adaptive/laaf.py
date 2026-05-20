@@ -31,7 +31,7 @@ class CosLU(BaseActivation):
 
     Examples::
 
-        >>> m = CosLU(alpha=2.0, beta=1.0)
+        >>> m = CosLU(a=2.0, b=1.0)
         >>> x = torch.randn(2)
         >>> output = m(x)
 
