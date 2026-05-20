@@ -20,7 +20,7 @@ class Polyexp(BaseActivation):
         b (float, optional): Parameter for the linear term. Default: ``1.0``
         c (float, optional): Parameter for the exponential term. Default: ``1.0``
         d (float, optional): Parameter for the exponential decay. Default: ``1.0``
-        inplace (bool, optional): parameter kept for API consistency, but polyexp operation 
+        inplace (bool, optional): parameter kept for API consistency, but polyexp operation
                                  cannot be done in-place. Default: ``False``
 
     Shape:
@@ -34,7 +34,7 @@ class Polyexp(BaseActivation):
         self.b = b
         self.c = c
         self.d = d
-          # Unused
+        # Unused
 
     def _forward(self, z) -> Tensor:
         return self.a * z**2 + self.b * z + self.c * torch.exp(-self.d * z**2)
@@ -48,7 +48,7 @@ class Exponential(BaseActivation):
     :math:`\text{Exponential}(z) = \exp(-z)`
 
     Args:
-        inplace (bool, optional): parameter kept for API consistency, but exponential operation 
+        inplace (bool, optional): parameter kept for API consistency, but exponential operation
                                  cannot be done in-place. Default: ``False``
 
     Shape:
@@ -58,10 +58,11 @@ class Exponential(BaseActivation):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-          # Unused
+        # Unused
 
     def _forward(self, z) -> Tensor:
         return torch.exp((-z).clamp(max=88.0))
+
 
 @register_activation
 class Symexp(BaseActivation):
@@ -73,7 +74,7 @@ class Symexp(BaseActivation):
     Inverse of the logmoid activation unit (LAU).
 
     Args:
-        inplace (bool, optional): parameter kept for API consistency, but symexp operation 
+        inplace (bool, optional): parameter kept for API consistency, but symexp operation
                                  cannot be done in-place. Default: ``False``
 
     Shape:
@@ -83,10 +84,11 @@ class Symexp(BaseActivation):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-          # Unused
+        # Unused
 
     def _forward(self, z) -> Tensor:
         return torch.sign(z) * (torch.exp(torch.abs(z).clamp(max=88.0)) - 1)
+
 
 @register_activation
 class Wave(BaseActivation):
@@ -99,7 +101,7 @@ class Wave(BaseActivation):
 
     Args:
         a (float, optional): Parameter for the exponential decay. Default: ``1.0``
-        inplace (bool, optional): parameter kept for API consistency, but wave operation 
+        inplace (bool, optional): parameter kept for API consistency, but wave operation
                                  cannot be done in-place. Default: ``False``
 
     Shape:
@@ -110,7 +112,7 @@ class Wave(BaseActivation):
     def __init__(self, a: float = 1.0, **kwargs):
         super().__init__(**kwargs)
         self.a = a
-          # Unused
+        # Unused
 
     def _forward(self, z) -> Tensor:
         return 1 - z**2 * torch.exp(-self.a * z**2)

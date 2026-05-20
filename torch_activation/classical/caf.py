@@ -1,8 +1,10 @@
 import torch
 import torch.nn as nn
 from torch import Tensor
+
 from torch_activation import register_activation
 from torch_activation.base import BaseActivation
+
 
 @register_activation
 class HCAF(BaseActivation):
@@ -11,9 +13,9 @@ class HCAF(BaseActivation):
 
     .. math::
         a_i = \sigma(z_i)
-        
+
         c_{i,1} = ra_i(1 - a_i)
-        
+
         c_{i,j} = rc_{i,j-1}(1 - c_{i,j-1})
 
     where :math:`\sigma(z_i)` is the logistic sigmoid and :math:`r = 4` by default.
@@ -45,14 +47,14 @@ class HCAF(BaseActivation):
     def _forward(self, x: Tensor) -> Tensor:
         # Initial sigmoid activation
         a = torch.sigmoid(x)
-        
+
         # First chaotic iteration
         c = self.r * a * (1 - a)
-        
+
         # Additional chaotic iterations
         for _ in range(1, self.iterations):
             c = self.r * c * (1 - c)
-            
+
         return c
 
 
@@ -87,7 +89,9 @@ class FCAF_Hidden(BaseActivation):
         >>> output = m(x)
     """
 
-    def __init__(self, r: float = 4.0, a: float = 0.0, b: float = 0.5, iterations: int = 1, **kwargs):
+    def __init__(
+        self, r: float = 4.0, a: float = 0.0, b: float = 0.5, iterations: int = 1, **kwargs
+    ):
         super().__init__(**kwargs)
         self.r = r
         self.a = a
@@ -97,11 +101,16 @@ class FCAF_Hidden(BaseActivation):
     def _forward(self, x: Tensor) -> Tensor:
         # Normalize input to [0,1] range for chaotic map stability
         z = torch.sigmoid(x)
-        
+
         for _ in range(self.iterations):
             # Apply the chaotic map
-            z = self.r * z * (1 - z) + z + self.a - (self.b / (2 * torch.pi)) * torch.sin(2 * torch.pi * z)
-            
+            z = (
+                self.r * z * (1 - z)
+                + z
+                + self.a
+                - (self.b / (2 * torch.pi)) * torch.sin(2 * torch.pi * z)
+            )
+
         return z
 
 
@@ -138,8 +147,16 @@ class FCAF_Output(BaseActivation):
         >>> output = m(x)
     """
 
-    def __init__(self, r: float = 4.0, a: float = 0.0, b: float = 0.5, 
-                 c: float = 1.0, d: float = 0.0, iterations: int = 1, **kwargs):
+    def __init__(
+        self,
+        r: float = 4.0,
+        a: float = 0.0,
+        b: float = 0.5,
+        c: float = 1.0,
+        d: float = 0.0,
+        iterations: int = 1,
+        **kwargs,
+    ):
         super().__init__(**kwargs)
         self.r = r
         self.a = a
@@ -151,15 +168,18 @@ class FCAF_Output(BaseActivation):
     def _forward(self, x: Tensor) -> Tensor:
         # Normalize input to [0,1] range for chaotic map stability
         z = torch.sigmoid(x)
-        
+
         for _ in range(self.iterations):
             # Apply the chaotic map with additional terms
-            z = (self.r * z * (1 - z) + 
-                 z + self.a - 
-                 (self.b / (2 * torch.pi)) * torch.sin(2 * torch.pi * z) + 
-                 torch.exp(-self.c * z * z) + 
-                 self.d)
-            
+            z = (
+                self.r * z * (1 - z)
+                + z
+                + self.a
+                - (self.b / (2 * torch.pi)) * torch.sin(2 * torch.pi * z)
+                + torch.exp(-self.c * z * z)
+                + self.d
+            )
+
         return z
 
 
@@ -206,9 +226,9 @@ class CCAF(BaseActivation):
     def _forward(self, x: Tensor) -> Tensor:
         # Normalize input to [-1,1] range for sine stability
         z = torch.tanh(x)
-        
+
         for _ in range(self.iterations):
             # Apply the cascade chaotic map
             z = self.a * torch.sin(torch.pi * self.b * torch.sin(torch.pi * z))
-            
+
         return z

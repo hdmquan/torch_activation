@@ -1,13 +1,16 @@
 import pytest
 import torch
+
 import torch_activation
 
 NONSMOOTH_ACTIVATIONS: list[str] = ["FracReLU"]
 ACTIVATION_NAME = "FracReLU"
 
+
 def _get_module(**kwargs):
     cls = getattr(torch_activation, ACTIVATION_NAME)
     return cls(**kwargs)
+
 
 class TestShape:
     def test_shape_4d(self):
@@ -19,6 +22,7 @@ class TestShape:
         m = _get_module()
         x = torch.randn(16)
         assert m(x).shape == x.shape
+
 
 class TestNumerical:
     def test_nonnegative_for_positive_input(self):
@@ -32,6 +36,7 @@ class TestNumerical:
         x = torch.linspace(-3.0, -0.1, 20)
         out = m(x)
         assert torch.allclose(out, torch.zeros_like(out))
+
 
 class TestGradients:
     def test_gradcheck(self):
@@ -49,6 +54,7 @@ class TestGradients:
         fd = (m((x_np + eps).float()) - m((x_np - eps).float())).double() / (2 * eps)
         assert torch.allclose(grad_auto, fd, atol=1e-2)
 
+
 class TestEdgeCases:
     def test_no_nan_inf_positive(self):
         m = _get_module()
@@ -56,6 +62,7 @@ class TestEdgeCases:
         out = m(x)
         assert not torch.isnan(out).any()
         assert not torch.isinf(out).any()
+
 
 class TestInplace:
     def test_inplace_matches_normal(self):

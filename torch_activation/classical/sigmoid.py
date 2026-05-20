@@ -1,13 +1,14 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from torch_activation.base import BaseActivation
-
 from torch import Tensor
 
 from torch_activation import register_activation
+from torch_activation.base import BaseActivation
 from torch_activation.utils import sech
+
 # TODO: Optimize any functions that use where
+
 
 @register_activation
 class Sigmoid(BaseActivation):
@@ -36,8 +37,6 @@ class Sigmoid(BaseActivation):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-
-        
 
     def _forward(self, z) -> Tensor:
         if self.inplace:
@@ -74,7 +73,6 @@ class Tanh(BaseActivation):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        
 
     def _forward(self, z) -> Tensor:
         if self.inplace:
@@ -115,9 +113,6 @@ class ShiftedScaledSigmoid(BaseActivation):
         super().__init__(**kwargs)
         self.a = nn.Parameter(torch.tensor(a))
         self.b = nn.Parameter(torch.tensor(b))
-        
-
-    
 
     def _forward(self, z):
         return torch.sigmoid(self.a * (z - self.b))
@@ -156,16 +151,11 @@ class VariantSigmoidFunction(BaseActivation):
         >>> m(x)
     """
 
-    def __init__(
-        self, a: float = 1.0, b: float = 1.0, c: float = 0.0
-    , **kwargs):
+    def __init__(self, a: float = 1.0, b: float = 1.0, c: float = 0.0, **kwargs):
         super().__init__(**kwargs)
         self.a = nn.Parameter(torch.tensor([a]))
         self.b = nn.Parameter(torch.tensor([b]))
         self.c = nn.Parameter(torch.tensor([c]))
-        
-
-    
 
     def _forward(self, z):
         return self.a * torch.sigmoid(self.b * z) - self.c
@@ -208,9 +198,6 @@ class STanh(BaseActivation):
         super().__init__(**kwargs)
         self.a = nn.Parameter(torch.tensor([a]))
         self.b = nn.Parameter(torch.tensor([b]))
-        
-
-    
 
     def _forward(self, z):
         return self.a * torch.tanh(self.b * z)
@@ -315,9 +302,7 @@ class ArctanGR(BaseActivation):
         >>> output = m(x)
     """
 
-    def __init__(
-        self, scale_factor: float = 1.0 / (1.0 + torch.sqrt(torch.tensor(2.0)))
-    , **kwargs):
+    def __init__(self, scale_factor: float = 1.0 / (1.0 + torch.sqrt(torch.tensor(2.0))), **kwargs):
         super().__init__(**kwargs)
         self.scale_factor = scale_factor
 
@@ -397,7 +382,6 @@ class TripleStateSigmoid(BaseActivation):
         super().__init__(**kwargs)
         self.a = nn.Parameter(torch.tensor([a]))
         self.b = nn.Parameter(torch.tensor([b]))
-        
 
     def _forward(self, z) -> Tensor:
         return torch.sigmoid(z) + torch.sigmoid(z - self.a) + torch.sigmoid(z - self.b)
@@ -466,20 +450,20 @@ class ImprovedLogisticSigmoid(BaseActivation):
 
     def _forward(self, z) -> Tensor:
         sig_b = torch.sigmoid(self.b)
-        
+
         upper_mask = z >= self.b
         lower_mask = z <= -self.b
-        
+
         result = torch.sigmoid(z)
 
         if self.a != 0:  # To not compute linear extensions where not needed
             upper_region = self.a * (z - self.b) + sig_b
             lower_region = self.a * (z + self.b) + (1 - sig_b)
-            
+
             # Apply masks
             result = torch.where(upper_mask, upper_region, result)
             result = torch.where(lower_mask, lower_region, result)
-        
+
         return result
 
 
@@ -558,10 +542,9 @@ class PTanh(BaseActivation):
             if self.a != 0:
                 result[neg_mask] = tanh_z[neg_mask] / a
             else:
-                result[neg_mask] = float('inf') * torch.sign(tanh_z[neg_mask])
+                result[neg_mask] = float("inf") * torch.sign(tanh_z[neg_mask])
 
         return result
-
 
 
 @register_activation
@@ -602,7 +585,6 @@ class SRS(BaseActivation):
         return z / denominator
 
 
-
 @register_activation
 class SC(BaseActivation):
     r"""
@@ -631,7 +613,6 @@ class SC(BaseActivation):
 
     def _forward(self, z) -> Tensor:
         return (F.softplus(self.a * z) - F.softplus(self.a * (z - 1))) / self.a
-
 
 
 @register_activation
@@ -671,7 +652,8 @@ class Hexpo(BaseActivation):
         c: float = 1.0,
         d: float = 1.0,
         learnable: bool = False,
-        **kwargs):
+        **kwargs,
+    ):
         super().__init__(**kwargs)
         self.a = nn.Parameter(torch.tensor([a]))
         self.b = nn.Parameter(torch.tensor([b]))
@@ -747,26 +729,28 @@ class SmoothStep(BaseActivation):
 
     def _forward(self, z) -> Tensor:
         half_a = self.a / 2
-        
+
         result = torch.ones_like(z)
-        
+
         middle_mask = (z > -half_a) & (z < half_a)
         lower_mask = z <= -half_a
 
-        if middle_mask.any(): 
+        if middle_mask.any():
             # Compute polynomial using Horner
             # Original: cubic_term - linear_term + constant_term
             # = (2 / (a^3)) * z^3 - (3 / (2 * a)) * z + 0.5
             # Horner: 0.5 + z*(-3/(2*a) + z*z*(2/(a^3)))
             z_middle = z[middle_mask]
             inv_a = 1.0 / self.a
-            
-            middle_result = 0.5 + z_middle * (-1.5 * inv_a + torch.square(z_middle) * (2.0 * torch.pow(inv_a, 3)))
+
+            middle_result = 0.5 + z_middle * (
+                -1.5 * inv_a + torch.square(z_middle) * (2.0 * torch.pow(inv_a, 3))
+            )
             result[middle_mask] = middle_result
-        
+
         if lower_mask.any():
             result[lower_mask] = 0.0
-        
+
         return result
 
 
@@ -821,7 +805,7 @@ class SincSigmoid(BaseActivation):
 
     def _forward(self, z) -> Tensor:
         sigmoid_z = torch.sigmoid(z)
-        
+
         result = torch.ones_like(z)
         nonzero_mask = sigmoid_z > 1e-10
 
@@ -912,7 +896,9 @@ class Root2sigmoid(BaseActivation):
     def _forward(self, z) -> Tensor:
         zc = z.clamp(-253.0, 253.0)
         numerator = torch.pow(self.r, zc) - torch.pow(self.r, -zc)
-        denominator = 2 * self.r * (torch.sqrt(2 * (torch.pow(self.r, 2 * zc) + torch.pow(self.r, -2 * zc))))
+        denominator = (
+            2 * self.r * (torch.sqrt(2 * (torch.pow(self.r, 2 * zc) + torch.pow(self.r, -2 * zc))))
+        )
         return numerator / denominator
 
 
@@ -1203,7 +1189,7 @@ class Rootsig(BaseActivation):
 # The math is equivalent to RootsigPlus
 # @register_activation
 # class UnnamedSigmoid1(BaseActivation):
-#     # TODO: Ask someone about this name. 
+#     # TODO: Ask someone about this name.
 #     r"""
 #     :note: The name "UnnamedSigmoid1" derived from the first entry in "3.2.25 Rootsig and others" entry. I named it this way because the curve resembles the Rootsig but not as soft
 
@@ -1237,7 +1223,7 @@ class Rootsig(BaseActivation):
 
 @register_activation
 class RootsigPlus(BaseActivation):
-    # TODO: Ask someone about this name. 
+    # TODO: Ask someone about this name.
     r"""
     :note: The name "RootsigPlus" derived from the second entry in "3.2.25 Rootsig and others" entry, found in the `Estimates of the number of hidden units and variation with respect
     to half-spaces` paper. I named it this way because the curve resembles the Tanh but softer and not as soft as Rootsig.
@@ -1268,10 +1254,9 @@ class RootsigPlus(BaseActivation):
         return a_z / (1 + torch.abs(a_z))
 
 
-
 @register_activation
 class SoftTanh(BaseActivation):
-    # TODO: Ask someone about this name. 
+    # TODO: Ask someone about this name.
     r"""
     :note: The name "RadicalTanh" derived from the third entry in "3.2.25 Rootsig and others" entry, found in the `Estimates of the number of hidden units and variation with respect
     to half-spaces` paper. I named it this way because the curve resembles the Tanh but softer and not as soft as RootsigPlus.

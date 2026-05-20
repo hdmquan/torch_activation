@@ -1,13 +1,15 @@
+from typing import Tuple
+
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from torch_activation.base import BaseActivation
 from torch import Tensor
-from typing import Tuple
 
 import torch_activation as tac
 from torch_activation import register_activation
+from torch_activation.base import BaseActivation
 from torch_activation.utils import split
+
 
 class GLU(BaseActivation):
     r"""
@@ -195,4 +197,3 @@ class SwiGLU(BaseActivation):
     def _forward(self, x: Tensor) -> Tensor:
         a, b = split(x, self.dim)
         return tac.Swish()(a) * b
-

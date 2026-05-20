@@ -1,10 +1,11 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from torch_activation.base import BaseActivation
 from torch import Tensor
 
 from torch_activation import register_activation
+from torch_activation.base import BaseActivation
+
 
 @register_activation
 class Softmax(BaseActivation):
@@ -28,10 +29,10 @@ class Softmax(BaseActivation):
         >>> input = torch.randn(2, 3)
         >>> output = m(input)
     """
+
     def __init__(self, dim=-1, inplace=False, **kwargs):
         super().__init__(inplace=inplace, **kwargs)
         self.dim = dim
-        
 
     def _forward(self, x: Tensor) -> Tensor:
         if self.inplace:
@@ -69,6 +70,7 @@ class BetaSoftmax(BaseActivation):
         >>> input = torch.randn(2, 3)
         >>> output = m(input)
     """
+
     def __init__(self, beta: float = 1.0, trainable: bool = False, dim: int = -1, **kwargs):
         super().__init__(**kwargs)
         self.dim = dim

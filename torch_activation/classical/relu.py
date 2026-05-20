@@ -1,10 +1,10 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from torch_activation.base import BaseActivation
-
 from torch import Tensor
+
 from torch_activation import register_activation
+from torch_activation.base import BaseActivation
 
 
 @register_activation
@@ -199,14 +199,10 @@ class RReLU(BaseActivation):
         self.upper = upper
 
     def _forward(self, x: Tensor) -> Tensor:
-        return F.leaky_relu_(
-            x, negative_slope=torch.rand(x.shape).uniform_(self.lower, self.upper)
-        )
+        return F.leaky_relu_(x, negative_slope=torch.rand(x.shape).uniform_(self.lower, self.upper))
 
     def _forward_inplace(self, x: Tensor) -> Tensor:
-        return F.leaky_relu_(
-            x, negative_slope=torch.rand(x.shape).uniform_(self.lower, self.upper)
-        )
+        return F.leaky_relu_(x, negative_slope=torch.rand(x.shape).uniform_(self.lower, self.upper))
 
 
 # FIXME: Does not pass test
@@ -721,6 +717,7 @@ class OLReLU(BaseActivation):
 
     def _forward(self, x: Tensor) -> Tensor:
         import math
+
         neg_slope = math.exp(-self.a)
         if self.inplace:
             return x.where(x >= 0, x.mul_(neg_slope))
@@ -923,9 +920,7 @@ class SCAA(BaseActivation):
             bias=False,
         )
         # Initialize weights
-        nn.init.kaiming_normal_(
-            self.dw_conv.weight, mode="fan_out", nonlinearity="relu"
-        )
+        nn.init.kaiming_normal_(self.dw_conv.weight, mode="fan_out", nonlinearity="relu")
 
     def _forward(self, x: Tensor) -> Tensor:
         return torch.maximum(x, self.dw_conv(x))
@@ -1140,9 +1135,7 @@ class ReSP(BaseActivation):
             x[neg_mask] = torch.log(1 + torch.exp(x[neg_mask]))
             return x
         else:
-            return torch.where(
-                x >= 0, self.a * x + self.ln2, torch.log(1 + torch.exp(x))
-            )
+            return torch.where(x >= 0, self.a * x + self.ln2, torch.log(1 + torch.exp(x)))
 
 
 @register_activation
@@ -1696,9 +1689,7 @@ class BLReLU(BaseActivation):
         self.c = (1 - a) * b
 
     def _forward(self, x: Tensor) -> Tensor:
-        return torch.where(
-            x <= 0, self.a * x, torch.where(x >= self.b, self.a * x + self.c, x)
-        )
+        return torch.where(x <= 0, self.a * x, torch.where(x >= self.b, self.a * x + self.c, x))
 
     def _forward_inplace(self, x: Tensor) -> Tensor:
         mask_neg = x <= 0
@@ -2207,9 +2198,7 @@ class DualReLU(BaseActivation):
     def _forward(self, x: Tensor) -> Tensor:
         size_2_dims = [i for i, s in enumerate(x.shape) if s == 2]
         if not size_2_dims:
-            raise ValueError(
-                "Input tensor must have a dimension with size 2 for DualReLU"
-            )
+            raise ValueError("Input tensor must have a dimension with size 2 for DualReLU")
 
         dim = size_2_dims[0]
 
@@ -2255,9 +2244,7 @@ class OPLU(BaseActivation):
 
     def _forward(self, x: Tensor) -> Tensor:
         if x.shape[-1] % 2 != 0:
-            raise ValueError(
-                "The last dimension of the input tensor must be even for OPLU"
-            )
+            raise ValueError("The last dimension of the input tensor must be even for OPLU")
 
         shape = x.shape
         x_reshaped = x.view(*shape[:-1], -1, 2)

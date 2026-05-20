@@ -17,7 +17,7 @@ class ETanh(BaseActivation):
 
     Args:
         a (float, optional): Scaling parameter. Default: ``1.0``
-        inplace (bool, optional): parameter kept for API consistency, but E-Tanh operation 
+        inplace (bool, optional): parameter kept for API consistency, but E-Tanh operation
                                  cannot be done in-place. Default: ``False``
 
     Shape:
@@ -45,7 +45,7 @@ class EvolvedTanhReLU(BaseActivation):
 
     Args:
         a (float, optional): Scaling parameter. Default: ``1.0``
-        inplace (bool, optional): parameter kept for API consistency, but this operation 
+        inplace (bool, optional): parameter kept for API consistency, but this operation
                                  cannot be done in-place. Default: ``False``
 
     Shape:
@@ -71,7 +71,7 @@ class EvolvedTanhLogReLU(BaseActivation):
     This activation function was found using neuroevolution.
 
     Args:
-        inplace (bool, optional): parameter kept for API consistency, but this operation 
+        inplace (bool, optional): parameter kept for API consistency, but this operation
                                  cannot be done in-place. Default: ``False``
 
     Shape:

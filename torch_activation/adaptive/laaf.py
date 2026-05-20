@@ -1,11 +1,11 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from torch_activation.base import BaseActivation
-
 from torch import Tensor
 
 from torch_activation import register_activation
+from torch_activation.base import BaseActivation
+
 
 @register_activation
 class CosLU(BaseActivation):
@@ -44,9 +44,6 @@ class CosLU(BaseActivation):
         super().__init__(**kwargs)
         self.alpha = nn.Parameter(Tensor([a]))
         self.beta = nn.Parameter(Tensor([b]))
-        
-
-    
 
     def _forward(self, x):
         result = x + self.alpha * torch.cos(self.beta * x)
@@ -58,6 +55,7 @@ class CosLU(BaseActivation):
         x.add_(self.alpha * torch.cos(self.beta * x))
         x.mul_(s_x)
         return x
+
 
 @register_activation
 class LAAF(BaseActivation):
@@ -92,28 +90,35 @@ class LAAF(BaseActivation):
         >>> m(x)
     """
 
-    def __init__(self, activation: str = 'sigmoid', a_init: float = 1.0, 
-                 leaky_slope: float = 0.01, fixed_n: float = 1.0, **kwargs):
+    def __init__(
+        self,
+        activation: str = "sigmoid",
+        a_init: float = 1.0,
+        leaky_slope: float = 0.01,
+        fixed_n: float = 1.0,
+        **kwargs,
+    ):
         super().__init__(**kwargs)
         self.a = nn.Parameter(Tensor([a_init]))
         self.activation = activation.lower()
         self.leaky_slope = leaky_slope
         self.fixed_n = fixed_n
-        
-        
-        if self.activation not in ['sigmoid', 'tanh', 'relu', 'leaky_relu']:
-            raise ValueError(f"Unsupported activation: {activation}. Choose from 'sigmoid', 'tanh', 'relu', 'leaky_relu'")
+
+        if self.activation not in ["sigmoid", "tanh", "relu", "leaky_relu"]:
+            raise ValueError(
+                f"Unsupported activation: {activation}. Choose from 'sigmoid', 'tanh', 'relu', 'leaky_relu'"
+            )
 
     def _forward(self, x) -> Tensor:
         scaled_x = self.fixed_n * self.a * x
-        
-        if self.activation == 'sigmoid':
+
+        if self.activation == "sigmoid":
             return torch.sigmoid(scaled_x)
-        elif self.activation == 'tanh':
+        elif self.activation == "tanh":
             return torch.tanh(scaled_x)
-        elif self.activation == 'relu':
+        elif self.activation == "relu":
             return F.relu(scaled_x)
-        elif self.activation == 'leaky_relu':
+        elif self.activation == "leaky_relu":
             return F.leaky_relu(scaled_x, negative_slope=self.leaky_slope)
 
 
@@ -311,4 +316,4 @@ class AGumb(BaseActivation):
     def _forward(self, x) -> Tensor:
         # Ensure a is positive using softplus
         a = F.softplus(self.a_raw)
-        return 1 - (1 + a * torch.exp(x.clamp(max=88.0)))**(-1)
+        return 1 - (1 + a * torch.exp(x.clamp(max=88.0))) ** (-1)

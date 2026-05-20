@@ -1,5 +1,6 @@
 import pytest
 import torch
+
 import torch_activation
 
 ACTIVATION_NAME = "SCAA"

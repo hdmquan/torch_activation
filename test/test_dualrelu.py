@@ -1,5 +1,6 @@
 import pytest
 import torch
+
 import torch_activation
 
 NONSMOOTH_ACTIVATIONS: list[str] = ["DualReLU"]
@@ -47,8 +48,10 @@ class TestGradients:
         fd = torch.zeros_like(x_det)
         for i in range(x_det.shape[0]):
             for j in range(x_det.shape[1]):
-                xp = x_det.clone(); xp[i, j] += eps
-                xm = x_det.clone(); xm[i, j] -= eps
+                xp = x_det.clone()
+                xp[i, j] += eps
+                xm = x_det.clone()
+                xm[i, j] -= eps
                 fd[i, j] = (m(xp.float()).double().sum() - m(xm.float()).double().sum()) / (2 * eps)
         assert torch.allclose(grad_auto, fd, atol=5e-3)
 

@@ -1,14 +1,13 @@
-import os
 import importlib
 import inspect
+import os
 import sys
 
 # Get the directory of the current file
 current_dir = os.path.dirname(os.path.abspath(__file__))
 
 # Get all Python files in the directory (excluding __init__.py)
-python_files = [f[:-3] for f in os.listdir(current_dir) 
-                if f.endswith('.py') and f != '__init__.py']
+python_files = [f[:-3] for f in os.listdir(current_dir) if f.endswith(".py") and f != "__init__.py"]
 
 # Dictionary to store all classes
 __all__ = []
@@ -17,7 +16,7 @@ __all__ = []
 for module_name in python_files:
     # Import the module
     module = importlib.import_module(f"torch_activation.adaptive.{module_name}")
-    
+
     # Get all classes from the module
     for name, obj in inspect.getmembers(module, inspect.isclass):
         # Check if the class is defined in this module (not imported)

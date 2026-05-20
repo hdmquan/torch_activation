@@ -1,12 +1,13 @@
+from typing import Callable
+
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from torch_activation.base import BaseActivation
-
 from torch import Tensor
-from typing import Callable
 
 from torch_activation import register_activation
+from torch_activation.base import BaseActivation
+
 
 @register_activation
 class ShiLU(BaseActivation):
@@ -45,7 +46,6 @@ class ShiLU(BaseActivation):
         super().__init__(**kwargs)
         self.alpha = nn.Parameter(Tensor([alpha]))
         self.beta = nn.Parameter(Tensor([beta]))
-        
 
     def _forward(self, x) -> Tensor:
         if self.inplace:
@@ -100,10 +100,10 @@ class StarReLU(BaseActivation):
         b: float = -0.4472,
         learnable: bool = False,
         inplace: bool = False,
-        **kwargs
+        **kwargs,
     ):
         super().__init__(**kwargs)
-        
+
         if learnable:
             self.s = nn.Parameter(Tensor([s]))
             self.b = nn.Parameter(Tensor([b]))
@@ -153,14 +153,9 @@ class DELU(BaseActivation):
     def __init__(self, n: float = 1.0, **kwargs):
         super().__init__(**kwargs)
         self.n = torch.nn.Parameter(Tensor([n]))
-        
-
-    
 
     def _forward(self, x):
-        return torch.where(
-            x <= 0, F.silu(x), (self.n + 0.5) * x + torch.abs(torch.exp(-x) - 1)
-        )
+        return torch.where(x <= 0, F.silu(x), (self.n + 0.5) * x + torch.abs(torch.exp(-x) - 1))
 
     def _forward_inplace(self, x):
         x[x <= 0] = F.silu(x[x <= 0])
@@ -204,7 +199,7 @@ class PReLU(BaseActivation):
 
     def __init__(self, a: float = 1.0, learnable: bool = False, **kwargs):
         super().__init__(**kwargs)
-        
+
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
         else:
@@ -248,7 +243,7 @@ class PReLUPlus(BaseActivation):
 
     def __init__(self, a: float = 1.0, learnable: bool = False, **kwargs):
         super().__init__(**kwargs)
-        
+
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
         else:
@@ -293,7 +288,7 @@ class MarReLU(BaseActivation):
 
     def __init__(self, a: float = 0.0, learnable: bool = False, **kwargs):
         super().__init__(**kwargs)
-        
+
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
         else:
@@ -338,15 +333,16 @@ class RPReLU(BaseActivation):
     """
 
     def __init__(
-        self, 
-        a: float = 0.0, 
-        b: float = 0.0, 
-        c: float = 1.0, 
-        learnable: bool = False, 
-        inplace: bool = False
-    , **kwargs):
+        self,
+        a: float = 0.0,
+        b: float = 0.0,
+        c: float = 1.0,
+        learnable: bool = False,
+        inplace: bool = False,
+        **kwargs,
+    ):
         super().__init__(**kwargs)
-        
+
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
             self.b = nn.Parameter(Tensor([b]))
@@ -397,14 +393,15 @@ class LeLeLU(BaseActivation):
     """
 
     def __init__(
-        self, 
-        a: float = 1.0, 
-        negative_slope: float = 0.01, 
-        learnable: bool = False, 
-        inplace: bool = False
-    , **kwargs):
+        self,
+        a: float = 1.0,
+        negative_slope: float = 0.01,
+        learnable: bool = False,
+        inplace: bool = False,
+        **kwargs,
+    ):
         super().__init__(**kwargs)
-        
+
         self.negative_slope = negative_slope
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
@@ -450,14 +447,15 @@ class PREU(BaseActivation):
     """
 
     def __init__(
-        self, 
-        a: float = 1.0, 
-        b: float = 1.0, 
-        learnable: bool = False, 
-        inplace: bool = False
-    , **kwargs):
+        self,
+        a: float = 1.0,
+        b: float = 1.0,
+        learnable: bool = False,
+        inplace: bool = False,
+        **kwargs,
+    ):
         super().__init__(**kwargs)
-        
+
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
             self.b = nn.Parameter(Tensor([b]))
@@ -506,14 +504,15 @@ class RTReLU(BaseActivation):
     """
 
     def __init__(
-        self, 
-        a: float = 1.0, 
-        sigma: float = 0.75, 
-        learnable: bool = False, 
-        inplace: bool = False
-    , **kwargs):
+        self,
+        a: float = 1.0,
+        sigma: float = 0.75,
+        learnable: bool = False,
+        inplace: bool = False,
+        **kwargs,
+    ):
         super().__init__(**kwargs)
-        
+
         self.sigma = sigma
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
@@ -559,14 +558,15 @@ class SMU(BaseActivation):
     """
 
     def __init__(
-        self, 
-        a: float = 0.25, 
-        b: float = 25.0, 
-        learnable: bool = False, 
-        inplace: bool = False
-    , **kwargs):
+        self,
+        a: float = 0.25,
+        b: float = 25.0,
+        learnable: bool = False,
+        inplace: bool = False,
+        **kwargs,
+    ):
         super().__init__(**kwargs)
-        
+
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
             self.b = nn.Parameter(Tensor([b]))
@@ -577,7 +577,7 @@ class SMU(BaseActivation):
     def _forward(self, x) -> Tensor:
         term1 = (1 + self.a) * x
         term2 = (1 - self.a) * x * torch.erf(self.b * (1 - self.a) * x)
-        
+
         if self.inplace:
             x.copy_((term1 + term2) / 2)
             return x
@@ -612,12 +612,7 @@ class SAU(BaseActivation):
         >>> output = m(x)
     """
 
-    def __init__(
-        self, 
-        a: float = 1.0, 
-        b: float = 1.0, 
-        learnable: bool = False
-    , **kwargs):
+    def __init__(self, a: float = 1.0, b: float = 1.0, learnable: bool = False, **kwargs):
         super().__init__(**kwargs)
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
@@ -629,10 +624,14 @@ class SAU(BaseActivation):
     def _forward(self, x) -> Tensor:
         # Handle potential division by zero
         safe_x = torch.where(x == 0, torch.ones_like(x) * 1e-10, x)
-        
-        term1 = 1 / (2 * self.b * torch.sqrt(torch.tensor(torch.pi))) * torch.exp(-self.b**2 * x**2 / 2)
-        term2 = 0.5 * (1 - self.a / safe_x + x * torch.erf(self.b * x / torch.sqrt(torch.tensor(2.0))))
-        
+
+        term1 = (
+            1 / (2 * self.b * torch.sqrt(torch.tensor(torch.pi))) * torch.exp(-self.b**2 * x**2 / 2)
+        )
+        term2 = 0.5 * (
+            1 - self.a / safe_x + x * torch.erf(self.b * x / torch.sqrt(torch.tensor(2.0)))
+        )
+
         return term1 + term2
 
 
@@ -667,15 +666,16 @@ class ProbAct(BaseActivation):
     """
 
     def __init__(
-        self, 
-        base_activation: Callable = F.relu, 
-        sigma: float = 0.1, 
-        learnable: bool = False, 
-        inplace: bool = False
-    , **kwargs):
+        self,
+        base_activation: Callable = F.relu,
+        sigma: float = 0.1,
+        learnable: bool = False,
+        inplace: bool = False,
+        **kwargs,
+    ):
         super().__init__(**kwargs)
         self.base_activation = base_activation
-        
+
         if learnable:
             self.sigma = nn.Parameter(Tensor([sigma]))
         else:
@@ -684,8 +684,8 @@ class ProbAct(BaseActivation):
     def _forward(self, x) -> Tensor:
         activated = self.base_activation(x)
         noise = torch.randn_like(x) * self.sigma
-        
-        if self.inplace and hasattr(activated, 'add_'):
+
+        if self.inplace and hasattr(activated, "add_"):
             activated.add_(noise)
             return activated
         else:
@@ -722,13 +722,10 @@ class ReLUProbAct(BaseActivation):
     """
 
     def __init__(
-        self, 
-        sigma: float = 0.1, 
-        learnable: bool = False, 
-        inplace: bool = False
-    , **kwargs):
+        self, sigma: float = 0.1, learnable: bool = False, inplace: bool = False, **kwargs
+    ):
         super().__init__(**kwargs)
-        
+
         if learnable:
             self.sigma = nn.Parameter(Tensor([sigma]))
         else:
@@ -773,15 +770,16 @@ class AOAF(BaseActivation):
     """
 
     def __init__(
-        self, 
-        a: float = 0.1, 
-        b: float = 0.17, 
-        c: float = 0.17, 
-        learnable: bool = False, 
-        inplace: bool = False
-    , **kwargs):
+        self,
+        a: float = 0.1,
+        b: float = 0.17,
+        c: float = 0.17,
+        learnable: bool = False,
+        inplace: bool = False,
+        **kwargs,
+    ):
         super().__init__(**kwargs)
-        
+
         self.b = b
         self.c = c
         if learnable:
@@ -792,7 +790,7 @@ class AOAF(BaseActivation):
     def _forward(self, x) -> Tensor:
         offset = self.b * self.a
         bias = self.c * self.a
-        
+
         if self.inplace:
             x.sub_(offset).clamp_(min=0).add_(bias)
             return x
@@ -832,14 +830,15 @@ class DLReLU(BaseActivation):
     """
 
     def __init__(
-        self, 
-        a: float = 0.01, 
-        mse: float = 1.0, 
-        learnable: bool = False, 
-        inplace: bool = False
-    , **kwargs):
+        self,
+        a: float = 0.01,
+        mse: float = 1.0,
+        learnable: bool = False,
+        inplace: bool = False,
+        **kwargs,
+    ):
         super().__init__(**kwargs)
-        
+
         self.mse = mse
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
@@ -852,7 +851,7 @@ class DLReLU(BaseActivation):
 
     def _forward(self, x) -> Tensor:
         negative_slope = self.a * self.mse
-        
+
         if self.inplace:
             mask = x < 0
             x[mask].mul_(negative_slope)
@@ -893,14 +892,15 @@ class ExpDLReLU(BaseActivation):
     """
 
     def __init__(
-        self, 
-        a: float = 0.01, 
-        mse: float = 0.0, 
-        learnable: bool = False, 
-        inplace: bool = False
-    , **kwargs):
+        self,
+        a: float = 0.01,
+        mse: float = 0.0,
+        learnable: bool = False,
+        inplace: bool = False,
+        **kwargs,
+    ):
         super().__init__(**kwargs)
-        
+
         self.mse = mse
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
@@ -913,7 +913,7 @@ class ExpDLReLU(BaseActivation):
 
     def _forward(self, x) -> Tensor:
         negative_slope = self.a * torch.exp(-torch.tensor(self.mse))
-        
+
         if self.inplace:
             mask = x < 0
             x[mask].mul_(negative_slope)
@@ -949,14 +949,9 @@ class DReLU(BaseActivation):
         >>> m(x)
     """
 
-    def __init__(
-        self, 
-        a: float = 0.0, 
-        learnable: bool = False, 
-        inplace: bool = False
-    , **kwargs):
+    def __init__(self, a: float = 0.0, learnable: bool = False, inplace: bool = False, **kwargs):
         super().__init__(**kwargs)
-        
+
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
         else:
@@ -998,14 +993,9 @@ class FReLU(BaseActivation):
         >>> m(x)
     """
 
-    def __init__(
-        self, 
-        b: float = 0.0, 
-        learnable: bool = False, 
-        inplace: bool = False
-    , **kwargs):
+    def __init__(self, b: float = 0.0, learnable: bool = False, inplace: bool = False, **kwargs):
         super().__init__(**kwargs)
-        
+
         if learnable:
             self.b = nn.Parameter(Tensor([b]))
         else:
@@ -1052,16 +1042,17 @@ class AdaptiveHardTanh(BaseActivation):
     """
 
     def __init__(
-        self, 
-        a: float = 1.0, 
-        b: float = 0.0, 
+        self,
+        a: float = 1.0,
+        b: float = 0.0,
         min_val: float = -1.0,
         max_val: float = 1.0,
-        learnable: bool = False, 
-        inplace: bool = False
-    , **kwargs):
+        learnable: bool = False,
+        inplace: bool = False,
+        **kwargs,
+    ):
         super().__init__(**kwargs)
-        
+
         self.min_val = min_val
         self.max_val = max_val
         if learnable:
@@ -1073,7 +1064,7 @@ class AdaptiveHardTanh(BaseActivation):
 
     def _forward(self, x) -> Tensor:
         scaled_shifted = self.a * (x - self.b)
-        
+
         if self.inplace:
             scaled_shifted.clamp_(min=self.min_val, max=self.max_val)
             return scaled_shifted
@@ -1112,14 +1103,15 @@ class AReLU(BaseActivation):
     """
 
     def __init__(
-        self, 
-        a: float = 0.9, 
-        b: float = 2.0, 
-        learnable: bool = False, 
-        inplace: bool = False
-    , **kwargs):
+        self,
+        a: float = 0.9,
+        b: float = 2.0,
+        learnable: bool = False,
+        inplace: bool = False,
+        **kwargs,
+    ):
         super().__init__(**kwargs)
-        
+
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
             self.b = nn.Parameter(Tensor([b]))
@@ -1130,7 +1122,7 @@ class AReLU(BaseActivation):
     def _forward(self, x) -> Tensor:
         positive_scale = 1 + torch.sigmoid(self.b)
         negative_scale = self.a  # C(a) = a in the simplest case
-        
+
         if self.inplace:
             mask = x < 0
             x[~mask].mul_(positive_scale)
@@ -1169,14 +1161,15 @@ class DPReLU(BaseActivation):
     """
 
     def __init__(
-        self, 
-        a: float = 1.0, 
-        b: float = 0.01, 
-        learnable: bool = False, 
-        inplace: bool = False
-    , **kwargs):
+        self,
+        a: float = 1.0,
+        b: float = 0.01,
+        learnable: bool = False,
+        inplace: bool = False,
+        **kwargs,
+    ):
         super().__init__(**kwargs)
-        
+
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
             self.b = nn.Parameter(Tensor([b]))
@@ -1224,15 +1217,16 @@ class DualLine(BaseActivation):
     """
 
     def __init__(
-        self, 
-        a: float = 1.0, 
-        b: float = 0.01, 
-        m: float = -0.22, 
-        learnable: bool = False, 
-        inplace: bool = False
-    , **kwargs):
+        self,
+        a: float = 1.0,
+        b: float = 0.01,
+        m: float = -0.22,
+        learnable: bool = False,
+        inplace: bool = False,
+        **kwargs,
+    ):
         super().__init__(**kwargs)
-        
+
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
             self.b = nn.Parameter(Tensor([b]))
@@ -1282,15 +1276,16 @@ class PiLU(BaseActivation):
     """
 
     def __init__(
-        self, 
-        a: float = 1.0, 
-        b: float = 0.01, 
-        c: float = 0.0, 
-        learnable: bool = False, 
-        inplace: bool = False
-    , **kwargs):
+        self,
+        a: float = 1.0,
+        b: float = 0.01,
+        c: float = 0.0,
+        learnable: bool = False,
+        inplace: bool = False,
+        **kwargs,
+    ):
         super().__init__(**kwargs)
-        
+
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
             self.b = nn.Parameter(Tensor([b]))
@@ -1303,7 +1298,7 @@ class PiLU(BaseActivation):
     def _forward(self, x) -> Tensor:
         bias_a = self.c * (1 - self.a)
         bias_b = self.c * (1 - self.b)
-        
+
         if self.inplace:
             mask = x < self.c
             x[~mask].mul_(self.a).add_(bias_a)
@@ -1345,16 +1340,17 @@ class DPAF(BaseActivation):
     """
 
     def __init__(
-        self, 
-        a: float = 1.0, 
-        m: float = 0.0, 
+        self,
+        a: float = 1.0,
+        m: float = 0.0,
         base_activation: Callable = F.relu,
-        learnable: bool = False, 
-        inplace: bool = False
-    , **kwargs):
+        learnable: bool = False,
+        inplace: bool = False,
+        **kwargs,
+    ):
         super().__init__(**kwargs)
         self.base_activation = base_activation
-        
+
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
             self.m = nn.Parameter(Tensor([m]))
@@ -1364,8 +1360,8 @@ class DPAF(BaseActivation):
 
     def _forward(self, x) -> Tensor:
         activated = self.base_activation(x)
-        
-        if self.inplace and hasattr(activated, 'add_'):
+
+        if self.inplace and hasattr(activated, "add_"):
             mask = x >= 0
             activated[mask].mul_(self.a)
             activated.add_(self.m)
@@ -1406,13 +1402,14 @@ class FPAF(BaseActivation):
     """
 
     def __init__(
-        self, 
-        a: float = 1.0, 
-        b: float = 1.0, 
+        self,
+        a: float = 1.0,
+        b: float = 1.0,
         pos_activation: Callable = F.relu,
         neg_activation: Callable = F.relu,
-        learnable: bool = False
-    , **kwargs):
+        learnable: bool = False,
+        **kwargs,
+    ):
         super().__init__(**kwargs)
         self.pos_activation = pos_activation
         self.neg_activation = neg_activation
@@ -1458,14 +1455,15 @@ class EPReLU(BaseActivation):
     """
 
     def __init__(
-        self, 
-        a: float = 1.0, 
-        alpha: float = 0.1, 
-        learnable: bool = False, 
-        inplace: bool = False
-    , **kwargs):
+        self,
+        a: float = 1.0,
+        alpha: float = 0.1,
+        learnable: bool = False,
+        inplace: bool = False,
+        **kwargs,
+    ):
         super().__init__(**kwargs)
-        
+
         self.alpha = alpha
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
@@ -1475,7 +1473,7 @@ class EPReLU(BaseActivation):
     def _forward(self, x) -> Tensor:
         # Sample k from uniform distribution
         k = 1 + (2 * torch.rand_like(x) - 1) * self.alpha
-        
+
         if self.inplace:
             mask = x < 0
             x[~mask].mul_(k[~mask])
@@ -1515,13 +1513,14 @@ class PairedReLU(BaseActivation):
     """
 
     def __init__(
-        self, 
-        a: float = 0.5, 
-        b: float = 0.0, 
-        c: float = -0.5, 
-        d: float = 0.0, 
-        learnable: bool = False
-    , **kwargs):
+        self,
+        a: float = 0.5,
+        b: float = 0.0,
+        c: float = -0.5,
+        d: float = 0.0,
+        learnable: bool = False,
+        **kwargs,
+    ):
         super().__init__(**kwargs)
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
@@ -1537,10 +1536,10 @@ class PairedReLU(BaseActivation):
     def _forward(self, x) -> Tensor:
         # First component: max(a*x - b, 0)
         y1 = F.relu(self.a * x - self.b)
-        
+
         # Second component: max(c*x - d, 0)
         y2 = F.relu(self.c * x - self.d)
-        
+
         # Stack the outputs along the channel dimension
         if x.dim() <= 1:
             return torch.cat([y1, y2], dim=0)
@@ -1575,14 +1574,9 @@ class Tent(BaseActivation):
         >>> m(x)
     """
 
-    def __init__(
-        self, 
-        a: float = 1.0, 
-        learnable: bool = False, 
-        inplace: bool = False
-    , **kwargs):
+    def __init__(self, a: float = 1.0, learnable: bool = False, inplace: bool = False, **kwargs):
         super().__init__(**kwargs)
-        
+
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
         else:
@@ -1628,14 +1622,9 @@ class Hat(BaseActivation):
         >>> m(x)
     """
 
-    def __init__(
-        self, 
-        a: float = 2.0, 
-        learnable: bool = False, 
-        inplace: bool = False
-    , **kwargs):
+    def __init__(self, a: float = 2.0, learnable: bool = False, inplace: bool = False, **kwargs):
         super().__init__(**kwargs)
-        
+
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
         else:
@@ -1697,15 +1686,16 @@ class RMAF(BaseActivation):
     """
 
     def __init__(
-        self, 
-        a: float = 1.0, 
-        b: float = 1.0, 
-        c: float = 1.0, 
-        learnable: bool = False, 
-        inplace: bool = False
-    , **kwargs):
+        self,
+        a: float = 1.0,
+        b: float = 1.0,
+        c: float = 1.0,
+        learnable: bool = False,
+        inplace: bool = False,
+        **kwargs,
+    ):
         super().__init__(**kwargs)
-        
+
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
             self.b = nn.Parameter(Tensor([b]))
@@ -1718,11 +1708,11 @@ class RMAF(BaseActivation):
     def _forward(self, x) -> Tensor:
         # Calculate the memristor-like term
         memristor_term = (1 / (0.25 * (1 + torch.exp(-x)) + 0.75)) ** self.c
-        
+
         # Apply scaling
         result = self.b * memristor_term * self.a * x
-        
-        if self.inplace and hasattr(x, 'copy_'):
+
+        if self.inplace and hasattr(x, "copy_"):
             x.copy_(result)
             return x
         else:
@@ -1758,14 +1748,15 @@ class PTELU(BaseActivation):
     """
 
     def __init__(
-        self, 
-        a: float = 1.0, 
-        b: float = 1.0, 
-        learnable: bool = False, 
-        inplace: bool = False
-    , **kwargs):
+        self,
+        a: float = 1.0,
+        b: float = 1.0,
+        learnable: bool = False,
+        inplace: bool = False,
+        **kwargs,
+    ):
         super().__init__(**kwargs)
-        
+
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
             self.b = nn.Parameter(Tensor([b]))
@@ -1813,14 +1804,9 @@ class TaLU(BaseActivation):
         >>> m(x)
     """
 
-    def __init__(
-        self, 
-        a: float = -1.0, 
-        learnable: bool = False, 
-        inplace: bool = False
-    , **kwargs):
+    def __init__(self, a: float = -1.0, learnable: bool = False, inplace: bool = False, **kwargs):
         super().__init__(**kwargs)
-        
+
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
         else:
@@ -1828,29 +1814,29 @@ class TaLU(BaseActivation):
 
     def _forward(self, x) -> Tensor:
         tanh_a = torch.tanh(self.a)
-        
+
         if self.inplace:
             mask_middle = (x < 0) & (x > self.a)
             mask_lower = x <= self.a
-            
+
             x[mask_middle] = torch.tanh(x[mask_middle])
             x[mask_lower] = tanh_a
-            
+
             return x
         else:
             # Create masks for different regions
             mask_upper = x >= 0
             mask_middle = (x < 0) & (x > self.a)
             mask_lower = x <= self.a
-            
+
             # Initialize result tensor
             result = torch.zeros_like(x)
-            
+
             # Apply different functions to different regions
             result[mask_upper] = x[mask_upper]
             result[mask_middle] = torch.tanh(x[mask_middle])
             result[mask_lower] = tanh_a
-            
+
             return result
 
 
@@ -1887,14 +1873,15 @@ class PTaLU(BaseActivation):
     """
 
     def __init__(
-        self, 
-        a: float = -0.75, 
-        b: float = 1.0, 
-        learnable: bool = False, 
-        inplace: bool = False
-    , **kwargs):
+        self,
+        a: float = -0.75,
+        b: float = 1.0,
+        learnable: bool = False,
+        inplace: bool = False,
+        **kwargs,
+    ):
         super().__init__(**kwargs)
-        
+
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
             self.b = nn.Parameter(Tensor([b]))
@@ -1941,15 +1928,16 @@ class TanhLU(BaseActivation):
     """
 
     def __init__(
-        self, 
-        a: float = 1.0, 
-        b: float = 1.0, 
-        c: float = 1.0, 
-        learnable: bool = False, 
-        inplace: bool = False
-    , **kwargs):
+        self,
+        a: float = 1.0,
+        b: float = 1.0,
+        c: float = 1.0,
+        learnable: bool = False,
+        inplace: bool = False,
+        **kwargs,
+    ):
         super().__init__(**kwargs)
-        
+
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
             self.b = nn.Parameter(Tensor([b]))
@@ -1961,8 +1949,8 @@ class TanhLU(BaseActivation):
 
     def _forward(self, x) -> Tensor:
         result = self.a * torch.tanh(self.b * x) + self.c * x
-        
-        if self.inplace and hasattr(x, 'copy_'):
+
+        if self.inplace and hasattr(x, "copy_"):
             x.copy_(result)
             return x
         else:
@@ -1998,14 +1986,9 @@ class TeLU(BaseActivation):
         >>> m(x)
     """
 
-    def __init__(
-        self, 
-        a: float = 1.0, 
-        learnable: bool = False, 
-        inplace: bool = False
-    , **kwargs):
+    def __init__(self, a: float = 1.0, learnable: bool = False, inplace: bool = False, **kwargs):
         super().__init__(**kwargs)
-        
+
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
         else:
@@ -2014,11 +1997,11 @@ class TeLU(BaseActivation):
     def _forward(self, x) -> Tensor:
         # Apply ELU
         elu_output = F.elu(self.a * x)
-        
+
         # Apply tanh and multiply by x
         result = x * torch.tanh(elu_output)
-        
-        if self.inplace and hasattr(x, 'copy_'):
+
+        if self.inplace and hasattr(x, "copy_"):
             x.copy_(result)
             return x
         else:
@@ -2052,14 +2035,9 @@ class TReLU(BaseActivation):
         >>> m(x)
     """
 
-    def __init__(
-        self, 
-        b: float = 1.0, 
-        learnable: bool = False, 
-        inplace: bool = False
-    , **kwargs):
+    def __init__(self, b: float = 1.0, learnable: bool = False, inplace: bool = False, **kwargs):
         super().__init__(**kwargs)
-        
+
         if learnable:
             self.b = nn.Parameter(Tensor([b]))
         else:
@@ -2101,14 +2079,9 @@ class TReLU2(BaseActivation):
         >>> m(x)
     """
 
-    def __init__(
-        self, 
-        a: float = 1.0, 
-        learnable: bool = False, 
-        inplace: bool = False
-    , **kwargs):
+    def __init__(self, a: float = 1.0, learnable: bool = False, inplace: bool = False, **kwargs):
         super().__init__(**kwargs)
-        
+
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
         else:
@@ -2121,6 +2094,7 @@ class TReLU2(BaseActivation):
             return x
         else:
             return torch.where(x >= 0, x, self.a * torch.tanh(x))
+
 
 @register_activation
 class ReLTanh(BaseActivation):
@@ -2157,14 +2131,15 @@ class ReLTanh(BaseActivation):
     """
 
     def __init__(
-        self, 
-        a: float = -1.5, 
-        b: float = 0.0, 
-        learnable: bool = False, 
-        inplace: bool = False
-    , **kwargs):
+        self,
+        a: float = -1.5,
+        b: float = 0.0,
+        learnable: bool = False,
+        inplace: bool = False,
+        **kwargs,
+    ):
         super().__init__(**kwargs)
-        
+
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
             self.b = nn.Parameter(Tensor([b]))
@@ -2174,7 +2149,7 @@ class ReLTanh(BaseActivation):
 
     def _tanh_derivative(self, x):
         # Derivative of tanh(x) = 1 - tanh^2(x) = 4 / (e^x + e^-x)^2
-        return 4 / (torch.exp(x) + torch.exp(-x))**2
+        return 4 / (torch.exp(x) + torch.exp(-x)) ** 2
 
     def _forward(self, x) -> Tensor:
         a = self.a.to(x.dtype) if isinstance(self.a, Tensor) else x.new_tensor(self.a)
@@ -2243,14 +2218,9 @@ class BLU(BaseActivation):
         >>> m(x)
     """
 
-    def __init__(
-        self, 
-        a: float = 0.0, 
-        learnable: bool = False, 
-        inplace: bool = False
-    , **kwargs):
+    def __init__(self, a: float = 0.0, learnable: bool = False, inplace: bool = False, **kwargs):
         super().__init__(**kwargs)
-        
+
         if learnable:
             # Constrain a to be in [-1, 1]
             self.a = nn.Parameter(Tensor([a]).clamp(-1, 1))
@@ -2259,8 +2229,8 @@ class BLU(BaseActivation):
 
     def _forward(self, x) -> Tensor:
         result = self.a * torch.sqrt(x**2 + 1) - 1 + x
-        
-        if self.inplace and hasattr(x, 'copy_'):
+
+        if self.inplace and hasattr(x, "copy_"):
             x.copy_(result)
             return x
         else:
@@ -2299,14 +2269,9 @@ class ReBLU(BaseActivation):
         >>> m(x)
     """
 
-    def __init__(
-        self, 
-        a: float = 0.0, 
-        learnable: bool = False, 
-        inplace: bool = False
-    , **kwargs):
+    def __init__(self, a: float = 0.0, learnable: bool = False, inplace: bool = False, **kwargs):
         super().__init__(**kwargs)
-        
+
         if learnable:
             # Constrain a to be in [-1, 1]
             self.a = nn.Parameter(Tensor([a]).clamp(-1, 1))
@@ -2316,7 +2281,7 @@ class ReBLU(BaseActivation):
     def _forward(self, x) -> Tensor:
         if self.inplace:
             mask = x <= 0
-            x[~mask] = self.a * torch.sqrt(x[~mask]**2 + 1) - 1 + x[~mask]
+            x[~mask] = self.a * torch.sqrt(x[~mask] ** 2 + 1) - 1 + x[~mask]
             x[mask] = 0
             return x
         else:
@@ -2356,14 +2321,9 @@ class DELU(BaseActivation):
         >>> m(x)
     """
 
-    def __init__(
-        self, 
-        a: float = 0.0, 
-        learnable: bool = False, 
-        inplace: bool = False
-    , **kwargs):
+    def __init__(self, a: float = 0.0, learnable: bool = False, inplace: bool = False, **kwargs):
         super().__init__(**kwargs)
-        
+
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
         else:
@@ -2416,14 +2376,9 @@ class SCMish(BaseActivation):
         >>> m(x)
     """
 
-    def __init__(
-        self, 
-        a: float = 1.0, 
-        learnable: bool = False, 
-        inplace: bool = False
-    , **kwargs):
+    def __init__(self, a: float = 1.0, learnable: bool = False, inplace: bool = False, **kwargs):
         super().__init__(**kwargs)
-        
+
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
         else:
@@ -2438,8 +2393,8 @@ class SCMish(BaseActivation):
         mish = x * tanh_softplus
         # max(0, mish)
         result = torch.clamp(mish, min=0)
-        
-        if self.inplace and hasattr(x, 'copy_'):
+
+        if self.inplace and hasattr(x, "copy_"):
             x.copy_(result)
             return x
         else:
@@ -2475,15 +2430,14 @@ class SCSwish(BaseActivation):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        
 
     def _forward(self, x) -> Tensor:
         # x * sigmoid(x)
         swish = x * torch.sigmoid(x)
         # max(0, swish)
         result = torch.clamp(swish, min=0)
-        
-        if self.inplace and hasattr(x, 'copy_'):
+
+        if self.inplace and hasattr(x, "copy_"):
             x.copy_(result)
             return x
         else:
@@ -2525,15 +2479,16 @@ class PSwish(BaseActivation):
     """
 
     def __init__(
-        self, 
-        a: float = 1.0, 
-        b: float = 1.0, 
-        c: float = 0.0, 
-        learnable: bool = False, 
-        inplace: bool = False
-    , **kwargs):
+        self,
+        a: float = 1.0,
+        b: float = 1.0,
+        c: float = 0.0,
+        learnable: bool = False,
+        inplace: bool = False,
+        **kwargs,
+    ):
         super().__init__(**kwargs)
-        
+
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
             self.b = nn.Parameter(Tensor([b]))
@@ -2587,14 +2542,15 @@ class PELU(BaseActivation):
     """
 
     def __init__(
-        self, 
-        a: float = 1.0, 
-        b: float = 1.0, 
-        learnable: bool = False, 
-        inplace: bool = False
-    , **kwargs):
+        self,
+        a: float = 1.0,
+        b: float = 1.0,
+        learnable: bool = False,
+        inplace: bool = False,
+        **kwargs,
+    ):
         super().__init__(**kwargs)
-        
+
         if learnable:
             # Ensure a and b are positive
             self.a = nn.Parameter(Tensor([abs(a)]))
@@ -2653,14 +2609,15 @@ class EDELU(BaseActivation):
     """
 
     def __init__(
-        self, 
-        a: float = 1.0, 
-        c: float = 0.0, 
-        learnable: bool = False, 
-        inplace: bool = False
-    , **kwargs):
+        self,
+        a: float = 1.0,
+        c: float = 0.0,
+        learnable: bool = False,
+        inplace: bool = False,
+        **kwargs,
+    ):
         super().__init__(**kwargs)
-        
+
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
             self.c = nn.Parameter(Tensor([c]))
@@ -2712,15 +2669,16 @@ class AdaptiveCombination1(BaseActivation):
     """
 
     def __init__(
-        self, 
-        a: float = 0.5, 
+        self,
+        a: float = 0.5,
         lrelu_slope: float = 0.01,
         elu_alpha: float = 1.0,
-        learnable: bool = False, 
-        inplace: bool = False
-    , **kwargs):
+        learnable: bool = False,
+        inplace: bool = False,
+        **kwargs,
+    ):
         super().__init__(**kwargs)
-        
+
         self.lrelu_slope = lrelu_slope
         self.elu_alpha = elu_alpha
         if learnable:
@@ -2732,14 +2690,14 @@ class AdaptiveCombination1(BaseActivation):
     def _forward(self, x) -> Tensor:
         # LReLU(x)
         lrelu = F.leaky_relu(x, negative_slope=self.lrelu_slope)
-        
+
         # ELU(x)
         elu = F.elu(x, alpha=self.elu_alpha)
-        
+
         # Weighted combination
         result = self.a * lrelu + (1 - self.a) * elu
-        
-        if self.inplace and hasattr(x, 'copy_'):
+
+        if self.inplace and hasattr(x, "copy_"):
             x.copy_(result)
             return x
         else:
@@ -2748,7 +2706,6 @@ class AdaptiveCombination1(BaseActivation):
 
 @register_activation
 class AdaptiveCombination2(BaseActivation):
-
     r"""
     :note: This is a temporary naming.
     Applies an adaptive combination of activation functions with sigmoid gating:
@@ -2781,16 +2738,17 @@ class AdaptiveCombination2(BaseActivation):
     """
 
     def __init__(
-        self, 
-        a: float = 1.0, 
+        self,
+        a: float = 1.0,
         prelu_slope: float = 0.01,
         pelu_alpha: float = 1.0,
         pelu_beta: float = 1.0,
-        learnable: bool = False, 
-        inplace: bool = False
-    , **kwargs):
+        learnable: bool = False,
+        inplace: bool = False,
+        **kwargs,
+    ):
         super().__init__(**kwargs)
-        
+
         self.prelu_slope = prelu_slope
         self.pelu_alpha = pelu_alpha
         self.pelu_beta = pelu_beta
@@ -2802,19 +2760,19 @@ class AdaptiveCombination2(BaseActivation):
     def _forward(self, x) -> Tensor:
         # Sigmoid gate
         gate = torch.sigmoid(self.a * x)
-        
+
         # PReLU(x)
         prelu = torch.where(x >= 0, x, self.prelu_slope * x)
-        
+
         # PELU(x)
         pelu_pos = (self.pelu_alpha / self.pelu_beta) * x
         pelu_neg = self.pelu_alpha * (torch.exp(x / self.pelu_beta) - 1)
         pelu = torch.where(x >= 0, pelu_pos, pelu_neg)
-        
+
         # Gated combination
         result = gate * prelu + (1 - gate) * pelu
-        
-        if self.inplace and hasattr(x, 'copy_'):
+
+        if self.inplace and hasattr(x, "copy_"):
             x.copy_(result)
             return x
         else:
@@ -2851,14 +2809,9 @@ class FELU(BaseActivation):
         >>> m(x)
     """
 
-    def __init__(
-        self, 
-        a: float = 1.0, 
-        learnable: bool = False, 
-        inplace: bool = False
-    , **kwargs):
+    def __init__(self, a: float = 1.0, learnable: bool = False, inplace: bool = False, **kwargs):
         super().__init__(**kwargs)
-        
+
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
         else:
@@ -2907,14 +2860,15 @@ class PFELU(BaseActivation):
     """
 
     def __init__(
-        self, 
-        a: float = 1.0, 
-        b: float = 0.0, 
-        learnable: bool = False, 
-        inplace: bool = False
-    , **kwargs):
+        self,
+        a: float = 1.0,
+        b: float = 0.0,
+        learnable: bool = False,
+        inplace: bool = False,
+        **kwargs,
+    ):
         super().__init__(**kwargs)
-        
+
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
             self.b = nn.Parameter(Tensor([b]))
@@ -2968,14 +2922,15 @@ class MPELU(BaseActivation):
     """
 
     def __init__(
-        self, 
-        a: float = 1.0, 
-        b: float = 1.0, 
-        learnable: bool = False, 
-        inplace: bool = False
-    , **kwargs):
+        self,
+        a: float = 1.0,
+        b: float = 1.0,
+        learnable: bool = False,
+        inplace: bool = False,
+        **kwargs,
+    ):
         super().__init__(**kwargs)
-        
+
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
             self.b = nn.Parameter(Tensor([b]))
@@ -3022,15 +2977,16 @@ class PE2ReLU(BaseActivation):
     """
 
     def __init__(
-        self, 
-        a: float = 0.4, 
-        b: float = 0.3, 
+        self,
+        a: float = 0.4,
+        b: float = 0.3,
         elu_alpha: float = 1.0,
-        learnable: bool = False, 
-        inplace: bool = False
-    , **kwargs):
+        learnable: bool = False,
+        inplace: bool = False,
+        **kwargs,
+    ):
         super().__init__(**kwargs)
-        
+
         self.elu_alpha = elu_alpha
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
@@ -3042,17 +2998,17 @@ class PE2ReLU(BaseActivation):
     def _forward(self, x) -> Tensor:
         # ReLU(x)
         relu_part = F.relu(x)
-        
+
         # ELU(x)
         elu_part = F.elu(x, alpha=self.elu_alpha)
-        
+
         # -ELU(-x)
         neg_elu_part = -F.elu(-x, alpha=self.elu_alpha)
-        
+
         # Weighted combination
         result = self.a * relu_part + self.b * elu_part + (1 - self.a - self.b) * neg_elu_part
-        
-        if self.inplace and hasattr(x, 'copy_'):
+
+        if self.inplace and hasattr(x, "copy_"):
             x.copy_(result)
             return x
         else:
@@ -3088,14 +3044,15 @@ class PE2Id(BaseActivation):
     """
 
     def __init__(
-        self, 
-        a: float = 0.5, 
+        self,
+        a: float = 0.5,
         elu_alpha: float = 1.0,
-        learnable: bool = False, 
-        inplace: bool = False
-    , **kwargs):
+        learnable: bool = False,
+        inplace: bool = False,
+        **kwargs,
+    ):
         super().__init__(**kwargs)
-        
+
         self.elu_alpha = elu_alpha
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
@@ -3105,14 +3062,14 @@ class PE2Id(BaseActivation):
     def _forward(self, x) -> Tensor:
         # Identity part
         id_part = x
-        
+
         # ELU(x) - ELU(-x)
         elu_diff = F.elu(x, alpha=self.elu_alpha) - F.elu(-x, alpha=self.elu_alpha)
-        
+
         # Weighted combination
         result = self.a * id_part + (1 - self.a) * elu_diff
-        
-        if self.inplace and hasattr(x, 'copy_'):
+
+        if self.inplace and hasattr(x, "copy_"):
             x.copy_(result)
             return x
         else:
@@ -3157,14 +3114,9 @@ class SoftExponential(BaseActivation):
                Linear Units. arXiv:1704.07483.
     """
 
-    def __init__(
-        self, 
-        a: float = 0.0, 
-        learnable: bool = False, 
-        inplace: bool = False
-    , **kwargs):
+    def __init__(self, a: float = 0.0, learnable: bool = False, inplace: bool = False, **kwargs):
         super().__init__(**kwargs)
-        
+
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
         else:
@@ -3172,18 +3124,18 @@ class SoftExponential(BaseActivation):
 
     def _forward(self, x) -> Tensor:
         a = self.a.item()  # Get scalar value for conditional logic
-        
+
         if abs(a) < 1e-6:  # a ≈ 0
             return x
-        
+
         if a > 0:
             result = (torch.exp(a * x) - 1) / a + a
         else:  # a < 0
             # Ensure the argument to log is positive
             safe_x = torch.clamp(1 - a * (x + a), min=1e-6)
             result = torch.log(safe_x) / -a
-        
-        if self.inplace and hasattr(x, 'copy_'):
+
+        if self.inplace and hasattr(x, "copy_"):
             x.copy_(result)
             return x
         else:
@@ -3220,14 +3172,9 @@ class CELU(BaseActivation):
         >>> m(x)
     """
 
-    def __init__(
-        self, 
-        a: float = 1.0, 
-        learnable: bool = False, 
-        inplace: bool = False
-    , **kwargs):
+    def __init__(self, a: float = 1.0, learnable: bool = False, inplace: bool = False, **kwargs):
         super().__init__(**kwargs)
-        
+
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
         else:
@@ -3274,14 +3221,9 @@ class ErfReLU(BaseActivation):
         >>> m(x)
     """
 
-    def __init__(
-        self, 
-        a: float = 1.0, 
-        learnable: bool = False, 
-        inplace: bool = False
-    , **kwargs):
+    def __init__(self, a: float = 1.0, learnable: bool = False, inplace: bool = False, **kwargs):
         super().__init__(**kwargs)
-        
+
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
         else:
@@ -3328,14 +3270,15 @@ class PSELU(BaseActivation):
     """
 
     def __init__(
-        self, 
-        a: float = 1.0, 
-        b: float = 1.0, 
-        learnable: bool = False, 
-        inplace: bool = False
-    , **kwargs):
+        self,
+        a: float = 1.0,
+        b: float = 1.0,
+        learnable: bool = False,
+        inplace: bool = False,
+        **kwargs,
+    ):
         super().__init__(**kwargs)
-        
+
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
             self.b = nn.Parameter(Tensor([b]))
@@ -3388,15 +3331,16 @@ class LPSELU(BaseActivation):
     """
 
     def __init__(
-        self, 
-        a: float = 1.0, 
-        b: float = 1.0, 
-        c: float = 0.01, 
-        learnable: bool = False, 
-        inplace: bool = False
-    , **kwargs):
+        self,
+        a: float = 1.0,
+        b: float = 1.0,
+        c: float = 0.01,
+        learnable: bool = False,
+        inplace: bool = False,
+        **kwargs,
+    ):
         super().__init__(**kwargs)
-        
+
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
             self.b = nn.Parameter(Tensor([b]))
@@ -3452,16 +3396,17 @@ class LPSELU_RP(BaseActivation):
     """
 
     def __init__(
-        self, 
-        a: float = 1.0, 
-        b: float = 1.0, 
-        c: float = 0.01, 
+        self,
+        a: float = 1.0,
+        b: float = 1.0,
+        c: float = 0.01,
         m: float = 0.0,
-        learnable: bool = False, 
-        inplace: bool = False
-    , **kwargs):
+        learnable: bool = False,
+        inplace: bool = False,
+        **kwargs,
+    ):
         super().__init__(**kwargs)
-        
+
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
             self.b = nn.Parameter(Tensor([b]))
@@ -3517,14 +3462,15 @@ class ShELU(BaseActivation):
     """
 
     def __init__(
-        self, 
-        a: float = 1.0, 
-        b: float = 0.0, 
-        learnable: bool = False, 
-        inplace: bool = False
-    , **kwargs):
+        self,
+        a: float = 1.0,
+        b: float = 0.0,
+        learnable: bool = False,
+        inplace: bool = False,
+        **kwargs,
+    ):
         super().__init__(**kwargs)
-        
+
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
             self.b = nn.Parameter(Tensor([b]))
@@ -3534,7 +3480,7 @@ class ShELU(BaseActivation):
 
     def _forward(self, x) -> Tensor:
         shifted_x = x + self.b
-        
+
         if self.inplace:
             mask = shifted_x < 0
             x[~mask] = shifted_x[~mask]
@@ -3576,14 +3522,15 @@ class SvELU(BaseActivation):
     """
 
     def __init__(
-        self, 
-        a: float = 1.0, 
-        b: float = 0.0, 
-        learnable: bool = False, 
-        inplace: bool = False
-    , **kwargs):
+        self,
+        a: float = 1.0,
+        b: float = 0.0,
+        learnable: bool = False,
+        inplace: bool = False,
+        **kwargs,
+    ):
         super().__init__(**kwargs)
-        
+
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
             self.b = nn.Parameter(Tensor([b]))
@@ -3636,15 +3583,16 @@ class PShELU(BaseActivation):
     """
 
     def __init__(
-        self, 
-        a: float = 1.0, 
-        b: float = 1.0, 
-        c: float = 0.0, 
-        learnable: bool = False, 
-        inplace: bool = False
-    , **kwargs):
+        self,
+        a: float = 1.0,
+        b: float = 1.0,
+        c: float = 0.0,
+        learnable: bool = False,
+        inplace: bool = False,
+        **kwargs,
+    ):
         super().__init__(**kwargs)
-        
+
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
             self.b = nn.Parameter(Tensor([b]))
@@ -3656,7 +3604,7 @@ class PShELU(BaseActivation):
 
     def _forward(self, x) -> Tensor:
         shifted_x = x + self.c
-        
+
         if self.inplace:
             mask = shifted_x < 0
             x[~mask] = (self.a / self.b) * shifted_x[~mask]
@@ -3701,15 +3649,16 @@ class PSvELU(BaseActivation):
     """
 
     def __init__(
-        self, 
-        a: float = 1.0, 
-        b: float = 1.0, 
-        c: float = 0.0, 
-        learnable: bool = False, 
-        inplace: bool = False
-    , **kwargs):
+        self,
+        a: float = 1.0,
+        b: float = 1.0,
+        c: float = 0.0,
+        learnable: bool = False,
+        inplace: bool = False,
+        **kwargs,
+    ):
         super().__init__(**kwargs)
-        
+
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
             self.b = nn.Parameter(Tensor([b]))
@@ -3766,15 +3715,16 @@ class TSwish(BaseActivation):
     """
 
     def __init__(
-        self, 
-        a: float = 1.0, 
-        b: float = 1.0, 
-        c: float = 0.0, 
-        learnable: bool = False, 
-        inplace: bool = False
-    , **kwargs):
+        self,
+        a: float = 1.0,
+        b: float = 1.0,
+        c: float = 0.0,
+        learnable: bool = False,
+        inplace: bool = False,
+        **kwargs,
+    ):
         super().__init__(**kwargs)
-        
+
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
             self.b = nn.Parameter(Tensor([b]))
@@ -3845,8 +3795,9 @@ class RePSU(BaseActivation):
         d: float = 1.0,
         e: float = 1.0,
         learnable: bool = False,
-        inplace: bool = False
-    , **kwargs):
+        inplace: bool = False,
+        **kwargs,
+    ):
         super().__init__(**kwargs)
 
         if learnable:
@@ -3873,7 +3824,7 @@ class RePSU(BaseActivation):
         repsku = torch.where(x >= self.b, self._repsku_val(x), torch.zeros_like(x))
         repshu = torch.where(x >= self.b, 2 * x - repsku, torch.zeros_like(x))
         result = self.a * repsku + (1 - self.a) * repshu
-        if self.inplace and hasattr(x, 'copy_'):
+        if self.inplace and hasattr(x, "copy_"):
             x.copy_(result)
             return x
         return result
@@ -3911,14 +3862,15 @@ class PDELU(BaseActivation):
     """
 
     def __init__(
-        self, 
-        a: float = 1.0, 
-        b: float = 0.9, 
-        learnable: bool = False, 
-        inplace: bool = False
-    , **kwargs):
+        self,
+        a: float = 1.0,
+        b: float = 0.9,
+        learnable: bool = False,
+        inplace: bool = False,
+        **kwargs,
+    ):
         super().__init__(**kwargs)
-        
+
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
             # Constrain b to avoid division by zero
@@ -3982,15 +3934,16 @@ class EELU(BaseActivation):
     """
 
     def __init__(
-        self, 
-        a: float = 1.0, 
-        b: float = 1.0, 
-        epsilon: float = 0.5, 
-        learnable: bool = False, 
-        inplace: bool = False
-    , **kwargs):
+        self,
+        a: float = 1.0,
+        b: float = 1.0,
+        epsilon: float = 0.5,
+        learnable: bool = False,
+        inplace: bool = False,
+        **kwargs,
+    ):
         super().__init__(**kwargs)
-        
+
         self.epsilon = epsilon
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
@@ -4002,12 +3955,12 @@ class EELU(BaseActivation):
     def _forward(self, x) -> Tensor:
         # Sample sigma from uniform distribution
         sigma = torch.rand(1, device=x.device) * self.epsilon
-        
+
         # Sample k from truncated normal distribution
         # We'll approximate truncated normal by sampling and clamping
         k = torch.randn_like(x) * sigma + 1.0
         k = torch.clamp(k, min=0.0)  # Truncate at 0
-        
+
         if self.inplace:
             mask = x < 0
             x[~mask] = k[~mask] * x[~mask]
@@ -4050,14 +4003,15 @@ class PFPLUS(BaseActivation):
     """
 
     def __init__(
-        self, 
-        a: float = 1.0, 
-        b: float = 0.1, 
-        learnable: bool = False, 
-        inplace: bool = False
-    , **kwargs):
+        self,
+        a: float = 1.0,
+        b: float = 0.1,
+        learnable: bool = False,
+        inplace: bool = False,
+        **kwargs,
+    ):
         super().__init__(**kwargs)
-        
+
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
             self.b = nn.Parameter(Tensor([b]))
@@ -4068,17 +4022,17 @@ class PFPLUS(BaseActivation):
     def _forward(self, x) -> Tensor:
         # Calculate H(x) - 1
         h_minus_1 = torch.where(x >= 0, torch.zeros_like(x), torch.ones_like(x) * (-1))
-        
+
         # Calculate (1 - b*x)^(H(x) - 1)
         base = 1 - self.b * x
         # Avoid negative bases for fractional powers
         safe_base = torch.where(base > 0, base, torch.ones_like(base) * 1e-6)
         power_term = torch.pow(safe_base, h_minus_1)
-        
+
         # Calculate final result
         result = self.a * x * power_term
-        
-        if self.inplace and hasattr(x, 'copy_'):
+
+        if self.inplace and hasattr(x, "copy_"):
             x.copy_(result)
             return x
         else:
@@ -4114,14 +4068,15 @@ class PVLU(BaseActivation):
     """
 
     def __init__(
-        self, 
-        a: float = 0.1, 
-        b: float = 1.0, 
-        learnable: bool = False, 
-        inplace: bool = False
-    , **kwargs):
+        self,
+        a: float = 0.1,
+        b: float = 1.0,
+        learnable: bool = False,
+        inplace: bool = False,
+        **kwargs,
+    ):
         super().__init__(**kwargs)
-        
+
         if learnable:
             self.a = nn.Parameter(Tensor([a]))
             self.b = nn.Parameter(Tensor([b]))
@@ -4132,8 +4087,8 @@ class PVLU(BaseActivation):
     def _forward(self, x) -> Tensor:
         relu_part = F.relu(x)
         sin_part = self.a * torch.sin(self.b * x)
-        
-        if self.inplace and hasattr(x, 'copy_'):
+
+        if self.inplace and hasattr(x, "copy_"):
             x.copy_(relu_part + sin_part)
             return x
         else:

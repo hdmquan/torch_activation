@@ -1,12 +1,13 @@
+import math
+
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from torch_activation.base import BaseActivation
-import math
-
 from torch import Tensor
-from torch_activation.utils import sech
+
 from torch_activation import register_activation
+from torch_activation.base import BaseActivation
+from torch_activation.utils import sech
 
 
 # TODO: There are mentioned of WiG - a gated unit. Investigate it later..
@@ -986,9 +987,7 @@ class Smish(BaseActivation):
         >>> output = m(x)
     """
 
-    def __init__(
-        self, a: float = 1.0, b: float = 1.0, learnable: bool = False, **kwargs
-    ):
+    def __init__(self, a: float = 1.0, b: float = 1.0, learnable: bool = False, **kwargs):
         super().__init__(**kwargs)
         self.a = nn.Parameter(torch.tensor(float(a)))
         self.b = nn.Parameter(torch.tensor(float(b)))

@@ -1,10 +1,11 @@
-import torch
-import torch.nn as nn
-from torch import Tensor
 import math
+
+import torch
+from torch import Tensor
 
 from torch_activation import register_activation
 from torch_activation.base import BaseActivation
+
 
 @register_activation
 class Sine(BaseActivation):
@@ -15,7 +16,7 @@ class Sine(BaseActivation):
 
     Args:
         omega (float, optional): frequency of the sine wave. Default: ``math.pi``
-        inplace (bool, optional): parameter kept for API consistency, but sine operation 
+        inplace (bool, optional): parameter kept for API consistency, but sine operation
                                  cannot be done in-place. Default: ``False``
 
     Shape:
@@ -26,7 +27,7 @@ class Sine(BaseActivation):
     def __init__(self, omega: float = math.pi, **kwargs):
         super().__init__(**kwargs)
         self.omega = omega
-          # Unused
+        # Unused
 
     def _forward(self, z) -> Tensor:
         return torch.sin(self.omega * z)
@@ -44,7 +45,7 @@ class CombHSine(BaseActivation):
 
     Args:
         a (float, optional): hyperparameter controlling the scaling. Default: ``1.0``
-        inplace (bool, optional): parameter kept for API consistency, but operation 
+        inplace (bool, optional): parameter kept for API consistency, but operation
                                  cannot be done in-place. Default: ``False``
 
     Shape:
@@ -55,7 +56,7 @@ class CombHSine(BaseActivation):
     def __init__(self, a: float = 1.0, **kwargs):
         super().__init__(**kwargs)
         self.a = a
-          # Unused
+        # Unused
 
     def _forward(self, z) -> Tensor:
         az = self.a * z
@@ -70,7 +71,7 @@ class ModifiedArcsinh(BaseActivation):
     :math:`\text{ModifiedArcsinh}(z) = \frac{1}{12} \sinh^{-1}(z) |z|`
 
     Args:
-        inplace (bool, optional): parameter kept for API consistency, but operation 
+        inplace (bool, optional): parameter kept for API consistency, but operation
                                  cannot be done in-place. Default: ``False``
 
     Shape:
@@ -80,7 +81,7 @@ class ModifiedArcsinh(BaseActivation):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-          # Unused
+        # Unused
 
     def _forward(self, z) -> Tensor:
         return (1.0 / 12.0) * torch.asinh(z) * torch.abs(z)
@@ -91,14 +92,14 @@ class HyperSinh(BaseActivation):
     r"""
     Applies the hyper-sinh activation function:
 
-    :math:`\text{HyperSinh}(z) = 
-    \begin{cases} 
+    :math:`\text{HyperSinh}(z) =
+    \begin{cases}
     \frac{\sinh(z)}{3}, & \text{if } z > 0 \\
     \frac{z^3}{4}, & \text{if } z \leq 0
     \end{cases}`
 
     Args:
-        inplace (bool, optional): parameter kept for API consistency, but operation 
+        inplace (bool, optional): parameter kept for API consistency, but operation
                                  cannot be done in-place. Default: ``False``
 
     Shape:
@@ -108,7 +109,7 @@ class HyperSinh(BaseActivation):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-          # Unused
+        # Unused
 
     def _forward(self, z) -> Tensor:
         positive_part = torch.sinh(z.clamp(-88.0, 88.0)) / 3.0
@@ -124,7 +125,7 @@ class Arctid(BaseActivation):
     :math:`\text{Arctid}(z) = \tan^{-1}(z) \cdot 2^{-z}`
 
     Args:
-        inplace (bool, optional): parameter kept for API consistency, but operation 
+        inplace (bool, optional): parameter kept for API consistency, but operation
                                  cannot be done in-place. Default: ``False``
 
     Shape:
@@ -134,7 +135,7 @@ class Arctid(BaseActivation):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-          # Unused
+        # Unused
 
     def _forward(self, z) -> Tensor:
         return torch.atan(z) * torch.pow(2.0, -z.clamp(-126, 127))
@@ -148,7 +149,7 @@ class Cosine(BaseActivation):
     :math:`\text{Cosine}(z) = 1 - \cos(z)`
 
     Args:
-        inplace (bool, optional): parameter kept for API consistency, but operation 
+        inplace (bool, optional): parameter kept for API consistency, but operation
                                  cannot be done in-place. Default: ``False``
 
     Shape:
@@ -158,7 +159,7 @@ class Cosine(BaseActivation):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-          # Unused
+        # Unused
 
     def _forward(self, z) -> Tensor:
         return 1.0 - torch.cos(z)
@@ -172,7 +173,7 @@ class Cosid(BaseActivation):
     :math:`\text{Cosid}(z) = \cos(z) - z`
 
     Args:
-        inplace (bool, optional): parameter kept for API consistency, but operation 
+        inplace (bool, optional): parameter kept for API consistency, but operation
                                  cannot be done in-place. Default: ``False``
 
     Shape:
@@ -182,7 +183,7 @@ class Cosid(BaseActivation):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-          # Unused
+        # Unused
 
     def _forward(self, z) -> Tensor:
         return torch.cos(z) - z
@@ -199,7 +200,7 @@ class Sinp(BaseActivation):
 
     Args:
         a (float, optional): scaling parameter for the linear term. Default: ``1.0``
-        inplace (bool, optional): parameter kept for API consistency, but operation 
+        inplace (bool, optional): parameter kept for API consistency, but operation
                                  cannot be done in-place. Default: ``False``
 
     Shape:
@@ -210,7 +211,7 @@ class Sinp(BaseActivation):
     def __init__(self, a: float = 1.0, **kwargs):
         super().__init__(**kwargs)
         self.a = a
-          # Unused
+        # Unused
 
     def _forward(self, z) -> Tensor:
         return torch.sin(z) - self.a * z
@@ -224,7 +225,7 @@ class GCU(BaseActivation):
     :math:`\text{GCU}(z) = z \cdot \cos(z)`
 
     Args:
-        inplace (bool, optional): parameter kept for API consistency, but operation 
+        inplace (bool, optional): parameter kept for API consistency, but operation
                                  cannot be done in-place. Default: ``False``
 
     Shape:
@@ -234,7 +235,7 @@ class GCU(BaseActivation):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-          # Unused
+        # Unused
 
     def _forward(self, z) -> Tensor:
         return z * torch.cos(z)
@@ -248,7 +249,7 @@ class ASU(BaseActivation):
     :math:`\text{ASU}(z) = z \cdot \sin(z)`
 
     Args:
-        inplace (bool, optional): parameter kept for API consistency, but operation 
+        inplace (bool, optional): parameter kept for API consistency, but operation
                                  cannot be done in-place. Default: ``False``
 
     Shape:
@@ -258,7 +259,7 @@ class ASU(BaseActivation):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-          # Unused
+        # Unused
 
     def _forward(self, z) -> Tensor:
         return z * torch.sin(z)
@@ -269,14 +270,14 @@ class Sinc(BaseActivation):
     r"""
     Applies the Sinc activation function:
 
-    :math:`\text{Sinc}(z) = 
-    \begin{cases} 
+    :math:`\text{Sinc}(z) =
+    \begin{cases}
     \frac{\sin(\pi z)}{\pi z}, & \text{if } z \neq 0 \\
     1, & \text{if } z = 0
     \end{cases}`
 
     Args:
-        inplace (bool, optional): parameter kept for API consistency, but operation 
+        inplace (bool, optional): parameter kept for API consistency, but operation
                                  cannot be done in-place. Default: ``False``
 
     Shape:
@@ -286,7 +287,7 @@ class Sinc(BaseActivation):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-          # Unused
+        # Unused
 
     def _forward(self, z) -> Tensor:
         # Handle the case where z = 0 to avoid division by zero
@@ -301,7 +302,7 @@ class SSU(BaseActivation):
     :math:`\text{SSU}(z) = \pi \cdot \text{sinc}(z - \pi)`
 
     Args:
-        inplace (bool, optional): parameter kept for API consistency, but operation 
+        inplace (bool, optional): parameter kept for API consistency, but operation
                                  cannot be done in-place. Default: ``False``
 
     Shape:
@@ -311,15 +312,15 @@ class SSU(BaseActivation):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-          # Unused
+        # Unused
 
     def _forward(self, z) -> Tensor:
         shifted_z = z - math.pi
         # Handle the case where shifted_z = 0 to avoid division by zero
         return math.pi * torch.where(
-            shifted_z == 0, 
-            torch.ones_like(z), 
-            torch.sin(math.pi * shifted_z) / (math.pi * shifted_z)
+            shifted_z == 0,
+            torch.ones_like(z),
+            torch.sin(math.pi * shifted_z) / (math.pi * shifted_z),
         )
 
 
@@ -331,7 +332,7 @@ class DSU(BaseActivation):
     :math:`\text{DSU}(z) = \frac{\pi}{2} \cdot (\text{sinc}(z - \pi) - \text{sinc}(z + \pi))`
 
     Args:
-        inplace (bool, optional): parameter kept for API consistency, but operation 
+        inplace (bool, optional): parameter kept for API consistency, but operation
                                  cannot be done in-place. Default: ``False``
 
     Shape:
@@ -341,25 +342,25 @@ class DSU(BaseActivation):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-          # Unused
+        # Unused
 
     def _forward(self, z) -> Tensor:
         left_shifted = z - math.pi
         right_shifted = z + math.pi
-        
+
         # Handle the case where shifted values are 0 to avoid division by zero
         left_sinc = torch.where(
-            left_shifted == 0, 
-            torch.ones_like(z), 
-            torch.sin(math.pi * left_shifted) / (math.pi * left_shifted)
+            left_shifted == 0,
+            torch.ones_like(z),
+            torch.sin(math.pi * left_shifted) / (math.pi * left_shifted),
         )
-        
+
         right_sinc = torch.where(
-            right_shifted == 0, 
-            torch.ones_like(z), 
-            torch.sin(math.pi * right_shifted) / (math.pi * right_shifted)
+            right_shifted == 0,
+            torch.ones_like(z),
+            torch.sin(math.pi * right_shifted) / (math.pi * right_shifted),
         )
-        
+
         return (math.pi / 2.0) * (left_sinc - right_sinc)
 
 
@@ -368,14 +369,14 @@ class HcLSH(BaseActivation):
     r"""
     Applies the Hyperbolic Cosine Linearized Squashing Function (HcLSH) activation function:
 
-    :math:`\text{HcLSH}(z) = 
-    \begin{cases} 
+    :math:`\text{HcLSH}(z) =
+    \begin{cases}
     \ln(\cosh(z)) + \frac{z \cdot \cosh(z)}{2}, & \text{if } z \geq 0 \\
     \ln(\cosh(z)) + z, & \text{if } z < 0
     \end{cases}`
 
     Args:
-        inplace (bool, optional): parameter kept for API consistency, but operation 
+        inplace (bool, optional): parameter kept for API consistency, but operation
                                  cannot be done in-place. Default: ``False``
 
     Shape:
@@ -385,7 +386,7 @@ class HcLSH(BaseActivation):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-          # Unused
+        # Unused
 
     def _forward(self, z) -> Tensor:
         z_clamped = z.clamp(-84.0, 84.0)

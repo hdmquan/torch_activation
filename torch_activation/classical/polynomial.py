@@ -16,7 +16,7 @@ class NCU(BaseActivation):
     A simple activation function based on a third-degree polynomial.
 
     Args:
-        inplace (bool, optional): parameter kept for API consistency, but NCU operation 
+        inplace (bool, optional): parameter kept for API consistency, but NCU operation
                                  cannot be done in-place. Default: ``False``
 
     Shape:
@@ -26,7 +26,7 @@ class NCU(BaseActivation):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-          # Unused
+        # Unused
 
     def _forward(self, z) -> Tensor:
         return z - z**3
@@ -43,7 +43,7 @@ class Triple(BaseActivation):
 
     Args:
         a (float, optional): Parameter for the cubic term. Default: ``1.0``
-        inplace (bool, optional): parameter kept for API consistency, but triple operation 
+        inplace (bool, optional): parameter kept for API consistency, but triple operation
                                  cannot be done in-place. Default: ``False``
 
     Shape:
@@ -54,7 +54,7 @@ class Triple(BaseActivation):
     def __init__(self, a: float = 1.0, **kwargs):
         super().__init__(**kwargs)
         self.a = a
-          # Unused
+        # Unused
 
     def _forward(self, z) -> Tensor:
         return self.a * z**3
@@ -70,7 +70,7 @@ class SQU(BaseActivation):
     A simple non-monotonic activation function.
 
     Args:
-        inplace (bool, optional): parameter kept for API consistency, but SQU operation 
+        inplace (bool, optional): parameter kept for API consistency, but SQU operation
                                  cannot be done in-place. Default: ``False``
 
     Shape:
@@ -80,7 +80,7 @@ class SQU(BaseActivation):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-          # Unused
+        # Unused
 
     def _forward(self, z) -> Tensor:
         return z**2 + z

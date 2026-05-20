@@ -1,8 +1,9 @@
+import math
+
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from torch import Tensor
-import math
 
 from torch_activation import register_activation
 from torch_activation.base import BaseActivation
@@ -133,7 +134,9 @@ class SAAAF(BaseActivation):
         self.weights = nn.Parameter(torch.linspace(x_min, x_max, n_segments + 1))
 
     def _forward(self, x) -> Tensor:
-        knots = torch.linspace(self.x_min, self.x_max, self.n_segments + 1, device=x.device, dtype=x.dtype)
+        knots = torch.linspace(
+            self.x_min, self.x_max, self.n_segments + 1, device=x.device, dtype=x.dtype
+        )
         delta = knots[1] - knots[0]
         result = torch.zeros_like(x)
         for k in range(self.n_segments + 1):
@@ -323,7 +326,7 @@ class SPLASH(BaseActivation):
         super().__init__(**kwargs)
         self.a = nn.Parameter(torch.ones(n_hinges))
         c = torch.linspace(0.0, hinge_range, n_hinges)
-        self.register_buffer('c', c)
+        self.register_buffer("c", c)
 
     def _forward(self, x) -> Tensor:
         out = torch.zeros_like(x)
@@ -490,7 +493,7 @@ class MWF(BaseActivation):
 
     def _forward(self, x) -> Tensor:
         b = self.b.abs().clamp(min=1e-6)
-        return self.a * x * torch.exp(-b * x ** 2) + self.c * torch.tanh(x)
+        return self.a * x * torch.exp(-b * x**2) + self.c * torch.tanh(x)
 
 
 @register_activation
@@ -687,7 +690,7 @@ class LuTU(BaseActivation):
     def __init__(self, n_anchors: int = 16, x_min: float = -4.0, x_max: float = 4.0, **kwargs):
         super().__init__(**kwargs)
         anchors = torch.linspace(x_min, x_max, n_anchors)
-        self.register_buffer('anchors', anchors)
+        self.register_buffer("anchors", anchors)
         self.values = nn.Parameter(torch.linspace(x_min, x_max, n_anchors))
 
     def _forward(self, x) -> Tensor:
@@ -726,7 +729,9 @@ class Maxout(BaseActivation):
         self.biases = nn.Parameter(torch.zeros(n_pieces))
 
     def _forward(self, x) -> Tensor:
-        candidates = torch.stack([self.slopes[k] * x + self.biases[k] for k in range(self.slopes.shape[0])], dim=0)
+        candidates = torch.stack(
+            [self.slopes[k] * x + self.biases[k] for k in range(self.slopes.shape[0])], dim=0
+        )
         return candidates.max(dim=0).values
 
 
@@ -761,7 +766,7 @@ class PAU(BaseActivation):
     def _forward(self, x) -> Tensor:
         num = torch.zeros_like(x)
         for i, ai in enumerate(self.a):
-            num = num + ai * x ** i
+            num = num + ai * x**i
         denom = torch.ones_like(x)
         for j, bj in enumerate(self.b):
             denom = denom + bj.abs() * x ** (2 * (j + 1))
@@ -799,7 +804,7 @@ class RPAU(BaseActivation):
     def _forward(self, x) -> Tensor:
         num = torch.zeros_like(x)
         for i, ai in enumerate(self.a):
-            num = num + ai * x ** i
+            num = num + ai * x**i
         ax = x.abs()
         denom = torch.ones_like(x)
         for j, bj in enumerate(self.b):
@@ -838,7 +843,7 @@ class ERA(BaseActivation):
     def _forward(self, x) -> Tensor:
         num = torch.zeros_like(x)
         for i, ai in enumerate(self.a):
-            num = num + ai * x ** i
+            num = num + ai * x**i
         denom = torch.zeros_like(x)
         for j, bj in enumerate(self.b):
             denom = denom + bj.abs() * x.abs() ** j
@@ -953,7 +958,7 @@ class TruG(BaseActivation):
 
     def _forward(self, x) -> Tensor:
         sigma2 = self.log_sigma.exp().pow(2).clamp(min=1e-6)
-        return torch.exp(-x ** 2 / (2.0 * sigma2))
+        return torch.exp(-(x**2) / (2.0 * sigma2))
 
 
 @register_activation
@@ -1194,8 +1199,7 @@ class FAB(BaseActivation):
 
     def _forward(self, x) -> Tensor:
         w = torch.softmax(self.w, dim=0)
-        return (w[0] * F.relu(x) + w[1] * torch.tanh(x)
-                + w[2] * torch.sigmoid(x) + w[3] * x)
+        return w[0] * F.relu(x) + w[1] * torch.tanh(x) + w[2] * torch.sigmoid(x) + w[3] * x
 
 
 @register_activation
@@ -1226,12 +1230,12 @@ class KAF(BaseActivation):
         super().__init__(**kwargs)
         self.gamma = gamma
         d = torch.linspace(-bound, bound, D)
-        self.register_buffer('d', d)
+        self.register_buffer("d", d)
         self.a = nn.Parameter(torch.zeros(D))
 
     def _forward(self, x) -> Tensor:
         diff = x.unsqueeze(-1) - self.d
-        k = torch.exp(-self.gamma * diff ** 2)
+        k = torch.exp(-self.gamma * diff**2)
         return (k * self.a).sum(-1)
 
 
@@ -1366,8 +1370,7 @@ class PLAF(BaseActivation):
         d = self.d
         offset = 1 - 1 / d
         mid = (1 / d) * x.abs() ** d * x.sign()
-        return torch.where(x >= 1, x - offset,
-               torch.where(x < -1, x + offset, mid))
+        return torch.where(x >= 1, x - offset, torch.where(x < -1, x + offset, mid))
 
 
 @register_activation

@@ -1,6 +1,8 @@
 import math
+
 import pytest
 import torch
+
 import torch_activation
 
 NONSMOOTH_ACTIVATIONS: list[str] = ["AdaLU"]

@@ -5,6 +5,7 @@ from torch import Tensor
 from torch_activation import register_activation
 from torch_activation.base import BaseActivation
 
+
 @register_activation
 class SQRT(BaseActivation):
     r"""
@@ -25,7 +26,6 @@ class SQRT(BaseActivation):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        
 
     def _forward(self, z) -> Tensor:
         pos = z.clamp(min=0)
@@ -60,7 +60,6 @@ class SSAF(BaseActivation):
         super().__init__(**kwargs)
         self.a = a
         self.factor = 2 * a
-        
 
     def _forward(self, z) -> Tensor:
         pos = (self.factor * z).clamp(min=0)

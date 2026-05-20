@@ -1,6 +1,8 @@
 import os
 import sys
+
 from torch_activation import __version__
+
 sys.path.insert(0, os.path.abspath("../"))
 
 # Configuration file for the Sphinx documentation builder.

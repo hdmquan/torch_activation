@@ -1,16 +1,18 @@
 # Someone make this a real test plz :((
 
-import torch
-import torch_activation
-import inspect
 import importlib
+import inspect
 import pkgutil
+
+import torch
+from loguru import logger
 from utils import (
-    check_forward_pass,
     check_backward_pass,
+    check_forward_pass,
 )
 
-from loguru import logger
+import torch_activation
+
 
 def test_activations(dev="cpu"):
     """Test all registered activation functions."""
@@ -18,7 +20,7 @@ def test_activations(dev="cpu"):
     failed_tests = 0
     tested_count = 0
     skipped_count = 0
-    
+
     acts = torch_activation.get_all_activations()
 
     for act_name in acts:
@@ -54,26 +56,28 @@ def find_unregistered_activations():
     """Find activation classes that aren't registered in the registry."""
     registered_classes = {info["class"] for info in torch_activation._ACTIVATIONS.values()}
     unregistered_classes = []
-    
+
     # Recursively import all submodules in torch_activation
     package = torch_activation
-    for _, name, is_pkg in pkgutil.walk_packages(package.__path__, package.__name__ + '.'):
+    for _, name, is_pkg in pkgutil.walk_packages(package.__path__, package.__name__ + "."):
         try:
             module = importlib.import_module(name)
-            
+
             # Look for classes that might be activation functions
             for name, obj in inspect.getmembers(module):
                 # Check if it's a class and not imported from elsewhere
-                if (inspect.isclass(obj) and 
-                    obj.__module__ == module.__name__ and
-                    obj not in registered_classes):
-                    
+                if (
+                    inspect.isclass(obj)
+                    and obj.__module__ == module.__name__
+                    and obj not in registered_classes
+                ):
+
                     # Check if it has forward method (potential activation function)
-                    if hasattr(obj, 'forward') and callable(getattr(obj, 'forward')):
+                    if hasattr(obj, "forward") and callable(getattr(obj, "forward")):
                         unregistered_classes.append((obj.__name__, obj.__module__))
         except ImportError as e:
             logger.error(f"Error importing module {name}: {e}")
-    
+
     return unregistered_classes
 
 
@@ -81,7 +85,7 @@ def test_all_acts():
     dev = "cpu"
     passed, failed, tested, skipped = test_activations(dev)
     total_activations = len(torch_activation.get_all_activations())
-    
+
     # Find unregistered activation functions
     unregistered = find_unregistered_activations()
 
@@ -91,14 +95,16 @@ def test_all_acts():
     logger.info(
         f"Activation functions: {tested} tested, {skipped} skipped, {total_activations} total."
     )
-    
+
     if unregistered:
-        logger.warning(f"Found {len(unregistered)} potential activation classes that aren't registered:")
+        logger.warning(
+            f"Found {len(unregistered)} potential activation classes that aren't registered:"
+        )
         for class_name, module_name in unregistered:
             logger.warning(f"  {class_name} in {module_name}")
 
     assert failed == 0, "Failed tests"
-        
+
 
 if __name__ == "__main__":
     test_all_acts()

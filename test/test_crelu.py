@@ -1,13 +1,16 @@
 import pytest
 import torch
+
 import torch_activation
 
 NONSMOOTH_ACTIVATIONS: list[str] = ["CReLU"]
 ACTIVATION_NAME = "CReLU"
 
+
 def _get_module(**kwargs):
     cls = getattr(torch_activation, ACTIVATION_NAME)
     return cls(**kwargs)
+
 
 class TestShape:
     def test_shape_4d(self):
@@ -21,6 +24,7 @@ class TestShape:
         x = torch.randn(16)
         out = m(x)
         assert out.shape[0] == 32
+
 
 class TestNumerical:
     def test_positive_inputs(self):
@@ -37,6 +41,7 @@ class TestNumerical:
         assert torch.allclose(out[:4], torch.zeros(4))
         assert torch.allclose(out[4:], torch.ones(4))
 
+
 class TestGradients:
     def test_gradcheck(self):
         if ACTIVATION_NAME in NONSMOOTH_ACTIVATIONS:
@@ -50,6 +55,7 @@ class TestGradients:
             pytest.skip("smooth activation — gradcheck used instead")
         pytest.skip("CReLU output shape doubles; finite-diff not directly comparable")
 
+
 class TestEdgeCases:
     def test_no_nan_inf(self):
         m = _get_module()
@@ -58,6 +64,7 @@ class TestEdgeCases:
             out = m(x)
             assert not torch.isnan(out).any()
             assert not torch.isinf(out).any()
+
 
 class TestInplace:
     def test_inplace_matches_normal(self):

@@ -1,20 +1,26 @@
 import math
+
 import pytest
 import torch
+
 import torch_activation
 
 ACTIVATION_NAME = "PSigmoid"
 
+
 def scalar_ref(x: float) -> float:
     return 1.0 * (1 / (1 + math.exp(-1.0 * x)))
+
 
 def _get_module(**kwargs):
     cls = getattr(torch_activation, ACTIVATION_NAME)
     return cls(**kwargs)
 
+
 def _ref_tensor(x: torch.Tensor) -> torch.Tensor:
     flat = x.reshape(-1).tolist()
     return torch.tensor([scalar_ref(v) for v in flat], dtype=x.dtype).reshape(x.shape)
+
 
 class TestShape:
     def test_shape_4d(self):
@@ -27,13 +33,16 @@ class TestShape:
         x = torch.randn(16)
         assert m(x).shape == x.shape
 
+
 class TestNumerical:
     def test_allclose_ref(self):
         m = _get_module()
         x = torch.linspace(-3, 3, 50)
         expected = _ref_tensor(x)
-        assert torch.allclose(m(x), expected, atol=1e-5), \
-            f"Max error: {(m(x) - expected).abs().max().item()}"
+        assert torch.allclose(
+            m(x), expected, atol=1e-5
+        ), f"Max error: {(m(x) - expected).abs().max().item()}"
+
 
 class TestGradients:
     def test_gradcheck(self):
@@ -44,6 +53,7 @@ class TestGradients:
     def test_finite_diff_nonsmooth(self):
         pytest.skip("smooth activation — gradcheck used instead")
 
+
 class TestEdgeCases:
     def test_no_nan_inf(self):
         m = _get_module()
@@ -52,6 +62,7 @@ class TestEdgeCases:
             out = m(x)
             assert not torch.isnan(out).any()
             assert not torch.isinf(out).any()
+
 
 class TestInplace:
     def test_inplace_matches_normal(self):

@@ -1,13 +1,16 @@
 import pytest
 import torch
+
 import torch_activation
 
 NONSMOOTH_ACTIVATIONS: list[str] = []
 ACTIVATION_NAME = "SQMAX"
 
+
 def _get_module(**kwargs):
     cls = getattr(torch_activation, ACTIVATION_NAME)
     return cls(**kwargs)
+
 
 class TestShape:
     def test_shape_4d(self):
@@ -19,6 +22,7 @@ class TestShape:
         m = _get_module()
         x = torch.randn(16)
         assert m(x).shape == x.shape
+
 
 class TestNumerical:
     def test_sums_to_one(self):
@@ -33,6 +37,7 @@ class TestNumerical:
         out = m(x)
         assert (out >= 0).all()
 
+
 class TestGradients:
     def test_gradcheck(self):
         m = _get_module()
@@ -42,6 +47,7 @@ class TestGradients:
     def test_finite_diff_nonsmooth(self):
         pytest.skip("smooth activation — gradcheck used instead")
 
+
 class TestEdgeCases:
     def test_no_nan_inf(self):
         m = _get_module()
@@ -49,6 +55,7 @@ class TestEdgeCases:
         out = m(x)
         assert not torch.isnan(out).any()
         assert not torch.isinf(out).any()
+
 
 class TestInplace:
     def test_inplace_matches_normal(self):

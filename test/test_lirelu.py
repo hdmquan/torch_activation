@@ -1,11 +1,14 @@
 import math
+
 import pytest
 import torch
+
 import torch_activation
 
 NONSMOOTH_ACTIVATIONS: list[str] = ["LiReLU"]
 
 ACTIVATION_NAME = "LiReLU"
+
 
 def scalar_ref(x: float) -> float:
     a = 0.2
@@ -42,8 +45,9 @@ class TestNumerical:
         m = _get_module()
         x = torch.linspace(-3, 3, 50)
         expected = _ref_tensor(x)
-        assert torch.allclose(m(x), expected, atol=1e-5), \
-            f"Max error: {(m(x) - expected).abs().max().item()}"
+        assert torch.allclose(
+            m(x), expected, atol=1e-5
+        ), f"Max error: {(m(x) - expected).abs().max().item()}"
 
 
 class TestGradients:
@@ -66,8 +70,9 @@ class TestGradients:
         grad_auto = x.grad.clone()
         x_np = x.detach()
         fd = (m((x_np + eps).float()) - m((x_np - eps).float())).double() / (2 * eps)
-        assert torch.allclose(grad_auto, fd, atol=1e-3), \
-            f"Finite-diff grad mismatch: max {(grad_auto - fd).abs().max().item()}"
+        assert torch.allclose(
+            grad_auto, fd, atol=1e-3
+        ), f"Finite-diff grad mismatch: max {(grad_auto - fd).abs().max().item()}"
 
 
 class TestEdgeCases:

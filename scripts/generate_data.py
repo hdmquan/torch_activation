@@ -132,18 +132,20 @@ def main(plots_dir: str = "site/public/plots", out: str = "site/public/data.json
         except Exception as e:
             print(f"Warning: plot failed for {name}: {e}", file=sys.stderr)
 
-        acts.append({
-            "name": display_name,
-            "family": family,
-            "module": mod,
-            "description": _extract_description(doc),
-            "formula": _extract_formula(doc),
-            "params": _get_params(cls),
-            "tags": tags_map.get(name, []),
-            "paper_ref": _extract_paper_ref(doc),
-            "plot": f"/plots/{name}.svg",
-            "similar": [],
-        })
+        acts.append(
+            {
+                "name": display_name,
+                "family": family,
+                "module": mod,
+                "description": _extract_description(doc),
+                "formula": _extract_formula(doc),
+                "params": _get_params(cls),
+                "tags": tags_map.get(name, []),
+                "paper_ref": _extract_paper_ref(doc),
+                "plot": f"/plots/{name}.svg",
+                "similar": [],
+            }
+        )
 
     for act in acts:
         act["similar"] = _similar(act["name"], act["family"], act["tags"], acts)
@@ -161,6 +163,7 @@ def main(plots_dir: str = "site/public/plots", out: str = "site/public/data.json
 
 if __name__ == "__main__":
     import argparse
+
     p = argparse.ArgumentParser()
     p.add_argument("--plots-dir", default="site/public/plots")
     p.add_argument("--out", default="site/public/data.json")

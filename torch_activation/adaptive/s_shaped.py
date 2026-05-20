@@ -1,10 +1,11 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from torch_activation.base import BaseActivation
 from torch import Tensor
 
 from torch_activation import register_activation
+from torch_activation.base import BaseActivation
+
 
 @register_activation
 class SReLU(BaseActivation):
@@ -37,15 +38,21 @@ class SReLU(BaseActivation):
         >>> output = m(x)
     """
 
-    def __init__(self, init_tr: float = 1.0, init_tl: float = -1.0,
-                 init_ar: float = 0.1, init_al: float = 0.1,
-                 fix_init_epochs: int = 0, **kwargs):
+    def __init__(
+        self,
+        init_tr: float = 1.0,
+        init_tl: float = -1.0,
+        init_ar: float = 0.1,
+        init_al: float = 0.1,
+        fix_init_epochs: int = 0,
+        **kwargs,
+    ):
         super().__init__(**kwargs)
         self.tr = nn.Parameter(Tensor([init_tr]))
         self.tl = nn.Parameter(Tensor([init_tl]))
         self.ar = nn.Parameter(Tensor([init_ar]))
         self.al = nn.Parameter(Tensor([init_al]))
-        
+
         # For tracking epochs if parameters should be fixed initially
         self.fix_init_epochs = fix_init_epochs
         self.current_epoch = 0
@@ -65,12 +72,8 @@ class SReLU(BaseActivation):
             tl = self.tl
             ar = self.ar
             al = self.al
-        return torch.where(
-            x >= tr,
-            tr + ar * (x - tr),
-            torch.where(x <= tl, tl + al * (x - tl), x)
-        )
-    
+        return torch.where(x >= tr, tr + ar * (x - tr), torch.where(x <= tl, tl + al * (x - tl), x))
+
     def train(self, mode=True, **kwargs):
         super(SReLU, self).train(mode)
         if mode:

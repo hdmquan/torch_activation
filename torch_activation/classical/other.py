@@ -1,10 +1,12 @@
+import math
+
 import torch
 import torch.nn as nn
 from torch import Tensor
-import math
 
 from torch_activation import register_activation
 from torch_activation.base import BaseActivation
+
 
 @register_activation
 class Binary(BaseActivation):
@@ -30,7 +32,6 @@ class Binary(BaseActivation):
         super().__init__(**kwargs)
         self.a = a
         self.b = b
-        
 
     def _forward(self, z) -> Tensor:
         return _Binary.apply(z, self.a, self.b)
@@ -61,7 +62,7 @@ class BentIdentity(BaseActivation):
     :math:`\text{BentIdentity}(z) = \frac{\sqrt{z^2 + 1} - 1}{2} + z`
 
     Args:
-        inplace (bool, optional): parameter kept for API consistency, but bent identity operation 
+        inplace (bool, optional): parameter kept for API consistency, but bent identity operation
                                  cannot be done in-place. Default: ``False``
 
     Shape:
@@ -71,7 +72,7 @@ class BentIdentity(BaseActivation):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-          # Unused
+        # Unused
 
     def _forward(self, z) -> Tensor:
         return (torch.sqrt(z**2 + 1) - 1) / 2 + z
@@ -85,7 +86,7 @@ class Mishra(BaseActivation):
     :math:`\text{Mishra}(z) = \frac{1}{2} \cdot \frac{z}{1 + |z|} + \frac{z}{2} \cdot \frac{1}{1 + |z|}`
 
     Args:
-        inplace (bool, optional): parameter kept for API consistency, but Mishra operation 
+        inplace (bool, optional): parameter kept for API consistency, but Mishra operation
                                  cannot be done in-place. Default: ``False``
 
     Shape:
@@ -95,7 +96,7 @@ class Mishra(BaseActivation):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-          # Unused
+        # Unused
 
     def _forward(self, z) -> Tensor:
         abs_z = torch.abs(z)
@@ -114,7 +115,7 @@ class SahaBora(BaseActivation):
     Args:
         k (float, optional): non-trainable parameter. Default: ``0.98``
         alpha (float, optional): non-trainable parameter. Default: ``0.5``
-        inplace (bool, optional): parameter kept for API consistency, but SBAF operation 
+        inplace (bool, optional): parameter kept for API consistency, but SBAF operation
                                  cannot be done in-place. Default: ``False``
 
     Shape:
@@ -126,12 +127,12 @@ class SahaBora(BaseActivation):
         super().__init__(**kwargs)
         self.k = k
         self.alpha = alpha
-          # Unused
+        # Unused
 
     def _forward(self, z) -> Tensor:
         # Clamp z to avoid numerical issues when z is close to 0 or 1
-        z_safe = torch.clamp(z, min=1e-7, max=1-1e-7)
-        denominator = 1 + self.k * (z_safe**self.alpha) * ((1 - z_safe)**(1 - self.alpha))
+        z_safe = torch.clamp(z, min=1e-7, max=1 - 1e-7)
+        denominator = 1 + self.k * (z_safe**self.alpha) * ((1 - z_safe) ** (1 - self.alpha))
         return 1 / denominator
 
 
@@ -158,7 +159,7 @@ class Logarithmic(BaseActivation):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-          # Unused
+        # Unused
 
     def _forward(self, z) -> Tensor:
         # Add small epsilon to avoid log(0)
@@ -206,29 +207,29 @@ class SPOCU(BaseActivation):
         assert 0 < b < 1, "Parameter b must be in range (0,1)"
         assert c > 0, "Parameter c must be positive"
         assert d >= 1, "Parameter d must be >= 1"
-        
+
         self.a = a
         self.b = b
         self.c = c
         self.d = d
-          # Unused
-        
+        # Unused
+
         # Pre-compute h(b) for efficiency
         self.h_b = self._r(b) if 0 <= b < d else self._r(d)
 
     def _r(self, x):
-        return x**3 - (2*x**4 + x**5)/2
+        return x**3 - (2 * x**4 + x**5) / 2
 
     def _h(self, x):
         neg_mask = x < 0
         mid_mask = (0 <= x) & (x < self.d)
         high_mask = x >= self.d
-        
+
         result = torch.zeros_like(x)
         result[neg_mask] = x[neg_mask]
         result[mid_mask] = self._r(x[mid_mask])
         result[high_mask] = self._r(torch.tensor(self.d, device=x.device))
-        
+
         return result
 
     def _forward(self, z) -> Tensor:
@@ -269,15 +270,15 @@ class PUAF(BaseActivation):
         self.a = a
         self.b = b
         self.c = c
-          # Unused
+        # Unused
 
     def _forward(self, z) -> Tensor:
         result = torch.zeros_like(z)
-        
+
         # z > c
         upper_mask = z > self.c
         result[upper_mask] = z[upper_mask] ** self.a
-        
+
         # |z| <= c
         mid_mask = torch.abs(z) <= self.c
         if self.b == 0:
@@ -287,10 +288,10 @@ class PUAF(BaseActivation):
             z_mid = z[mid_mask]
             numerator = (self.c + z_mid) ** self.b
             denominator = numerator + (self.c - z_mid) ** self.b
-            result[mid_mask] = (z_mid ** self.a) * (numerator / denominator)
-        
+            result[mid_mask] = (z_mid**self.a) * (numerator / denominator)
+
         # z < -c is already set to 0 by initialization
-        
+
         return result
 
 
@@ -303,7 +304,7 @@ class ArandaOrdaz(BaseActivation):
 
     Args:
         a (float, optional): fixed parameter. Default: ``2.0``
-        inplace (bool, optional): parameter kept for API consistency, but Aranda-Ordaz operation 
+        inplace (bool, optional): parameter kept for API consistency, but Aranda-Ordaz operation
                                  cannot be done in-place. Default: ``False``
 
     Shape:
@@ -315,10 +316,10 @@ class ArandaOrdaz(BaseActivation):
         super().__init__(**kwargs)
         assert a > 0, "Parameter a must be positive"
         self.a = a
-          # Unused
+        # Unused
 
     def _forward(self, z) -> Tensor:
-        return 1 - (1 + self.a * torch.exp(z))**(-1)
+        return 1 - (1 + self.a * torch.exp(z)) ** (-1)
 
 
 @register_activation
@@ -368,11 +369,11 @@ class KDAC(BaseActivation):
         super().__init__(**kwargs)
         assert a > 0, "Parameter a must be positive"
         assert b > 0, "Parameter b must be positive"
-        
+
         self.a = nn.Parameter(torch.tensor(a))
         self.b = nn.Parameter(torch.tensor(b))
         self.c = c  # Fixed parameter
-          # Unused
+        # Unused
 
     def _clip(self, x):
         return torch.clamp(x, 0.0, 1.0)
@@ -435,55 +436,55 @@ class KWTA(BaseActivation):
         super().__init__(**kwargs)
         self.k = k
         self.dim = dim
-          # Unused
+        # Unused
 
     def _forward(self, z) -> Tensor:
         if self.dim is None:
             # Operate on flattened tensor
             original_shape = z.shape
             z_flat = z.view(-1)
-            
+
             # Calculate k if it's a fraction
             k = self.k
             if isinstance(k, float) and 0 < k < 1:
                 k = max(1, int(k * z_flat.numel()))
-            
+
             # Get indices of k largest elements
             _, indices = torch.topk(z_flat, k)
-            
+
             # Create output tensor with zeros
             result = torch.zeros_like(z_flat)
-            
+
             # Set values at indices to original values
             result[indices] = z_flat[indices]
-            
+
             # Reshape back to original shape
             return result.view(original_shape)
         else:
             # Operate along specified dimension
             dim_size = z.size(self.dim)
-            
+
             # Calculate k if it's a fraction
             k = self.k
             if isinstance(k, float) and 0 < k < 1:
                 k = max(1, int(k * dim_size))
-            
+
             # Get indices of k largest elements along dimension
             _, indices = torch.topk(z, k, dim=self.dim)
-            
+
             # Create a mask of zeros with ones at the indices of the k largest elements
             mask = torch.zeros_like(z, dtype=torch.bool)
-            
+
             # Use scatter to set the mask
             scatter_dim = self.dim
             expand_dims = [1] * len(z.shape)
             expand_dims[scatter_dim] = k
             dim_indices = torch.arange(k).view(expand_dims).expand_as(indices)
             mask.scatter_(scatter_dim, indices, torch.ones_like(indices, dtype=torch.bool))
-            
+
             # Apply the mask to get the result
             return z * mask.float()
-        
+
 
 # TODO: Verify this implementation
 @register_activation
@@ -491,25 +492,25 @@ class VBAF(BaseActivation):
     r"""
     :note: The implementation of this activation function is based on limited information from the literature.
            The original papers don't provide complete details on how this function should be applied in neural networks.
-    
+
     :todo: Verify this implementation against more detailed descriptions if they become available.
            Currently unclear whether VBAF should be applied only to inputs or also to intermediate representations.
-    
+
     Applies the Volatility-Based Activation Function (VBAF):
 
     :math:`\text{VBAF}(z_1, \ldots, z_n) = \frac{\sum_{j=1}^{n} (z_j - \bar{z})}{\bar{z}}`
 
     where:
-    
+
     :math:`\bar{z} = \frac{\sum_{j=1}^{n} z_j}{n}`
-    
+
     This activation function was designed for time-series forecasting and was used in LSTM neural networks.
     It takes multiple inputs (a sequence of values) and produces a single output based on their volatility.
 
     Args:
         dim (int, optional): The dimension along which to compute the mean and volatility.
                             Default: ``-1`` (last dimension)
-        inplace (bool, optional): parameter kept for API consistency, but VBAF operation 
+        inplace (bool, optional): parameter kept for API consistency, but VBAF operation
                                  cannot be done in-place. Default: ``False``
 
     Shape:
@@ -520,19 +521,18 @@ class VBAF(BaseActivation):
     def __init__(self, dim: int = -1, **kwargs):
         super().__init__(**kwargs)
         self.dim = dim
-          # Unused
+        # Unused
 
     def _forward(self, z) -> Tensor:
         # Compute mean along the specified dimension
         z_mean = torch.mean(z, dim=self.dim, keepdim=True)
-        
+
         # Compute the sum of deviations from the mean
         deviations_sum = torch.sum(z - z_mean, dim=self.dim, keepdim=True)
-        
+
         # Compute the volatility measure (sum of deviations divided by mean)
         # Add small epsilon to avoid division by zero
         eps = 1e-10
         result = deviations_sum / (z_mean + eps)
-        
+
         return result
-        

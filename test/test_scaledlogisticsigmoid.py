@@ -1,7 +1,9 @@
 import math
+
 import pytest
 import torch
 import torch.nn.functional as F
+
 import torch_activation
 
 ACTIVATION_NAME = "ScaledLogisticSigmoid"

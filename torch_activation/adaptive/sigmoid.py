@@ -1,12 +1,12 @@
+from typing import Callable
+
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from torch_activation.base import BaseActivation
 from torch import Tensor
 
-from typing import Callable
-
 from torch_activation import register_activation
+from torch_activation.base import BaseActivation
 
 
 @register_activation
@@ -38,9 +38,7 @@ class AdaptiveSigmoid(BaseActivation):
         >>> output = m(x)
     """
 
-    def __init__(
-        self, a: float = 1.0, learnable: bool = False, inplace: bool = False, **kwargs
-    ):
+    def __init__(self, a: float = 1.0, learnable: bool = False, inplace: bool = False, **kwargs):
         super().__init__(**kwargs)
 
         if learnable:
@@ -52,7 +50,10 @@ class AdaptiveSigmoid(BaseActivation):
     def _forward(self, x) -> Tensor:
         exp_neg = torch.exp((-self.a * x).clamp(max=88.0))
         denom1 = 1 - exp_neg
-        denom1 = denom1 + torch.where(denom1 >= 0, torch.ones_like(denom1), -torch.ones_like(denom1)) * 1e-7
+        denom1 = (
+            denom1
+            + torch.where(denom1 >= 0, torch.ones_like(denom1), -torch.ones_like(denom1)) * 1e-7
+        )
         term1 = 2 / denom1
         term2 = 2 / (self.a * (1 + exp_neg))
         result = term1 - term2
@@ -98,7 +99,7 @@ class GeneralizedHyperbolicTangent(BaseActivation):
         b: float = 1.0,
         learnable: bool = False,
         inplace: bool = False,
-        **kwargs
+        **kwargs,
     ):
         super().__init__(**kwargs)
 
@@ -158,7 +159,7 @@ class TrainableAmplitude(BaseActivation):
         b: float = 0.0,
         learnable: bool = False,
         inplace: bool = False,
-        **kwargs
+        **kwargs,
     ):
         super().__init__(**kwargs)
         self.base_activation = base_activation
@@ -213,9 +214,7 @@ class ASSF(BaseActivation):
         >>> output = m(x)
     """
 
-    def __init__(
-        self, a: float = 1.0, learnable: bool = False, inplace: bool = False, **kwargs
-    ):
+    def __init__(self, a: float = 1.0, learnable: bool = False, inplace: bool = False, **kwargs):
         super().__init__(**kwargs)
 
         if learnable:
@@ -261,9 +260,7 @@ class SVAF(BaseActivation):
         >>> output = m(x)
     """
 
-    def __init__(
-        self, a: float = 1.0, learnable: bool = False, inplace: bool = False, **kwargs
-    ):
+    def __init__(self, a: float = 1.0, learnable: bool = False, inplace: bool = False, **kwargs):
         super().__init__(**kwargs)
 
         if learnable:
@@ -322,7 +319,7 @@ class TanhSoft(BaseActivation):
         d: float = 0.1,
         learnable: bool = False,
         inplace: bool = False,
-        **kwargs
+        **kwargs,
     ):
         super().__init__(**kwargs)
 
@@ -378,9 +375,7 @@ class TanhSoft1(BaseActivation):
         >>> output = m(x)
     """
 
-    def __init__(
-        self, a: float = 1.0, learnable: bool = False, inplace: bool = False, **kwargs
-    ):
+    def __init__(self, a: float = 1.0, learnable: bool = False, inplace: bool = False, **kwargs):
         super().__init__(**kwargs)
 
         if learnable:
@@ -435,7 +430,7 @@ class TanhSoft2(BaseActivation):
         c: float = 1.0,
         learnable: bool = False,
         inplace: bool = False,
-        **kwargs
+        **kwargs,
     ):
         super().__init__(**kwargs)
 
@@ -485,9 +480,7 @@ class TanhSoft3(BaseActivation):
         >>> output = m(x)
     """
 
-    def __init__(
-        self, a: float = 1.0, learnable: bool = False, inplace: bool = False, **kwargs
-    ):
+    def __init__(self, a: float = 1.0, learnable: bool = False, inplace: bool = False, **kwargs):
         super().__init__(**kwargs)
 
         if learnable:
@@ -543,7 +536,7 @@ class PSigmoid(BaseActivation):
         b: float = 1.0,
         learnable: bool = False,
         inplace: bool = False,
-        **kwargs
+        **kwargs,
     ):
         super().__init__(**kwargs)
 
@@ -592,9 +585,7 @@ class PSF(BaseActivation):
         >>> output = m(x)
     """
 
-    def __init__(
-        self, m: float = 1.0, learnable: bool = False, inplace: bool = False, **kwargs
-    ):
+    def __init__(self, m: float = 1.0, learnable: bool = False, inplace: bool = False, **kwargs):
         super().__init__(**kwargs)
 
         if learnable:
@@ -652,7 +643,7 @@ class STACTanh(BaseActivation):
         b: float = 0.1,
         learnable: bool = False,
         inplace: bool = False,
-        **kwargs
+        **kwargs,
     ):
         super().__init__(**kwargs)
 

@@ -1,7 +1,8 @@
+import math
+
 import torch
 import torch.nn as nn
 from torch import Tensor
-import math
 
 from torch_activation import register_activation
 from torch_activation.base import BaseActivation
@@ -20,7 +21,7 @@ class Softplus(BaseActivation):
     Args:
         beta (float, optional): controls the smoothness of the approximation. Default: ``1.0``
         threshold (float, optional): values above this revert to a linear function. Default: ``20.0``
-        inplace (bool, optional): parameter kept for API consistency, but softplus operation 
+        inplace (bool, optional): parameter kept for API consistency, but softplus operation
                                  cannot be done in-place. Default: ``False``
 
     Shape:
@@ -32,7 +33,7 @@ class Softplus(BaseActivation):
         super().__init__(**kwargs)
         self.beta = beta
         self.threshold = threshold
-          # Unused
+        # Unused
 
     def _forward(self, z) -> Tensor:
         # Use the built-in softplus for numerical stability
@@ -54,7 +55,7 @@ class ParametricSoftplus(BaseActivation):
         b (float, optional): shifting parameter. Default: ``0.693`` (ln(2))
         beta (float, optional): controls the smoothness of the approximation. Default: ``1.0``
         threshold (float, optional): values above this revert to a linear function. Default: ``20.0``
-        inplace (bool, optional): parameter kept for API consistency, but operation 
+        inplace (bool, optional): parameter kept for API consistency, but operation
                                  cannot be done in-place. Default: ``False``
 
     Shape:
@@ -62,14 +63,15 @@ class ParametricSoftplus(BaseActivation):
         - Output: :math:`(*)`, same shape as the input.
     """
 
-    def __init__(self, a: float = 1.5, b: float = 0.693, beta: float = 1.0, 
-                 threshold: float = 20.0, **kwargs):
+    def __init__(
+        self, a: float = 1.5, b: float = 0.693, beta: float = 1.0, threshold: float = 20.0, **kwargs
+    ):
         super().__init__(**kwargs)
         self.a = a
         self.b = b
         self.beta = beta
         self.threshold = threshold
-          # Unused
+        # Unused
 
     def _forward(self, z) -> Tensor:
         softplus = torch.nn.functional.softplus(z, self.beta, self.threshold)
@@ -90,7 +92,7 @@ class SoftPlusPlus(BaseActivation):
         a (float, optional): scaling parameter for the input in softplus term. Default: ``1.0``
         b (float, optional): scaling parameter for the linear term. Default: ``2.0``
         threshold (float, optional): values above this revert to a linear function. Default: ``20.0``
-        inplace (bool, optional): parameter kept for API consistency, but operation 
+        inplace (bool, optional): parameter kept for API consistency, but operation
                                  cannot be done in-place. Default: ``False``
 
     Shape:
@@ -104,15 +106,17 @@ class SoftPlusPlus(BaseActivation):
         self.b = b
         self.threshold = threshold
         self.ln2 = math.log(2)
-          # Unused
+        # Unused
 
     def _forward(self, z) -> Tensor:
         # Apply a to the input for the softplus term
         scaled_input = self.a * z
-        
+
         # For numerical stability, use the built-in softplus for the first term
-        softplus_term = torch.nn.functional.softplus(scaled_input, beta=1.0, threshold=self.threshold)
-        
+        softplus_term = torch.nn.functional.softplus(
+            scaled_input, beta=1.0, threshold=self.threshold
+        )
+
         # Add the linear term and subtract ln(2)
         return softplus_term + (z / self.b) - self.ln2
 
@@ -131,7 +135,7 @@ class RandSoftplus(BaseActivation):
         a (float, optional): interpolation parameter between ReLU and softplus. Default: ``0.5``
         beta (float, optional): controls the smoothness of the softplus. Default: ``1.0``
         threshold (float, optional): values above this revert to a linear function. Default: ``20.0``
-        inplace (bool, optional): parameter kept for API consistency, but operation 
+        inplace (bool, optional): parameter kept for API consistency, but operation
                                  cannot be done in-place. Default: ``False``
 
     Shape:
@@ -144,14 +148,14 @@ class RandSoftplus(BaseActivation):
         self.a = a
         self.beta = beta
         self.threshold = threshold
-          # Unused
+        # Unused
 
     def _forward(self, z) -> Tensor:
         # ReLU term
         relu_term = torch.nn.functional.relu(z)
-        
+
         # Softplus term
         softplus_term = torch.nn.functional.softplus(z, self.beta, self.threshold)
-        
+
         # Interpolate between ReLU and softplus based on parameter a
         return (1 - self.a) * relu_term + self.a * softplus_term

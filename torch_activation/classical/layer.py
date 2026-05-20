@@ -108,4 +108,3 @@
 #         ]
 #         output = torch.sum(torch.stack(activations), dim=0)
 #         return output / torch.norm(output)
-

@@ -1,6 +1,6 @@
-import os
 import importlib
 import inspect
+import os
 
 __version__ = "0.4.0"
 
@@ -45,7 +45,6 @@ for file_name in os.listdir(current_dir):
         module_name = file_name[:-3]  # Remove .py extension
 
         module = importlib.import_module(f".{module_name}", package=__package__)
-
 
         for name, obj in inspect.getmembers(module, inspect.isclass):
             if obj.__module__ == module.__name__:

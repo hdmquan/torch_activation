@@ -1,7 +1,8 @@
+import math
+
 import torch
 import torch.nn as nn
 from torch import Tensor
-import math
 
 from torch_activation import register_activation
 from torch_activation.base import BaseActivation
@@ -33,23 +34,23 @@ class BiFiring(BaseActivation):
     def __init__(self, a: float = 1.0, **kwargs):
         super().__init__(**kwargs)
         self.a = a
-          # Unused
+        # Unused
 
     def _forward(self, z) -> Tensor:
         result = torch.zeros_like(z)
-        
+
         # z > a
         upper_mask = z > self.a
-        result[upper_mask] = z[upper_mask] - self.a/2
-        
+        result[upper_mask] = z[upper_mask] - self.a / 2
+
         # -a <= z <= a
         mid_mask = (z >= -self.a) & (z <= self.a)
-        result[mid_mask] = (z[mid_mask]**2) / (2 * self.a)
-        
+        result[mid_mask] = (z[mid_mask] ** 2) / (2 * self.a)
+
         # z < -a
         lower_mask = z < -self.a
-        result[lower_mask] = -z[lower_mask] - self.a/2
-        
+        result[lower_mask] = -z[lower_mask] - self.a / 2
+
         return result
 
 
@@ -84,31 +85,31 @@ class BoundedBiFiring(BaseActivation):
         super().__init__(**kwargs)
         self.a = a
         self.b = b
-          # Unused
+        # Unused
 
     def _forward(self, z) -> Tensor:
         result = torch.zeros_like(z)
-        
+
         # z < -b - a/2
-        lower_bound_mask = z < (-self.b - self.a/2)
+        lower_bound_mask = z < (-self.b - self.a / 2)
         result[lower_bound_mask] = self.b
-        
+
         # -b - a/2 <= z < -a
-        lower_mid_mask = (z >= (-self.b - self.a/2)) & (z < -self.a)
-        result[lower_mid_mask] = -z[lower_mid_mask] - self.a/2
-        
+        lower_mid_mask = (z >= (-self.b - self.a / 2)) & (z < -self.a)
+        result[lower_mid_mask] = -z[lower_mid_mask] - self.a / 2
+
         # -a <= z <= a
         mid_mask = (z >= -self.a) & (z <= self.a)
-        result[mid_mask] = (z[mid_mask]**2) / (2 * self.a)
-        
+        result[mid_mask] = (z[mid_mask] ** 2) / (2 * self.a)
+
         # a < z <= b + a/2
-        upper_mid_mask = (z > self.a) & (z <= (self.b + self.a/2))
-        result[upper_mid_mask] = z[upper_mid_mask] - self.a/2
-        
+        upper_mid_mask = (z > self.a) & (z <= (self.b + self.a / 2))
+        result[upper_mid_mask] = z[upper_mid_mask] - self.a / 2
+
         # z > b + a/2
-        upper_bound_mask = z > (self.b + self.a/2)
+        upper_bound_mask = z > (self.b + self.a / 2)
         result[upper_bound_mask] = self.b
-        
+
         return result
 
 
@@ -135,7 +136,7 @@ class PiecewiseMexicanHat(BaseActivation):
     def __init__(self, a: float = 4.0, **kwargs):
         super().__init__(**kwargs)
         self.a = a
-          # Unused
+        # Unused
         self.const_term = 1 / (math.sqrt(3) * math.pi)
 
     def _forward(self, z) -> Tensor:
@@ -172,10 +173,10 @@ class PiecewiseRadialBasisFunction(BaseActivation):
         super().__init__(**kwargs)
         self.a = a
         self.b = b
-          # Unused
+        # Unused
 
     def _forward(self, z) -> Tensor:
-        val_upper = torch.exp(-((z - 2*self.a)**2) / (self.b**2))
+        val_upper = torch.exp(-((z - 2 * self.a) ** 2) / (self.b**2))
         val_mid = torch.exp(-(z**2) / (self.b**2))
-        val_lower = torch.exp(-((z + 2*self.a)**2) / (self.b**2))
+        val_lower = torch.exp(-((z + 2 * self.a) ** 2) / (self.b**2))
         return torch.where(z >= self.a, val_upper, torch.where(z <= -self.a, val_lower, val_mid))

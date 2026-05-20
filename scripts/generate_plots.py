@@ -1,4 +1,5 @@
 import argparse
+
 import torch_activation as ta
 from torch_activation.utils import plot_activation
 

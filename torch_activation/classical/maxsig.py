@@ -1,9 +1,10 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from torch_activation.base import BaseActivation
 from torch import Tensor
+
 from torch_activation import register_activation
+from torch_activation.base import BaseActivation
 
 
 @register_activation
@@ -36,10 +37,10 @@ class TanhLinearUnit(BaseActivation):
     def _forward(self, x) -> Tensor:
         pos_mask = x >= 0
         neg_mask = ~pos_mask
-        
+
         result = x.clone()
         result[neg_mask] = torch.tanh(x[neg_mask] / 2)
-        
+
         return result
 
 
@@ -72,10 +73,10 @@ class DualELU(BaseActivation):
     def _forward(self, x) -> Tensor:
         dim_size = x.size(self.dim)
         assert dim_size % 2 == 0, f"Dimension {self.dim} must be divisible by 2"
-        
+
         split_size = dim_size // 2
         z, z_prime = torch.split(x, split_size, dim=self.dim)
-        
+
         return F.elu(z, alpha=self.alpha) - F.elu(z_prime, alpha=self.alpha)
 
 
@@ -148,14 +149,14 @@ class PolynomialLinearUnit(BaseActivation):
     def _forward(self, x) -> Tensor:
         pos_mask = x >= 0
         neg_mask = ~pos_mask
-        
+
         result = x.clone()
         neg_x = x[neg_mask]
-        
+
         # Ensure numerical stability by clamping values
         neg_x = torch.clamp(neg_x, min=-0.999)
         result[neg_mask] = 1 / (1 - neg_x) - 1
-        
+
         return result
 
 
@@ -293,11 +294,11 @@ class FasterPowerFunctionLinearUnit(BaseActivation):
     def _forward(self, x) -> Tensor:
         pos_mask = x >= 0
         neg_mask = ~pos_mask
-        
+
         result = x.clone()
         neg_x = x[neg_mask]
         result[neg_mask] = neg_x + (neg_x.pow(2) / torch.sqrt(1 + neg_x.pow(2)))
-        
+
         return result
 
 
@@ -335,7 +336,7 @@ class ElasticAdaptivelyParametricCompoundedUnit(BaseActivation):
     def __init__(self, a: float = 1.0, b: float = 1.0, num_parameters: int = 1, **kwargs):
         super().__init__(**kwargs)
         self.num_parameters = num_parameters
-        
+
         if num_parameters == 1:
             self.a = nn.Parameter(Tensor([a]))
             self.b = nn.Parameter(Tensor([b]))
@@ -368,7 +369,9 @@ class ElasticAdaptivelyParametricCompoundedUnit(BaseActivation):
             for i in range(self.num_parameters):
                 channel_pos_mask = pos_mask.narrow(0, i, 1).squeeze(0)
                 if channel_pos_mask.any():
-                    result.narrow(0, i, 1)[channel_pos_mask] = b[i] * x.narrow(0, i, 1)[channel_pos_mask]
+                    result.narrow(0, i, 1)[channel_pos_mask] = (
+                        b[i] * x.narrow(0, i, 1)[channel_pos_mask]
+                    )
 
                 channel_neg_mask = neg_mask.narrow(0, i, 1).squeeze(0)
                 if channel_neg_mask.any():
@@ -402,7 +405,7 @@ class LipschitzReLU(BaseActivation):
         >>> m = LipschitzReLU()
         >>> x = torch.randn(2)
         >>> output = m(x)
-        
+
         >>> # Custom implementation with leaky behavior
         >>> m = LipschitzReLU(p_fn=lambda x: x, n_fn=lambda x: 0.1 * x)
         >>> x = torch.randn(2)
@@ -417,11 +420,11 @@ class LipschitzReLU(BaseActivation):
     def _forward(self, x) -> Tensor:
         pos_mask = x > 0
         neg_mask = ~pos_mask
-        
+
         result = torch.zeros_like(x)
         result[pos_mask] = self.p_fn(x[pos_mask])
         result[neg_mask] = self.n_fn(x[neg_mask])
-        
+
         return result
 
 
@@ -450,7 +453,9 @@ class ScaledExponentialLinearUnit(BaseActivation):
         >>> output = m(x)
     """
 
-    def __init__(self, a: float = 1.0507009873554804934193, b: float = 1.6732631921033945073073, **kwargs):
+    def __init__(
+        self, a: float = 1.0507009873554804934193, b: float = 1.6732631921033945073073, **kwargs
+    ):
         super().__init__(**kwargs)
         self.a = a
         self.b = b
@@ -717,17 +722,17 @@ class ExponentialLinearSigmoidSquashing(BaseActivation):
     def _forward(self, x) -> Tensor:
         pos_mask = x >= 0
         neg_mask = ~pos_mask
-        
+
         result = torch.zeros_like(x)
         sigmoid = torch.sigmoid(x)
-        
+
         # Positive part
         result[pos_mask] = x[pos_mask] * sigmoid[pos_mask]
-        
+
         # Negative part
         neg_x = x[neg_mask]
         result[neg_mask] = (torch.exp(neg_x) - 1) * sigmoid[neg_mask]
-        
+
         return result
 
 
@@ -810,7 +815,7 @@ class RSigELUD(BaseActivation):
         return result
 
 
-@register_activation 
+@register_activation
 class LSReLU(BaseActivation):
     r"""
     Applies the LSReLU activation function:

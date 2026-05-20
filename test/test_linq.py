@@ -1,9 +1,11 @@
 import pytest
 import torch
+
 import torch_activation
 
 NONSMOOTH_ACTIVATIONS: list[str] = ["LinQ"]
 ACTIVATION_NAME = "LinQ"
+
 
 def scalar_ref(x: float, a: float = 1.0) -> float:
     upper_threshold = 2 - 2 * a
@@ -15,14 +17,17 @@ def scalar_ref(x: float, a: float = 1.0) -> float:
     else:
         return a * x - 1 - 2 * x + x**2
 
+
 def _get_module(**kwargs):
     cls = getattr(torch_activation, ACTIVATION_NAME)
     return cls(**kwargs)
+
 
 def _ref_tensor(x: torch.Tensor) -> torch.Tensor:
     flat = x.reshape(-1).tolist()
     out = [scalar_ref(v) for v in flat]
     return torch.tensor(out, dtype=x.dtype).reshape(x.shape)
+
 
 class TestShape:
     def test_shape_4d(self):
@@ -35,13 +40,16 @@ class TestShape:
         x = torch.randn(16)
         assert m(x).shape == x.shape
 
+
 class TestNumerical:
     def test_allclose_ref(self):
         m = _get_module()
         x = torch.linspace(-3, 3, 50)
         expected = _ref_tensor(x)
-        assert torch.allclose(m(x), expected, atol=1e-5), \
-            f"Max error: {(m(x) - expected).abs().max().item()}"
+        assert torch.allclose(
+            m(x), expected, atol=1e-5
+        ), f"Max error: {(m(x) - expected).abs().max().item()}"
+
 
 class TestGradients:
     def test_gradcheck(self):
@@ -65,6 +73,7 @@ class TestGradients:
         fd = (m((x_np + eps).float()) - m((x_np - eps).float())).double() / (2 * eps)
         assert torch.allclose(grad_auto, fd, atol=5e-3)
 
+
 class TestEdgeCases:
     def test_no_nan_inf(self):
         m = _get_module()
@@ -80,6 +89,7 @@ class TestEdgeCases:
         out = m(x)
         expected_zero = scalar_ref(0.0)
         assert torch.allclose(out, torch.full_like(out, expected_zero), atol=1e-6)
+
 
 class TestInplace:
     def test_inplace_matches_normal(self):

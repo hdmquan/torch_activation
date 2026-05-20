@@ -1,11 +1,12 @@
+import math
+
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from torch_activation.base import BaseActivation
 from torch import Tensor
-import math
 
 from torch_activation import register_activation
+from torch_activation.base import BaseActivation
 
 
 @register_activation
@@ -37,12 +38,7 @@ class Swish(BaseActivation):
         >>> output = m(x)
     """
 
-    def __init__(
-            self,
-            a: float = 1.0,
-            learnable: bool = False,
-            inplace: bool = False
-            , **kwargs):
+    def __init__(self, a: float = 1.0, learnable: bool = False, inplace: bool = False, **kwargs):
         super().__init__(**kwargs)
 
         if learnable:
@@ -53,7 +49,7 @@ class Swish(BaseActivation):
     def _forward(self, x) -> Tensor:
         result = x * torch.sigmoid(self.a * x)
 
-        if self.inplace and hasattr(x, 'copy_'):
+        if self.inplace and hasattr(x, "copy_"):
             x.copy_(result)
             return x
         else:
@@ -91,12 +87,13 @@ class AHAF(BaseActivation):
     """
 
     def __init__(
-            self,
-            a: float = 1.0,
-            b: float = 1.0,
-            learnable: bool = False,
-            inplace: bool = False
-            , **kwargs):
+        self,
+        a: float = 1.0,
+        b: float = 1.0,
+        learnable: bool = False,
+        inplace: bool = False,
+        **kwargs,
+    ):
         super().__init__(**kwargs)
 
         if learnable:
@@ -109,7 +106,7 @@ class AHAF(BaseActivation):
     def _forward(self, x) -> Tensor:
         result = self.a * x * torch.sigmoid(self.b * x)
 
-        if self.inplace and hasattr(x, 'copy_'):
+        if self.inplace and hasattr(x, "copy_"):
             x.copy_(result)
             return x
         else:
@@ -147,12 +144,13 @@ class PSSiLU(BaseActivation):
     """
 
     def __init__(
-            self,
-            a: float = 1.0,
-            b: float = 0.5,
-            learnable: bool = False,
-            inplace: bool = False
-            , **kwargs):
+        self,
+        a: float = 1.0,
+        b: float = 0.5,
+        learnable: bool = False,
+        inplace: bool = False,
+        **kwargs,
+    ):
         super().__init__(**kwargs)
 
         if learnable:
@@ -168,7 +166,7 @@ class PSSiLU(BaseActivation):
         shifted_sigmoid = (torch.sigmoid(self.a * x) - self.b) / (1 - self.b)
         result = x * shifted_sigmoid
 
-        if self.inplace and hasattr(x, 'copy_'):
+        if self.inplace and hasattr(x, "copy_"):
             x.copy_(result)
             return x
         else:
@@ -204,12 +202,7 @@ class ESwish(BaseActivation):
         >>> output = m(x)
     """
 
-    def __init__(
-            self,
-            a: float = 1.5,
-            learnable: bool = False,
-            inplace: bool = False
-            , **kwargs):
+    def __init__(self, a: float = 1.5, learnable: bool = False, inplace: bool = False, **kwargs):
         super().__init__(**kwargs)
 
         if learnable:
@@ -220,7 +213,7 @@ class ESwish(BaseActivation):
     def _forward(self, x) -> Tensor:
         result = self.a * x * torch.sigmoid(x)
 
-        if self.inplace and hasattr(x, 'copy_'):
+        if self.inplace and hasattr(x, "copy_"):
             x.copy_(result)
             return x
         else:
@@ -258,12 +251,13 @@ class ACONB(BaseActivation):
     """
 
     def __init__(
-            self,
-            a: float = 1.0,
-            b: float = 0.25,
-            learnable: bool = False,
-            inplace: bool = False
-            , **kwargs):
+        self,
+        a: float = 1.0,
+        b: float = 0.25,
+        learnable: bool = False,
+        inplace: bool = False,
+        **kwargs,
+    ):
         super().__init__(**kwargs)
 
         if learnable:
@@ -280,7 +274,7 @@ class ACONB(BaseActivation):
         linear_part = self.b * x
         result = swish_part + linear_part
 
-        if self.inplace and hasattr(x, 'copy_'):
+        if self.inplace and hasattr(x, "copy_"):
             x.copy_(result)
             return x
         else:
@@ -319,13 +313,14 @@ class ACONC(BaseActivation):
     """
 
     def __init__(
-            self,
-            a: float = 1.0,
-            b: float = 0.0,
-            c: float = 1.0,
-            learnable: bool = False,
-            inplace: bool = False
-            , **kwargs):
+        self,
+        a: float = 1.0,
+        b: float = 0.0,
+        c: float = 1.0,
+        learnable: bool = False,
+        inplace: bool = False,
+        **kwargs,
+    ):
         super().__init__(**kwargs)
 
         if learnable:
@@ -343,7 +338,7 @@ class ACONC(BaseActivation):
         linear_part = self.b * x
         result = swish_part + linear_part
 
-        if self.inplace and hasattr(x, 'copy_'):
+        if self.inplace and hasattr(x, "copy_"):
             x.copy_(result)
             return x
         else:
@@ -379,12 +374,7 @@ class PSGU(BaseActivation):
         >>> output = m(x)
     """
 
-    def __init__(
-            self,
-            a: float = 0.5,
-            learnable: bool = False,
-            inplace: bool = False
-            , **kwargs):
+    def __init__(self, a: float = 0.5, learnable: bool = False, inplace: bool = False, **kwargs):
         super().__init__(**kwargs)
 
         if learnable:
@@ -395,7 +385,7 @@ class PSGU(BaseActivation):
     def _forward(self, x) -> Tensor:
         result = x * torch.tanh(self.a * torch.sigmoid(x))
 
-        if self.inplace and hasattr(x, 'copy_'):
+        if self.inplace and hasattr(x, "copy_"):
             x.copy_(result)
             return x
         else:
@@ -429,12 +419,7 @@ class TBSReLUl(BaseActivation):
         >>> output = m(x)
     """
 
-    def __init__(
-            self,
-            a: float = 0.5,
-            learnable: bool = False,
-            inplace: bool = False
-            , **kwargs):
+    def __init__(self, a: float = 0.5, learnable: bool = False, inplace: bool = False, **kwargs):
         super().__init__(**kwargs)
 
         if learnable:
@@ -447,7 +432,7 @@ class TBSReLUl(BaseActivation):
         bipolar_sigmoid = (1 - exp_neg) / (1 + exp_neg)
         result = x * torch.tanh(self.a * bipolar_sigmoid)
 
-        if self.inplace and hasattr(x, 'copy_'):
+        if self.inplace and hasattr(x, "copy_"):
             x.copy_(result)
             return x
         else:
@@ -486,13 +471,14 @@ class PATS(BaseActivation):
     """
 
     def __init__(
-            self,
-            a: float = 0.625,
-            lower_bound: float = 0.5,
-            upper_bound: float = 0.75,
-            learnable: bool = False,
-            inplace: bool = False
-            , **kwargs):
+        self,
+        a: float = 0.625,
+        lower_bound: float = 0.5,
+        upper_bound: float = 0.75,
+        learnable: bool = False,
+        inplace: bool = False,
+        **kwargs,
+    ):
         super().__init__(**kwargs)
 
         self.lower_bound = lower_bound
@@ -510,11 +496,13 @@ class PATS(BaseActivation):
             a_value = self.a
         else:
             # During training with learnable parameter, sample from uniform distribution
-            a_value = torch.rand_like(self.a) * (self.upper_bound - self.lower_bound) + self.lower_bound
+            a_value = (
+                torch.rand_like(self.a) * (self.upper_bound - self.lower_bound) + self.lower_bound
+            )
 
         result = x * torch.arctan(a_value * math.pi * torch.sigmoid(x))
 
-        if self.inplace and hasattr(x, 'copy_'):
+        if self.inplace and hasattr(x, "copy_"):
             x.copy_(result)
             return x
         else:
@@ -554,12 +542,13 @@ class AQuLU(BaseActivation):
     """
 
     def __init__(
-            self,
-            a: float = 0.2,
-            b: float = 0.1,
-            learnable: bool = False,
-            inplace: bool = False
-            , **kwargs):
+        self,
+        a: float = 0.2,
+        b: float = 0.1,
+        learnable: bool = False,
+        inplace: bool = False,
+        **kwargs,
+    ):
         super().__init__(**kwargs)
 
         if learnable:
@@ -629,12 +618,13 @@ class SinLU(BaseActivation):
     """
 
     def __init__(
-            self,
-            a: float = 0.5,
-            b: float = 1.0,
-            learnable: bool = False,
-            inplace: bool = False
-            , **kwargs):
+        self,
+        a: float = 0.5,
+        b: float = 1.0,
+        learnable: bool = False,
+        inplace: bool = False,
+        **kwargs,
+    ):
         super().__init__(**kwargs)
 
         if learnable:
@@ -648,7 +638,7 @@ class SinLU(BaseActivation):
         modified_x = x + self.a * torch.sin(self.b * x)
         result = modified_x * torch.sigmoid(x)
 
-        if self.inplace and hasattr(x, 'copy_'):
+        if self.inplace and hasattr(x, "copy_"):
             x.copy_(result)
             return x
         else:
@@ -686,12 +676,13 @@ class ErfAct(BaseActivation):
     """
 
     def __init__(
-            self,
-            a: float = 1.0,
-            b: float = 0.5,
-            learnable: bool = False,
-            inplace: bool = False
-            , **kwargs):
+        self,
+        a: float = 1.0,
+        b: float = 0.5,
+        learnable: bool = False,
+        inplace: bool = False,
+        **kwargs,
+    ):
         super().__init__(**kwargs)
 
         if learnable:
@@ -706,7 +697,7 @@ class ErfAct(BaseActivation):
         exp_term = torch.exp(torch.clamp(self.b * x, max=20))
         result = x * torch.erf(self.a * exp_term)
 
-        if self.inplace and hasattr(x, 'copy_'):
+        if self.inplace and hasattr(x, "copy_"):
             x.copy_(result)
             return x
         else:
@@ -744,12 +735,13 @@ class PSerf(BaseActivation):
     """
 
     def __init__(
-            self,
-            a: float = 1.0,
-            b: float = 1.0,
-            learnable: bool = False,
-            inplace: bool = False
-            , **kwargs):
+        self,
+        a: float = 1.0,
+        b: float = 1.0,
+        learnable: bool = False,
+        inplace: bool = False,
+        **kwargs,
+    ):
         super().__init__(**kwargs)
 
         if learnable:
@@ -764,7 +756,7 @@ class PSerf(BaseActivation):
         softplus = torch.log1p(torch.exp(torch.clamp(self.b * x, max=20)))
         result = x * torch.erf(self.a * softplus)
 
-        if self.inplace and hasattr(x, 'copy_'):
+        if self.inplace and hasattr(x, "copy_"):
             x.copy_(result)
             return x
         else:
@@ -798,12 +790,7 @@ class Swim(BaseActivation):
         >>> output = m(x)
     """
 
-    def __init__(
-            self,
-            a: float = 0.5,
-            learnable: bool = False,
-            inplace: bool = False
-            , **kwargs):
+    def __init__(self, a: float = 0.5, learnable: bool = False, inplace: bool = False, **kwargs):
         super().__init__(**kwargs)
 
         if learnable:
@@ -816,7 +803,7 @@ class Swim(BaseActivation):
         sigmoid_term = 0.5 * (1 + (self.a * x) / torch.sqrt(1 + x.pow(2)))
         result = x * sigmoid_term
 
-        if self.inplace and hasattr(x, 'copy_'):
+        if self.inplace and hasattr(x, "copy_"):
             x.copy_(result)
             return x
         else:
@@ -834,14 +821,14 @@ class GPSoftmax(BaseActivation):
     :math:`f(z_j) = \frac{\exp(\text{PNORM}(z_j))}{\sum_{k=1}^{N} \exp(\text{PNORM}(z_k))}`
 
     where PNORM is a generalized power-based normalization:
-    
+
     :math:`\text{PNORM}(z_i) = \frac{z_i - M_{a_i, b_i}}{\text{GPM}_{c_i, d_i}(z - M_{a_i, b_i})}`
-    
+
     :math:`M_{a_i, b_i} = \text{GPM}_{a_i, b_i}(z)`
-    
+
     :math:`\text{GPM}_{\alpha, \beta}(x) = \frac{\ln\left(\sum_{k=1}^{N} \alpha^{\beta x_k}\right) - \ln(N)}{\beta \ln(\alpha)}`
 
-    
+
     Args:
         input_shape (int): The size of the input vector tensor, channel or feature size.
         a (float, optional): Initial value for parameter `a`. Default is 1.0.
@@ -859,7 +846,7 @@ class GPSoftmax(BaseActivation):
         d (nn.Parameter or Tensor): Trainable parameter `d`.
         inplace (bool): If True, modifies the input tensor in place.
         input_shape (int): The size of the input vector tensor, channel or feature size.
-    
+
     Methods:
         _forward(x: Tensor) -> Tensor:
             Computes the generalized Lehmer softmax transformation.
@@ -869,26 +856,30 @@ class GPSoftmax(BaseActivation):
 
         gpm_func(x: Tensor, alpha: Tensor, beta: Tensor) -> Tensor:
             Computes the generalized Lehmer mean function.
-        
+
     """
 
     def __init__(
-            self,
-            input_shape: int,
-            a: float = 1.0,
-            b: float = 1.0,
-            c: float = 1.0,
-            d: float = 1.0,
-            learnable: bool = True,
-            inplace: bool = False,
-            **kwargs
+        self,
+        input_shape: int,
+        a: float = 1.0,
+        b: float = 1.0,
+        c: float = 1.0,
+        d: float = 1.0,
+        learnable: bool = True,
+        inplace: bool = False,
+        **kwargs,
     ) -> None:
         super().__init__(**kwargs)
 
         def create_param(value: float) -> Tensor:
             """Creates a learnable parameter if `learnable` is True; otherwise, returns a fixed tensor."""
-            tensor = torch.full((input_shape, 1), value, dtype=torch.float64)  # Initialize tensor with the given value
-            return nn.Parameter(torch.randn(input_shape)) if learnable else tensor  # Convert to parameter if learnable
+            tensor = torch.full(
+                (input_shape, 1), value, dtype=torch.float64
+            )  # Initialize tensor with the given value
+            return (
+                nn.Parameter(torch.randn(input_shape)) if learnable else tensor
+            )  # Convert to parameter if learnable
 
         # Initialize parameters (either as learnable or fixed tensors)
         self.a: Tensor = create_param(a)
@@ -909,7 +900,7 @@ class GPSoftmax(BaseActivation):
             Tensor: Softmax-transformed tensor.
         """
         result = F.softmax(self.pnorm(x, self.a, self.b, self.c, self.d), dim=-1)
-        if self.inplace and hasattr(x, 'copy_'):
+        if self.inplace and hasattr(x, "copy_"):
             x.copy_(result)
             return x
         return result
@@ -924,7 +915,7 @@ class GPSoftmax(BaseActivation):
         glm_second: Tensor = self.gpm_func(x - glm_first, c, d)
         result: Tensor = (x - glm_first) / glm_second
 
-        if self.inplace and hasattr(x, 'copy_'):
+        if self.inplace and hasattr(x, "copy_"):
             x.copy_(result)
             return x
         return result
@@ -953,15 +944,15 @@ class GLSoftmax(BaseActivation):
 
     This is a softmax variant that applies a generalized Lehmer-based normalization
     with trainable parameters `a`, `b`, `c`, and `d`.
-    
+
     :math:`f(z_j) = \frac{\exp(\text{LNORM}(z_j))}{\sum_{k=1}^{N} \exp(\text{LNORM}(z_k))}`
 
     where LNORM is a generalized Lehmer-based normalization:
-    
+
     :math:`\text{LNORM}(z_i) = \frac{z_i - M_{a_i, b_i}}{\text{GLM}_{c_i, d_i}(z - M_{a_i, b_i})}`
-    
+
     :math:`M_{a_i, b_i} = \text{GLM}_{a_i, b_i}(z)`
-    
+
     :math:`\text{GLM}_{\alpha, \beta}(x) = \frac{\ln \left( \frac{\sum_{k=1}^{N} \alpha^{(\beta+1)x_k}}{\sum_{k=1}^{N} \alpha^{\beta x_k}} \right)}{\ln(\alpha)}`
 
 
@@ -994,22 +985,26 @@ class GLSoftmax(BaseActivation):
     """
 
     def __init__(
-            self,
-            input_shape: int,
-            a: float = 1.0,
-            b: float = 1.0,
-            c: float = 1.0,
-            d: float = 1.0,
-            learnable: bool = True,
-            inplace: bool = False,
-            **kwargs
+        self,
+        input_shape: int,
+        a: float = 1.0,
+        b: float = 1.0,
+        c: float = 1.0,
+        d: float = 1.0,
+        learnable: bool = True,
+        inplace: bool = False,
+        **kwargs,
     ) -> None:
         super().__init__(**kwargs)
 
         def create_param(value: float) -> Tensor:
             """Creates a learnable parameter if `learnable` is True; otherwise, returns a fixed tensor."""
-            tensor = torch.full((input_shape, 1), value, dtype=torch.float64)  # Initialize tensor with the given value
-            return nn.Parameter(torch.randn(input_shape)) if learnable else tensor  # Convert to parameter if learnable
+            tensor = torch.full(
+                (input_shape, 1), value, dtype=torch.float64
+            )  # Initialize tensor with the given value
+            return (
+                nn.Parameter(torch.randn(input_shape)) if learnable else tensor
+            )  # Convert to parameter if learnable
 
         # Initialize parameters (either as learnable or fixed tensors)
         self.a: Tensor = create_param(a)
@@ -1029,7 +1024,7 @@ class GLSoftmax(BaseActivation):
             Tensor: Softmax-transformed tensor.
         """
         result = F.softmax(self.lnorm(x, self.a, self.b, self.c, self.d), dim=-1)
-        if self.inplace and hasattr(x, 'copy_'):
+        if self.inplace and hasattr(x, "copy_"):
             x.copy_(result)
             return x
         return result
@@ -1112,13 +1107,13 @@ class ARBF(BaseActivation):
     """
 
     def __init__(
-            self,
-            input_shape: int,
-            a: float = 1.0,
-            b: float = 1.0,
-            learnable: bool = True,
-            inplace: bool = False,
-            **kwargs
+        self,
+        input_shape: int,
+        a: float = 1.0,
+        b: float = 1.0,
+        learnable: bool = True,
+        inplace: bool = False,
+        **kwargs,
     ) -> None:
         super().__init__(**kwargs)
 
@@ -1132,7 +1127,7 @@ class ARBF(BaseActivation):
 
     def _forward(self, x: Tensor) -> Tensor:
         result = torch.exp(-0.5 * (x - self.a) ** 2 / torch.pow(self.b, 2))
-        if self.inplace and hasattr(x, 'copy_'):
+        if self.inplace and hasattr(x, "copy_"):
             x.copy_(result)
             return x
         return result
@@ -1170,12 +1165,12 @@ class PGELU(BaseActivation):
     """
 
     def __init__(
-            self,
-            input_shape: int,
-            a: float = 1.0,
-            learnable: bool = True,
-            inplace: bool = False,
-            **kwargs
+        self,
+        input_shape: int,
+        a: float = 1.0,
+        learnable: bool = True,
+        inplace: bool = False,
+        **kwargs,
     ) -> None:
         super().__init__(**kwargs)
 
@@ -1188,7 +1183,7 @@ class PGELU(BaseActivation):
 
     def _forward(self, x: Tensor) -> Tensor:
         result = x * 0.5 * (1 + torch.erf((x / self.a) / math.sqrt(2)))
-        if self.inplace and hasattr(x, 'copy_'):
+        if self.inplace and hasattr(x, "copy_"):
             x.copy_(result)
             return x
         return result
@@ -1232,29 +1227,29 @@ class PFTS(BaseActivation):
     """
 
     def __init__(
-            self,
-            input_shape: int,
-            T: float = -0.2,
-            learnable: bool = True,
-            inplace: bool = False,
-            **kwargs
+        self,
+        input_shape: int,
+        T: float = -0.2,
+        learnable: bool = True,
+        inplace: bool = False,
+        **kwargs,
     ) -> None:
         super().__init__(**kwargs)
 
         def create_param(value: float) -> Tensor:
             tensor = torch.full((input_shape, 1), value, dtype=torch.float64)
-            return nn.Parameter(
-                -0.2 * torch.ones(input_shape)) if learnable else tensor
+            return nn.Parameter(-0.2 * torch.ones(input_shape)) if learnable else tensor
 
         self.T: Tensor = create_param(T)
         self.inplace: bool = inplace
 
     def _forward(self, x: Tensor) -> Tensor:
         result = torch.nn.functional.relu(x) * torch.nn.functional.sigmoid(x) + self.T
-        if self.inplace and hasattr(x, 'copy_'):
+        if self.inplace and hasattr(x, "copy_"):
             x.copy_(result)
             return x
         return result
+
 
 @register_activation
 class PFPM(BaseActivation):
@@ -1292,12 +1287,12 @@ class PFPM(BaseActivation):
     """
 
     def __init__(
-            self,
-            input_shape: int,
-            p: float = 1.0,
-            learnable: bool = True,
-            inplace: bool = False,
-            **kwargs
+        self,
+        input_shape: int,
+        p: float = 1.0,
+        learnable: bool = True,
+        inplace: bool = False,
+        **kwargs,
     ) -> None:
         super().__init__(**kwargs)
 
@@ -1310,7 +1305,7 @@ class PFPM(BaseActivation):
 
     def _forward(self, x: Tensor) -> Tensor:
         result = torch.nn.functional.relu(x) * torch.tanh(torch.log1p(torch.exp(x))) + self.p
-        if self.inplace and hasattr(x, 'copy_'):
+        if self.inplace and hasattr(x, "copy_"):
             x.copy_(result)
             return x
         return result
@@ -1357,13 +1352,13 @@ class PSIGRAMP(BaseActivation):
     """
 
     def __init__(
-            self,
-            input_shape: int,
-            a: float = 0.5,
-            b: float = 1.0,
-            learnable: bool = True,
-            inplace: bool = False,
-            **kwargs
+        self,
+        input_shape: int,
+        a: float = 0.5,
+        b: float = 1.0,
+        learnable: bool = True,
+        inplace: bool = False,
+        **kwargs,
     ) -> None:
         super().__init__(**kwargs)
 
@@ -1378,15 +1373,15 @@ class PSIGRAMP(BaseActivation):
     def _forward(self, x: Tensor) -> Tensor:
         converted_a = torch.nn.functional.sigmoid(self.a)
         relu_section = 0.5 * (
-                    torch.nn.functional.relu(2 * self.b * x + 1) - torch.nn.functional.relu(2 * self.b * x - 1))
+            torch.nn.functional.relu(2 * self.b * x + 1)
+            - torch.nn.functional.relu(2 * self.b * x - 1)
+        )
 
         result = converted_a * (torch.nn.functional.sigmoid(x)) + (1 - converted_a) * relu_section
-        if self.inplace and hasattr(x, 'copy_'):
+        if self.inplace and hasattr(x, "copy_"):
             x.copy_(result)
             return x
         return result
-
-
 
 
 @register_activation
@@ -1426,12 +1421,12 @@ class RSIGN(BaseActivation):
     """
 
     def __init__(
-            self,
-            input_shape: int,
-            a: float = 0.5,
-            learnable: bool = True,
-            inplace: bool = False,
-            **kwargs
+        self,
+        input_shape: int,
+        a: float = 0.5,
+        learnable: bool = True,
+        inplace: bool = False,
+        **kwargs,
     ) -> None:
         super().__init__(**kwargs)
 
@@ -1445,10 +1440,11 @@ class RSIGN(BaseActivation):
     def _forward(self, x: Tensor) -> Tensor:
         func1 = torch.sign(x - self.a)
         result = torch.where(func1 == 0, torch.tensor(1), func1)
-        if self.inplace and hasattr(x, 'copy_'):
+        if self.inplace and hasattr(x, "copy_"):
             x.copy_(result)
             return x
         return result
+
 
 @register_activation
 class MAF(BaseActivation):
@@ -1486,13 +1482,13 @@ class MAF(BaseActivation):
     """
 
     def __init__(
-            self,
-            input_shape: int,
-            a: float = 0.5,
-            b: float = 1.0,
-            learnable: bool = True,
-            inplace: bool = False,
-            **kwargs
+        self,
+        input_shape: int,
+        a: float = 0.5,
+        b: float = 1.0,
+        learnable: bool = True,
+        inplace: bool = False,
+        **kwargs,
     ) -> None:
         super().__init__(**kwargs)
 
@@ -1506,10 +1502,11 @@ class MAF(BaseActivation):
 
     def _forward(self, x: Tensor) -> Tensor:
         result = torch.sqrt((x - self.a) ** 2 + torch.pow(self.b, 2))
-        if self.inplace and hasattr(x, 'copy_'):
+        if self.inplace and hasattr(x, "copy_"):
             x.copy_(result)
             return x
         return result
+
 
 @register_activation
 class UAF(BaseActivation):
@@ -1562,16 +1559,16 @@ class UAF(BaseActivation):
     """
 
     def __init__(
-            self,
-            input_shape: int,
-            a: float = 0.5,
-            b: float = 1.0,
-            c: float = 0.5,
-            d: float = 1.0,
-            e: float = 0.5,
-            learnable: bool = True,
-            inplace: bool = False,
-            **kwargs
+        self,
+        input_shape: int,
+        a: float = 0.5,
+        b: float = 1.0,
+        c: float = 0.5,
+        d: float = 1.0,
+        e: float = 0.5,
+        learnable: bool = True,
+        inplace: bool = False,
+        **kwargs,
     ) -> None:
         super().__init__(**kwargs)
 
@@ -1587,14 +1584,13 @@ class UAF(BaseActivation):
         self.inplace: bool = inplace
 
     def _forward(self, x: Tensor) -> Tensor:
-        term1 = torch.log1p(torch.exp(self.a * (x + self.b) + self.c * x ** 2))
+        term1 = torch.log1p(torch.exp(self.a * (x + self.b) + self.c * x**2))
         term2 = torch.log1p(torch.exp(self.d * (x - self.b)))
         result = term1 - term2 + self.e
-        if self.inplace and hasattr(x, 'copy_'):
+        if self.inplace and hasattr(x, "copy_"):
             x.copy_(result)
             return x
         return result
-
 
 
 @register_activation
@@ -1645,15 +1641,14 @@ class GReLU(BaseActivation):
             Computes the GReLU activation transformation for the input tensor.
     """
 
-
     def __init__(
-            self,
-            input_shape: int,
-            a: float = 1.5,
-            b: float = 0.5,
-            learnable: bool = True,
-            inplace: bool = False,
-            **kwargs
+        self,
+        input_shape: int,
+        a: float = 1.5,
+        b: float = 0.5,
+        learnable: bool = True,
+        inplace: bool = False,
+        **kwargs,
     ) -> None:
         super().__init__(**kwargs)
 
@@ -1665,19 +1660,19 @@ class GReLU(BaseActivation):
         self.b: Tensor = create_param(b)
         self.inplace: bool = inplace
 
-
     def _forward(self, x: Tensor) -> Tensor:
         # softplus ensures b > 0 and a > 1
         a = 1 + F.softplus(self.a)
         b = F.softplus(self.b)
 
         term1 = torch.log1p(torch.exp(torch.log(a) * b * x))
-        term2 =  b * torch.log(a)
+        term2 = b * torch.log(a)
         result = torch.exp(torch.log(term1) - torch.log(term2))
-        if self.inplace and hasattr(x, 'copy_'):
+        if self.inplace and hasattr(x, "copy_"):
             x.copy_(result)
             return x
         return result
+
 
 @register_activation
 class GLN(BaseActivation):
@@ -1723,15 +1718,14 @@ class GLN(BaseActivation):
             Computes the GLN activation transformation by blending sin and tanh using a sigmoid gate.
     """
 
-
     def __init__(
-            self,
-            input_shape: int,
-            a: float = 1.0,
-            b: float = 1.0,
-            learnable: bool = True,
-            inplace: bool = False,
-            **kwargs
+        self,
+        input_shape: int,
+        a: float = 1.0,
+        b: float = 1.0,
+        learnable: bool = True,
+        inplace: bool = False,
+        **kwargs,
     ) -> None:
         super().__init__(**kwargs)
 
@@ -1743,13 +1737,10 @@ class GLN(BaseActivation):
         self.b: Tensor = create_param(b)
         self.inplace: bool = inplace
 
-
     def _forward(self, x: Tensor) -> Tensor:
 
         result = F.sigmoid(self.a) * torch.sin(x) + (1 - F.sigmoid(self.a)) * torch.tanh(x) - self.b
-        if self.inplace and hasattr(x, 'copy_'):
+        if self.inplace and hasattr(x, "copy_"):
             x.copy_(result)
             return x
         return result
-
-

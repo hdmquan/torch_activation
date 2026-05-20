@@ -3,14 +3,14 @@
 # - Get all register activation functions
 # - Test if they can be inplace
 # - If they are not inplace-able, pass inplace to it, if it doesn't return not implement error, raise an error.
-# - If they are inplace-able, pass inplace to it, if the output doesn't match the result from the not inplace, error. 
+# - If they are inplace-able, pass inplace to it, if the output doesn't match the result from the not inplace, error.
 # - If it raise any error that is something other than not implement or if the flag is not implemented, give a warning. else mark it as pass.
 
 import torch
 from loguru import logger
+
 import torch_activation as tac
 from torch_activation.utils import can_be_inplace
-
 
 if __name__ == "__main__":
 
@@ -29,10 +29,10 @@ if __name__ == "__main__":
             logger.error(f"{act_name}: Not found in registry")
             failed += 1
             continue
-        
+
         # Is it even a word?
         is_inplaceable = can_be_inplace(act_fn, x)
-        
+
         # Test non-inplace version
         try:
             normal_output = act_fn(x.clone())
@@ -88,4 +88,3 @@ if __name__ == "__main__":
     print(f"\033[31mFailed: {failed}\033[0m")
 
     assert failed == 0, "Failed tests"
-        

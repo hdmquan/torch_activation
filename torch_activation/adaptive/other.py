@@ -1,12 +1,13 @@
+from typing import Callable
+
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from torch_activation.base import BaseActivation
-
 from torch import Tensor
-from typing import Callable
 
 from torch_activation import register_activation
+from torch_activation.base import BaseActivation
+
 
 @register_activation
 class SGT(BaseActivation):
@@ -45,18 +46,18 @@ class SGT(BaseActivation):
     """
 
     def __init__(
-        self, 
-        a: float = 0.1, 
-        alpha: float = 1.0, 
-        b: float = 1.1, 
-        beta: float = 1.0, 
-        learnable: bool = False, 
-        **kwargs
+        self,
+        a: float = 0.1,
+        alpha: float = 1.0,
+        b: float = 1.1,
+        beta: float = 1.0,
+        learnable: bool = False,
+        **kwargs,
     ):
         super().__init__(**kwargs)
         self.a = a
-        self.b = b  
-        
+        self.b = b
+
         if learnable:
             self.alpha = nn.Parameter(Tensor([alpha]))
             self.beta = nn.Parameter(Tensor([beta]))
@@ -91,13 +92,10 @@ class SGT(BaseActivation):
         return x
 
 
-
-
 if __name__ == "__main__":
     from torch_activation.utils import plot_activation
-    activation_params = {
-        "SGT": {"a": [1, 2], "b": [1, 2], "alpha": [1, 2], "beta": [1, 2]}
-    }
+
+    activation_params = {"SGT": {"a": [1, 2], "b": [1, 2], "alpha": [1, 2], "beta": [1, 2]}}
 
     for activation_name, params in activation_params.items():
         # Get the class from its name

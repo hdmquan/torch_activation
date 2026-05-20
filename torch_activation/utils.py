@@ -1,11 +1,12 @@
-import os
 import math
-import torch
-import plotly
-import plotly.io as pio
-import plotly.graph_objects as go
-from torch import Tensor
+import os
 from typing import Tuple
+
+import plotly
+import plotly.graph_objects as go
+import plotly.io as pio
+import torch
+from torch import Tensor
 
 
 def sech(z):
@@ -14,42 +15,45 @@ def sech(z):
     """
     return 1 / torch.cosh(z)
 
+
 def split(x: Tensor, dim: int) -> Tuple[Tensor, Tensor]:
     dim_size = x.size(dim)
     assert dim_size % 2 == 0, f"Dimension {dim} must be divisible by 2"
-    
+
     split_size = dim_size // 2
     return torch.split(x, split_size, dim=dim)
+
 
 def can_be_inplace(func, x):
     """
     Check if an activation function can be safely performed in-place.
-    
+
     Args:
         func: The activation function to test
         x: A sample input tensor
-        
+
     Returns:
         bool: True if the function can be performed in-place, False otherwise
     """
     x = x.clone().requires_grad_()
     y = func(x)
     grad_outputs = torch.ones_like(y)
-    
+
     dy_dx = torch.autograd.grad(y, x, grad_outputs, retain_graph=True, create_graph=True)[0]
-    
+
     # If derivatives computed by only x match the above, the function can be in-place
     try:
         # Detach to not use y inderivative computation
         y = y.detach()
-        
+
         y_recomputed = func(x)
         dy_dx_recomputed = torch.autograd.grad(y_recomputed, x, grad_outputs, retain_graph=True)[0]
-        
+
         return torch.allclose(dy_dx, dy_dx_recomputed, rtol=1e-4, atol=1e-4)
-        
-    except:  # TODO: Add specific
+
+    except Exception:
         return False
+
 
 def plot_activation(
     activation: torch.nn.Module,
@@ -67,17 +71,18 @@ def plot_activation(
     Parameters:
         activation (torch.nn.Module): The activation function to plot.
         params (dict): A dictionary of parameter names and values for the activation function.
-        save_dir (str, optional): The directory to save the generated image. Defaults to "./images/activation_images".
+        save_dir (str, optional): Directory to save the generated image.
+            Defaults to "./images/activation_images".
         x_range (tuple, optional): The x-axis range for the plot. Defaults to (-5, 5).
         y_range (tuple, optional): The y-axis range for the plot. Defaults to None (auto-scale).
         preview (bool, optional): Whether to display the plot interactively. Defaults to False.
-        plot_derivative (bool, optional): Whether to plot the derivative of the activation function. Defaults to True.
+        plot_derivative (bool, optional): Whether to plot the derivative. Defaults to True.
 
     Returns:
         None
 
-    The function plots the activation function and, optionally, its derivative for the given parameters.
-    The resulting plot is saved as an image in the specified `save_dir` directory.
+    Plots the activation function and, optionally, its derivative for the given parameters.
+    Saves the resulting plot as an image in `save_dir`.
 
     If `preview` is set to True, the plot will also be displayed interactively.
 
@@ -130,9 +135,7 @@ def plot_activation(
             )
 
     else:
-        param_combinations = torch.tensor(
-            [[v for v in params[key]] for key in params.keys()]
-        ).T
+        param_combinations = torch.tensor([[v for v in params[key]] for key in params.keys()]).T
 
         y_ = []
         for i, combination in enumerate(param_combinations):

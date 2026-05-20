@@ -1,6 +1,7 @@
 import torch
 import torch.nn as nn
 from torch import Tensor
+
 from torch_activation import register_activation
 from torch_activation.base import BaseActivation
 
@@ -10,11 +11,11 @@ class SQNL(BaseActivation):
     r"""
     Applies the SQNL (Square Non-Linear) activation function:
 
-    :math:`\text{SQNL}(z) = \begin{cases} 
-    1, & z > 2 \\ 
-    z - \frac{z^2}{4}, & 0 \leq z \leq 2 \\ 
-    z + \frac{z^2}{4}, & -2 \leq z < 0 \\ 
-    -1, & z < -2 
+    :math:`\text{SQNL}(z) = \begin{cases}
+    1, & z > 2 \\
+    z - \frac{z^2}{4}, & 0 \leq z \leq 2 \\
+    z + \frac{z^2}{4}, & -2 \leq z < 0 \\
+    -1, & z < -2
     \end{cases}`
 
     Args:
@@ -71,10 +72,10 @@ class SQLU(BaseActivation):
     r"""
     Applies the SQLU (Square Linear Unit) activation function:
 
-    :math:`\text{SQLU}(z) = \begin{cases} 
-    z, & z > 0 \\ 
-    z + \frac{z^2}{4}, & -2 \leq z \leq 0 \\ 
-    -1, & z < -2 
+    :math:`\text{SQLU}(z) = \begin{cases}
+    z, & z > 0 \\
+    z + \frac{z^2}{4}, & -2 \leq z \leq 0 \\
+    -1, & z < -2
     \end{cases}`
 
     Args:
@@ -111,11 +112,9 @@ class SQLU(BaseActivation):
         return result
 
     def _forward_inplace(self, z):
-        gt0 = z > 0
         betweenNeg2and0 = (z >= -2) & (z <= 0)
         ltNeg2 = z < -2
 
-        # No change needed for z > 0
         z[betweenNeg2and0] = z[betweenNeg2and0] + (z[betweenNeg2and0] ** 2) / 4
         z[ltNeg2] = -1
 
@@ -127,10 +126,10 @@ class Squish(BaseActivation):
     r"""
     Applies the Squish activation function:
 
-    :math:`\text{Squish}(z) = \begin{cases} 
-    z + \frac{z^2}{32}, & z > 0 \\ 
-    z + \frac{z^2}{2}, & -2 \leq z \leq 0 \\ 
-    0, & z < -2 
+    :math:`\text{Squish}(z) = \begin{cases}
+    z + \frac{z^2}{32}, & z > 0 \\
+    z + \frac{z^2}{2}, & -2 \leq z \leq 0 \\
+    0, & z < -2
     \end{cases}`
 
     Args:
@@ -183,10 +182,10 @@ class SqREU(BaseActivation):
     r"""
     Applies the SqREU (Square Rectified Exponential Unit) activation function:
 
-    :math:`\text{SqREU}(z) = \begin{cases} 
-    z, & z > 0 \\ 
-    z + \frac{z^2}{2}, & -2 \leq z \leq 0 \\ 
-    0, & z < -2 
+    :math:`\text{SqREU}(z) = \begin{cases}
+    z, & z > 0 \\
+    z + \frac{z^2}{2}, & -2 \leq z \leq 0 \\
+    0, & z < -2
     \end{cases}`
 
     Args:
@@ -223,11 +222,9 @@ class SqREU(BaseActivation):
         return result
 
     def _forward_inplace(self, z):
-        gt0 = z > 0
         betweenNeg2and0 = (z >= -2) & (z <= 0)
         ltNeg2 = z < -2
 
-        # No change needed for z > 0
         z[betweenNeg2and0] = z[betweenNeg2and0] + (z[betweenNeg2and0] ** 2) / 2
         z[ltNeg2] = 0
 
@@ -281,7 +278,6 @@ class SqSoftplus(BaseActivation):
         return result
 
     def _forward_inplace(self, z):
-        gtHalf = z > 0.5
         betweenNegHalfAndHalf = (z >= -0.5) & (z <= 0.5)
         ltNegHalf = z < -0.5
 
@@ -298,11 +294,11 @@ class LogSQNL(BaseActivation):
     r"""
     Applies the LogSQNL (Logarithmic Square Non-Linear) activation function:
 
-    :math:`\text{LogSQNL}(z) = \begin{cases} 
-    1, & z > 2 \\ 
-    \frac{1}{2}z - \frac{z^2}{4} + \frac{1}{2}, & 0 \leq z \leq 2 \\ 
-    \frac{1}{2}z + \frac{z^2}{4} + \frac{1}{2}, & -2 \leq z < 0 \\ 
-    0, & z < -2 
+    :math:`\text{LogSQNL}(z) = \begin{cases}
+    1, & z > 2 \\
+    \frac{1}{2}z - \frac{z^2}{4} + \frac{1}{2}, & 0 \leq z \leq 2 \\
+    \frac{1}{2}z + \frac{z^2}{4} + \frac{1}{2}, & -2 \leq z < 0 \\
+    0, & z < -2
     \end{cases}`
 
     Args:
@@ -335,9 +331,7 @@ class LogSQNL(BaseActivation):
 
         result[gt2] = 1
         result[between0and2] = 0.5 * z[between0and2] - (z[between0and2] ** 2) / 4 + 0.5
-        result[betweenNeg2and0] = (
-            0.5 * z[betweenNeg2and0] + (z[betweenNeg2and0] ** 2) / 4 + 0.5
-        )
+        result[betweenNeg2and0] = 0.5 * z[betweenNeg2and0] + (z[betweenNeg2and0] ** 2) / 4 + 0.5
         result[ltNeg2] = 0
 
         return result
@@ -350,9 +344,7 @@ class LogSQNL(BaseActivation):
 
         z[gt2] = 1
         z[between0and2] = 0.5 * z[between0and2] - (z[between0and2] ** 2) / 4 + 0.5
-        z[betweenNeg2and0] = (
-            0.5 * z[betweenNeg2and0] + (z[betweenNeg2and0] ** 2) / 4 + 0.5
-        )
+        z[betweenNeg2and0] = 0.5 * z[betweenNeg2and0] + (z[betweenNeg2and0] ** 2) / 4 + 0.5
         z[ltNeg2] = 0
 
         return z
@@ -401,10 +393,10 @@ class LinQ(BaseActivation):
     r"""
     Applies the LinQ (Linear Quadratic) activation function:
 
-    :math:`\text{LinQ}(z) = \begin{cases} 
-    az + 1 - 2z + z^2, & z \geq 2 - 2a \\ 
-    \frac{1}{4}z(4 - |z|), & -2 + 2a < z < 2 - 2a \\ 
-    az - 1 - 2z + z^2, & z \leq -2 + 2a 
+    :math:`\text{LinQ}(z) = \begin{cases}
+    az + 1 - 2z + z^2, & z \geq 2 - 2a \\
+    \frac{1}{4}z(4 - |z|), & -2 + 2a < z < 2 - 2a \\
+    az - 1 - 2z + z^2, & z \leq -2 + 2a
     \end{cases}`
 
     Args:
@@ -440,15 +432,9 @@ class LinQ(BaseActivation):
         lower_region = (~upper_region) & (z <= lower_threshold)
         middle_region = ~upper_region & ~lower_region
 
-        result[upper_region] = (
-            a * z[upper_region] + 1 - 2 * z[upper_region] + z[upper_region] ** 2
-        )
-        result[middle_region] = (
-            0.25 * z[middle_region] * (4 - torch.abs(z[middle_region]))
-        )
-        result[lower_region] = (
-            a * z[lower_region] - 1 - 2 * z[lower_region] + z[lower_region] ** 2
-        )
+        result[upper_region] = a * z[upper_region] + 1 - 2 * z[upper_region] + z[upper_region] ** 2
+        result[middle_region] = 0.25 * z[middle_region] * (4 - torch.abs(z[middle_region]))
+        result[lower_region] = a * z[lower_region] - 1 - 2 * z[lower_region] + z[lower_region] ** 2
 
         return result
 
@@ -461,13 +447,9 @@ class LinQ(BaseActivation):
         lower_region = (~upper_region) & (z <= lower_threshold)
         middle_region = ~upper_region & ~lower_region
 
-        z[upper_region] = (
-            a * z[upper_region] + 1 - 2 * z[upper_region] + z[upper_region] ** 2
-        )
+        z[upper_region] = a * z[upper_region] + 1 - 2 * z[upper_region] + z[upper_region] ** 2
         z[middle_region] = 0.25 * z[middle_region] * (4 - torch.abs(z[middle_region]))
-        z[lower_region] = (
-            a * z[lower_region] - 1 - 2 * z[lower_region] + z[lower_region] ** 2
-        )
+        z[lower_region] = a * z[lower_region] - 1 - 2 * z[lower_region] + z[lower_region] ** 2
 
         return z
 
@@ -477,9 +459,9 @@ class ISRLU(BaseActivation):
     r"""
     Applies the ISRLU (Inverse Square Root Linear Unit) activation function:
 
-    :math:`\text{ISRLU}(z) = \begin{cases} 
-    z, & z \geq 0 \\ 
-    \frac{z}{\sqrt{1 + az^2}}, & z < 0 
+    :math:`\text{ISRLU}(z) = \begin{cases}
+    z, & z \geq 0 \\
+    \frac{z}{\sqrt{1 + az^2}}, & z < 0
     \end{cases}`
 
     Args:
@@ -600,9 +582,9 @@ class SquaredReLU(BaseActivation):
     r"""
     Applies the SquaredReLU activation function:
 
-    :math:`\text{SquaredReLU}(z) = \begin{cases} 
-    z^2, & z > 0 \\ 
-    0, & z \leq 0 
+    :math:`\text{SquaredReLU}(z) = \begin{cases}
+    z^2, & z > 0 \\
+    0, & z \leq 0
     \end{cases}`
 
     Args:

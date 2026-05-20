@@ -1,5 +1,7 @@
 import sys
+
 import torch
+
 import torch_activation as ta
 
 
@@ -35,4 +37,5 @@ def tag_all() -> dict[str, list[str]]:
 
 if __name__ == "__main__":
     import json
+
     json.dump(tag_all(), sys.stdout, indent=2)

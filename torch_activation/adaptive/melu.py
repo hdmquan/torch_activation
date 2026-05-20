@@ -1,11 +1,13 @@
+import math
+
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from torch_activation.base import BaseActivation
-import math
 from torch import Tensor
 
 from torch_activation import register_activation
+from torch_activation.base import BaseActivation
+
 
 @register_activation
 class MeLU(BaseActivation):
@@ -35,28 +37,30 @@ class MeLU(BaseActivation):
         >>> output = m(x)
     """
 
-    def __init__(self, k: int = 4, init_negative_slope: float = 0.01, init_a: float = 0.0, **kwargs):
+    def __init__(
+        self, k: int = 4, init_negative_slope: float = 0.01, init_a: float = 0.0, **kwargs
+    ):
         super().__init__(**kwargs)
         self.k = k
-        
+
         # PReLU parameter
         self.prelu_weight = nn.Parameter(Tensor([init_negative_slope]))
-        
+
         # Trainable parameters a_i,j
-        self.a = nn.Parameter(torch.full((k-1,), init_a))
-        
-        b = torch.zeros(k-1)
-        c = torch.zeros(k-1)
-        for j in range(k-1):
-            b[j] = j * 2.0 / (k-1) - 1.0
-            c[j] = 1.0 / (j+1)
-        self.register_buffer('b', b)
-        self.register_buffer('c', c)
+        self.a = nn.Parameter(torch.full((k - 1,), init_a))
+
+        b = torch.zeros(k - 1)
+        c = torch.zeros(k - 1)
+        for j in range(k - 1):
+            b[j] = j * 2.0 / (k - 1) - 1.0
+            c[j] = 1.0 / (j + 1)
+        self.register_buffer("b", b)
+        self.register_buffer("c", c)
 
     def _forward(self, x) -> Tensor:
         prelu_out = F.prelu(x, self.prelu_weight.to(x.dtype))
         sum_part = torch.zeros_like(x)
-        for j in range(self.k-1):
+        for j in range(self.k - 1):
             phi = torch.clamp(self.c[j] - torch.abs(x - self.b[j]), min=0.0)
             sum_part = sum_part + self.a[j] * phi
         return prelu_out + sum_part
@@ -93,21 +97,20 @@ class MMeLU(BaseActivation):
         self.a_raw = nn.Parameter(torch.logit(Tensor([init_a])))
         self.b_raw = nn.Parameter(torch.log(torch.exp(Tensor([init_b])) - 1))
         self.c = nn.Parameter(Tensor([init_c]))
-        
 
     def _forward(self, x) -> Tensor:
         # Constrain a to [0, 1] using sigmoid
         a = torch.sigmoid(self.a_raw)
-        
+
         # Constrain b to be positive using softplus
         b = F.softplus(self.b_raw)
-        
+
         # First term: a * max(b - |z - c|, 0)
         first_term = a * torch.clamp(b - torch.abs(x - self.c), min=0.0)
-        
+
         # Second term: (1 - a) * ReLU(z)
         second_term = (1 - a) * F.relu(x, inplace=self.inplace)
-        
+
         return first_term + second_term
 
 
@@ -139,30 +142,32 @@ class GaLU(BaseActivation):
         >>> output = m(x)
     """
 
-    def __init__(self, k: int = 4, init_negative_slope: float = 0.01, init_a: float = 0.0, **kwargs):
+    def __init__(
+        self, k: int = 4, init_negative_slope: float = 0.01, init_a: float = 0.0, **kwargs
+    ):
         super().__init__(**kwargs)
         self.k = k
-        
+
         # PReLU parameter
         self.prelu_weight = nn.Parameter(Tensor([init_negative_slope]))
-        
+
         # Trainable parameters a_i,j
-        self.a = nn.Parameter(torch.full((k-1,), init_a))
-        
-        b = torch.zeros(k-1)
-        c = torch.zeros(k-1)
-        for j in range(k-1):
-            b[j] = j * 2.0 / (k-1) - 1.0
-            c[j] = 1.0 / (j+1)
-        self.register_buffer('b', b)
-        self.register_buffer('c', c)
+        self.a = nn.Parameter(torch.full((k - 1,), init_a))
+
+        b = torch.zeros(k - 1)
+        c = torch.zeros(k - 1)
+        for j in range(k - 1):
+            b[j] = j * 2.0 / (k - 1) - 1.0
+            c[j] = 1.0 / (j + 1)
+        self.register_buffer("b", b)
+        self.register_buffer("c", c)
 
     def _forward(self, x) -> Tensor:
         prelu_out = F.prelu(x, self.prelu_weight.to(x.dtype))
         sum_part = torch.zeros_like(x)
-        for j in range(self.k-1):
+        for j in range(self.k - 1):
             term1 = torch.clamp(self.c[j] - torch.abs(x - self.b[j]), min=0.0)
-            term2 = torch.clamp(torch.abs(x - self.b[j] - 2*self.c[j]) - self.c[j], max=0.0)
+            term2 = torch.clamp(torch.abs(x - self.b[j] - 2 * self.c[j]) - self.c[j], max=0.0)
             phi = term1 + term2
             sum_part = sum_part + self.a[j] * phi
         return prelu_out + sum_part
@@ -195,12 +200,11 @@ class HardSwish(BaseActivation):
     def __init__(self, b_init: float = 1.0, **kwargs):
         super().__init__(**kwargs)
         self.b = nn.Parameter(Tensor([b_init]))
-        
 
     def _forward(self, x) -> Tensor:
         # Calculate hard sigmoid part: max(0, min(0.2*b*x + 0.5, 1))
         hard_sigmoid = torch.clamp(0.2 * self.b * x + 0.5, min=0.0, max=1.0)
-        
+
         # Multiply by 2*x
         if self.inplace and x.is_floating_point():
             result = x.mul_(2).mul_(hard_sigmoid)

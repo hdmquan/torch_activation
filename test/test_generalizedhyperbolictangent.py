@@ -1,22 +1,28 @@
 import math
+
 import pytest
 import torch
+
 import torch_activation
 
 ACTIVATION_NAME = "GeneralizedHyperbolicTangent"
+
 
 def scalar_ref(x: float) -> float:
     num = 1 - math.exp(-1.0 * x)
     den = 1 + math.exp(-1.0 * x)
     return 1.0 * (num / den)
 
+
 def _get_module(**kwargs):
     cls = getattr(torch_activation, ACTIVATION_NAME)
     return cls(**kwargs)
 
+
 def _ref_tensor(x: torch.Tensor) -> torch.Tensor:
     flat = x.reshape(-1).tolist()
     return torch.tensor([scalar_ref(v) for v in flat], dtype=x.dtype).reshape(x.shape)
+
 
 class TestShape:
     def test_shape_4d(self):
@@ -29,13 +35,16 @@ class TestShape:
         x = torch.randn(16)
         assert m(x).shape == x.shape
 
+
 class TestNumerical:
     def test_allclose_ref(self):
         m = _get_module()
         x = torch.linspace(-3, 3, 50)
         expected = _ref_tensor(x)
-        assert torch.allclose(m(x), expected, atol=1e-5), \
-            f"Max error: {(m(x) - expected).abs().max().item()}"
+        assert torch.allclose(
+            m(x), expected, atol=1e-5
+        ), f"Max error: {(m(x) - expected).abs().max().item()}"
+
 
 class TestGradients:
     def test_gradcheck(self):
@@ -45,6 +54,7 @@ class TestGradients:
 
     def test_finite_diff_nonsmooth(self):
         pytest.skip("smooth activation — gradcheck used instead")
+
 
 class TestEdgeCases:
     def test_no_nan_inf(self):
@@ -60,6 +70,7 @@ class TestEdgeCases:
         x = torch.zeros(8)
         out = m(x)
         assert torch.allclose(out, torch.zeros_like(out), atol=1e-6)
+
 
 class TestInplace:
     def test_inplace_matches_normal(self):

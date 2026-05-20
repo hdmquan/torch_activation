@@ -1,10 +1,11 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from torch_activation.base import BaseActivation
 from torch import Tensor
 
 from torch_activation import register_activation
+from torch_activation.base import BaseActivation
+
 
 @register_activation
 class MollifiedAbsoluteValue(BaseActivation):
@@ -549,11 +550,11 @@ class MishPlus(BaseActivation):
         # First BipolarPlus
         abs_x_eps = torch.sqrt(x.pow(2) + self.epsilon)
         bipolar1 = x / abs_x_eps
-        
+
         # Second BipolarPlus
         abs_bipolar1_eps = torch.sqrt(bipolar1.pow(2) + self.epsilon)
         bipolar2 = bipolar1 / abs_bipolar1_eps
-        
+
         return x * bipolar2
 
 

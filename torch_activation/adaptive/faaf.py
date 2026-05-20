@@ -1,14 +1,16 @@
+import math
+
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from torch_activation.base import BaseActivation
-import math
-from torch import Tensor
 from scipy.special import bernoulli
+from torch import Tensor
 
 from torch_activation import register_activation
+from torch_activation.base import BaseActivation
 
 # TODO: Naming
+
 
 class FAAF(BaseActivation):
     r"""
@@ -110,7 +112,7 @@ class FracSoftplus(BaseActivation):
     def _forward(self, x) -> Tensor:
         # Clamp a to be in (0, 2) range for stability
         a_clamped = torch.clamp(self.a, 0.01, 1.99)
-        
+
         # Special cases for efficiency
         if torch.abs(a_clamped - 0.0) < 1e-4:
             # When a ≈ 0, return softplus
@@ -118,19 +120,19 @@ class FracSoftplus(BaseActivation):
         elif torch.abs(a_clamped - 1.0) < 1e-4:
             # When a ≈ 1, return sigmoid
             return torch.sigmoid(x)
-        
+
         # Compute the approximation using finite sum
         result = torch.zeros_like(x)
         h_pow_a = torch.pow(self.h, a_clamped)
         gamma_a_plus_1 = torch.exp(torch.lgamma(a_clamped + 1))
-        
+
         for n in range(self.n_terms):
             # Calculate terms in the sum
             coef = ((-1) ** n) * gamma_a_plus_1
             denom = math.factorial(n) * torch.exp(torch.lgamma(1 - n + a_clamped))
             term = coef * F.softplus(x - n * self.h) / denom
             result += term
-            
+
         return result / h_pow_a
 
 
@@ -172,24 +174,24 @@ class FracTanh(BaseActivation):
     def _forward(self, x) -> Tensor:
         # Clamp a to be in (0, 2) range for stability
         a_clamped = torch.clamp(self.a, 0.01, 1.99)
-        
+
         # Special cases for efficiency
         if torch.abs(a_clamped - 0.0) < 1e-4:
             # When a ≈ 0, return tanh
             return torch.tanh(x)
-        
+
         # Compute the approximation using finite sum
         result = torch.zeros_like(x)
         h_pow_a = torch.pow(self.h, a_clamped)
         gamma_a_plus_1 = torch.exp(torch.lgamma(a_clamped + 1))
-        
+
         for n in range(self.n_terms):
             # Calculate terms in the sum
             coef = ((-1) ** n) * gamma_a_plus_1
             denom = math.factorial(n) * torch.exp(torch.lgamma(1 - n + a_clamped))
             term = coef * torch.tanh(x - n * self.h) / denom
             result += term
-            
+
         return result / h_pow_a
 
 
@@ -274,7 +276,9 @@ class FracLReLU(BaseActivation):
         >>> output = m(x)
     """
 
-    def __init__(self, a_init: float = 0.5, negative_slope: float = 0.1, eps: float = 1e-6, **kwargs):
+    def __init__(
+        self, a_init: float = 0.5, negative_slope: float = 0.1, eps: float = 1e-6, **kwargs
+    ):
         super().__init__(**kwargs)
         self.a = nn.Parameter(Tensor([a_init]))
         self.negative_slope = negative_slope
@@ -284,7 +288,11 @@ class FracLReLU(BaseActivation):
         a_clamped = torch.clamp(self.a, 0.01, 0.99)
         gamma_term = torch.exp(torch.lgamma(2 - a_clamped))
         val_pos = torch.pow(torch.clamp(x, min=0) + self.eps, 1 - a_clamped) / gamma_term
-        val_neg = -self.negative_slope * torch.pow(torch.clamp(-x, min=0) + self.eps, 1 - a_clamped) / gamma_term
+        val_neg = (
+            -self.negative_slope
+            * torch.pow(torch.clamp(-x, min=0) + self.eps, 1 - a_clamped)
+            / gamma_term
+        )
         return torch.where(x > 0, val_pos, torch.where(x < 0, val_neg, torch.zeros_like(x)))
 
 
@@ -325,10 +333,10 @@ class FracPReLU(BaseActivation):
     def _forward(self, x) -> Tensor:
         # Clamp a to be in (0, 1) range for stability
         a_clamped = torch.clamp(self.a, 0.01, 0.99)
-        
+
         # Calculate gamma term
         gamma_term = torch.exp(torch.lgamma(2 - a_clamped))
-        
+
         b_abs = torch.abs(self.b)
         val_pos = torch.pow(torch.clamp(x, min=0) + self.eps, 1 - a_clamped) / gamma_term
         val_neg = -b_abs * torch.pow(torch.clamp(-x, min=0) + self.eps, 1 - a_clamped) / gamma_term
@@ -364,7 +372,9 @@ class FracELU(BaseActivation):
         >>> output = m(x)
     """
 
-    def __init__(self, a_init: float = 0.5, alpha: float = 1.0, n_terms: int = 5, eps: float = 1e-6, **kwargs):
+    def __init__(
+        self, a_init: float = 0.5, alpha: float = 1.0, n_terms: int = 5, eps: float = 1e-6, **kwargs
+    ):
         super().__init__(**kwargs)
         self.a = nn.Parameter(Tensor([a_init]))
         self.alpha = alpha
@@ -382,12 +392,15 @@ class FracELU(BaseActivation):
         second_term = torch.zeros_like(x)
         for k in range(self.n_terms):
             gamma_k_plus_1 = math.factorial(k)
-            gamma_k_plus_1_minus_a = torch.exp(torch.lgamma(torch.tensor(k + 1, dtype=x.dtype, device=x.device) - a_clamped))
+            gamma_k_plus_1_minus_a = torch.exp(
+                torch.lgamma(torch.tensor(k + 1, dtype=x.dtype, device=x.device) - a_clamped)
+            )
             coef = 1 / gamma_k_plus_1 * gamma_k_plus_1_minus_a / gamma_k_plus_1
             second_term = second_term + coef * torch.pow(abs_x, k - a_clamped)
         val_neg = self.alpha * second_term + first_term
 
         return torch.where(x > 0, val_pos, torch.where(x < 0, val_neg, torch.zeros_like(x)))
+
 
 # TODO: Forward pass failed: Can't call numpy() on Tensor that requires grad. Use tensor.detach().numpy() instead.
 # @register_activation
@@ -429,14 +442,14 @@ class FracSiLU1(BaseActivation):
     def _forward(self, x) -> Tensor:
         # Clamp a to be in (0, 1) range for stability
         a_clamped = torch.clamp(self.a, 0.01, 0.99)
-        
+
         # Create masks for positive and negative values
         pos_mask = x >= 0
         neg_mask = x < 0
-        
+
         # Initialize result tensor
         result = torch.zeros_like(x)
-        
+
         # Apply to positive values
         if pos_mask.any():
             x_pos = x[pos_mask]
@@ -444,33 +457,34 @@ class FracSiLU1(BaseActivation):
             x_pos = x_pos + self.eps
             gamma_term = torch.exp(torch.lgamma(2 - a_clamped))
             result[pos_mask] = torch.pow(x_pos, 1 - a_clamped) / gamma_term
-        
+
         # Apply to negative values
         if neg_mask.any():
             x_neg = x[neg_mask]
-            
+
             # Compute the sum
             sum_term = torch.zeros_like(x_neg)
             for k in range(self.n_terms):
                 # Calculate (-1)^k + (2^(k+1) - 1) * B_{k+1}
                 bernoulli_term = self.bernoulli_numbers[k + 1]
                 coef_term = ((-1) ** k) + ((2 ** (k + 1)) - 1) * bernoulli_term
-                
+
                 # Calculate Gamma(k + 2) / (Gamma(k + 2 - a) * (k + 1)!)
                 gamma_k_plus_2 = math.factorial(k + 1)
                 gamma_k_plus_2_minus_a = torch.exp(torch.lgamma(k + 2 - a_clamped))
                 k_plus_1_factorial = math.factorial(k + 1)
-                
+
                 coef = coef_term * gamma_k_plus_2 / (gamma_k_plus_2_minus_a * k_plus_1_factorial)
-                
+
                 # Calculate z^(k+1-a)
                 power_term = torch.pow(torch.abs(x_neg) + self.eps, k + 1 - a_clamped)
-                
+
                 sum_term += coef * power_term
-            
+
             result[neg_mask] = sum_term
-            
+
         return result
+
 
 # TODO: Forward pass failed: Can't call numpy() on Tensor that requires grad. Use tensor.detach().numpy() instead.
 # @register_activation
@@ -509,27 +523,27 @@ class FracSiLU2(BaseActivation):
     def _forward(self, x) -> Tensor:
         # Clamp a to be in (0, 1) range for stability
         a_clamped = torch.clamp(self.a, 0.01, 0.99)
-        
+
         # Compute the sum for all values
         result = torch.zeros_like(x)
-        
+
         for k in range(self.n_terms):
             # Calculate (-1)^k + (2^(k+1) - 1) * B_{k+1}
             bernoulli_term = self.bernoulli_numbers[k + 1]
             coef_term = ((-1) ** k) + ((2 ** (k + 1)) - 1) * bernoulli_term
-            
+
             # Calculate Gamma(k + 2) / (Gamma(k + 2 - a) * (k + 1)!)
             gamma_k_plus_2 = math.factorial(k + 1)
             gamma_k_plus_2_minus_a = torch.exp(torch.lgamma(k + 2 - a_clamped))
             k_plus_1_factorial = math.factorial(k + 1)
-            
+
             coef = coef_term * gamma_k_plus_2 / (gamma_k_plus_2_minus_a * k_plus_1_factorial)
-            
+
             # Calculate z^(k+1-a)
             power_term = torch.pow(torch.abs(x) + self.eps, k + 1 - a_clamped) * torch.sign(x)
-            
+
             result += coef * power_term
-        
+
         return result
 
 
@@ -590,14 +604,19 @@ class FracGELU1(BaseActivation):
             sum_term = torch.zeros_like(x_neg)
             for k in range(self.n_terms):
                 k_factorial = math.factorial(k)
-                neg_half_pow_k = ((-0.5) ** k)
+                neg_half_pow_k = (-0.5) ** k
 
-                gamma_2k_plus_3 = math.factorial(2*k + 2)
-                gamma_2k_plus_3_minus_a = torch.exp(torch.lgamma(2*k + 3 - a_clamped))
+                gamma_2k_plus_3 = math.factorial(2 * k + 2)
+                gamma_2k_plus_3_minus_a = torch.exp(torch.lgamma(2 * k + 3 - a_clamped))
 
-                power_term = torch.pow(torch.abs(x_neg) + self.eps, 2*k + 1 - a_clamped)
+                power_term = torch.pow(torch.abs(x_neg) + self.eps, 2 * k + 1 - a_clamped)
 
-                term = (1 / k_factorial) * neg_half_pow_k * (gamma_2k_plus_3 / gamma_2k_plus_3_minus_a) * power_term
+                term = (
+                    (1 / k_factorial)
+                    * neg_half_pow_k
+                    * (gamma_2k_plus_3 / gamma_2k_plus_3_minus_a)
+                    * power_term
+                )
                 sum_term += term
 
             second_term = -(1 / self.sqrt_2pi) * sum_term
@@ -642,29 +661,34 @@ class FracGELU2(BaseActivation):
     def _forward(self, x) -> Tensor:
         # Clamp a to be in (0, 1) range for stability
         a_clamped = torch.clamp(self.a, 0.01, 0.99)
-        
+
         # First term: 0.5 * z^(1-a) / Gamma(2-a)
         gamma_term = torch.exp(torch.lgamma(2 - a_clamped))
         first_term = 0.5 * torch.pow(torch.abs(x) + self.eps, 1 - a_clamped) * torch.sign(x)
         first_term = first_term / gamma_term
-        
+
         # Second term: -1/sqrt(2π) * sum(...)
         sum_term = torch.zeros_like(x)
         for k in range(self.n_terms):
             # Calculate 1/k! * (-1/2)^k
             k_factorial = math.factorial(k)
-            neg_half_pow_k = ((-0.5) ** k)
-            
+            neg_half_pow_k = (-0.5) ** k
+
             # Calculate Gamma(2k+3) / Gamma(2k+3-a)
-            gamma_2k_plus_3 = math.factorial(2*k + 2)
-            gamma_2k_plus_3_minus_a = torch.exp(torch.lgamma(2*k + 3 - a_clamped))
-            
+            gamma_2k_plus_3 = math.factorial(2 * k + 2)
+            gamma_2k_plus_3_minus_a = torch.exp(torch.lgamma(2 * k + 3 - a_clamped))
+
             # Calculate z^(2k+1-a)
-            power_term = torch.pow(torch.abs(x) + self.eps, 2*k + 1 - a_clamped) * torch.sign(x)
-            
-            term = (1 / k_factorial) * neg_half_pow_k * (gamma_2k_plus_3 / gamma_2k_plus_3_minus_a) * power_term
+            power_term = torch.pow(torch.abs(x) + self.eps, 2 * k + 1 - a_clamped) * torch.sign(x)
+
+            term = (
+                (1 / k_factorial)
+                * neg_half_pow_k
+                * (gamma_2k_plus_3 / gamma_2k_plus_3_minus_a)
+                * power_term
+            )
             sum_term += term
-        
+
         second_term = -(1 / self.sqrt_2pi) * sum_term
-        
+
         return first_term + second_term
