@@ -1585,8 +1585,8 @@ class UAF(BaseActivation):
         super().__init__(**kwargs)
 
         def create_param(value: float) -> Tensor:
-            tensor = torch.full((input_shape, 1), value, dtype=torch.float64)
-            return nn.Parameter(torch.randn(input_shape)) if learnable else tensor
+            tensor = torch.full((input_shape,), value)
+            return nn.Parameter(tensor) if learnable else tensor
 
         self.a: Tensor = create_param(a)
         self.b: Tensor = create_param(b)
