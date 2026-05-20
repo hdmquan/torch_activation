@@ -59,16 +59,16 @@ class ShiLU(BaseActivation):
 
 @register_activation
 class StarReLU(BaseActivation):
-    r"""
-    Applies the element-wise function:
+    r"""StarReLU activation function.
 
-    :math:`\text{StarReLU}(x) = s \cdot \text{ReLU}(x)^2 + b`
+    Proposed by Yu et al. (2022) [1]_.
 
-     See: https://doi.org/10.48550/arXiv.2210.13452
+    .. math::
+        \text{StarReLU}(x) = s \cdot \text{ReLU}(x)^2 + b
 
     Args:
-        s (float, optional): Scaled factor for StarReLU, shared across channel. Default: 0.8944
-        b (float, optional): Bias term for StarReLU, shared across channel. Default: -0.4472
+        s (float, optional): scale factor, shared across channels. Default: ``0.8944``
+        b (float, optional): bias term, shared across channels. Default: ``-0.4472``
         learnable (bool, optional): optionally make ``s`` and ``b`` trainable. Default: ``False``
         inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
@@ -87,6 +87,11 @@ class StarReLU(BaseActivation):
         >>> m = torch_activation.StarReLU(learnable=True, inplace=True)
         >>> x = torch.randn(3, 384, 384)
         >>> m(x)
+
+    References:
+        .. [1] Yu, W., Si, C., Zhou, P., Luo, M., Zhou, D., Feng, J.,
+               Yan, S., & Wang, X. (2022). MetaFormer Baselines for Vision.
+               arXiv:2210.13452.
     """
 
     def __init__(
@@ -165,13 +170,15 @@ class DELU(BaseActivation):
 
 @register_activation
 class PReLU(BaseActivation):
-    r"""
-    Applies the Parametric Rectified Linear Unit function:
+    r"""Parametric Rectified Linear Unit activation function.
 
-    :math:`\text{PReLU}(x) = \begin{cases} x, & x \geq 0 \\ \frac{x}{a}, & x < 0 \end{cases}`
+    Proposed by He et al. (2015) [1]_.
+
+    .. math::
+        \text{PReLU}(x) = \begin{cases} x, & x \geq 0 \\ \frac{x}{a}, & x < 0 \end{cases}
 
     Args:
-        a (float, optional): Scaling factor for the negative part of the input. Default: 1.0
+        a (float, optional): slope for negative inputs. Default: ``1.0``
         learnable (bool, optional): optionally make ``a`` trainable. Default: ``False``
         inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
@@ -188,6 +195,11 @@ class PReLU(BaseActivation):
         >>> m = torch_activation.PReLU(learnable=True, inplace=True)
         >>> x = torch.randn(2, 3, 4)
         >>> m(x)
+
+    References:
+        .. [1] He, K., Zhang, X., Ren, S., & Sun, J. (2015). Delving Deep into
+               Rectifiers: Surpassing Human-Level Performance on ImageNet
+               Classification. ICCV 2015. arXiv:1502.01852.
     """
 
     def __init__(self, a: float = 1.0, learnable: bool = False, **kwargs):
@@ -3150,17 +3162,20 @@ class PE2Id(BaseActivation):
 
 @register_activation
 class SoftExponential(BaseActivation):
-    r"""
-    Applies the Soft Exponential activation function:
+    r"""Soft Exponential activation function.
 
-    :math:`\text{SoftExponential}(x) = \begin{cases}
-        \frac{\exp(a \cdot x) - 1}{a} + a, & a > 0 \\
-        x, & a = 0 \\
-        \frac{\ln(1 - a(x + a))}{-a}, & a < 0
-    \end{cases}`
+    Proposed by Barron (2017) [1]_.
+
+    .. math::
+        \text{SoftExponential}(x) = \begin{cases}
+            \frac{\exp(a \cdot x) - 1}{a} + a, & a > 0 \\
+            x, & a = 0 \\
+            \frac{\ln(1 - a(x + a))}{-a}, & a < 0
+        \end{cases}
 
     Args:
-        a (float, optional): Shape parameter. Default: 0.0
+        a (float, optional): shape parameter controlling exponential/logarithmic
+            behaviour. Default: ``0.0``
         learnable (bool, optional): optionally make ``a`` trainable. Default: ``False``
         inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
@@ -3177,6 +3192,10 @@ class SoftExponential(BaseActivation):
         >>> m = torch_activation.SoftExponential(learnable=True, inplace=True)
         >>> x = torch.randn(2, 3, 4)
         >>> m(x)
+
+    References:
+        .. [1] Barron, J. T. (2017). Continuously Differentiable Exponential
+               Linear Units. arXiv:1704.07483.
     """
 
     def __init__(
