@@ -69,7 +69,7 @@ class SReLU(BaseActivation):
         return F.relu(x - 1.0)
 
     def _forward_inplace(self, x: Tensor) -> Tensor:
-        return F.relu_(x - 1.0)
+        return x.sub_(1.0).clamp_(min=0)
 
 
 @register_activation
@@ -717,10 +717,12 @@ class OLReLU(BaseActivation):
         self.a = (u + l) / (u - l)
 
     def _forward(self, x: Tensor) -> Tensor:
+        import math
+        neg_slope = math.exp(-self.a)
         if self.inplace:
-            return x.where(x >= 0, x.mul_(torch.exp(-self.a)))
+            return x.where(x >= 0, x.mul_(neg_slope))
         else:
-            return torch.where(x >= 0, x, x * torch.exp(-self.a))
+            return torch.where(x >= 0, x, x * neg_slope)
 
 
 @register_activation

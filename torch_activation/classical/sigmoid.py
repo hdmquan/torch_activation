@@ -113,8 +113,8 @@ class ShiftedScaledSigmoid(BaseActivation):
 
     def __init__(self, a: float = 1.0, b: float = 0.0, **kwargs):
         super().__init__(**kwargs)
-        self.a = nn.Parameter(torch.tensor([a]))
-        self.b = nn.Parameter(torch.tensor([b]))
+        self.a = nn.Parameter(torch.tensor(a))
+        self.b = nn.Parameter(torch.tensor(b))
         
 
     
@@ -1192,7 +1192,7 @@ class Rootsig(BaseActivation):
 
     def __init__(self, a: float = 1.0, **kwargs):
         super().__init__(**kwargs)
-        self.a = nn.Parameter(torch.tensor([a]), requires_grad=False)
+        self.a = nn.Parameter(torch.tensor(a), requires_grad=False)
 
     def _forward(self, z) -> Tensor:
         a_z = self.a * z
@@ -1294,7 +1294,7 @@ class SoftTanh(BaseActivation):
 
     def __init__(self, a: float = 2.0, **kwargs):
         super().__init__(**kwargs)
-        self.a = nn.Parameter(torch.tensor([a]))
+        self.a = nn.Parameter(torch.tensor(a))
 
     def _forward(self, z) -> Tensor:
         a_z = self.a * z

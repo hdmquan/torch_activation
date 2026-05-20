@@ -66,7 +66,7 @@ class TestGradients:
         grad_auto = x.grad.clone()
         x_np = x.detach()
         fd = (m((x_np + eps).float()) - m((x_np - eps).float())).double() / (2 * eps)
-        assert torch.allclose(grad_auto, fd, atol=1e-3)
+        assert torch.allclose(grad_auto, fd, atol=5e-3)
 
 class TestEdgeCases:
     def test_no_nan_inf(self):

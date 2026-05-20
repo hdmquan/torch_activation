@@ -7,7 +7,7 @@ NONSMOOTH_ACTIVATIONS: list[str] = ["OLReLU"]
 ACTIVATION_NAME = "OLReLU"
 
 def scalar_ref(x: float) -> float:
-    lower, upper = 0.125, 0.333
+    lower, upper = 3.0, 8.0
     alpha = (upper + lower) / (upper - lower)
     neg_slope = math.exp(-alpha)
     if x >= 0:

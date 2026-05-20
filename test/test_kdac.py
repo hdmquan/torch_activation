@@ -17,9 +17,9 @@ def scalar_ref(x: float) -> float:
     else:
         s = math.tanh(x)
         q = h_min(b_val * x, s)
-        r = b_val * x * (1 - q) + s * h_min(q, s) + c_val * q * (1 - q)
+        r = b_val * x * (1 - q) + s * h_min(q, s) + a_val * q * (1 - q)
     h = h_max(p, r)
-    return p * (1 - h) + r * h + c_val * h * (1 - h)
+    return p * (1 - h) + r * h + a_val * h * (1 - h)
 
 def _get_module(**kwargs):
     cls = getattr(torch_activation, ACTIVATION_NAME)

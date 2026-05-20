@@ -637,4 +637,5 @@ class SquaredReLU(BaseActivation):
     def _forward_inplace(self, z):
         pos = z > 0
         z[pos] = z[pos] ** 2
+        z[~pos] = 0
         return z

@@ -11,7 +11,7 @@ def scalar_ref(x: float) -> float:
     if x >= 0:
         return x * hs
     else:
-        return (1 + math.exp(-x)) * hs
+        return (math.exp(x) - 1) * hs
 
 def _get_module(**kwargs):
     cls = getattr(torch_activation, ACTIVATION_NAME)

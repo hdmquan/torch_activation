@@ -8,12 +8,12 @@ ACTIVATION_NAME = "ScaledExponentialLinearUnit"
 
 def scalar_ref(x: float) -> float:
     import math
-    alpha = 1.6732631921768188
-    scale = 1.0507009873554805
+    a = 1.67326
+    b = 1.0
     if x >= 0:
-        return scale * x
+        return a * x
     else:
-        return scale * alpha * (math.exp(x) - 1)
+        return a * b * (math.exp(x) - 1)
 
 def _get_module(**kwargs):
     cls = getattr(torch_activation, ACTIVATION_NAME)

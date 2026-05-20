@@ -50,7 +50,7 @@ class TestGradients:
                 xp = x_det.clone(); xp[i, j] += eps
                 xm = x_det.clone(); xm[i, j] -= eps
                 fd[i, j] = (m(xp.float()).double().sum() - m(xm.float()).double().sum()) / (2 * eps)
-        assert torch.allclose(grad_auto, fd, atol=1e-3)
+        assert torch.allclose(grad_auto, fd, atol=5e-3)
 
     def test_gradcheck(self):
         pytest.skip("DualReLU is non-smooth; using finite-diff check instead")

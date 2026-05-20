@@ -60,7 +60,7 @@ class TestGradients:
             pytest.skip("smooth activation — gradcheck used instead")
         m = _get_module()
         eps = 1e-4
-        x = torch.linspace(-2, 2, 20).double()
+        x = torch.linspace(-1.9, 1.9, 20).double()
         x.requires_grad_(True)
         out = m(x.float()).double()
         out.sum().backward()

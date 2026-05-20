@@ -756,7 +756,7 @@ class HardExponentialLinearSigmoidSquashing(BaseActivation):
     def _forward(self, x) -> Tensor:
         pos_mask = x >= 0
         hard_sigmoid = torch.clamp((x + 1) / 2, 0, 1)
-        exp_term = torch.where(pos_mask, torch.ones_like(x), 1 + torch.exp(torch.clamp(x, max=0)))
+        exp_term = torch.exp(x.clamp(max=0)) - 1
         raw = torch.where(pos_mask, x * hard_sigmoid, exp_term * hard_sigmoid)
         return torch.where(hard_sigmoid == 0, torch.zeros_like(x), raw)
 
@@ -838,8 +838,8 @@ class LSReLU(BaseActivation):
 
     def __init__(self, a: float = 1.0, b: float = 1.0, **kwargs):
         super().__init__(**kwargs)
-        self.a = nn.Parameter(Tensor([a]))
-        self.b = nn.Parameter(Tensor([b]))
+        self.a = nn.Parameter(Tensor([a]).squeeze())
+        self.b = nn.Parameter(Tensor([b]).squeeze())
 
     def _forward(self, x) -> Tensor:
         offset = torch.abs(torch.log(self.a * self.b + 1) - self.b)

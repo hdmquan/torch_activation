@@ -28,10 +28,9 @@ class SQRT(BaseActivation):
         
 
     def _forward(self, z) -> Tensor:
-        if self.inplace:
-            return z.where(z >= 0, torch.sqrt(z), -torch.sqrt(-z))
-        else:
-            return torch.where(z >= 0, torch.sqrt(z), -torch.sqrt(-z))
+        pos = z.clamp(min=0)
+        neg = (-z).clamp(min=0)
+        return torch.where(z >= 0, torch.sqrt(pos), -torch.sqrt(neg))
 
 
 @register_activation
@@ -64,7 +63,6 @@ class SSAF(BaseActivation):
         
 
     def _forward(self, z) -> Tensor:
-        if self.inplace:
-            return z.where(z >= 0, torch.sqrt(self.factor * z), -torch.sqrt(-self.factor * z))
-        else:
-            return torch.where(z >= 0, torch.sqrt(self.factor * z), -torch.sqrt(-self.factor * z))
+        pos = (self.factor * z).clamp(min=0)
+        neg = (-self.factor * z).clamp(min=0)
+        return torch.where(z >= 0, torch.sqrt(pos), -torch.sqrt(neg))

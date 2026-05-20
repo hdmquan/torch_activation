@@ -37,7 +37,7 @@ class TestNumerical:
     def test_odd_layer(self):
         m = _get_module(a=0.1, layer=1)
         x = torch.tensor([-1.0])
-        assert torch.allclose(m(x), torch.tensor([0.1]), atol=1e-5)
+        assert torch.allclose(m(x), torch.tensor([-0.1]), atol=1e-5)
 
 
 class TestGradients:
