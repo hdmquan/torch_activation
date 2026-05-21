@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 
 import torch.nn as nn
+from torch import Tensor
 
 
 class BaseActivation(nn.Module, ABC):
@@ -15,17 +16,17 @@ class BaseActivation(nn.Module, ABC):
         self.inplace = inplace
 
     @abstractmethod
-    def _forward(self, x):
+    def _forward(self, x: Tensor) -> Tensor:
         """Normal forward pass computation (required)."""
         pass
 
-    def _forward_inplace(self, x):
+    def _forward_inplace(self, x: Tensor) -> Tensor:
         """In-place computation (optional). If not implemented, it raises an error."""
         raise NotImplementedError(
             f"{self.__class__.__name__} does not support in-place operations."
         )
 
-    def forward(self, x):
+    def forward(self, x: Tensor) -> Tensor:
         """Main dispatch method."""
         scalar = x.dim() == 0
         if scalar:

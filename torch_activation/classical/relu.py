@@ -377,7 +377,7 @@ class CReLU(BaseActivation):
         super().__init__(**kwargs)
         self.dim = dim
 
-    def _forward(self, x) -> Tensor:
+    def _forward(self, x: Tensor) -> Tensor:
         return F.relu(torch.cat((x, -x), dim=self.dim))
 
 
@@ -417,7 +417,7 @@ class NCReLU(BaseActivation):
         super().__init__(**kwargs)
         self.dim = dim
 
-    def _forward(self, x) -> Tensor:
+    def _forward(self, x: Tensor) -> Tensor:
         return torch.cat((F.relu(x), -F.relu(-x)), dim=self.dim)
 
 
@@ -458,7 +458,7 @@ class ReLUN(BaseActivation):
         super().__init__(**kwargs)
         self.n = nn.Parameter(Tensor([n]))
 
-    def _forward(self, x) -> Tensor:
+    def _forward(self, x: Tensor) -> Tensor:
         return x.clamp(0) - F.relu(x - self.n)
 
 
@@ -496,7 +496,7 @@ class SquaredReLU(BaseActivation):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-    def _forward(self, x) -> Tensor:
+    def _forward(self, x: Tensor) -> Tensor:
         if self.inplace:
             return F.relu_(x).pow_(2)
         else:

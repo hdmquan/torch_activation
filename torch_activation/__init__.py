@@ -1,33 +1,16 @@
-import importlib
-import inspect
-import os
+import warnings
+from typing import Any
 
 __version__ = "0.4.0"
 
-__all__ = []
-
-current_dir = os.path.dirname(__file__)
-
-# TODO: Remove the decorator in the future since we already have a base class.
-# This only registers decorated classes. Some undecorated are either untested or incomplete.
-_ACTIVATIONS = {}
+_ACTIVATIONS: dict[str, dict[str, Any]] = {}
 
 
-def register_activation(cls=None, *, differentiable=True):
-    """
-    Decorator to register activation functions.
-
-    Args:
-        cls: The class to register
-        differentiable: Whether the activation is differentiable
-    """
-
-    def _register(cls):
-        name = cls.__name__
+def register_activation(cls: Any = None, *, differentiable: bool = True) -> Any:
+    def _register(cls: type) -> type:
+        name: str = cls.__name__
         _ACTIVATIONS[name] = {"class": cls, "differentiable": differentiable}
-        # Also make the class available at module level
         globals()[name] = cls
-        __all__.append(name)
         return cls
 
     if cls is None:
@@ -35,40 +18,39 @@ def register_activation(cls=None, *, differentiable=True):
     return _register(cls)
 
 
-def get_all_activations():
+def get_all_activations() -> list[str]:
     return list(_ACTIVATIONS.keys())
 
 
-for file_name in os.listdir(current_dir):
-    if file_name.endswith(".py") and file_name != "__init__.py":
+def _import_submodule(package_path):
+    import importlib
+    import inspect
+    import os
 
-        module_name = file_name[:-3]  # Remove .py extension
+    current_dir = os.path.dirname(__file__)
+    subdir = os.path.join(current_dir, package_path)
+    pkg = f"torch_activation.{package_path}"
 
-        module = importlib.import_module(f".{module_name}", package=__package__)
+    for fname in os.listdir(subdir):
+        if not fname.endswith(".py") or fname == "__init__.py":
+            continue
+        mod_name = fname[:-3]
+        try:
+            importlib.import_module(f".{mod_name}", package=pkg)
+        except Exception as e:
+            warnings.warn(f"Failed to import {pkg}.{mod_name}: {e}")
 
-        for name, obj in inspect.getmembers(module, inspect.isclass):
-            if obj.__module__ == module.__name__:
-                register_activation(obj)
-
-# Import and conditionally register classes from the classical subdirectory
-try:
-    classical_module = importlib.import_module(".classical", package=__package__)
-    adaptive_module = importlib.import_module(".adaptive", package=__package__)
-
-    # Get all classes from the classical module
-    for name in getattr(classical_module, "__all__", []):
-        # Get the class object
-        cls = getattr(classical_module, name)
-
-        # Make it available at the top level without registering
-        globals()[name] = cls
-        __all__.append(name)
-
-    # Get all classes from the adaptive module
-    for name in getattr(adaptive_module, "__all__", []):
-        # Get the class object
-        cls = getattr(adaptive_module, name)
+    try:
+        pkg_mod = importlib.import_module(f".{package_path}", package="torch_activation")
+        for name in getattr(pkg_mod, "__all__", []):
+            obj = getattr(pkg_mod, name, None)
+            if obj is not None and inspect.isclass(obj) and name not in globals():
+                globals()[name] = obj
+    except Exception as e:
+        warnings.warn(f"Failed to import torch_activation.{package_path}: {e}")
 
 
-except ImportError:
-    pass
+_import_submodule("classical")
+_import_submodule("adaptive")
+
+__all__ = list(_ACTIVATIONS.keys()) + ["__version__", "get_all_activations", "register_activation"]

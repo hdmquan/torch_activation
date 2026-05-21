@@ -50,7 +50,7 @@ class Swish(BaseActivation):
         a_val = self.a.item() if hasattr(self.a, "item") else self.a
         return f"a={a_val:.4f}"
 
-    def _forward(self, x) -> Tensor:
+    def _forward(self, x: Tensor) -> Tensor:
         result = x * torch.sigmoid(self.a * x)
 
         if self.inplace and hasattr(x, "copy_"):
@@ -107,7 +107,7 @@ class AHAF(BaseActivation):
             self.a = Tensor([a])
             self.b = Tensor([b])
 
-    def _forward(self, x) -> Tensor:
+    def _forward(self, x: Tensor) -> Tensor:
         result = self.a * x * torch.sigmoid(self.b * x)
 
         if self.inplace and hasattr(x, "copy_"):
@@ -165,7 +165,7 @@ class PSSiLU(BaseActivation):
             self.a = Tensor([a])
             self.b = Tensor([min(b, 0.99)])  # Ensure b is less than 1
 
-    def _forward(self, x) -> Tensor:
+    def _forward(self, x: Tensor) -> Tensor:
         # Compute the shifted and normalized sigmoid
         shifted_sigmoid = (torch.sigmoid(self.a * x) - self.b) / (1 - self.b)
         result = x * shifted_sigmoid
@@ -214,7 +214,7 @@ class ESwish(BaseActivation):
         else:
             self.a = Tensor([a])
 
-    def _forward(self, x) -> Tensor:
+    def _forward(self, x: Tensor) -> Tensor:
         result = self.a * x * torch.sigmoid(x)
 
         if self.inplace and hasattr(x, "copy_"):
@@ -272,7 +272,7 @@ class ACONB(BaseActivation):
             self.a = Tensor([a])
             self.b = Tensor([max(0.0, min(b, 1.0))])  # Ensure b is between 0 and 1
 
-    def _forward(self, x) -> Tensor:
+    def _forward(self, x: Tensor) -> Tensor:
         one_minus_b = 1 - self.b
         swish_part = one_minus_b * x * torch.sigmoid(self.a * one_minus_b * x)
         linear_part = self.b * x
@@ -336,7 +336,7 @@ class ACONC(BaseActivation):
             self.b = Tensor([b])
             self.c = Tensor([c])
 
-    def _forward(self, x) -> Tensor:
+    def _forward(self, x: Tensor) -> Tensor:
         c_minus_b = self.c - self.b
         swish_part = c_minus_b * x * torch.sigmoid(self.a * c_minus_b * x)
         linear_part = self.b * x
@@ -386,7 +386,7 @@ class PSGU(BaseActivation):
         else:
             self.a = Tensor([a])
 
-    def _forward(self, x) -> Tensor:
+    def _forward(self, x: Tensor) -> Tensor:
         result = x * torch.tanh(self.a * torch.sigmoid(x))
 
         if self.inplace and hasattr(x, "copy_"):
@@ -431,7 +431,7 @@ class TBSReLUl(BaseActivation):
         else:
             self.a = Tensor([a])
 
-    def _forward(self, x) -> Tensor:
+    def _forward(self, x: Tensor) -> Tensor:
         exp_neg = torch.exp((-x).clamp(max=88.0))
         bipolar_sigmoid = (1 - exp_neg) / (1 + exp_neg)
         result = x * torch.tanh(self.a * bipolar_sigmoid)
@@ -494,7 +494,7 @@ class PATS(BaseActivation):
         else:
             self.a = Tensor([a])
 
-    def _forward(self, x) -> Tensor:
+    def _forward(self, x: Tensor) -> Tensor:
         # If not in training mode or not learnable, use the fixed parameter
         if not self.training or not isinstance(self.a, nn.Parameter):
             a_value = self.a
@@ -563,7 +563,7 @@ class AQuLU(BaseActivation):
             self.a = Tensor([max(1e-6, a)])
             self.b = Tensor([b])
 
-    def _forward(self, x) -> Tensor:
+    def _forward(self, x: Tensor) -> Tensor:
         a = self.a.to(x.dtype) if isinstance(self.a, Tensor) else x.new_tensor(self.a)
         b = self.b.to(x.dtype) if isinstance(self.b, Tensor) else x.new_tensor(self.b)
         upper_threshold = (1 - b) / a
@@ -638,7 +638,7 @@ class SinLU(BaseActivation):
             self.a = Tensor([a])
             self.b = Tensor([b])
 
-    def _forward(self, x) -> Tensor:
+    def _forward(self, x: Tensor) -> Tensor:
         modified_x = x + self.a * torch.sin(self.b * x)
         result = modified_x * torch.sigmoid(x)
 
@@ -696,7 +696,7 @@ class ErfAct(BaseActivation):
             self.a = Tensor([a])
             self.b = Tensor([b])
 
-    def _forward(self, x) -> Tensor:
+    def _forward(self, x: Tensor) -> Tensor:
         # Calculate exp(b*x) with clipping to prevent overflow
         exp_term = torch.exp(torch.clamp(self.b * x, max=20))
         result = x * torch.erf(self.a * exp_term)
@@ -755,7 +755,7 @@ class PSerf(BaseActivation):
             self.a = Tensor([a])
             self.b = Tensor([b])
 
-    def _forward(self, x) -> Tensor:
+    def _forward(self, x: Tensor) -> Tensor:
         # Calculate softplus: ln(1 + exp(b*x))
         softplus = torch.log1p(torch.exp(torch.clamp(self.b * x, max=20)))
         result = x * torch.erf(self.a * softplus)
@@ -802,7 +802,7 @@ class Swim(BaseActivation):
         else:
             self.a = Tensor([a])
 
-    def _forward(self, x) -> Tensor:
+    def _forward(self, x: Tensor) -> Tensor:
         # Calculate the modified sigmoid-like term
         sigmoid_term = 0.5 * (1 + (self.a * x) / torch.sqrt(1 + x.pow(2)))
         result = x * sigmoid_term

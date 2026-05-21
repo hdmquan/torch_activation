@@ -32,7 +32,7 @@ class SiLU(BaseActivation):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-    def _forward(self, x) -> Tensor:
+    def _forward(self, x: Tensor) -> Tensor:
         return F.silu(x)
 
 
@@ -70,7 +70,7 @@ class CoLU(BaseActivation):
     def __init__(self, inplace=False, **kwargs):
         super().__init__(inplace=inplace, **kwargs)
 
-    def _forward(self, x) -> Tensor:
+    def _forward(self, x: Tensor) -> Tensor:
         if self.inplace:
             return x.div_(1 - x * torch.exp(-1 * (x + torch.exp(x))))
         else:
@@ -106,7 +106,7 @@ class Phish(torch.nn.Module):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-    def _forward(self, x) -> Tensor:
+    def _forward(self, x: Tensor) -> Tensor:
         output = F.gelu(x)
         output = F.tanh(output)
         output = x * output
@@ -147,12 +147,12 @@ class SinLU(BaseActivation):
         self.alpha = nn.Parameter(torch.tensor(float(a)))
         self.beta = nn.Parameter(torch.tensor(float(b)))
 
-    def _forward(self, x):
+    def _forward(self, x: Tensor) -> Tensor:
         result = x + self.alpha * torch.sin(self.beta * x)
         result *= torch.sigmoid(x)
         return result
 
-    def _forward_inplace(self, x):
+    def _forward_inplace(self, x: Tensor) -> Tensor:
         s_x = torch.sigmoid(x)
         x.add_(self.alpha * torch.sin(self.beta * x))
         x.mul_(s_x)
@@ -182,7 +182,7 @@ class GELU(BaseActivation):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-    def _forward(self, x) -> Tensor:
+    def _forward(self, x: Tensor) -> Tensor:
         return F.gelu(x)
 
 
@@ -211,7 +211,7 @@ class SGELU(BaseActivation):
         super().__init__(**kwargs)
         self.a = nn.Parameter(torch.tensor(float(a)))
 
-    def _forward(self, x) -> Tensor:
+    def _forward(self, x: Tensor) -> Tensor:
         return self.a * x * torch.erf(x / math.sqrt(2))
 
 
@@ -236,7 +236,7 @@ class CaLU(BaseActivation):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-    def _forward(self, x) -> Tensor:
+    def _forward(self, x: Tensor) -> Tensor:
         return x * (torch.arctan(x) / math.pi + 0.5)
 
 
@@ -264,7 +264,7 @@ class LaLU(BaseActivation):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-    def _forward(self, x) -> Tensor:
+    def _forward(self, x: Tensor) -> Tensor:
         pos_mask = x >= 0
         neg_mask = ~pos_mask
 
@@ -304,7 +304,7 @@ class CoLU(BaseActivation):  # noqa: F811
     def __init__(self, inplace=False, **kwargs):
         super().__init__(inplace=inplace, **kwargs)
 
-    def _forward(self, x) -> Tensor:
+    def _forward(self, x: Tensor) -> Tensor:
         denominator = 1 - x * torch.exp(-(x + torch.exp(x)))
         return x.div_(denominator) if self.inplace else x / denominator
 
@@ -336,7 +336,7 @@ class TSSwish(BaseActivation):
         self.a = nn.Parameter(torch.tensor(float(a)))
         self.b = nn.Parameter(torch.tensor(float(b)))
 
-    def _forward(self, x) -> Tensor:
+    def _forward(self, x: Tensor) -> Tensor:
         # TODO: Memory
         sigmoid_x = torch.sigmoid(x)
         triple_term = sigmoid_x + torch.sigmoid(x - self.a) + torch.sigmoid(x - self.b)
@@ -366,7 +366,7 @@ class GSwish(BaseActivation):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-    def _forward(self, x) -> Tensor:
+    def _forward(self, x: Tensor) -> Tensor:
         return x * torch.sigmoid(torch.exp(-x))
 
 
@@ -393,7 +393,7 @@ class ESwish(BaseActivation):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-    def _forward(self, x) -> Tensor:
+    def _forward(self, x: Tensor) -> Tensor:
         return torch.exp((-x).clamp(max=88.0)) * torch.sigmoid(x)
 
 
@@ -420,7 +420,7 @@ class dSigmoid(BaseActivation):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-    def _forward(self, x) -> Tensor:
+    def _forward(self, x: Tensor) -> Tensor:
         sigmoid_x = torch.sigmoid(x)
         return torch.exp((-x).clamp(max=88.0)) * sigmoid_x * sigmoid_x
 
@@ -446,7 +446,7 @@ class Gish(BaseActivation):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-    def _forward(self, x) -> Tensor:
+    def _forward(self, x: Tensor) -> Tensor:
         return x * torch.log(2 - torch.exp(-torch.exp(x)))
 
 
@@ -473,7 +473,7 @@ class Logish(BaseActivation):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-    def _forward(self, x) -> Tensor:
+    def _forward(self, x: Tensor) -> Tensor:
         return x * torch.log(1 + torch.sigmoid(x))
 
 
@@ -498,7 +498,7 @@ class LogLogish(BaseActivation):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-    def _forward(self, x) -> Tensor:
+    def _forward(self, x: Tensor) -> Tensor:
         return x * (1 - torch.exp(-torch.exp(x)))
 
 
@@ -523,7 +523,7 @@ class ExpExpish(BaseActivation):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-    def _forward(self, x) -> Tensor:
+    def _forward(self, x: Tensor) -> Tensor:
         return x * torch.exp(-torch.exp(-x))
 
 
@@ -548,7 +548,7 @@ class SelfArctan(BaseActivation):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-    def _forward(self, x) -> Tensor:
+    def _forward(self, x: Tensor) -> Tensor:
         return x * torch.arctan(x)
 
 
@@ -581,7 +581,7 @@ class pLogish(BaseActivation):
         self.a = nn.Parameter(torch.tensor(float(a)))
         self.b = nn.Parameter(torch.tensor(float(b)))
 
-    def _forward(self, x) -> Tensor:
+    def _forward(self, x: Tensor) -> Tensor:
         return self.a * x * torch.log(1 + torch.sigmoid(self.b * x))
 
 
@@ -606,7 +606,7 @@ class Phish(BaseActivation):  # noqa: F811
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-    def _forward(self, x) -> Tensor:
+    def _forward(self, x: Tensor) -> Tensor:
         return x * torch.tanh(F.gelu(x))
 
 
@@ -631,7 +631,7 @@ class Suish(BaseActivation):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-    def _forward(self, x) -> Tensor:
+    def _forward(self, x: Tensor) -> Tensor:
         return torch.maximum(x, x * torch.exp(-torch.abs(x)))
 
 
@@ -658,7 +658,7 @@ class TSReLU(BaseActivation):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-    def _forward(self, x) -> Tensor:
+    def _forward(self, x: Tensor) -> Tensor:
         return x * torch.tanh(torch.sigmoid(x))
 
 
@@ -683,7 +683,7 @@ class TBSReLU(BaseActivation):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-    def _forward(self, x) -> Tensor:
+    def _forward(self, x: Tensor) -> Tensor:
         exp_neg_x = torch.exp((-x).clamp(max=88.0))
         bipolar_sigmoid = (1 - exp_neg_x) / (1 + exp_neg_x)
         return x * torch.tanh(bipolar_sigmoid)
@@ -712,7 +712,7 @@ class LogSigmoid(BaseActivation):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-    def _forward(self, x) -> Tensor:
+    def _forward(self, x: Tensor) -> Tensor:
         return F.logsigmoid(x)
 
 
@@ -739,7 +739,7 @@ class dSiLU(BaseActivation):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-    def _forward(self, x) -> Tensor:
+    def _forward(self, x: Tensor) -> Tensor:
         sigmoid_x = torch.sigmoid(x)
         return sigmoid_x * (1 + x * (1 - sigmoid_x))
 
@@ -765,7 +765,7 @@ class DoubleSiLU(BaseActivation):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-    def _forward(self, x) -> Tensor:
+    def _forward(self, x: Tensor) -> Tensor:
         return F.silu(F.silu(x))
 
 
@@ -792,7 +792,7 @@ class MSiLU(BaseActivation):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-    def _forward(self, x) -> Tensor:
+    def _forward(self, x: Tensor) -> Tensor:
         return x * torch.sigmoid(x) + torch.exp((-x.pow(2) - 1) / 4)
 
 
@@ -817,7 +817,7 @@ class TSiLU(BaseActivation):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-    def _forward(self, x) -> Tensor:
+    def _forward(self, x: Tensor) -> Tensor:
         # The paper wrote this in tanh exp form
         silu_x = x * torch.sigmoid(x)
         return torch.tanh(silu_x)
@@ -844,7 +844,7 @@ class ASiLU(BaseActivation):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-    def _forward(self, x) -> Tensor:
+    def _forward(self, x: Tensor) -> Tensor:
         return torch.arctan(x * torch.sigmoid(x))
 
 
@@ -873,7 +873,7 @@ class SwAT(BaseActivation):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-    def _forward(self, x) -> Tensor:
+    def _forward(self, x: Tensor) -> Tensor:
         return x * torch.sigmoid(torch.arctan(x))
 
 
@@ -900,7 +900,7 @@ class ReHSec(BaseActivation):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-    def _forward(self, x) -> Tensor:
+    def _forward(self, x: Tensor) -> Tensor:
         return x * sech(x)
 
 
@@ -925,7 +925,7 @@ class LiSHT(BaseActivation):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-    def _forward(self, x) -> Tensor:
+    def _forward(self, x: Tensor) -> Tensor:
         return x * torch.tanh(x)
 
 
@@ -956,7 +956,7 @@ class Mish(BaseActivation):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-    def _forward(self, x) -> Tensor:
+    def _forward(self, x: Tensor) -> Tensor:
         return x * torch.tanh(F.softplus(x))
 
 
@@ -996,7 +996,7 @@ class Smish(BaseActivation):
             self.register_buffer("a", torch.tensor(float(a)))
             self.register_buffer("b", torch.tensor(float(b)))
 
-    def _forward(self, x) -> Tensor:
+    def _forward(self, x: Tensor) -> Tensor:
         return self.a * x * torch.tanh(torch.log(1 + torch.sigmoid(self.b * x)))
 
 
@@ -1021,7 +1021,7 @@ class TanhExp(BaseActivation):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-    def _forward(self, x) -> Tensor:
+    def _forward(self, x: Tensor) -> Tensor:
         return x * torch.tanh(torch.exp(x))
 
 
@@ -1053,7 +1053,7 @@ class Serf(BaseActivation):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-    def _forward(self, x) -> Tensor:
+    def _forward(self, x: Tensor) -> Tensor:
         return x * torch.erf(F.softplus(x))
 
 
@@ -1080,7 +1080,7 @@ class EANAF(BaseActivation):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-    def _forward(self, x) -> Tensor:
+    def _forward(self, x: Tensor) -> Tensor:
         exp_x = torch.exp(x.clamp(max=88.0))
         return x * (exp_x / (exp_x + 2))
 
@@ -1108,7 +1108,7 @@ class SinSig(BaseActivation):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-    def _forward(self, x) -> Tensor:
+    def _forward(self, x: Tensor) -> Tensor:
         return x * torch.sin((math.pi / 2) * torch.sigmoid(x))
 
 
@@ -1135,6 +1135,6 @@ class SiELU(BaseActivation):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-    def _forward(self, x) -> Tensor:
+    def _forward(self, x: Tensor) -> Tensor:
         inner = 2 * math.sqrt(2 / math.pi) * (x + 0.044715 * x.pow(3))
         return x * torch.sigmoid(inner)
