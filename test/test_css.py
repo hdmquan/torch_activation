@@ -10,7 +10,7 @@ ACTIVATION_NAME = "CSS"
 
 
 def scalar_ref(x: float) -> float:
-    return (1.0 / (1.0 + math.exp(-x))) * math.cos(x)
+    return math.sin(x) + 1.0 / (1.0 + math.exp(-x))
 
 
 def _get_module(**kwargs):

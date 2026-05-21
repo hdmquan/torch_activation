@@ -593,7 +593,15 @@ class Sincos(BaseActivation):
     r"""
     Applies the Sincos activation function:
 
-    :math:`\text{Sincos}(x) = \sin(x) + \cos(x)`
+    :math:`\text{Sincos}(x) = a \sin(bx) + c \cos(dx)`
+
+    where :math:`a`, :math:`b`, :math:`c`, :math:`d` are learnable parameters.
+
+    Args:
+        a (float, optional): Scale for sine term. Default: ``1.0``
+        b (float, optional): Frequency for sine term. Default: ``1.0``
+        c (float, optional): Scale for cosine term. Default: ``1.0``
+        d (float, optional): Frequency for cosine term. Default: ``1.0``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
@@ -608,13 +616,21 @@ class Sincos(BaseActivation):
         >>> m = torch_activation.Sincos()
         >>> x = torch.randn(2)
         >>> output = m(x)
+
+        >>> m = torch_activation.Sincos(a=0.5, b=2.0, c=0.5, d=2.0)
+        >>> x = torch.randn(2)
+        >>> output = m(x)
     """
 
-    def __init__(self, **kwargs):
+    def __init__(self, a: float = 1.0, b: float = 1.0, c: float = 1.0, d: float = 1.0, **kwargs):
         super().__init__(**kwargs)
+        self.a = nn.Parameter(torch.tensor(a))
+        self.b = nn.Parameter(torch.tensor(b))
+        self.c = nn.Parameter(torch.tensor(c))
+        self.d = nn.Parameter(torch.tensor(d))
 
     def _forward(self, x) -> Tensor:
-        return torch.sin(x) + torch.cos(x)
+        return self.a * torch.sin(self.b * x) + self.c * torch.cos(self.d * x)
 
 
 @register_activation
@@ -622,9 +638,16 @@ class CSS(BaseActivation):
     r"""
     Applies the Cosine-Sigmoid Shift (CSS) activation function:
 
-    :math:`\text{CSS}(x) = \sigma(x) \cdot \cos(x)`
+    :math:`\text{CSS}(x) = a \sin(bx) + c \sigma(dx)`
 
-    where :math:`\sigma(x)` is the sigmoid function.
+    where :math:`\sigma` is the sigmoid function and :math:`a`, :math:`b`, :math:`c`, :math:`d`
+    are learnable parameters.
+
+    Args:
+        a (float, optional): Scale for sine term. Default: ``1.0``
+        b (float, optional): Frequency for sine term. Default: ``1.0``
+        c (float, optional): Scale for sigmoid term. Default: ``1.0``
+        d (float, optional): Scale for sigmoid input. Default: ``1.0``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
@@ -639,13 +662,21 @@ class CSS(BaseActivation):
         >>> m = torch_activation.CSS()
         >>> x = torch.randn(2)
         >>> output = m(x)
+
+        >>> m = torch_activation.CSS(a=2.0, b=1.0, c=1.0, d=0.5)
+        >>> x = torch.randn(2)
+        >>> output = m(x)
     """
 
-    def __init__(self, **kwargs):
+    def __init__(self, a: float = 1.0, b: float = 1.0, c: float = 1.0, d: float = 1.0, **kwargs):
         super().__init__(**kwargs)
+        self.a = nn.Parameter(torch.tensor(a))
+        self.b = nn.Parameter(torch.tensor(b))
+        self.c = nn.Parameter(torch.tensor(c))
+        self.d = nn.Parameter(torch.tensor(d))
 
     def _forward(self, x) -> Tensor:
-        return torch.sigmoid(x) * torch.cos(x)
+        return self.a * torch.sin(self.b * x) + self.c * torch.sigmoid(self.d * x)
 
 
 @register_activation
@@ -686,7 +717,13 @@ class Expcos(BaseActivation):
     r"""
     Applies the Expcos activation function:
 
-    :math:`\text{Expcos}(x) = \exp(\cos(x))`
+    :math:`\text{Expcos}(x) = \exp(-ax^2) \cos(bx)`
+
+    where :math:`a` and :math:`b` are learnable parameters.
+
+    Args:
+        a (float, optional): Decay rate. Default: ``1.0``
+        b (float, optional): Frequency. Default: ``1.0``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
@@ -701,13 +738,19 @@ class Expcos(BaseActivation):
         >>> m = torch_activation.Expcos()
         >>> x = torch.randn(2)
         >>> output = m(x)
+
+        >>> m = torch_activation.Expcos(a=0.5, b=2.0)
+        >>> x = torch.randn(2)
+        >>> output = m(x)
     """
 
-    def __init__(self, **kwargs):
+    def __init__(self, a: float = 1.0, b: float = 1.0, **kwargs):
         super().__init__(**kwargs)
+        self.a = nn.Parameter(torch.tensor(a))
+        self.b = nn.Parameter(torch.tensor(b))
 
     def _forward(self, x) -> Tensor:
-        return torch.exp(torch.cos(x))
+        return torch.exp(-self.a * x**2) * torch.cos(self.b * x)
 
 
 @register_activation
