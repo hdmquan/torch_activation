@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "torch-activation"
-version = "0.4.0"
-description = "A library of new activation function implement in PyTorch to save time in experiment and have fun"
+version = "1.0.0"
+description = "Activation functions for PyTorch"
 authors = ["Alan Huynh <hdmquan@outlook.com>"]
 license = "MIT"
 readme = "README.md"
@@ -11,11 +11,9 @@ packages = [{include = "torch_activation"}]
 python = ">=3.10, <4.0"
 loguru = "^0.7.3"
 torch = ">=1.13.0"
-plotly = "^6.0.0"
-pytest = "^8.3.5"
-scipy = "^1.15.2"
-kaleido = "0.2"
-sphinx = "8.0"
+
+[tool.poetry.extras]
+plot = ["plotly", "kaleido"]
 
 [tool.poetry.group.dev.dependencies]
 pre-commit = "*"
@@ -24,6 +22,11 @@ flake8 = "*"
 mypy = "*"
 isort = "*"
 doc8 = "*"
+pytest = "^8.3.5"
+scipy = "^1.15.2"
+plotly = "^6.0.0"
+kaleido = "0.2"
+sphinx = "8.0"
 
 [tool.doc8]
 max-line-length = 100
