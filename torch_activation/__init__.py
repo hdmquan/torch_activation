@@ -1,7 +1,11 @@
 import warnings
+from importlib.metadata import PackageNotFoundError, version
 from typing import Any
 
-__version__ = "1.0.0"
+try:
+    __version__ = version("torch-activation")
+except PackageNotFoundError:
+    __version__ = "unknown"
 
 _ACTIVATIONS: dict[str, dict[str, Any]] = {}
 
