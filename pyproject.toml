@@ -9,7 +9,6 @@ packages = [{include = "torch_activation"}]
 
 [tool.poetry.dependencies]
 python = ">=3.10, <4.0"
-loguru = "^0.7.3"
 torch = ">=1.13.0"
 
 [tool.poetry.extras]

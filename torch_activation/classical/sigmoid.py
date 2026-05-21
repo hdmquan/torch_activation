@@ -275,17 +275,17 @@ class ArctanGR(BaseActivation):
     r"""
     Applies the ArctanGR activation function:
 
-    :math:`\text{ArctanGR}(z) = \frac{\arctan(z)}{1 + \sqrt{2}}`
+    :math:`\text{ArctanGR}(z) = \frac{\arctan(z)}{\frac{1 + \sqrt{2}}{2}}`
 
     ArctanGR is a scaled version of the Arctan activation function. The scaling factor
-    :math:`\frac{1}{1 + \sqrt{2}}` was found to be particularly effective in experiments,
+    :math:`\frac{2}{1 + \sqrt{2}}` was found to be particularly effective in experiments,
     outperforming other activation functions including the standard Arctan. Other scaling
     variants such as division by :math:`\pi`, :math:`\frac{1 + \sqrt{5}}{2}` (golden ratio),
     or the Euler number have also been explored in the literature.
 
     Args:
         scale_factor (float): The scaling factor for the arctangent output.
-            Default: :math:`\frac{1}{1 + \sqrt{2}} \approx 0.2929`
+            Default: :math:`\frac{2}{1 + \sqrt{2}} \approx 0.8284`
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
@@ -302,7 +302,7 @@ class ArctanGR(BaseActivation):
         >>> output = m(x)
     """
 
-    def __init__(self, scale_factor: float = 1.0 / (1.0 + torch.sqrt(torch.tensor(2.0))), **kwargs):
+    def __init__(self, scale_factor: float = 2.0 / (1.0 + torch.sqrt(torch.tensor(2.0))), **kwargs):
         super().__init__(**kwargs)
         self.scale_factor = scale_factor
 
@@ -552,7 +552,7 @@ class SRS(BaseActivation):
     r"""
     Applies the Soft Root Sign activation function:
 
-    :math:`\text{SRS}(z) = \frac{z}{\sqrt[a]{1 + \exp\left(-\frac{z}{b}\right)}}`
+    :math:`\text{SRS}(z) = \frac{z}{\frac{z}{a} + \exp\left(-\frac{z}{b}\right)}`
 
     Args:
         a (float, optional): Root parameter. Default: 2.0
@@ -581,8 +581,7 @@ class SRS(BaseActivation):
             self.register_buffer("b", torch.tensor([b]))
 
     def _forward(self, z) -> Tensor:
-        denominator = torch.pow(1 + torch.exp(-z / self.b), 1 / self.a)
-        return z / denominator
+        return z / (z / self.a + torch.exp(-z / self.b))
 
 
 @register_activation
@@ -621,8 +620,8 @@ class Hexpo(BaseActivation):
     Applies the Hexpo activation function:
 
     :math:`\text{Hexpo}(z) = \begin{cases}
-    -a \exp\left(-\frac{z}{b}\right) - 1, & z \geq 0 \\
-    c \exp\left(-\frac{z}{d}\right) - 1, & z < 0
+    -a\left(\exp\left(-\frac{z}{b}\right) - 1\right), & z \geq 0 \\
+    c\left(\exp\left(-\frac{z}{d}\right) - 1\right), & z < 0
     \end{cases}`
 
     :note: a, b, c and d could be trainable parameters, but could lead to vanishing gradients
@@ -668,8 +667,8 @@ class Hexpo(BaseActivation):
             self.register_buffer("d", torch.tensor([d]))
 
     def _forward(self, z) -> Tensor:
-        pos_val = -self.a * torch.exp((-z / self.b).clamp(max=88.0)) - 1
-        neg_val = self.c * torch.exp((-z / self.d).clamp(max=88.0)) - 1
+        pos_val = -self.a * (torch.exp((-z / self.b).clamp(max=88.0)) - 1)
+        neg_val = self.c * (torch.exp((-z / self.d).clamp(max=88.0)) - 1)
         return torch.where(z >= 0, pos_val, neg_val)
 
 
@@ -705,7 +704,7 @@ class SmoothStep(BaseActivation):
 
     :math:`\text{SmoothStep}(z) = \begin{cases}
     1, & z \geq \frac{a}{2} \\
-    \frac{2}{a^3} z^3 - \frac{3}{2a} z + \frac{1}{2}, & -\frac{a}{2} \leq z \leq \frac{a}{2} \\
+    -\frac{2}{a^3} z^3 + \frac{3}{2a} z + \frac{1}{2}, & -\frac{a}{2} \leq z \leq \frac{a}{2} \\
     0, & z \leq -\frac{a}{2}
     \end{cases}`
 
@@ -737,14 +736,13 @@ class SmoothStep(BaseActivation):
 
         if middle_mask.any():
             # Compute polynomial using Horner
-            # Original: cubic_term - linear_term + constant_term
-            # = (2 / (a^3)) * z^3 - (3 / (2 * a)) * z + 0.5
-            # Horner: 0.5 + z*(-3/(2*a) + z*z*(2/(a^3)))
+            # Original: -2/a^3 * z^3 + 3/(2a) * z + 0.5
+            # Horner: 0.5 + z*(3/(2a) + z^2*(-2/a^3))
             z_middle = z[middle_mask]
             inv_a = 1.0 / self.a
 
             middle_result = 0.5 + z_middle * (
-                -1.5 * inv_a + torch.square(z_middle) * (2.0 * torch.pow(inv_a, 3))
+                1.5 * inv_a + torch.square(z_middle) * (-2.0 * torch.pow(inv_a, 3))
             )
             result[middle_mask] = middle_result
 
@@ -787,7 +785,7 @@ class SincSigmoid(BaseActivation):
 
     :math:`\text{SincSigmoid}(z) = \text{sinc}(\sigma(z))`
 
-    where :math:`\text{sinc}(x) = \frac{\sin(\pi x)}{\pi x}` if :math:`x \neq 0`, and 1 if :math:`x = 0`. # noqa: E501
+    where :math:`\text{sinc}(x) = \frac{\sin(x)}{x}` if :math:`x \neq 0`, and 1 if :math:`x = 0`.
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
@@ -809,9 +807,8 @@ class SincSigmoid(BaseActivation):
         result = torch.ones_like(z)
         nonzero_mask = sigmoid_z > 1e-10
 
-        # Sinc is defined as sin(pi * x) / (pi * x)
-        pi_sigmoid_z = torch.pi * sigmoid_z[nonzero_mask]
-        result[nonzero_mask] = torch.sin(pi_sigmoid_z) / pi_sigmoid_z
+        s = sigmoid_z[nonzero_mask]
+        result[nonzero_mask] = torch.sin(s) / s
 
         return result
 

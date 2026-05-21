@@ -10,11 +10,11 @@ ACTIVATION_NAME = "HardExponentialLinearSigmoidSquashing"
 
 
 def scalar_ref(x: float) -> float:
-    hs = min(max((x + 1) / 2, 0), 1)
+    hs = max(min((x + 1) / 2, 1), 0)
     if x >= 0:
         return x * hs
     else:
-        return (math.exp(x) - 1) * hs
+        return (1 + math.exp(-x)) * hs
 
 
 def _get_module(**kwargs):

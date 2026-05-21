@@ -609,12 +609,13 @@ class FracGELU1(BaseActivation):
                 gamma_2k_plus_3 = math.factorial(2 * k + 2)
                 gamma_2k_plus_3_minus_a = torch.exp(torch.lgamma(2 * k + 3 - a_clamped))
 
-                power_term = torch.pow(torch.abs(x_neg) + self.eps, 2 * k + 1 - a_clamped)
+                power_term = torch.pow(torch.abs(x_neg) + self.eps, 2 * k + 2 - a_clamped)
 
                 term = (
                     (1 / k_factorial)
                     * neg_half_pow_k
                     * (gamma_2k_plus_3 / gamma_2k_plus_3_minus_a)
+                    / (2 * k + 1)
                     * power_term
                 )
                 sum_term += term
@@ -678,13 +679,14 @@ class FracGELU2(BaseActivation):
             gamma_2k_plus_3 = math.factorial(2 * k + 2)
             gamma_2k_plus_3_minus_a = torch.exp(torch.lgamma(2 * k + 3 - a_clamped))
 
-            # Calculate z^(2k+1-a)
-            power_term = torch.pow(torch.abs(x) + self.eps, 2 * k + 1 - a_clamped) * torch.sign(x)
+            # Calculate z^(2(k+1)-a)
+            power_term = torch.pow(torch.abs(x) + self.eps, 2 * k + 2 - a_clamped) * torch.sign(x)
 
             term = (
                 (1 / k_factorial)
                 * neg_half_pow_k
                 * (gamma_2k_plus_3 / gamma_2k_plus_3_minus_a)
+                / (2 * k + 1)
                 * power_term
             )
             sum_term += term

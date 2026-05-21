@@ -13,9 +13,9 @@ def scalar_ref(x: float) -> float:
     if x > 2:
         return 1.0
     elif x >= 0:
-        return 0.5 * x - x**2 / 4 + 0.5
+        return 0.5 * x - x**2 / 8 + 0.5
     elif x >= -2:
-        return 0.5 * x + x**2 / 4 + 0.5
+        return 0.5 * x + x**2 / 8 + 0.5
     else:
         return 0.0
 

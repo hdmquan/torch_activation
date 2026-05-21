@@ -719,15 +719,15 @@ class HPAF(BaseActivation):
         result = self.coefficients[0]  # H_0(x) = 1
 
         if self.order >= 1:
-            # H_1(x) = x
+            # H_1(x) = 2x
             h_prev = torch.ones_like(x)
-            h_curr = x
+            h_curr = 2 * x
             result = result + self.coefficients[1] * h_curr
 
             # Higher order Hermite polynomials using recurrence relation
-            # H_{n+1}(x) = x*H_n(x) - n*H_{n-1}(x)
+            # H_{n+1}(x) = 2x*H_n(x) - 2n*H_{n-1}(x)
             for n in range(1, self.order):
-                h_next = x * h_curr - n * h_prev
+                h_next = 2 * x * h_curr - 2 * n * h_prev
                 result = result + self.coefficients[n + 1] * h_next
                 h_prev, h_curr = h_curr, h_next
 

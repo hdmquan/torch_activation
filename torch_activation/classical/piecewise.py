@@ -118,8 +118,8 @@ class PiecewiseMexicanHat(BaseActivation):
     Applies the Piecewise Mexican-Hat activation function (PMAF):
 
     :math:`\text{PMAF}(z) = \begin{cases}
-    \frac{1}{\sqrt{3}\pi} - \frac{1}{4}(1-(z+a)^2) \exp(-\frac{(z+a)^2}{2}), & z < 0 \\
-    \frac{1}{\sqrt{3}\pi} - \frac{1}{4}(1-(z-a)^2) \exp(-\frac{(z-a)^2}{2}), & z \geq 0
+    \frac{2}{\sqrt{3}}\pi^{-\frac{1}{4}}(1-(z+a)^2) \exp(-\frac{(z+a)^2}{2}), & z < 0 \\
+    \frac{2}{\sqrt{3}}\pi^{-\frac{1}{4}}(1-(z-a)^2) \exp(-\frac{(z-a)^2}{2}), & z \geq 0
     \end{cases}`
 
     Args:
@@ -136,13 +136,13 @@ class PiecewiseMexicanHat(BaseActivation):
         super().__init__(**kwargs)
         self.a = a
         # Unused
-        self.const_term = 1 / (math.sqrt(3) * math.pi)
+        self.const_term = 2 / (math.sqrt(3) * math.pi ** 0.25)
 
     def _forward(self, z) -> Tensor:
         shifted_neg = z + self.a
-        val_neg = self.const_term - 0.25 * (1 - shifted_neg**2) * torch.exp(-(shifted_neg**2) / 2)
+        val_neg = self.const_term * (1 - shifted_neg**2) * torch.exp(-(shifted_neg**2) / 2)
         shifted_pos = z - self.a
-        val_pos = self.const_term - 0.25 * (1 - shifted_pos**2) * torch.exp(-(shifted_pos**2) / 2)
+        val_pos = self.const_term * (1 - shifted_pos**2) * torch.exp(-(shifted_pos**2) / 2)
         return torch.where(z < 0, val_neg, val_pos)
 
 

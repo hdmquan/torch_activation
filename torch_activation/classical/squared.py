@@ -296,8 +296,8 @@ class LogSQNL(BaseActivation):
 
     :math:`\text{LogSQNL}(z) = \begin{cases}
     1, & z > 2 \\
-    \frac{1}{2}z - \frac{z^2}{4} + \frac{1}{2}, & 0 \leq z \leq 2 \\
-    \frac{1}{2}z + \frac{z^2}{4} + \frac{1}{2}, & -2 \leq z < 0 \\
+    \frac{1}{2}(z - \frac{z^2}{4}) + \frac{1}{2}, & 0 \leq z \leq 2 \\
+    \frac{1}{2}(z + \frac{z^2}{4}) + \frac{1}{2}, & -2 \leq z < 0 \\
     0, & z < -2
     \end{cases}`
 
@@ -330,8 +330,8 @@ class LogSQNL(BaseActivation):
         ltNeg2 = z < -2
 
         result[gt2] = 1
-        result[between0and2] = 0.5 * z[between0and2] - (z[between0and2] ** 2) / 4 + 0.5
-        result[betweenNeg2and0] = 0.5 * z[betweenNeg2and0] + (z[betweenNeg2and0] ** 2) / 4 + 0.5
+        result[between0and2] = 0.5 * z[between0and2] - (z[between0and2] ** 2) / 8 + 0.5
+        result[betweenNeg2and0] = 0.5 * z[betweenNeg2and0] + (z[betweenNeg2and0] ** 2) / 8 + 0.5
         result[ltNeg2] = 0
 
         return result
@@ -343,8 +343,8 @@ class LogSQNL(BaseActivation):
         ltNeg2 = z < -2
 
         z[gt2] = 1
-        z[between0and2] = 0.5 * z[between0and2] - (z[between0and2] ** 2) / 4 + 0.5
-        z[betweenNeg2and0] = 0.5 * z[betweenNeg2and0] + (z[betweenNeg2and0] ** 2) / 4 + 0.5
+        z[between0and2] = 0.5 * z[between0and2] - (z[between0and2] ** 2) / 8 + 0.5
+        z[betweenNeg2and0] = 0.5 * z[betweenNeg2and0] + (z[betweenNeg2and0] ** 2) / 8 + 0.5
         z[ltNeg2] = 0
 
         return z
@@ -396,7 +396,7 @@ class LinQ(BaseActivation):
     :math:`\text{LinQ}(z) = \begin{cases}
     az + 1 - 2z + z^2, & z \geq 2 - 2a \\
     \frac{1}{4}z(4 - |z|), & -2 + 2a < z < 2 - 2a \\
-    az - 1 - 2z + z^2, & z \leq -2 + 2a
+    az - 1 + 2z - z^2, & z \leq -2 + 2a
     \end{cases}`
 
     Args:
@@ -434,7 +434,7 @@ class LinQ(BaseActivation):
 
         result[upper_region] = a * z[upper_region] + 1 - 2 * z[upper_region] + z[upper_region] ** 2
         result[middle_region] = 0.25 * z[middle_region] * (4 - torch.abs(z[middle_region]))
-        result[lower_region] = a * z[lower_region] - 1 - 2 * z[lower_region] + z[lower_region] ** 2
+        result[lower_region] = a * z[lower_region] - 1 + 2 * z[lower_region] - z[lower_region] ** 2
 
         return result
 
@@ -449,7 +449,7 @@ class LinQ(BaseActivation):
 
         z[upper_region] = a * z[upper_region] + 1 - 2 * z[upper_region] + z[upper_region] ** 2
         z[middle_region] = 0.25 * z[middle_region] * (4 - torch.abs(z[middle_region]))
-        z[lower_region] = a * z[lower_region] - 1 - 2 * z[lower_region] + z[lower_region] ** 2
+        z[lower_region] = a * z[lower_region] - 1 + 2 * z[lower_region] - z[lower_region] ** 2
 
         return z
 
@@ -546,7 +546,7 @@ class MEF(BaseActivation):
     r"""
     Applies the MEF (Modified Error Function) activation function:
 
-    :math:`\text{MEF}(z) = \frac{z}{\sqrt{1 + z^2} + 2}`
+    :math:`\text{MEF}(z) = \frac{z}{\sqrt{1 + z^2}} + \frac{1}{2}`
 
     Args:
         inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
@@ -570,10 +570,11 @@ class MEF(BaseActivation):
         super().__init__(**kwargs)
 
     def _forward(self, z):
-        return z / (torch.sqrt(1 + z**2) + 2)
+        return z / torch.sqrt(1 + z**2) + 0.5
 
     def _forward_inplace(self, z):
-        z.div_(torch.sqrt(1 + z**2) + 2)
+        z.div_(torch.sqrt(1 + z**2))
+        z.add_(0.5)
         return z
 
 

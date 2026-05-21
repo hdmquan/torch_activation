@@ -15,7 +15,7 @@ def scalar_ref(x: float, a: float = 1.0) -> float:
     elif x > lower_threshold:
         return 0.25 * x * (4 - abs(x))
     else:
-        return a * x - 1 - 2 * x + x**2
+        return a * x - 1 + 2 * x - x**2
 
 
 def _get_module(**kwargs):

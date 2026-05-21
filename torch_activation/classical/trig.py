@@ -84,7 +84,7 @@ class ModifiedArcsinh(BaseActivation):
         # Unused
 
     def _forward(self, z) -> Tensor:
-        return (1.0 / 12.0) * torch.asinh(z) * torch.abs(z)
+        return (1.0 / 12.0) * torch.asinh(z) * torch.sqrt(torch.abs(z))
 
 
 @register_activation
@@ -138,7 +138,7 @@ class Arctid(BaseActivation):
         # Unused
 
     def _forward(self, z) -> Tensor:
-        return torch.atan(z) * torch.pow(2.0, -z.clamp(-126, 127))
+        return torch.atan(z) ** 2 - z
 
 
 @register_activation
@@ -390,7 +390,6 @@ class HcLSH(BaseActivation):
 
     def _forward(self, z) -> Tensor:
         z_clamped = z.clamp(-84.0, 84.0)
-        log_cosh = torch.log(torch.cosh(z_clamped))
-        positive_part = log_cosh + (z_clamped * torch.cosh(z_clamped)) / 2.0
-        negative_part = log_cosh + z
+        positive_part = torch.log(torch.cosh(z_clamped) + z_clamped * torch.cosh(z_clamped / 2.0))
+        negative_part = torch.log(torch.cosh(z_clamped)) + z
         return torch.where(z >= 0, positive_part, negative_part)

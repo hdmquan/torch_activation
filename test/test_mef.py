@@ -12,7 +12,7 @@ ACTIVATION_NAME = "MEF"
 def scalar_ref(x: float) -> float:
     import math
 
-    return x / (math.sqrt(1 + x**2) + 2)
+    return x / math.sqrt(1 + x**2) + 0.5
 
 
 def _get_module(**kwargs):

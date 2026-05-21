@@ -10,7 +10,7 @@ ACTIVATION_NAME = "ModifiedArcsinh"
 
 
 def scalar_ref(x: float) -> float:
-    return (1.0 / 12.0) * math.asinh(x) * abs(x)
+    return (1.0 / 12.0) * math.asinh(x) * math.sqrt(abs(x))
 
 
 def _get_module(**kwargs):

@@ -774,7 +774,10 @@ class RReLU(BaseActivation):  # noqa: F811
         self.u = u
 
     def _forward(self, x: Tensor) -> Tensor:
-        a = torch.empty_like(x).uniform_(self.lower, self.u)
+        if self.training:
+            a = torch.empty_like(x).uniform_(self.lower, self.u)
+        else:
+            a = torch.full_like(x, (self.lower + self.u) / 2)
 
         if self.inplace:
             return x.where(x >= 0, x.div_(a))
@@ -1439,10 +1442,9 @@ class ShHardTanh(BaseActivation):
         self.a = a
 
     def _forward(self, x: Tensor) -> Tensor:
-        if self.inplace:
-            return x.clamp_(-1 - self.a, 1 - self.a).clamp_(-1, 1)
-        else:
-            return torch.clamp(torch.clamp(x, -1 - self.a, 1 - self.a), -1, 1)
+        lo, hi = -(1.0 + self.a), 1.0 - self.a
+        return torch.where(x < lo, torch.full_like(x, -1.0),
+                           torch.where(x > hi, torch.ones_like(x), x))
 
 
 @register_activation
@@ -1485,11 +1487,9 @@ class HardSwish(BaseActivation):
 
     def _forward(self, x: Tensor) -> Tensor:
         if self.inplace:
-            inner = x.add_(3).clamp_(-18, 18).div_(6)
-            x.mul_(inner)
-            return x
+            return F.hardswish_(x)
         else:
-            inner = torch.clamp(x + 3, -18, 18) / 6
+            inner = torch.clamp(x + 3, 0, 6) / 6
             return x * inner
 
 

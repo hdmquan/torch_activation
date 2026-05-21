@@ -14,9 +14,9 @@ def scalar_ref(x: float) -> float:
 
     a, b, c, d = 1.0, 1.0, 1.0, 1.0
     if x >= 0:
-        return -a * math.exp(-x / b) - 1
+        return -a * (math.exp(-x / b) - 1)
     else:
-        return c * math.exp(-x / d) - 1
+        return c * (math.exp(-x / d) - 1)
 
 
 def _get_module(**kwargs):

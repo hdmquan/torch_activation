@@ -13,13 +13,9 @@ def scalar_ref(x: float) -> float:
     import math
 
     a = 4.0
-    const_term = 1 / (math.sqrt(3) * math.pi)
-    if x < 0:
-        sz = x + a
-        return const_term - 0.25 * (1 - sz**2) * math.exp(-(sz**2) / 2)
-    else:
-        sz = x - a
-        return const_term - 0.25 * (1 - sz**2) * math.exp(-(sz**2) / 2)
+    const = (2.0 / math.sqrt(3.0)) * math.pi ** (-0.25)
+    sz = x + a if x < 0 else x - a
+    return const * (1 - sz**2) * math.exp(-sz**2 / 2)
 
 
 def _get_module(**kwargs):

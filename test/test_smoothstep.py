@@ -20,7 +20,7 @@ def scalar_ref(x: float) -> float:
         return 0.0
     else:
         inv_a = 1.0 / a
-        return 0.5 + x * (-1.5 * inv_a + x**2 * 2.0 * inv_a**3)
+        return 0.5 + x * (1.5 * inv_a - x**2 * 2.0 * inv_a**3)
 
 
 def _get_module(**kwargs):

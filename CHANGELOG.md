@@ -5,7 +5,7 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.0.0] - 2024-05-21
+## [1.0.0] - 2026-05-21
 
 ### Added
 - 416 activation functions across classical and adaptive families
@@ -27,7 +27,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Moved test structure to individual test files with template-based formula validation
 - Refactored BaseActivation to support scalar inputs natively
 
-## [0.4.0] - 2024-04-15
+## [0.4.0] - 2026-04-15
 
 ### Added
 - Initial implementation of classical activation families (sigmoid, ReLU, tanh variants)

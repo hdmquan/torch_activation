@@ -10,7 +10,8 @@ ACTIVATION_NAME = "ArandaOrdaz"
 
 
 def scalar_ref(x: float) -> float:
-    return 1 - (1 + 2.0 * math.exp(x)) ** (-1)
+    a = 2.0
+    return 1 - (1 + 2.0 * math.exp(x)) ** (-1 / a)
 
 
 def _get_module(**kwargs):

@@ -766,7 +766,7 @@ class DoubleSiLU(BaseActivation):
         super().__init__(**kwargs)
 
     def _forward(self, x: Tensor) -> Tensor:
-        return F.silu(F.silu(x))
+        return x * torch.sigmoid(F.silu(x))
 
 
 @register_activation

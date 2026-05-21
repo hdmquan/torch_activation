@@ -12,8 +12,8 @@ ACTIVATION_NAME = "HardSReLUE"
 def scalar_ref(x: float) -> float:
     a = 1.0
     if x >= 0:
-        hs = min(max((x + 1) / 2 + x, 0), 1)
-        return a * x * hs
+        hs = min(max((x + 1) / 2, 0), 1)
+        return a * x * hs + x
     else:
         return a * (math.exp(x) - 1)
 

@@ -13,7 +13,10 @@ def scalar_ref(x: float) -> float:
     import math
 
     a, b = 2.0, 3.0
-    return x / ((1 + math.exp(-x / b)) ** (1 / a))
+    denom = x / a + math.exp(-x / b)
+    if abs(denom) < 1e-10:
+        return 0.0
+    return x / denom
 
 
 def _get_module(**kwargs):

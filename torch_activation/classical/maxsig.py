@@ -686,8 +686,8 @@ class HardSReLUE(BaseActivation):
         result = torch.zeros_like(x)
 
         pos_x = x[pos_mask]
-        hard_sigmoid = torch.clamp((pos_x + 1) / 2 + pos_x, 0, 1)
-        result[pos_mask] = a * pos_x * hard_sigmoid
+        hard_sigmoid = torch.clamp((pos_x + 1) / 2, 0, 1)
+        result[pos_mask] = a * pos_x * hard_sigmoid + pos_x
 
         neg_x = x[neg_mask]
         result[neg_mask] = a * (torch.exp(neg_x) - 1)
@@ -763,8 +763,8 @@ class HardExponentialLinearSigmoidSquashing(BaseActivation):
     def _forward(self, x) -> Tensor:
         pos_mask = x >= 0
         hard_sigmoid = torch.clamp((x + 1) / 2, 0, 1)
-        exp_term = torch.exp(x.clamp(max=0)) - 1
-        raw = torch.where(pos_mask, x * hard_sigmoid, exp_term * hard_sigmoid)
+        neg_term = 1 + torch.exp(-x)
+        raw = torch.where(pos_mask, x * hard_sigmoid, neg_term * hard_sigmoid)
         return torch.where(hard_sigmoid == 0, torch.zeros_like(x), raw)
 
 

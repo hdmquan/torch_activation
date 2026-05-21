@@ -316,4 +316,4 @@ class AGumb(BaseActivation):
     def _forward(self, x) -> Tensor:
         # Ensure a is positive using softplus
         a = F.softplus(self.a_raw)
-        return 1 - (1 + a * torch.exp(x.clamp(max=88.0))) ** (-1)
+        return 1 - (1 + a * torch.exp(x.clamp(max=88.0))) ** (-1 / a)

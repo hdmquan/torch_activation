@@ -14,7 +14,7 @@ class AdaptiveSigmoid(BaseActivation):
     r"""
     Applies the Adaptive Sigmoid function:
 
-    :math:`\text{AdaptiveSigmoid}(x) = \frac{2}{1 - \exp(-ax)} - \frac{2}{a(1 + \exp(-ax))}`
+    :math:`\text{AdaptiveSigmoid}(x) = \frac{2(1 - \exp(-ax))}{a(1 + \exp(-ax))}`
 
     where :math:`a \in (0, \infty)` is a learnable parameter.
 
@@ -49,14 +49,7 @@ class AdaptiveSigmoid(BaseActivation):
 
     def _forward(self, x) -> Tensor:
         exp_neg = torch.exp((-self.a * x).clamp(max=88.0))
-        denom1 = 1 - exp_neg
-        denom1 = (
-            denom1
-            + torch.where(denom1 >= 0, torch.ones_like(denom1), -torch.ones_like(denom1)) * 1e-7
-        )
-        term1 = 2 / denom1
-        term2 = 2 / (self.a * (1 + exp_neg))
-        result = term1 - term2
+        result = 2 * (1 - exp_neg) / (self.a * (1 + exp_neg))
 
         if self.inplace and hasattr(x, "copy_"):
             x.copy_(result)

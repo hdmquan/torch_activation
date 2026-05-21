@@ -98,9 +98,8 @@ class Mishra(BaseActivation):
 
     def _forward(self, z) -> Tensor:
         abs_z = torch.abs(z)
-        term1 = 0.5 * z / (1 + abs_z)
-        term2 = 0.5 * z / (1 + abs_z)
-        return term1 + term2
+        softsign = z / (1 + abs_z)
+        return 0.5 * softsign ** 2 + 0.5 * softsign
 
 
 @register_activation
@@ -212,11 +211,10 @@ class SPOCU(BaseActivation):
         self.d = d
         # Unused
 
-        # Pre-compute h(b) for efficiency
         self.h_b = self._r(b) if 0 <= b < d else self._r(d)
 
     def _r(self, x):
-        return x**3 - (2 * x**4 + x**5) / 2
+        return x**3 * (x**5 - 2 * x**4 + 2)
 
     def _h(self, x):
         neg_mask = x < 0
@@ -226,13 +224,13 @@ class SPOCU(BaseActivation):
         result = torch.zeros_like(x)
         result[neg_mask] = x[neg_mask]
         result[mid_mask] = self._r(x[mid_mask])
-        result[high_mask] = self._r(torch.tensor(self.d, device=x.device))
+        result[high_mask] = self._r(torch.tensor(self.d, device=x.device, dtype=x.dtype))
 
         return result
 
     def _forward(self, z) -> Tensor:
-        h_z = self._h(z)
-        return self.a * (h_z**self.c) + self.b - self.a * self.h_b
+        h_z = self._h(z / self.c + self.b)
+        return self.a * h_z - self.a * self.h_b
 
 
 @register_activation
@@ -317,7 +315,7 @@ class ArandaOrdaz(BaseActivation):
         # Unused
 
     def _forward(self, z) -> Tensor:
-        return 1 - (1 + self.a * torch.exp(z)) ** (-1)
+        return 1 - (1 + self.a * torch.exp(z)) ** (-1 / self.a)
 
 
 @register_activation
@@ -522,5 +520,5 @@ class VBAF(BaseActivation):
 
     def _forward(self, z) -> Tensor:
         z_mean = torch.mean(z, dim=self.dim, keepdim=True)
-        abs_dev_sum = torch.sum((z - z_mean).abs(), dim=self.dim, keepdim=True)
-        return abs_dev_sum / (z_mean.abs() + 1e-10)
+        n = z.shape[self.dim]
+        return torch.sqrt(torch.sum((z_mean - z) ** 2, dim=self.dim, keepdim=True) / n)

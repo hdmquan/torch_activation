@@ -13,7 +13,7 @@ def scalar_ref(x: float) -> float:
     a, b, c, d = 1.0, 0.5, 1.0, 1.0
 
     def r(v):
-        return v**3 - (2 * v**4 + v**5) / 2
+        return v**3 * (v**5 - 2 * v**4 + 2)
 
     def h(v):
         if v < 0:
@@ -23,8 +23,7 @@ def scalar_ref(x: float) -> float:
         else:
             return r(d)
 
-    h_b = r(b) if 0 <= b < d else r(d)
-    return a * h(x) ** c + b - a * h_b
+    return a * h(x / c + b) - a * h(b)
 
 
 def _get_module(**kwargs):

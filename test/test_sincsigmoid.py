@@ -13,10 +13,9 @@ def scalar_ref(x: float) -> float:
     import math
 
     sig = 1 / (1 + math.exp(-x))
-    if sig < 1e-10:
+    if abs(sig) < 1e-10:
         return 1.0
-    pi_sig = math.pi * sig
-    return math.sin(pi_sig) / pi_sig
+    return math.sin(sig) / sig
 
 
 def _get_module(**kwargs):

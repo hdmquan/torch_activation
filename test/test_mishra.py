@@ -10,8 +10,8 @@ ACTIVATION_NAME = "Mishra"
 
 
 def scalar_ref(x: float) -> float:
-    abs_z = abs(x)
-    return x / (1 + abs_z)
+    s = x / (1 + abs(x))
+    return 0.5 * s**2 + 0.5 * s
 
 
 def _get_module(**kwargs):

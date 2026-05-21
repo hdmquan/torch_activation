@@ -10,11 +10,10 @@ ACTIVATION_NAME = "HcLSH"
 
 
 def scalar_ref(x: float) -> float:
-    lc = math.log(math.cosh(x))
     if x >= 0:
-        return lc + x * math.cosh(x) / 2.0
+        return math.log(math.cosh(x) + x * math.cosh(x / 2))
     else:
-        return lc + x
+        return math.log(math.cosh(x)) + x
 
 
 def _get_module(**kwargs):

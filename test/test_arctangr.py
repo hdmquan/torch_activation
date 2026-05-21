@@ -12,8 +12,7 @@ ACTIVATION_NAME = "ArctanGR"
 def scalar_ref(x: float) -> float:
     import math
 
-    scale = 1.0 / (1.0 + math.sqrt(2.0))
-    return math.atan(x) * scale
+    return math.atan(x) * 2.0 / (1.0 + math.sqrt(2.0))
 
 
 def _get_module(**kwargs):

@@ -13,7 +13,7 @@ def scalar_ref(x: float) -> float:
     def silu(v):
         return v / (1.0 + math.exp(-v))
 
-    return silu(silu(x))
+    return x / (1.0 + math.exp(-silu(x)))
 
 
 def _get_module(**kwargs):

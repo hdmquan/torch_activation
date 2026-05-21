@@ -10,7 +10,7 @@ ACTIVATION_NAME = "Arctid"
 
 
 def scalar_ref(x: float) -> float:
-    return math.atan(x) * 2 ** (-x)
+    return math.atan(x) ** 2 - x
 
 
 def _get_module(**kwargs):
