@@ -528,7 +528,7 @@ class PTanh(BaseActivation):
     def __init__(self, a: float = 2.0, **kwargs):
         super().__init__(**kwargs)
         assert a > 1.0, "a must be greater than 1.0"
-        self.a = nn.Parameter(torch.tensor([a]), requires_grad=False)
+        self.a = nn.Parameter(torch.tensor([a]))
 
     def _forward(self, z) -> Tensor:
         a = self.a.to(z.dtype)
@@ -572,13 +572,13 @@ class SRS(BaseActivation):
 
     def __init__(self, a: float = 2.0, b: float = 3.0, learnable: bool = False, **kwargs):
         super().__init__(**kwargs)
-        self.a = nn.Parameter(torch.tensor([a]))
-        self.b = nn.Parameter(torch.tensor([b]))
         self.learnable = learnable
-
-        if not learnable:
-            self.a.requires_grad = False
-            self.b.requires_grad = False
+        if learnable:
+            self.a = nn.Parameter(torch.tensor([a]))
+            self.b = nn.Parameter(torch.tensor([b]))
+        else:
+            self.register_buffer('a', torch.tensor([a]))
+            self.register_buffer('b', torch.tensor([b]))
 
     def _forward(self, z) -> Tensor:
         denominator = torch.pow(1 + torch.exp(-z / self.b), 1 / self.a)
@@ -609,7 +609,7 @@ class SC(BaseActivation):
 
     def __init__(self, a: float = 50.0, **kwargs):
         super().__init__(**kwargs)
-        self.a = nn.Parameter(torch.tensor([a]), requires_grad=False)
+        self.a = nn.Parameter(torch.tensor([a]))
 
     def _forward(self, z) -> Tensor:
         return (F.softplus(self.a * z) - F.softplus(self.a * (z - 1))) / self.a
@@ -655,17 +655,17 @@ class Hexpo(BaseActivation):
         **kwargs,
     ):
         super().__init__(**kwargs)
-        self.a = nn.Parameter(torch.tensor([a]))
-        self.b = nn.Parameter(torch.tensor([b]))
-        self.c = nn.Parameter(torch.tensor([c]))
-        self.d = nn.Parameter(torch.tensor([d]))
         self.learnable = learnable
-
-        if not learnable:
-            self.a.requires_grad = False
-            self.b.requires_grad = False
-            self.c.requires_grad = False
-            self.d.requires_grad = False
+        if learnable:
+            self.a = nn.Parameter(torch.tensor([a]))
+            self.b = nn.Parameter(torch.tensor([b]))
+            self.c = nn.Parameter(torch.tensor([c]))
+            self.d = nn.Parameter(torch.tensor([d]))
+        else:
+            self.register_buffer('a', torch.tensor([a]))
+            self.register_buffer('b', torch.tensor([b]))
+            self.register_buffer('c', torch.tensor([c]))
+            self.register_buffer('d', torch.tensor([d]))
 
     def _forward(self, z) -> Tensor:
         pos_val = -self.a * torch.exp((-z / self.b).clamp(max=88.0)) - 1
@@ -725,7 +725,7 @@ class SmoothStep(BaseActivation):
 
     def __init__(self, a: float = 1.0, **kwargs):
         super().__init__(**kwargs)
-        self.a = nn.Parameter(torch.tensor([a]), requires_grad=False)
+        self.a = nn.Parameter(torch.tensor([a]))
 
     def _forward(self, z) -> Tensor:
         half_a = self.a / 2
@@ -1029,7 +1029,7 @@ class pSechSig(BaseActivation):
 
     def __init__(self, a: float = 1.0, **kwargs):
         super().__init__(**kwargs)
-        self.a = nn.Parameter(torch.tensor([a]), requires_grad=False)
+        self.a = nn.Parameter(torch.tensor([a]))
 
     def _forward(self, z) -> Tensor:
         return (z + self.a * sech(z + self.a)) * torch.sigmoid(z)
@@ -1083,7 +1083,7 @@ class pTanhSig(BaseActivation):
 
     def __init__(self, a: float = 1.0, **kwargs):
         super().__init__(**kwargs)
-        self.a = nn.Parameter(torch.tensor([a]), requires_grad=False)
+        self.a = nn.Parameter(torch.tensor([a]))
 
     def _forward(self, z) -> Tensor:
         return (z + self.a * torch.tanh(z + self.a)) * torch.sigmoid(z)
@@ -1177,7 +1177,7 @@ class Rootsig(BaseActivation):
 
     def __init__(self, a: float = 1.0, **kwargs):
         super().__init__(**kwargs)
-        self.a = nn.Parameter(torch.tensor(a), requires_grad=False)
+        self.a = nn.Parameter(torch.tensor(a))
 
     def _forward(self, z) -> Tensor:
         a_z = self.a * z

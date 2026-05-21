@@ -1588,8 +1588,8 @@ class UAF(BaseActivation):
         self.inplace: bool = inplace
 
     def _forward(self, x: Tensor) -> Tensor:
-        term1 = torch.log1p(torch.exp(self.a * (x + self.b) + self.c * x**2))
-        term2 = torch.log1p(torch.exp(self.d * (x - self.b)))
+        term1 = F.softplus(self.a * (x + self.b) + self.c * x**2)
+        term2 = F.softplus(self.d * (x - self.b))
         result = term1 - term2 + self.e
         if self.inplace and hasattr(x, "copy_"):
             x.copy_(result)
@@ -1665,13 +1665,11 @@ class GReLU(BaseActivation):
         self.inplace: bool = inplace
 
     def _forward(self, x: Tensor) -> Tensor:
-        # softplus ensures b > 0 and a > 1
         a = 1 + F.softplus(self.a)
         b = F.softplus(self.b)
-
-        term1 = torch.log1p(torch.exp(torch.log(a) * b * x))
+        term1 = F.softplus(torch.log(a) * b * x)
         term2 = b * torch.log(a)
-        result = torch.exp(torch.log(term1) - torch.log(term2))
+        result = term1 / term2
         if self.inplace and hasattr(x, "copy_"):
             x.copy_(result)
             return x

@@ -14,7 +14,7 @@ DOUBLES_FIRST_DIM = {'CReLU', 'NCReLU'}
 DOUBLES_LAST_DIM = {'PairedReLU'}
 SKIP_SHAPE = {'VBAF'}
 
-STOCHASTIC = {'NReLU', 'RTReLU', 'RTPReLU', 'EELU', 'ProbAct', 'ReLUProbAct', 'RReLU', 'EPReLU'}
+STOCHASTIC = {'NReLU', 'RTReLU', 'RTPReLU', 'EELU', 'ProbAct', 'ReLUProbAct', 'RReLU', 'EPReLU', 'EReLU'}
 
 NONSMOOTH = {
     'ReLU', 'LReLU', 'HardTanh', 'HardSigmoid', 'HardSwish', 'SQNL',
@@ -24,7 +24,7 @@ NONSMOOTH = {
     'ShiLU', 'DYReLU', 'MarReLU', 'DelayReLU', 'DisReLU',
     'Maxout', 'Tent', 'Hat', 'PiecewiseMexicanHat', 'PFPM', 'FPAF', 'DPAF',
     'SmoothStep', 'KWTA', 'Binary', 'Hardshrink', 'Softshrink',
-    'HardSReLUE', 'LSReLU', 'SRReLU', 'TanhLinearUnit', 'TripleStateSigmoid',
+    'HardSReLUE', 'LSReLU', 'SRReLU', 'SoftsignRReLU', 'TanhLinearUnit', 'TripleStateSigmoid',
     'ImprovedLogisticSigmoid', 'SigmoidTanh', 'PSTanh', 'PTanh',
     'FCAF_Hidden', 'FCAF_Output', 'CCAF', 'HCAF',
     'NCReLU', 'PairedReLU', 'SignReLU', 'SignReLUPlus', 'ShiftedReLU',
@@ -34,6 +34,30 @@ NONSMOOTH = {
 SKIP_NONDEGEN = {'VBAF', 'Maxout', 'KWTA', 'AllReLU'}
 
 SKIP_DTYPE = {'BaseActivation'}
+
+UPCAST_DTYPE = {
+    'SinLU', 'ESwish', 'TAAF', 'GEU', 'LEAF', 'AdaLU', 'SAF', 'NIN', 'GRA', 'EIS',
+    'ScaledLogisticSigmoid', 'PLU', 'VAF', 'KAF', 'Binary', 'SReLU', 'RTReLU',
+    'HardSwish', 'SQMAX', 'VariantSigmoidFunction', 'STanh', 'SigmoidAlgebraic',
+    'TripleStateSigmoid', 'ImprovedLogisticSigmoid', 'SigLin', 'SRS', 'SC', 'Hexpo',
+    'pSechSig', 'pTanhSig', 'MSAF', 'SymMSAF', 'RootsigPlus', 'FracReLU', 'FracSoftplus',
+    'FracTanh', 'FALU', 'FracLReLU', 'FracPReLU', 'FracELU', 'FracGELU2',
+    'Swish', 'AHAF', 'PSSiLU', 'ACONB', 'ACONC', 'PSGU', 'TBSReLUl', 'PATS',
+    'ErfAct', 'PSerf', 'Swim', 'GPSoftmax', 'GLSoftmax', 'ARBF', 'PGELU', 'PFTS',
+    'PFPM', 'PSIGRAMP', 'RSIGN', 'MAF', 'UAF', 'GReLU', 'GLN', 'NActivation', 'ALiSA',
+    'MMeLU', 'FSA', 'ShiLU', 'StarReLU', 'DELU', 'PReLU', 'PReLUPlus', 'MarReLU',
+    'RPReLU', 'LeLeLU', 'PREU', 'SMU', 'SAU', 'ProbAct', 'ReLUProbAct', 'AOAF',
+    'DLReLU', 'ExpDLReLU', 'DReLU', 'FReLU', 'AdaptiveHardTanh', 'AReLU', 'DPReLU',
+    'DualLine', 'PiLU', 'DPAF', 'FPAF', 'EPReLU', 'PairedReLU', 'Tent', 'RMAF',
+    'PTELU', 'PTaLU', 'TanhLU', 'TeLU', 'TReLU', 'TReLU2', 'BLU', 'ReBLU', 'SCMish',
+    'PSwish', 'PELU', 'EDELU', 'AdaptiveCombination1', 'AdaptiveCombination2', 'FELU',
+    'PFELU', 'MPELU', 'PE2ReLU', 'PE2Id', 'CELU', 'ErfReLU', 'PSELU', 'LPSELU',
+    'LPSELU_RP', 'ShELU', 'SvELU', 'PShELU', 'PSvELU', 'TSwish', 'RePSU', 'EELU',
+    'PFPLUS', 'PVLU', 'CosLU', 'LAAF', 'AdaptiveSlopeTanh', 'PSTanh', 'SSinH', 'SExp',
+    'LAU', 'AGumb', 'AdaptiveSigmoid', 'GeneralizedHyperbolicTangent', 'TrainableAmplitude',
+    'ASSF', 'SVAF', 'TanhSoft', 'TanhSoft1', 'TanhSoft2', 'TanhSoft3', 'PSigmoid', 'PSF',
+    'ReLUN',
+}
 
 SKIP_ALL = {'BaseActivation'}
 
@@ -92,6 +116,8 @@ def test_numerical_stability(name):
 def test_dtype_preserved(name, dtype):
     if name in SKIP_DTYPE:
         pytest.skip("skip dtype check")
+    if dtype == torch.float16 and name in UPCAST_DTYPE:
+        pytest.skip("intentional float32 upcast for stability")
     m, x_fn = make_module_and_input(name, dtype=dtype)
     try:
         y = m(x_fn(1.0))

@@ -294,7 +294,10 @@ class SoftsignRReLU(BaseActivation):
 
     # TODO: There should be a better way to implement this
     def _forward(self, x: Tensor) -> Tensor:
-        a = torch.empty_like(x).uniform_(self.lower, self.u)
+        if self.training:
+            a = torch.empty_like(x).uniform_(self.lower, self.u)
+        else:
+            a = torch.full_like(x, (self.lower + self.u) / 2)
         denom = (1 + x).pow(2).clamp(min=1e-7)
         common_term = 1 / denom
         return torch.where(x >= 0, common_term + x, common_term + a * x)
@@ -453,13 +456,10 @@ class ReLUN(BaseActivation):
     # TODO: Default to RELU6
     def __init__(self, n: float = 1.0, **kwargs):
         super().__init__(**kwargs)
-        self.n = nn.Parameter(Tensor([n]), requires_grad=False)
+        self.n = nn.Parameter(Tensor([n]))
 
     def _forward(self, x) -> Tensor:
-        if self.inplace:
-            return x.clamp_(0, self.n.item())
-        else:
-            return torch.clamp(x, 0, self.n.item())
+        return x.clamp(0) - F.relu(x - self.n)
 
 
 @register_activation
@@ -828,7 +828,10 @@ class SRReLU(BaseActivation):
         self.u = u
 
     def _forward(self, x: Tensor) -> Tensor:
-        a = torch.empty_like(x).uniform_(self.lower, self.u)
+        if self.training:
+            a = torch.empty_like(x).uniform_(self.lower, self.u)
+        else:
+            a = torch.full_like(x, (self.lower + self.u) / 2)
         frac = 1 / torch.square(1 + x).clamp(min=1e-7)
         return torch.where(x >= 0, frac + x, frac + (a * x))
 

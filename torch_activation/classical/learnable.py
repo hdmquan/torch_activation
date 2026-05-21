@@ -197,7 +197,7 @@ class pSoftplus(BaseActivation):
 
     def _forward(self, x) -> Tensor:
         beta = self.log_beta.exp().clamp(min=1e-6)
-        return F.softplus(x, beta=beta.item(), threshold=20.0)
+        return F.softplus(beta * x) / beta
 
 
 @register_activation

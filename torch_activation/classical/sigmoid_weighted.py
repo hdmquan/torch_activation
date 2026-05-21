@@ -209,7 +209,7 @@ class SGELU(BaseActivation):
 
     def __init__(self, a: float = 1.0, **kwargs):
         super().__init__(**kwargs)
-        self.a = nn.Parameter(torch.tensor(float(a)), requires_grad=False)
+        self.a = nn.Parameter(torch.tensor(float(a)))
 
     def _forward(self, x) -> Tensor:
         return self.a * x * torch.erf(x / math.sqrt(2))
@@ -578,8 +578,8 @@ class pLogish(BaseActivation):
 
     def __init__(self, a: float = 1.0, b: float = 10.0, **kwargs):
         super().__init__(**kwargs)
-        self.a = nn.Parameter(torch.tensor(float(a)), requires_grad=False)
-        self.b = nn.Parameter(torch.tensor(float(b)), requires_grad=False)
+        self.a = nn.Parameter(torch.tensor(float(a)))
+        self.b = nn.Parameter(torch.tensor(float(b)))
 
     def _forward(self, x) -> Tensor:
         return self.a * x * torch.log(1 + torch.sigmoid(self.b * x))
@@ -989,12 +989,12 @@ class Smish(BaseActivation):
 
     def __init__(self, a: float = 1.0, b: float = 1.0, learnable: bool = False, **kwargs):
         super().__init__(**kwargs)
-        self.a = nn.Parameter(torch.tensor(float(a)))
-        self.b = nn.Parameter(torch.tensor(float(b)))
-
-        if not learnable:
-            self.a.requires_grad = False
-            self.b.requires_grad = False
+        if learnable:
+            self.a = nn.Parameter(torch.tensor(float(a)))
+            self.b = nn.Parameter(torch.tensor(float(b)))
+        else:
+            self.register_buffer('a', torch.tensor(float(a)))
+            self.register_buffer('b', torch.tensor(float(b)))
 
     def _forward(self, x) -> Tensor:
         return self.a * x * torch.tanh(torch.log(1 + torch.sigmoid(self.b * x)))
