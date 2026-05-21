@@ -839,7 +839,7 @@ class HardExponentialLinearSigmoidSquashing(BaseActivation):
 
         \text{HardExponentialLinearSigmoidSquashing}(z) = \begin{cases}
         z \cdot \max\!\left(0, \min\!\left(\tfrac{z+1}{2}, 1\right)\right), & z \geq 0 \\
-        (\exp(z) - 1) \cdot \max\!\left(0, \min\!\left(\tfrac{z+1}{2}, 1\right)\right), & z < 0
+        (1 + \exp(-z)) \cdot \max\!\left(0, \min\!\left(\tfrac{z+1}{2}, 1\right)\right), & z < 0
         \end{cases}
 
     Shape:

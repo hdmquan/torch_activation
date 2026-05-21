@@ -102,7 +102,7 @@ class Mishra(BaseActivation):
     r"""
     Applies the Mishra activation function:
 
-    :math:`\text{Mishra}(z) = \frac{1}{2} \cdot \frac{z}{1 + |z|} + \frac{z}{2} \cdot \frac{1}{1 + |z|}`
+    :math:`\text{Mishra}(z) = \frac{1}{2}\left(\frac{z}{1+|z|}\right)^2 + \frac{1}{2} \cdot \frac{z}{1+|z|}`
 
     Args:
         inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
@@ -221,9 +221,9 @@ class SPOCU(BaseActivation):
     r"""
     Applies the Scaled Polynomial Constant Unit (SPOCU) activation function:
 
-    :math:`\text{SPOCU}(z) = a \cdot h(z)^c + b - a \cdot h(b)`
+    :math:`\text{SPOCU}(z) = a \cdot h\!\left(\frac{z}{c} + b\right) - a \cdot h(b)`
 
-    where :math:`h(x) = \begin{cases} r(d), & x \geq d \\ r(x), & 0 \leq x < d \\ x, & x < 0 \end{cases}` and :math:`r(x) = x^3 - \frac{2x^4 + x^5}{2}`
+    where :math:`h(x) = \begin{cases} r(d), & x \geq d \\ r(x), & 0 \leq x < d \\ x, & x < 0 \end{cases}` and :math:`r(x) = x^3(x^5 - 2x^4 + 2)`
 
     Args:
         a (float, optional): scaling parameter. Default: ``1.0``
@@ -351,7 +351,7 @@ class ArandaOrdaz(BaseActivation):
     r"""
     Applies the Aranda-Ordaz activation function:
 
-    :math:`\text{ArandaOrdaz}(z) = 1 - (1 + a \cdot \exp(z))^{-1}`
+    :math:`\text{ArandaOrdaz}(z) = 1 - (1 + a \cdot \exp(z))^{-1/a}`
 
     Args:
         a (float, optional): fixed parameter. Default: ``2.0``
@@ -542,7 +542,7 @@ class VBAF(BaseActivation):
     r"""
     Applies the Volatility-Based Activation Function (VBAF):
 
-    :math:`\text{VBAF}(z_1, \ldots, z_n) = \frac{\sum_{j=1}^{n} |z_j - \bar{z}|}{|\bar{z}|}`
+    :math:`\text{VBAF}(z_1, \ldots, z_n) = \sqrt{\frac{\sum_{j=1}^{n}(z_j - \bar{z})^2}{n}}`
 
     where :math:`\bar{z} = \frac{\sum_{j=1}^{n} z_j}{n}`
 

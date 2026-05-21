@@ -83,7 +83,7 @@ class ModifiedArcsinh(BaseActivation):
     r"""
     Applies the Modified arcsinh (m-arcsinh) activation function:
 
-    :math:`\text{ModifiedArcsinh}(z) = \frac{1}{12} \sinh^{-1}(z) |z|`
+    :math:`\text{ModifiedArcsinh}(z) = \frac{1}{12} \sinh^{-1}(z) \sqrt{|z|}`
 
     Args:
         inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
@@ -156,7 +156,7 @@ class Arctid(BaseActivation):
     r"""
     Applies the Arctid activation function:
 
-    :math:`\text{Arctid}(z) = \tan^{-1}(z) \cdot 2^{-z}`
+    :math:`\text{Arctid}(z) = \left(\tan^{-1}(z)\right)^2 - z`
 
     Args:
         inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
@@ -486,7 +486,7 @@ class HcLSH(BaseActivation):
     .. math::
 
         \text{HcLSH}(z) = \begin{cases}
-        \ln(\cosh(z)) + \frac{z \cdot \cosh(z)}{2}, & z \geq 0 \\
+        \ln\!\left(\cosh(z) + z \cdot \cosh\!\left(\tfrac{z}{2}\right)\right), & z \geq 0 \\
         \ln(\cosh(z)) + z, & z < 0
         \end{cases}
 

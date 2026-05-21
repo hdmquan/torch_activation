@@ -371,7 +371,7 @@ class TripleStateSigmoid(BaseActivation):
     r"""
     Applies the Triple State Sigmoid activation function:
 
-    :math:`\text{TripleStateSigmoid}(z) = \frac{1}{1 + \exp(-z)} + \frac{1}{1 + \exp(-z+a)} + \frac{1}{1 + \exp(-z+b)}`
+    :math:`\text{TripleStateSigmoid}(z) = \sigma(z)\left(\sigma(z) + \sigma(z-a) + \sigma(z-b)\right)`
 
      See: https://www.sciencedirect.com/science/article/abs/pii/S0957417420307557
 
@@ -404,7 +404,8 @@ class TripleStateSigmoid(BaseActivation):
         self.b = nn.Parameter(torch.tensor([b]))
 
     def _forward(self, z) -> Tensor:
-        return torch.sigmoid(z) + torch.sigmoid(z - self.a) + torch.sigmoid(z - self.b)
+        s = torch.sigmoid(z)
+        return s * (s + torch.sigmoid(z - self.a) + torch.sigmoid(z - self.b))
 
 
 @register_activation

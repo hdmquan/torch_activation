@@ -388,7 +388,7 @@ class FracELU(BaseActivation):
 
         \text{FracELU}(z_i) = \begin{cases}
             \frac{z_i^{1 - a_i}}{\Gamma(2 - a_i)}, & z_i \geq 0 \\
-            b \sum_{k=0}^{N} \frac{\Gamma(k + 1 - a_i)}{\Gamma(k + 1)^2} z_i^{k - a_i} - \frac{b}{\Gamma(1 - a_i)} z_i^{-a_i}, & z_i < 0
+            b \sum_{k=0}^{N} \frac{1}{\Gamma(k + 1 - a_i)} z_i^{k - a_i} - \frac{b}{\Gamma(1 - a_i)} z_i^{-a_i}, & z_i < 0
         \end{cases}
 
     where :math:`\Gamma` is the Gamma function, :math:`a_i` is a trainable parameter, and :math:`b` is a fixed parameter.
@@ -441,7 +441,7 @@ class FracELU(BaseActivation):
             gamma_k_plus_1_minus_a = torch.exp(
                 torch.lgamma(torch.tensor(k + 1, dtype=x.dtype, device=x.device) - a_clamped)
             )
-            coef = 1 / gamma_k_plus_1 * gamma_k_plus_1_minus_a / gamma_k_plus_1
+            coef = 1.0 / gamma_k_plus_1_minus_a
             second_term = second_term + coef * torch.pow(abs_x, k - a_clamped)
         val_neg = self.alpha * second_term + first_term
 
@@ -612,7 +612,7 @@ class FracGELU1(BaseActivation):
 
         \text{FracGELU1}(z_i) = \begin{cases}
             \frac{z_i^{1 - a_i}}{\Gamma(2 - a_i)}, & z_i \geq 0 \\
-            \frac{0.5 z_i^{1 - a_i}}{\Gamma(2 - a_i)} - \frac{1}{\sqrt{2\pi}} \sum_{k=0}^{N} \frac{1}{k!} \left(-\frac{1}{2}\right)^k \frac{\Gamma(2k + 3)}{\Gamma(2k + 3 - a_i)} z_i^{2k+1 - a_i}, & z_i < 0
+            \frac{0.5 z_i^{1 - a_i}}{\Gamma(2 - a_i)} - \frac{1}{\sqrt{2\pi}} \sum_{k=0}^{N} \frac{1}{k!} \left(-\frac{1}{2}\right)^k \frac{\Gamma(2k + 3)}{\Gamma(2k + 3 - a_i)} z_i^{2(k+1) - a_i}, & z_i < 0
         \end{cases}
 
     where :math:`\Gamma` is the Gamma function and :math:`a_i` is a trainable parameter.
@@ -698,7 +698,7 @@ class FracGELU2(BaseActivation):
     r"""
     Applies the Fractional GELU Variant 2 activation function:
 
-    :math:`\text{FracGELU2}(z_i) = \frac{0.5 z_i^{1 - a_i}}{\Gamma(2 - a_i)} - \frac{1}{\sqrt{2\pi}} \sum_{k=0}^{N} \frac{1}{k!} \left(-\frac{1}{2}\right)^k \frac{\Gamma(2k + 3)}{\Gamma(2k + 3 - a_i)} z_i^{2k+1 - a_i}`
+    :math:`\text{FracGELU2}(z_i) = \frac{0.5 z_i^{1 - a_i}}{\Gamma(2 - a_i)} - \frac{1}{\sqrt{2\pi}} \sum_{k=0}^{N} \frac{1}{k!} \left(-\frac{1}{2}\right)^k \frac{\Gamma(2k + 3)}{\Gamma(2k + 3 - a_i)} z_i^{2(k+1) - a_i}`
 
     where :math:`\Gamma` is the Gamma function and :math:`a_i` is a trainable parameter.
 

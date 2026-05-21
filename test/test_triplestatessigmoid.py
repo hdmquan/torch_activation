@@ -15,7 +15,7 @@ def scalar_ref(x: float) -> float:
     def sig(v):
         return 1 / (1 + math.exp(-v))
 
-    return sig(x) + sig(x - 20.0) + sig(x - 40.0)
+    return sig(x) * (sig(x) + sig(x - 20.0) + sig(x - 40.0))
 
 
 def _get_module(**kwargs):
