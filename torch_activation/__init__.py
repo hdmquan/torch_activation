@@ -22,7 +22,7 @@ def get_all_activations() -> list[str]:
     return list(_ACTIVATIONS.keys())
 
 
-def _import_submodule(package_path):
+def _import_submodule(package_path, override=False):
     import importlib
     import inspect
     import os
@@ -44,13 +44,13 @@ def _import_submodule(package_path):
         pkg_mod = importlib.import_module(f".{package_path}", package="torch_activation")
         for name in getattr(pkg_mod, "__all__", []):
             obj = getattr(pkg_mod, name, None)
-            if obj is not None and inspect.isclass(obj) and name not in globals():
+            if obj is not None and inspect.isclass(obj) and (override or name not in globals()):
                 globals()[name] = obj
     except Exception as e:
         warnings.warn(f"Failed to import torch_activation.{package_path}: {e}")
 
 
-_import_submodule("classical")
 _import_submodule("adaptive")
+_import_submodule("classical", override=True)
 
 __all__ = list(_ACTIVATIONS.keys()) + ["__version__", "get_all_activations", "register_activation"]
