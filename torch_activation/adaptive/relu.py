@@ -119,7 +119,7 @@ class DELU(BaseActivation):
     r"""
     Applies the DELU activation function:
 
-    :math:`\text{DELU}(x) = \begin{cases} \text{SiLU}(x), & x \leq 0 \\ (n + 0.5) \cdot x + |\exp(-x) - 1|, & x > 0 \end{cases}` # noqa: E501
+    :math:`\text{DELU}(x) = \begin{cases} \text{SiLU}(x), & x < 0 \\ (n + 0.5) \cdot x + |\exp(-x) - 1|, & x \geq 0 \end{cases}` # noqa: E501
 
      See: https://doi.org/10.20944/preprints202301.0463.v1
 

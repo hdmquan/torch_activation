@@ -10,7 +10,7 @@ class Polyexp(BaseActivation):
     r"""
     Applies the Polyexp activation function:
 
-    :math:`\text{Polyexp}(z) = a \cdot z^2 + b \cdot z + c \cdot \exp(-d \cdot z^2)`
+    :math:`\text{Polyexp}(z) = (a \cdot z^2 + b \cdot z + c) \cdot \exp(-d \cdot z^2)`
 
     Args:
         a (float, optional): parameter for the quadratic term. Default: ``1.0``
@@ -43,7 +43,7 @@ class Polyexp(BaseActivation):
         # Unused
 
     def _forward(self, z) -> Tensor:
-        return self.a * z**2 + self.b * z + self.c * torch.exp(-self.d * z**2)
+        return (self.a * z**2 + self.b * z + self.c) * torch.exp(-self.d * z**2)
 
 
 @register_activation
@@ -117,7 +117,7 @@ class Wave(BaseActivation):
     r"""
     Applies the Wave activation function:
 
-    :math:`\text{Wave}(z) = 1 - z^2 \cdot \exp(-a \cdot z^2)`
+    :math:`\text{Wave}(z) = (1 - z^2) \cdot \exp(-a \cdot z^2)`
 
     Args:
         a (float, optional): parameter for the exponential decay. Default: ``1.0``
@@ -144,4 +144,4 @@ class Wave(BaseActivation):
         # Unused
 
     def _forward(self, z) -> Tensor:
-        return 1 - z**2 * torch.exp(-self.a * z**2)
+        return (1 - z**2) * torch.exp(-self.a * z**2)

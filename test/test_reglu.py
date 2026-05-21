@@ -28,7 +28,7 @@ class TestNumerical:
         m = _get_module()
         x = torch.randn(4, 4)
         a, b = x.chunk(2, dim=-1)
-        expected = F.relu(a) * b
+        expected = a * F.relu(b)
         assert torch.allclose(m(x), expected, atol=1e-5)
 
 

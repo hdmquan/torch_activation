@@ -10,7 +10,7 @@ ACTIVATION_NAME = "CCAF"
 
 
 def scalar_ref(x: float) -> float:
-    z = math.tanh(x)
+    z = x
     a, b = 0.5, 0.5
     z = a * math.sin(math.pi * b * math.sin(math.pi * z))
     return z

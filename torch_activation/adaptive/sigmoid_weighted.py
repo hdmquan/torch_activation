@@ -977,7 +977,7 @@ class GPSoftmax(BaseActivation):
         GPM_{\alpha, \beta}(x) = (ln( sum(\alpha^{\beta x_k}) ) - ln(N)) / (\beta ln(\alpha))
         """
         log_alpha: Tensor = torch.log(torch.clamp(alpha, min=1e-8))
-        b: Tensor = torch.multiply(beta + 1, x)
+        b: Tensor = torch.multiply(beta, x)
         first_part: Tensor = torch.logsumexp(b * log_alpha, dim=-1, keepdim=True)
 
         second_part = torch.log(torch.tensor(float(self.input_size)))

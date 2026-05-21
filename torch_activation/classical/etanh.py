@@ -48,7 +48,7 @@ class EvolvedTanhReLU(BaseActivation):
     r"""
     Applies the evolved combination of tanh and ReLU activation function:
 
-    :math:`\text{EvolvedTanhReLU}(z) = a \cdot \tanh(z^2) + \text{ReLU}(z)`
+    :math:`\text{EvolvedTanhReLU}(z) = a \cdot (\tanh(z^2) + \text{ReLU}(z))`
 
     Args:
         a (float, optional): Scaling parameter. Default: ``1.0``
@@ -78,7 +78,7 @@ class EvolvedTanhReLU(BaseActivation):
         self.a = a
 
     def _forward(self, z) -> Tensor:
-        return self.a * torch.tanh(z**2) + torch.relu(z)
+        return self.a * (torch.tanh(z**2) + torch.relu(z))
 
 
 @register_activation

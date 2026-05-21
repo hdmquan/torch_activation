@@ -184,7 +184,7 @@ class CCAF(BaseActivation):
 
     .. math::
 
-        \tilde{z}_i = \tanh(z_i), \quad f(\tilde{z}_{i+1}) = a \cdot \sin(\pi \cdot b \cdot \sin(\pi \tilde{z}_i))
+        f(z_{i+1}) = a \cdot \sin(\pi \cdot b \cdot \sin(\pi z_i))
 
     where :math:`a, b \in [0, 1]`.
 
@@ -217,11 +217,7 @@ class CCAF(BaseActivation):
         self.iterations = iterations
 
     def _forward(self, x: Tensor) -> Tensor:
-        # Normalize input to [-1,1] range for sine stability
-        z = torch.tanh(x)
-
+        z = x
         for _ in range(self.iterations):
-            # Apply the cascade chaotic map
             z = self.a * torch.sin(torch.pi * self.b * torch.sin(torch.pi * z))
-
         return z

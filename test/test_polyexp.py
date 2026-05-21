@@ -13,7 +13,7 @@ def scalar_ref(x: float) -> float:
     import math
 
     a, b, c, d = 1.0, 1.0, 1.0, 1.0
-    return a * x**2 + b * x + c * math.exp(-d * x**2)
+    return (a * x**2 + b * x + c) * math.exp(-d * x**2)
 
 
 def _get_module(**kwargs):
