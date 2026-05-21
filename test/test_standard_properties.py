@@ -353,6 +353,10 @@ def test_gradient_correctness(name):
     m, x_fn = make_module_and_input(name, dtype=torch.float64)
     x = x_fn(1.0).requires_grad_(True)
     if name in NONSMOOTH:
+        if name in NEEDS_INPUT_SHAPE:
+            x = torch.linspace(-1.9, 1.9, 8, dtype=torch.float64).reshape(2, 4).requires_grad_(True)
+        else:
+            x = torch.linspace(-1.9, 1.9, 8, dtype=torch.float64).requires_grad_(True)
         try:
             y = m(x)
             y.sum().backward()
@@ -374,7 +378,10 @@ def test_param_gradients_flow(name):
     m, x_fn = make_module_and_input(name)
     if not list(m.parameters()):
         pytest.skip("no parameters")
-    x = x_fn(1.0).requires_grad_(True)
+    if name in NEEDS_INPUT_SHAPE:
+        x = torch.linspace(-1.5, 1.5, 8).reshape(2, 4).requires_grad_(True)
+    else:
+        x = torch.linspace(-1.5, 1.5, 8).requires_grad_(True)
     m(x).sum().backward()
     for pname, p in m.named_parameters():
         assert p.grad is not None, f"{name}.{pname}: grad is None"

@@ -1169,7 +1169,9 @@ class VAF(BaseActivation):
     def __init__(self, J: int = 3, **kwargs):
         super().__init__(**kwargs)
         self.J = J
-        self.a = nn.Parameter(torch.randn(J + 1) * 0.1)
+        a_init = torch.zeros(J + 1)
+        a_init[1] = 1.0
+        self.a = nn.Parameter(a_init)
         self.b = nn.Parameter(torch.ones(J))
         self.c = nn.Parameter(torch.zeros(J))
 
