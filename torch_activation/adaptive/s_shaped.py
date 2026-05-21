@@ -9,31 +9,41 @@ from torch_activation.base import BaseActivation
 @register_activation
 class SReLU(BaseActivation):
     r"""
-    Applies the S-shaped Rectified Linear Unit (SReLU) function:
+    Applies the S-shaped Rectified Linear Unit activation function:
 
-    :math:`\text{SReLU}(z_i) = \begin{cases}
-    t^r_i + a^r_i(z_i - t^r_i), & z_i \geq t^r_i \\
-    z_i, & t^r_i > z_i > t^l_i \\
-    t^l_i + a^l_i(z_i - t^l_i), & z_i \leq t^l_i
-    \end{cases}`
+    .. math::
+
+        \text{SReLU}(z_i) = \begin{cases}
+            t^r_i + a^r_i(z_i - t^r_i), & z_i \geq t^r_i \\
+            z_i, & t^r_i > z_i > t^l_i \\
+            t^l_i + a^l_i(z_i - t^l_i), & z_i \leq t^l_i
+        \end{cases}
 
     where :math:`t^r_i`, :math:`t^l_i`, :math:`a^r_i`, and :math:`a^l_i` are trainable parameters.
 
     Args:
-        init_tr (float, optional): Initial value for the right threshold parameter tr. Default: 1.0
-        init_tl (float, optional): Initial value for the left threshold parameter tl. Default: -1.0
-        init_ar (float, optional): Initial value for the right slope parameter ar. Default: 0.1
-        init_al (float, optional): Initial value for the left slope parameter al. Default: 0.1
-        fix_init_epochs (int, optional): Number of epochs to keep parameters fixed at initialization. Default: 0 # noqa: E501
+        init_tr (float, optional): Initial value for the right threshold parameter tr. Default: ``1.0``
+        init_tl (float, optional): Initial value for the left threshold parameter tl. Default: ``-1.0``
+        init_ar (float, optional): Initial value for the right slope parameter ar. Default: ``0.1``
+        init_al (float, optional): Initial value for the left slope parameter al. Default: ``0.1``
+        fix_init_epochs (int, optional): Number of epochs to keep parameters fixed at initialization. Default: ``0``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/SReLU.png
+
     Examples::
 
-        >>> m = SReLU(init_tr=1.0, init_tl=-1.0, init_ar=0.1, init_al=0.1)
+        >>> m = torch_activation.SReLU(init_tr=1.0, init_tl=-1.0, init_ar=0.1, init_al=0.1)
         >>> x = torch.randn(2)
+        >>> output = m(x)
+
+        >>> m = torch_activation.SReLU()
+        >>> x = torch.randn(2, 3, 4)
         >>> output = m(x)
     """
 
@@ -84,29 +94,38 @@ class SReLU(BaseActivation):
 @register_activation
 class NActivation(BaseActivation):
     r"""
-    Applies the N-Activation function:
+    Applies the N-Activation activation function:
 
-    :math:`\text{N-Activation}(z_i) = \begin{cases}
-    z_i - 2t_{i,min}, & z_i < t_{i,min} \\
-    -z_i, & t_{i,min} \leq z_i \leq t_{i,max} \\
-    z_i - 2t_{i,max}, & z_i > t_{i,max}
-    \end{cases}`
+    .. math::
 
-    where :math:`t_{i,min} = \min(a_i, b_i)` and :math:`t_{i,max} = \max(a_i, b_i)`,
-    and :math:`a_i` and :math:`b_i` are trainable parameters.
+        \text{N-Activation}(z_i) = \begin{cases}
+            z_i - 2t_{i,\min}, & z_i < t_{i,\min} \\
+            -z_i, & t_{i,\min} \leq z_i \leq t_{i,\max} \\
+            z_i - 2t_{i,\max}, & z_i > t_{i,\max}
+        \end{cases}
+
+    where :math:`t_{i,\min} = \min(a_i, b_i)` and :math:`t_{i,\max} = \max(a_i, b_i)` are derived from trainable parameters.
 
     Args:
-        init_a (float, optional): Initial value for parameter a. Default: -0.5
-        init_b (float, optional): Initial value for parameter b. Default: 0.5
+        init_a (float, optional): Initial value for parameter a. Default: ``-0.5``
+        init_b (float, optional): Initial value for parameter b. Default: ``0.5``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/NActivation.png
+
     Examples::
 
-        >>> m = NActivation(init_a=-0.5, init_b=0.5)
+        >>> m = torch_activation.NActivation(init_a=-0.5, init_b=0.5)
         >>> x = torch.randn(2)
+        >>> output = m(x)
+
+        >>> m = torch_activation.NActivation()
+        >>> x = torch.randn(2, 3, 4)
         >>> output = m(x)
     """
 
@@ -124,28 +143,38 @@ class NActivation(BaseActivation):
 @register_activation
 class ALiSA(BaseActivation):
     r"""
-    Applies the Adaptive Linearized Sigmoidal Activation (ALiSA) function:
+    Applies the Adaptive Linearized Sigmoidal Activation function:
 
-    :math:`\text{ALiSA}(z_i) = \begin{cases}
-    a^r_i z_i - a^r_i + 1, & z_i \geq 1 \\
-    z_i, & 1 > z_i > 0 \\
-    a^l_i z_i, & z_i \leq 0
-    \end{cases}`
+    .. math::
+
+        \text{ALiSA}(z_i) = \begin{cases}
+            a^r_i z_i - a^r_i + 1, & z_i \geq 1 \\
+            z_i, & 1 > z_i > 0 \\
+            a^l_i z_i, & z_i \leq 0
+        \end{cases}
 
     where :math:`a^r_i` and :math:`a^l_i` are trainable parameters.
 
     Args:
-        init_ar (float, optional): Initial value for the right slope parameter ar. Default: 1.0
-        init_al (float, optional): Initial value for the left slope parameter al. Default: 0.1
+        init_ar (float, optional): Initial value for the right slope parameter ar. Default: ``1.0``
+        init_al (float, optional): Initial value for the left slope parameter al. Default: ``0.1``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/ALiSA.png
+
     Examples::
 
-        >>> m = ALiSA(init_ar=1.0, init_al=0.1)
+        >>> m = torch_activation.ALiSA(init_ar=1.0, init_al=0.1)
         >>> x = torch.randn(2)
+        >>> output = m(x)
+
+        >>> m = torch_activation.ALiSA()
+        >>> x = torch.randn(2, 3, 4)
         >>> output = m(x)
     """
 
@@ -161,28 +190,38 @@ class ALiSA(BaseActivation):
 @register_activation
 class LiSA(BaseActivation):
     r"""
-    Applies the Linearized Sigmoidal Activation (LiSA) function:
+    Applies the Linearized Sigmoidal Activation function:
 
-    :math:`\text{LiSA}(z_i) = \begin{cases}
-    a^r z_i - a^r + 1, & z_i \geq 1 \\
-    z_i, & 1 > z_i > 0 \\
-    a^l z_i, & z_i \leq 0
-    \end{cases}`
+    .. math::
+
+        \text{LiSA}(z_i) = \begin{cases}
+            a^r z_i - a^r + 1, & z_i \geq 1 \\
+            z_i, & 1 > z_i > 0 \\
+            a^l z_i, & z_i \leq 0
+        \end{cases}
 
     where :math:`a^r` and :math:`a^l` are fixed parameters.
 
     Args:
-        ar (float, optional): Fixed value for the right slope parameter ar. Default: 1.0
-        al (float, optional): Fixed value for the left slope parameter al. Default: 0.1
+        ar (float, optional): Fixed value for the right slope parameter ar. Default: ``1.0``
+        al (float, optional): Fixed value for the left slope parameter al. Default: ``0.1``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/LiSA.png
+
     Examples::
 
-        >>> m = LiSA(ar=1.0, al=0.1)
+        >>> m = torch_activation.LiSA(ar=1.0, al=0.1)
         >>> x = torch.randn(2)
+        >>> output = m(x)
+
+        >>> m = torch_activation.LiSA()
+        >>> x = torch.randn(2, 3, 4)
         >>> output = m(x)
     """
 

@@ -11,19 +11,31 @@ class Binary(BaseActivation):
     r"""
     Applies the Binary activation function:
 
-    :math:`\text{Binary}(z) = \begin{cases}
-    1, & a \leq z \leq b \\
-    0, & \text{otherwise}
-    \end{cases}`
+    .. math::
+
+        \text{Binary}(z) = \begin{cases}
+        1, & a \leq z \leq b \\
+        0, & \text{otherwise}
+        \end{cases}
 
     Args:
-        a (float, optional): parameter. Default: ``0.0``
-        b (float, optional): parameter. Default: ``1.0``
+        a (float, optional): lower threshold parameter. Default: ``0.0``
+        b (float, optional): upper threshold parameter. Default: ``1.0``
         inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
+
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/Binary.png
+
+    Examples::
+
+        >>> m = torch_activation.Binary()
+        >>> x = torch.randn(2)
+        >>> output = m(x)
     """
 
     def __init__(self, a: float = 0.0, b: float = 1.0, **kwargs):
@@ -60,12 +72,21 @@ class BentIdentity(BaseActivation):
     :math:`\text{BentIdentity}(z) = \frac{\sqrt{z^2 + 1} - 1}{2} + z`
 
     Args:
-        inplace (bool, optional): parameter kept for API consistency, but bent identity operation
-                                 cannot be done in-place. Default: ``False``
+        inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
+
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/BentIdentity.png
+
+    Examples::
+
+        >>> m = torch_activation.BentIdentity()
+        >>> x = torch.randn(2)
+        >>> output = m(x)
     """
 
     def __init__(self, **kwargs):
@@ -81,15 +102,24 @@ class Mishra(BaseActivation):
     r"""
     Applies the Mishra activation function:
 
-    :math:`\text{Mishra}(z) = \frac{1}{2} \cdot \frac{z}{1 + |z|} + \frac{z}{2} \cdot \frac{1}{1 + |z|}` # noqa: E501
+    :math:`\text{Mishra}(z) = \frac{1}{2} \cdot \frac{z}{1 + |z|} + \frac{z}{2} \cdot \frac{1}{1 + |z|}`
 
     Args:
-        inplace (bool, optional): parameter kept for API consistency, but Mishra operation
-                                 cannot be done in-place. Default: ``False``
+        inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
+
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/Mishra.png
+
+    Examples::
+
+        >>> m = torch_activation.Mishra()
+        >>> x = torch.randn(2)
+        >>> output = m(x)
     """
 
     def __init__(self, **kwargs):
@@ -112,12 +142,21 @@ class SahaBora(BaseActivation):
     Args:
         k (float, optional): non-trainable parameter. Default: ``0.98``
         alpha (float, optional): non-trainable parameter. Default: ``0.5``
-        inplace (bool, optional): parameter kept for API consistency, but SBAF operation
-                                 cannot be done in-place. Default: ``False``
+        inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
+
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/SahaBora.png
+
+    Examples::
+
+        >>> m = torch_activation.SahaBora()
+        >>> x = torch.randn(2)
+        >>> output = m(x)
     """
 
     def __init__(self, k: float = 0.98, alpha: float = 0.5, **kwargs):
@@ -138,20 +177,29 @@ class Logarithmic(BaseActivation):
     r"""
     Applies the Logarithmic activation function (LAF):
 
-    :math:`\text{Logarithmic}(z) = \begin{cases}
-    \ln(z) + 1, & z \geq 0 \\
-    -\ln(-z) + 1, & z < 0
-    \end{cases}`
+    .. math::
 
-    Also known as symlog in some literature.
+        \text{Logarithmic}(z) = \begin{cases}
+        \ln(z) + 1, & z \geq 0 \\
+        -\ln(-z) + 1, & z < 0
+        \end{cases}
 
     Args:
-        inplace (bool, optional): parameter kept for API consistency, but logarithmic operation
-                                 cannot be done in-place. Default: ``False``
+        inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
+
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/Logarithmic.png
+
+    Examples::
+
+        >>> m = torch_activation.Logarithmic()
+        >>> x = torch.randn(2)
+        >>> output = m(x)
     """
 
     def __init__(self, **kwargs):
@@ -175,27 +223,28 @@ class SPOCU(BaseActivation):
 
     :math:`\text{SPOCU}(z) = a \cdot h(z)^c + b - a \cdot h(b)`
 
-    where:
-
-    :math:`h(x) = \begin{cases}
-    r(d), & x \geq d \\
-    r(x), & 0 \leq x < d \\
-    x, & x < 0
-    \end{cases}`
-
-    and :math:`r(x) = x^3 - \frac{2x^4 + x^5}{2}`
+    where :math:`h(x) = \begin{cases} r(d), & x \geq d \\ r(x), & 0 \leq x < d \\ x, & x < 0 \end{cases}` and :math:`r(x) = x^3 - \frac{2x^4 + x^5}{2}`
 
     Args:
         a (float, optional): scaling parameter. Default: ``1.0``
-        b (float, optional): parameter in range (0,1). Default: ``0.5``
+        b (float, optional): parameter in range (0, 1). Default: ``0.5``
         c (float, optional): exponent parameter. Default: ``1.0``
-        d (float, optional): threshold parameter in range [1,∞). Default: ``1.0``
-        inplace (bool, optional): parameter kept for API consistency, but SPOCU operation
-                                 cannot be done in-place. Default: ``False``
+        d (float, optional): threshold parameter in range [1, ∞). Default: ``1.0``
+        inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
+
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/SPOCU.png
+
+    Examples::
+
+        >>> m = torch_activation.SPOCU()
+        >>> x = torch.randn(2)
+        >>> output = m(x)
     """
 
     def __init__(self, a: float = 1.0, b: float = 0.5, c: float = 1.0, d: float = 1.0, **kwargs):
@@ -238,27 +287,33 @@ class PUAF(BaseActivation):
     r"""
     Applies the Polynomial Universal Activation Function (PUAF):
 
-    :math:`\text{PUAF}(z) = \begin{cases}
-    z^a, & z > c \\
-    z^a \cdot \frac{(c+z)^b}{(c+z)^b+(c-z)^b}, & |z| \leq c \\
-    0, & z < -c
-    \end{cases}`
+    .. math::
 
-    Can approximate various activation functions based on parameter settings:
-    - ReLU: a=1, b=0, c=0
-    - Logistic sigmoid (approx): a=0, b=5, c=10
-    - Swish (approx): a=1, b=5, c=10
+        \text{PUAF}(z) = \begin{cases}
+        z^a, & z > c \\
+        z^a \cdot \frac{(c+z)^b}{(c+z)^b+(c-z)^b}, & |z| \leq c \\
+        0, & z < -c
+        \end{cases}
 
     Args:
         a (float, optional): exponent parameter. Default: ``1.0``
         b (float, optional): exponent parameter. Default: ``5.0``
         c (float, optional): threshold parameter. Default: ``10.0``
-        inplace (bool, optional): parameter kept for API consistency, but PUAF operation
-                                 cannot be done in-place. Default: ``False``
+        inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
+
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/PUAF.png
+
+    Examples::
+
+        >>> m = torch_activation.PUAF()
+        >>> x = torch.randn(2)
+        >>> output = m(x)
     """
 
     def __init__(self, a: float = 1.0, b: float = 5.0, c: float = 10.0, **kwargs):
@@ -300,12 +355,21 @@ class ArandaOrdaz(BaseActivation):
 
     Args:
         a (float, optional): fixed parameter. Default: ``2.0``
-        inplace (bool, optional): parameter kept for API consistency, but Aranda-Ordaz operation
-                                 cannot be done in-place. Default: ``False``
+        inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
+
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/ArandaOrdaz.png
+
+    Examples::
+
+        >>> m = torch_activation.ArandaOrdaz()
+        >>> x = torch.randn(2)
+        >>> output = m(x)
     """
 
     def __init__(self, a: float = 2.0, **kwargs):
@@ -321,44 +385,31 @@ class ArandaOrdaz(BaseActivation):
 @register_activation
 class KDAC(BaseActivation):
     r"""
-    :note: Adapted from `https://github.com/pyy-copyto/KDAC/blob/4541ffed1a964dfff9b8243a89c38a61e85860f5/KDAC.py` # noqa: E501
     Applies the Knowledge Discovery Activation Function (KDAC):
 
-    :math:`\text{KDAC}(z) = p \cdot (1 - h_{max}(p, r)) + r \cdot h_{max}(p, r) + k \cdot h_{max}(p, r) \cdot (1 - h_{max}(p, r))` # noqa: E501
+    :math:`\text{KDAC}(z) = p \cdot (1 - h_{max}(p, r)) + r \cdot h_{max}(p, r) + k \cdot h_{max}(p, r) \cdot (1 - h_{max}(p, r))`
 
-    where:
-
-    :math:`h_{max}(x, y) = \text{clip}\left(\frac{1}{2} - \frac{1}{2} \frac{x - y}{c}\right)`
-
-    :math:`\text{clip}(x) = \begin{cases}
-    0, & x \leq 0 \\
-    x, & 0 < x < 1 \\
-    1, & x \geq 1
-    \end{cases}`
-
-    :math:`p = az`
-
-    :math:`q = h_{min}(bz, s)`
-
-    :math:`r = \begin{cases}
-    p, & z > 0 \\
-    bz \cdot (1 - q) + s \cdot h_{min}(q, s) + k \cdot q \cdot (1 - q), & z \leq 0
-    \end{cases}`
-
-    :math:`s = \tanh(z)`
-
-    :math:`h_{min}(x, y) = \text{clip}\left(\frac{1}{2} + \frac{1}{2} \frac{x - y}{c}\right)`
+    where :math:`h_{max}(x, y) = \text{clip}\!\left(\frac{1}{2} - \frac{x - y}{2c}\right)`, :math:`p = az`, :math:`s = \tanh(z)`, and :math:`r = p` if :math:`z > 0`, else :math:`bz(1-q) + s \cdot h_{min}(q,s) + kq(1-q)` with :math:`q = h_{min}(bz, s)`.
 
     Args:
         a (float, optional): trainable parameter, must be positive. Default: ``0.1``
         b (float, optional): trainable parameter, must be positive. Default: ``0.1``
         c (float, optional): fixed parameter. Default: ``0.01``
-        inplace (bool, optional): parameter kept for API consistency, but KDAC operation
-                                 cannot be done in-place. Default: ``False``
+        inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
+
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/KDAC.png
+
+    Examples::
+
+        >>> m = torch_activation.KDAC()
+        >>> x = torch.randn(2)
+        >>> output = m(x)
     """
 
     def __init__(self, a: float = 0.1, b: float = 0.1, c: float = 0.01, **kwargs):
@@ -405,27 +456,31 @@ class KWTA(BaseActivation):
     r"""
     Applies the k-Winner-Takes-All (k-WTA) activation function:
 
-    :math:`\text{k-WTA}(z)_j = \begin{cases}
-    z_j, & z_j \in \{\text{k largest elements of } z\} \\
-    0, & \text{otherwise}
-    \end{cases}`
+    .. math::
 
-    This activation function keeps the k largest elements of the input unchanged and sets all other elements to zero. # noqa: E501
-    It was introduced to improve adversarial robustness.
+        \text{k-WTA}(z)_j = \begin{cases}
+        z_j, & z_j \in \{\text{k largest elements of } z\} \\
+        0, & \text{otherwise}
+        \end{cases}
 
     Args:
-        k (int or float, optional): If int, specifies the exact number of elements to keep.
-                                   If float between 0 and 1, specifies the fraction of elements to keep. # noqa: E501
-                                   Default: ``0.2``
-        dim (int, optional): The dimension along which to find the k largest elements.
-                            If None, the operation is applied to the flattened tensor.
-                            Default: ``None``
-        inplace (bool, optional): parameter kept for API consistency, but k-WTA operation
-                                 cannot be done in-place. Default: ``False``
+        k (int or float, optional): if int, number of elements to keep; if float in (0, 1), fraction to keep. Default: ``0.2``
+        dim (int, optional): dimension along which to find the k largest elements; if ``None``, operates on the flattened tensor. Default: ``None``
+        inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
+
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/KWTA.png
+
+    Examples::
+
+        >>> m = torch_activation.KWTA()
+        >>> x = torch.randn(2)
+        >>> output = m(x)
     """
 
     def __init__(self, k: float = 0.2, dim: int = None, **kwargs):
@@ -485,32 +540,29 @@ class KWTA(BaseActivation):
 @register_activation
 class VBAF(BaseActivation):
     r"""
-    :note: The implementation of this activation function is based on limited information from the literature. # noqa: E501
-           The original papers don't provide complete details on how this function should be applied in neural networks. # noqa: E501
-
-    :todo: Verify this implementation against more detailed descriptions if they become available.
-           Currently unclear whether VBAF should be applied only to inputs or also to intermediate representations. # noqa: E501
-
     Applies the Volatility-Based Activation Function (VBAF):
 
     :math:`\text{VBAF}(z_1, \ldots, z_n) = \frac{\sum_{j=1}^{n} |z_j - \bar{z}|}{|\bar{z}|}`
 
-    where:
-
-    :math:`\bar{z} = \frac{\sum_{j=1}^{n} z_j}{n}`
-
-    This activation function was designed for time-series forecasting and was used in LSTM neural networks. # noqa: E501
-    It takes multiple inputs (a sequence of values) and produces a single output based on their volatility. # noqa: E501
+    where :math:`\bar{z} = \frac{\sum_{j=1}^{n} z_j}{n}`
 
     Args:
-        dim (int, optional): The dimension along which to compute the mean and volatility.
-                            Default: ``-1`` (last dimension)
-        inplace (bool, optional): parameter kept for API consistency, but VBAF operation
-                                 cannot be done in-place. Default: ``False``
+        dim (int, optional): dimension along which to compute the mean and volatility. Default: ``-1``
+        inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
-        - Input: :math:`(*, N)`, where :math:`*` means any number of dimensions and N is the sequence length. # noqa: E501
+        - Input: :math:`(*, N)`, where :math:`*` means any number of dimensions and N is the sequence length.
         - Output: :math:`(*, 1)`, with the last dimension reduced to size 1.
+
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/VBAF.png
+
+    Examples::
+
+        >>> m = torch_activation.VBAF()
+        >>> x = torch.randn(2, 4)
+        >>> output = m(x)
     """
 
     def __init__(self, dim: int = -1, **kwargs):

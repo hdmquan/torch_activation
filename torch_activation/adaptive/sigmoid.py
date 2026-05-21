@@ -12,20 +12,22 @@ from torch_activation.base import BaseActivation
 @register_activation
 class AdaptiveSigmoid(BaseActivation):
     r"""
-    Applies the Adaptive Sigmoid function:
+    Applies the Adaptive Sigmoid activation function:
 
     :math:`\text{AdaptiveSigmoid}(x) = \frac{2(1 - \exp(-ax))}{a(1 + \exp(-ax))}`
 
-    where :math:`a \in (0, \infty)` is a learnable parameter.
-
     Args:
-        a (float, optional): Slope parameter. Default: 1.0
+        a (float, optional): Slope parameter. Default: ``1.0``
         learnable (bool, optional): optionally make ``a`` trainable. Default: ``False``
         inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
+
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/AdaptiveSigmoid.png
 
     Examples::
 
@@ -61,19 +63,23 @@ class AdaptiveSigmoid(BaseActivation):
 @register_activation
 class GeneralizedHyperbolicTangent(BaseActivation):
     r"""
-    Applies the Generalized Hyperbolic Tangent function:
+    Applies the Generalized Hyperbolic Tangent activation function:
 
-    :math:`\text{GeneralizedHyperbolicTangent}(x) = a \cdot \frac{1 - \exp(-b \cdot x)}{1 + \exp(-b \cdot x)}` # noqa: E501
+    :math:`\text{GeneralizedHyperbolicTangent}(x) = a \cdot \frac{1 - \exp(-b \cdot x)}{1 + \exp(-b \cdot x)}`
 
     Args:
-        a (float, optional): Amplitude parameter. Default: 1.0
-        b (float, optional): Slope parameter. Default: 1.0
+        a (float, optional): Amplitude parameter. Default: ``1.0``
+        b (float, optional): Slope parameter. Default: ``1.0``
         learnable (bool, optional): optionally make parameters trainable. Default: ``False``
         inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
+
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/GeneralizedHyperbolicTangent.png
 
     Examples::
 
@@ -117,7 +123,7 @@ class GeneralizedHyperbolicTangent(BaseActivation):
 @register_activation
 class TrainableAmplitude(BaseActivation):
     r"""
-    Applies the Trainable Amplitude function:
+    Applies the Trainable Amplitude activation function:
 
     :math:`\text{TrainableAmplitude}(x) = a \cdot g(x) + b`
 
@@ -125,14 +131,18 @@ class TrainableAmplitude(BaseActivation):
 
     Args:
         base_activation (callable, optional): Base activation function. Default: ``torch.tanh``
-        a (float, optional): Amplitude parameter. Default: 1.0
-        b (float, optional): Bias parameter. Default: 0.0
+        a (float, optional): Amplitude parameter. Default: ``1.0``
+        b (float, optional): Bias parameter. Default: ``0.0``
         learnable (bool, optional): optionally make parameters trainable. Default: ``False``
         inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
+
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/TrainableAmplitude.png
 
     Examples::
 
@@ -181,20 +191,24 @@ class TrainableAmplitude(BaseActivation):
 @register_activation
 class ASSF(BaseActivation):
     r"""
-    Applies the Adaptive Slope Sigmoidal Function:
+    Applies the Adaptive Slope Sigmoidal Function activation function:
 
     :math:`\text{ASSF}(x) = \sigma(a \cdot x) = \frac{1}{1 + \exp(-a \cdot x)}`
 
     where :math:`\sigma(x)` is the sigmoid function.
 
     Args:
-        a (float, optional): Slope parameter. Default: 1.0
+        a (float, optional): Slope parameter. Default: ``1.0``
         learnable (bool, optional): optionally make ``a`` trainable. Default: ``False``
         inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
+
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/ASSF.png
 
     Examples::
 
@@ -234,13 +248,17 @@ class SVAF(BaseActivation):
     :math:`\text{SVAF}(x) = \tanh(a \cdot x)`
 
     Args:
-        a (float, optional): Slope parameter. Default: 1.0
+        a (float, optional): Slope parameter. Default: ``1.0``
         learnable (bool, optional): optionally make ``a`` trainable. Default: ``False``
         inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
+
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/SVAF.png
 
     Examples::
 
@@ -275,23 +293,27 @@ class SVAF(BaseActivation):
 @register_activation
 class TanhSoft(BaseActivation):
     r"""
-    Applies the TanhSoft function:
+    Applies the TanhSoft activation function:
 
     :math:`\text{TanhSoft}(x) = \tanh(a \cdot x + b \cdot \exp(c \cdot x)) \cdot \ln(d + \exp(x))`
 
-    where :math:`a \in (-\infty, 1]`, :math:`b \in [0, \infty)`, :math:`c \in (0, \infty)`, :math:`d \in [0, 1]`. # noqa: E501
+    where :math:`a \in (-\infty, 1]`, :math:`b \in [0, \infty)`, :math:`c \in (0, \infty)`, :math:`d \in [0, 1]`.
 
     Args:
-        a (float, optional): Parameter for linear term. Default: 0.5
-        b (float, optional): Parameter for exponential term. Default: 0.5
-        c (float, optional): Parameter for exponential scaling. Default: 1.0
-        d (float, optional): Parameter for logarithmic term. Default: 0.1
+        a (float, optional): Parameter for linear term. Default: ``0.5``
+        b (float, optional): Parameter for exponential term. Default: ``0.5``
+        c (float, optional): Parameter for exponential scaling. Default: ``1.0``
+        d (float, optional): Parameter for logarithmic term. Default: ``0.1``
         learnable (bool, optional): optionally make parameters trainable. Default: ``False``
         inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
+
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/TanhSoft.png
 
     Examples::
 
@@ -344,18 +366,22 @@ class TanhSoft(BaseActivation):
 @register_activation
 class TanhSoft1(BaseActivation):
     r"""
-    Applies the TanhSoft-1 function:
+    Applies the TanhSoft-1 activation function:
 
     :math:`\text{TanhSoft-1}(x) = \tanh(a \cdot x) \cdot \ln(1 + \exp(x))`
 
     Args:
-        a (float, optional): Slope parameter for tanh. Default: 1.0
+        a (float, optional): Slope parameter for tanh. Default: ``1.0``
         learnable (bool, optional): optionally make ``a`` trainable. Default: ``False``
         inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
+
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/TanhSoft1.png
 
     Examples::
 
@@ -392,19 +418,23 @@ class TanhSoft1(BaseActivation):
 @register_activation
 class TanhSoft2(BaseActivation):
     r"""
-    Applies the TanhSoft-2 function:
+    Applies the TanhSoft-2 activation function:
 
     :math:`\text{TanhSoft-2}(x) = x \cdot \tanh(b \cdot \exp(c \cdot x))`
 
     Args:
-        b (float, optional): Amplitude parameter. Default: 1.0
-        c (float, optional): Exponential scaling parameter. Default: 1.0
+        b (float, optional): Amplitude parameter. Default: ``1.0``
+        c (float, optional): Exponential scaling parameter. Default: ``1.0``
         learnable (bool, optional): optionally make parameters trainable. Default: ``False``
         inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
+
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/TanhSoft2.png
 
     Examples::
 
@@ -449,18 +479,22 @@ class TanhSoft2(BaseActivation):
 @register_activation
 class TanhSoft3(BaseActivation):
     r"""
-    Applies the TanhSoft-3 function:
+    Applies the TanhSoft-3 activation function:
 
     :math:`\text{TanhSoft-3}(x) = \ln(1 + \exp(x) \cdot \tanh(a \cdot x))`
 
     Args:
-        a (float, optional): Slope parameter for tanh. Default: 1.0
+        a (float, optional): Slope parameter for tanh. Default: ``1.0``
         learnable (bool, optional): optionally make ``a`` trainable. Default: ``False``
         inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
+
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/TanhSoft3.png
 
     Examples::
 
@@ -496,21 +530,25 @@ class TanhSoft3(BaseActivation):
 @register_activation
 class PSigmoid(BaseActivation):
     r"""
-    Applies the Parametric Sigmoid function:
+    Applies the Parametric Sigmoid activation function:
 
     :math:`\text{PSigmoid}(x) = a \cdot \sigma(b \cdot x)`
 
     where :math:`\sigma(x)` is the sigmoid function.
 
     Args:
-        a (float, optional): Amplitude parameter. Default: 1.0
-        b (float, optional): Slope parameter. Default: 1.0
+        a (float, optional): Amplitude parameter. Default: ``1.0``
+        b (float, optional): Slope parameter. Default: ``1.0``
         learnable (bool, optional): optionally make parameters trainable. Default: ``False``
         inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
+
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/PSigmoid.png
 
     Examples::
 
@@ -554,18 +592,22 @@ class PSigmoid(BaseActivation):
 @register_activation
 class PSF(BaseActivation):
     r"""
-    Applies the Parametric Sigmoid Function:
+    Applies the Parametric Sigmoid Function activation function:
 
     :math:`\text{PSF}(x) = \frac{1}{(1 + \exp(-x))^m}`
 
     Args:
-        m (float, optional): Power parameter. Default: 1.0
+        m (float, optional): Power parameter. Default: ``1.0``
         learnable (bool, optional): optionally make ``m`` trainable. Default: ``False``
         inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
+
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/PSF.png
 
     Examples::
 
@@ -603,21 +645,27 @@ class STACTanh(BaseActivation):
     r"""
     Applies the Slope and Threshold Adaptive Activation Function with tanh:
 
-    :math:`\text{STAC-tanh}(x) = \begin{cases}
-        \tanh(-a) + b \cdot (x + a), & x < -a \\
-        \tanh(x), & -a \leq x \leq a \\
-        \tanh(a) + b \cdot (x - a), & x > a
-    \end{cases}`
+    .. math::
+
+        \text{STAC-tanh}(x) = \begin{cases}
+            \tanh(-a) + b \cdot (x + a), & x < -a \\
+            \tanh(x), & -a \leq x \leq a \\
+            \tanh(a) + b \cdot (x - a), & x > a
+        \end{cases}
 
     Args:
-        a (float, optional): Threshold parameter. Default: 1.0
-        b (float, optional): Slope parameter for linear regions. Default: 0.1
+        a (float, optional): Threshold parameter. Default: ``1.0``
+        b (float, optional): Slope parameter for linear regions. Default: ``0.1``
         learnable (bool, optional): optionally make parameters trainable. Default: ``False``
         inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
+
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/STACTanh.png
 
     Examples::
 

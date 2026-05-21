@@ -12,22 +12,31 @@ class BiFiring(BaseActivation):
     r"""
     Applies the Bi-Firing activation function (bfire):
 
-    :math:`\text{BiFiring}(z) = \begin{cases}
-    z - \frac{a}{2}, & z > a \\
-    \frac{z^2}{2a}, & -a \leq z \leq a \\
-    -z - \frac{a}{2}, & z < -a
-    \end{cases}`
+    .. math::
 
-    A smoothed variant of vReLU that becomes vReLU as a→0.
+        \text{BiFiring}(z) = \begin{cases}
+        z - \frac{a}{2}, & z > a \\
+        \frac{z^2}{2a}, & -a \leq z \leq a \\
+        -z - \frac{a}{2}, & z < -a
+        \end{cases}
 
     Args:
         a (float, optional): smoothing hyperparameter. Default: ``1.0``
-        inplace (bool, optional): parameter kept for API consistency, but operation
-                                 cannot be done in-place. Default: ``False``
+        inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
+
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/BiFiring.png
+
+    Examples::
+
+        >>> m = torch_activation.BiFiring()
+        >>> x = torch.randn(2)
+        >>> output = m(x)
     """
 
     def __init__(self, a: float = 1.0, **kwargs):
@@ -58,26 +67,34 @@ class BoundedBiFiring(BaseActivation):
     r"""
     Applies the Bounded Bi-Firing activation function (bbfire):
 
-    :math:`\text{BoundedBiFiring}(z) = \begin{cases}
-    b, & z < -b - \frac{a}{2} \\
-    -z - \frac{a}{2}, & -b - \frac{a}{2} \leq z < -a \\
-    \frac{z^2}{2a}, & -a \leq z \leq a \\
-    z - \frac{a}{2}, & a < z \leq b + \frac{a}{2} \\
-    b, & z > b + \frac{a}{2}
-    \end{cases}`
+    .. math::
 
-    A bounded variant of the bi-firing activation function that is symmetrical about the origin
-    and has a near inverse-bell-shaped activation curve.
+        \text{BoundedBiFiring}(z) = \begin{cases}
+        b, & z < -b - \frac{a}{2} \\
+        -z - \frac{a}{2}, & -b - \frac{a}{2} \leq z < -a \\
+        \frac{z^2}{2a}, & -a \leq z \leq a \\
+        z - \frac{a}{2}, & a < z \leq b + \frac{a}{2} \\
+        b, & z > b + \frac{a}{2}
+        \end{cases}
 
     Args:
         a (float, optional): smoothing hyperparameter. Default: ``1.0``
         b (float, optional): bounding hyperparameter. Default: ``5.0``
-        inplace (bool, optional): parameter kept for API consistency, but operation
-                                 cannot be done in-place. Default: ``False``
+        inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
+
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/BoundedBiFiring.png
+
+    Examples::
+
+        >>> m = torch_activation.BoundedBiFiring()
+        >>> x = torch.randn(2)
+        >>> output = m(x)
     """
 
     def __init__(self, a: float = 1.0, b: float = 5.0, **kwargs):
@@ -117,19 +134,30 @@ class PiecewiseMexicanHat(BaseActivation):
     r"""
     Applies the Piecewise Mexican-Hat activation function (PMAF):
 
-    :math:`\text{PMAF}(z) = \begin{cases}
-    \frac{2}{\sqrt{3}}\pi^{-\frac{1}{4}}(1-(z+a)^2) \exp(-\frac{(z+a)^2}{2}), & z < 0 \\
-    \frac{2}{\sqrt{3}}\pi^{-\frac{1}{4}}(1-(z-a)^2) \exp(-\frac{(z-a)^2}{2}), & z \geq 0
-    \end{cases}`
+    .. math::
+
+        \text{PMAF}(z) = \begin{cases}
+        \frac{2}{\sqrt{3}}\pi^{-\frac{1}{4}}(1-(z+a)^2) \exp(-\frac{(z+a)^2}{2}), & z < 0 \\
+        \frac{2}{\sqrt{3}}\pi^{-\frac{1}{4}}(1-(z-a)^2) \exp(-\frac{(z-a)^2}{2}), & z \geq 0
+        \end{cases}
 
     Args:
         a (float, optional): shape parameter. Default: ``4.0``
-        inplace (bool, optional): parameter kept for API consistency, but operation
-                                 cannot be done in-place. Default: ``False``
+        inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
+
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/PiecewiseMexicanHat.png
+
+    Examples::
+
+        >>> m = torch_activation.PiecewiseMexicanHat()
+        >>> x = torch.randn(2)
+        >>> output = m(x)
     """
 
     def __init__(self, a: float = 4.0, **kwargs):
@@ -151,21 +179,32 @@ class PiecewiseRadialBasisFunction(BaseActivation):
     r"""
     Applies the Piecewise Radial Basis Function (PRBF):
 
-    :math:`\text{PRBF}(z) = \begin{cases}
-    \exp(-\frac{(z-2a)^2}{b^2}), & z \geq a \\
-    \exp(-\frac{z^2}{b^2}), & -a < z < a \\
-    \exp(-\frac{(z+2a)^2}{b^2}), & z \leq -a
-    \end{cases}`
+    .. math::
+
+        \text{PRBF}(z) = \begin{cases}
+        \exp(-\frac{(z-2a)^2}{b^2}), & z \geq a \\
+        \exp(-\frac{z^2}{b^2}), & -a < z < a \\
+        \exp(-\frac{(z+2a)^2}{b^2}), & z \leq -a
+        \end{cases}
 
     Args:
         a (float, optional): shape parameter. Default: ``3.0``
         b (float, optional): scale parameter. Default: ``1.0``
-        inplace (bool, optional): parameter kept for API consistency, but operation
-                                 cannot be done in-place. Default: ``False``
+        inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
+
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/PiecewiseRadialBasisFunction.png
+
+    Examples::
+
+        >>> m = torch_activation.PiecewiseRadialBasisFunction()
+        >>> x = torch.randn(2)
+        >>> output = m(x)
     """
 
     def __init__(self, a: float = 3.0, b: float = 1.0, **kwargs):

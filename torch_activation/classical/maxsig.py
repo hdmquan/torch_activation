@@ -12,21 +12,27 @@ class TanhLinearUnit(BaseActivation):
     r"""
     Applies the Tanh Linear Unit activation function:
 
-    :math:`\text{TanhLinearUnit}(z) = \begin{cases}
-    z, & z \geq 0 \\
-    \frac{2}{1 + \exp(-z)} - 1, & z < 0
-    \end{cases} = \begin{cases}
-    z, & z \geq 0 \\
-    \tanh\left(\frac{z}{2}\right), & z < 0
-    \end{cases}`
+    .. math::
+
+        \text{TanhLinearUnit}(z) = \begin{cases}
+        z, & z \geq 0 \\
+        \tanh\left(\frac{z}{2}\right), & z < 0
+        \end{cases}
+
+    Args:
+        inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/TanhLinearUnit.png
+
     Examples::
 
-        >>> m = TanhLinearUnit()
+        >>> m = torch_activation.TanhLinearUnit()
         >>> x = torch.randn(2)
         >>> output = m(x)
     """
@@ -51,16 +57,20 @@ class DualELU(BaseActivation):
     :math:`\text{DualELU}(z, z') = \text{ELU}(z) - \text{ELU}(z')`
 
     Args:
-        alpha (float, optional): The alpha value for the ELU formulation. Default: 1.0
-        dim (int, optional): The dimension on which to split the input. Default: -1
+        alpha (float, optional): alpha value for the ELU formulation. Default: ``1.0``
+        dim (int, optional): dimension on which to split the input. Default: ``-1``
 
     Shape:
-        - Input: :math:`(*, N, *)` where `*` means any number of dimensions
-        - Output: :math:`(*, N/2, *)` where `*` means any number of dimensions
+        - Input: :math:`(*, N, *)`, where :math:`*` means any number of dimensions.
+        - Output: :math:`(*, N/2, *)`, same shape as the input but halved along dim.
+
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/DualELU.png
 
     Examples::
 
-        >>> m = DualELU()
+        >>> m = torch_activation.DualELU()
         >>> x = torch.randn(4, 2)
         >>> output = m(x)
     """
@@ -85,22 +95,28 @@ class DifferenceELU(BaseActivation):
     r"""
     Applies the Difference ELU activation function:
 
-    :math:`\text{DifferenceELU}(z) = \begin{cases}
-    z, & z \geq 0 \\
-    a(z\exp(z) - b\exp(bz)), & z < 0
-    \end{cases}`
+    .. math::
+
+        \text{DifferenceELU}(z) = \begin{cases}
+        z, & z \geq 0 \\
+        a(z\exp(z) - b\exp(bz)), & z < 0
+        \end{cases}
 
     Args:
-        a (float, optional): Scale parameter. Default: 1.0
-        b (float, optional): Exponential scale parameter. Default: 1.0
+        a (float, optional): scale parameter. Default: ``1.0``
+        b (float, optional): exponential scale parameter. Default: ``1.0``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/DifferenceELU.png
+
     Examples::
 
-        >>> m = DifferenceELU(a=1.0, b=0.5)
+        >>> m = torch_activation.DifferenceELU(a=1.0, b=0.5)
         >>> x = torch.randn(2)
         >>> output = m(x)
     """
@@ -127,18 +143,27 @@ class PolynomialLinearUnit(BaseActivation):
     r"""
     Applies the Polynomial Linear Unit activation function:
 
-    :math:`\text{PolynomialLinearUnit}(z) = \begin{cases}
-    z, & z \geq 0 \\
-    \frac{1}{1 - z} - 1, & z < 0
-    \end{cases}`
+    .. math::
+
+        \text{PolynomialLinearUnit}(z) = \begin{cases}
+        z, & z \geq 0 \\
+        \frac{1}{1 - z} - 1, & z < 0
+        \end{cases}
+
+    Args:
+        inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/PolynomialLinearUnit.png
+
     Examples::
 
-        >>> m = PolynomialLinearUnit()
+        >>> m = torch_activation.PolynomialLinearUnit()
         >>> x = torch.randn(2)
         >>> output = m(x)
     """
@@ -165,21 +190,27 @@ class InversePolynomialLinearUnit(BaseActivation):
     r"""
     Applies the Inverse Polynomial Linear Unit activation function:
 
-    :math:`\text{InversePolynomialLinearUnit}(z) = \begin{cases}
-    z, & z \geq 0 \\
-    \frac{1}{1 + |z|^a}, & z < 0
-    \end{cases}`
+    .. math::
+
+        \text{InversePolynomialLinearUnit}(z) = \begin{cases}
+        z, & z \geq 0 \\
+        \frac{1}{1 + |z|^a}, & z < 0
+        \end{cases}
 
     Args:
-        a (float, optional): Power parameter. Default: 1.0
+        a (float, optional): power parameter. Default: ``1.0``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/InversePolynomialLinearUnit.png
+
     Examples::
 
-        >>> m = InversePolynomialLinearUnit(a=2.0)
+        >>> m = torch_activation.InversePolynomialLinearUnit(a=2.0)
         >>> x = torch.randn(2)
         >>> output = m(x)
     """
@@ -205,21 +236,27 @@ class PowerLinearUnit(BaseActivation):
     r"""
     Applies the Power Linear Unit activation function:
 
-    :math:`\text{PowerLinearUnit}(z) = \begin{cases}
-    z, & z \geq 0 \\
-    (1 - z)^{-a} - 1, & z < 0
-    \end{cases}`
+    .. math::
+
+        \text{PowerLinearUnit}(z) = \begin{cases}
+        z, & z \geq 0 \\
+        (1 - z)^{-a} - 1, & z < 0
+        \end{cases}
 
     Args:
-        a (float, optional): Power parameter. Default: 1.0
+        a (float, optional): power parameter. Default: ``1.0``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/PowerLinearUnit.png
+
     Examples::
 
-        >>> m = PowerLinearUnit(a=0.5)
+        >>> m = torch_activation.PowerLinearUnit(a=0.5)
         >>> x = torch.randn(2)
         >>> output = m(x)
     """
@@ -247,15 +284,22 @@ class PowerFunctionLinearUnit(BaseActivation):
     r"""
     Applies the Power Function Linear Unit activation function:
 
-    :math:`\text{PowerFunctionLinearUnit}(z) = z \cdot \frac{1}{2} \left( 1 + \frac{z}{\sqrt{1 + z^2}} \right)` # noqa: E501
+    :math:`\text{PowerFunctionLinearUnit}(z) = z \cdot \frac{1}{2} \left( 1 + \frac{z}{\sqrt{1 + z^2}} \right)`
+
+    Args:
+        inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/PowerFunctionLinearUnit.png
+
     Examples::
 
-        >>> m = PowerFunctionLinearUnit()
+        >>> m = torch_activation.PowerFunctionLinearUnit()
         >>> x = torch.randn(2)
         >>> output = m(x)
     """
@@ -272,18 +316,27 @@ class FasterPowerFunctionLinearUnit(BaseActivation):
     r"""
     Applies the Faster Power Function Linear Unit activation function:
 
-    :math:`\text{FasterPowerFunctionLinearUnit}(z) = \begin{cases}
-    z, & z \geq 0 \\
-    z + \frac{z^2}{\sqrt{1 + z^2}}, & z < 0
-    \end{cases}`
+    .. math::
+
+        \text{FasterPowerFunctionLinearUnit}(z) = \begin{cases}
+        z, & z \geq 0 \\
+        z + \frac{z^2}{\sqrt{1 + z^2}}, & z < 0
+        \end{cases}
+
+    Args:
+        inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/FasterPowerFunctionLinearUnit.png
+
     Examples::
 
-        >>> m = FasterPowerFunctionLinearUnit()
+        >>> m = torch_activation.FasterPowerFunctionLinearUnit()
         >>> x = torch.randn(2)
         >>> output = m(x)
     """
@@ -307,29 +360,30 @@ class ElasticAdaptivelyParametricCompoundedUnit(BaseActivation):
     r"""
     Applies the Elastic Adaptively Parametric Compounded Unit activation function:
 
-    :math:`\text{ElasticAdaptivelyParametricCompoundedUnit}(z_i) = \begin{cases}
-    b_i z_i, & z_i \geq 0 \\
-    a_i z_i \cdot \tanh(\ln(1 + \exp(a_{i}z_{i}))), & z_i < 0
-    \end{cases}`
+    .. math::
+
+        \text{ElasticAdaptivelyParametricCompoundedUnit}(z_i) = \begin{cases}
+        b_i z_i, & z_i \geq 0 \\
+        a_i z_i \cdot \tanh(\ln(1 + \exp(a_{i}z_{i}))), & z_i < 0
+        \end{cases}
 
     Args:
-        a (float or Tensor, optional): Negative slope parameter. Default: 1.0
-        b (float or Tensor, optional): Positive slope parameter. Default: 1.0
-        num_parameters (int, optional): Number of parameters if using per-channel parameterization. Default: 1 # noqa: E501
+        a (float, optional): negative slope parameter. Default: ``1.0``
+        b (float, optional): positive slope parameter. Default: ``1.0``
+        num_parameters (int, optional): number of per-channel parameters. Default: ``1``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/ElasticAdaptivelyParametricCompoundedUnit.png
+
     Examples::
 
-        >>> m = ElasticAdaptivelyParametricCompoundedUnit(a=0.5, b=1.5)
+        >>> m = torch_activation.ElasticAdaptivelyParametricCompoundedUnit(a=0.5, b=1.5)
         >>> x = torch.randn(2)
-        >>> output = m(x)
-
-        >>> # Per-channel parameterization
-        >>> m = ElasticAdaptivelyParametricCompoundedUnit(num_parameters=3)
-        >>> x = torch.randn(3, 5)
         >>> output = m(x)
     """
 
@@ -387,27 +441,25 @@ class LipschitzReLU(BaseActivation):
     r"""
     Applies the Lipschitz ReLU activation function:
 
-    :math:`\text{LipschitzReLU}(z) = p(z | z > 0) + n(z | z \leq 0)`
+    :math:`\text{LipschitzReLU}(z) = p(z)\,[z > 0] + n(z)\,[z \leq 0]`
 
-    where p and n are positive and negative functions with Lipschitz constant <= 1.
+    where :math:`p` and :math:`n` are functions with Lipschitz constant at most 1.
 
     Args:
-        p_fn (callable, optional): Positive function. Default: identity
-        n_fn (callable, optional): Negative function. Default: zero
+        p_fn (callable, optional): positive-region function. Default: ``identity``
+        n_fn (callable, optional): negative-region function. Default: ``zero``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/LipschitzReLU.png
+
     Examples::
 
-        >>> # Default implementation (standard ReLU)
-        >>> m = LipschitzReLU()
-        >>> x = torch.randn(2)
-        >>> output = m(x)
-
-        >>> # Custom implementation with leaky behavior
-        >>> m = LipschitzReLU(p_fn=lambda x: x, n_fn=lambda x: 0.1 * x)
+        >>> m = torch_activation.LipschitzReLU()
         >>> x = torch.randn(2)
         >>> output = m(x)
     """
@@ -433,22 +485,28 @@ class ScaledExponentialLinearUnit(BaseActivation):
     r"""
     Applies the Scaled Exponential Linear Unit activation function:
 
-    :math:`\text{ScaledExponentialLinearUnit}(z) = \begin{cases}
-    az, & z \geq 0 \\
-    ab(\exp(z) - 1), & z < 0
-    \end{cases}`
+    .. math::
+
+        \text{ScaledExponentialLinearUnit}(z) = \begin{cases}
+        az, & z \geq 0 \\
+        ab(\exp(z) - 1), & z < 0
+        \end{cases}
 
     Args:
-        a (float, optional): Scale parameter (λ). Default: 1.0507009873554804934193
-        b (float, optional): Alpha parameter (α). Default: 1.6732631921033945073073
+        a (float, optional): scale parameter. Default: ``1.0507009873554804934193``
+        b (float, optional): alpha parameter. Default: ``1.6732631921033945073073``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/ScaledExponentialLinearUnit.png
+
     Examples::
 
-        >>> m = ScaledExponentialLinearUnit()
+        >>> m = torch_activation.ScaledExponentialLinearUnit()
         >>> x = torch.randn(2)
         >>> output = m(x)
     """
@@ -474,23 +532,29 @@ class LeakyScaledExponentialLinearUnit(BaseActivation):
     r"""
     Applies the Leaky Scaled Exponential Linear Unit activation function:
 
-    :math:`\text{LeakyScaledExponentialLinearUnit}(z) = \begin{cases}
-    az, & z \geq 0 \\
-    ab(\exp(z) - 1) + acz, & z < 0
-    \end{cases}`
+    .. math::
+
+        \text{LeakyScaledExponentialLinearUnit}(z) = \begin{cases}
+        az, & z \geq 0 \\
+        ab(\exp(z) - 1) + acz, & z < 0
+        \end{cases}
 
     Args:
-        a (float, optional): Scale parameter. Default: 1.0
-        b (float, optional): Alpha parameter. Default: 1.0
-        c (float, optional): Leaky slope. Default: 0.1
+        a (float, optional): scale parameter. Default: ``1.0``
+        b (float, optional): alpha parameter. Default: ``1.0``
+        c (float, optional): leaky slope. Default: ``0.1``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/LeakyScaledExponentialLinearUnit.png
+
     Examples::
 
-        >>> m = LeakyScaledExponentialLinearUnit(a=1.5, b=1.0, c=0.2)
+        >>> m = torch_activation.LeakyScaledExponentialLinearUnit(a=1.5, b=1.0, c=0.2)
         >>> x = torch.randn(2)
         >>> output = m(x)
     """
@@ -520,22 +584,28 @@ class ScaledExponentiallyRegularizedLinearUnit(BaseActivation):
     r"""
     Applies the Scaled Exponentially Regularized Linear Unit activation function:
 
-    :math:`\text{ScaledExponentiallyRegularizedLinearUnit}(z) = \begin{cases}
-    az, & z \geq 0 \\
-    abz\exp(z), & z < 0
-    \end{cases}`
+    .. math::
+
+        \text{ScaledExponentiallyRegularizedLinearUnit}(z) = \begin{cases}
+        az, & z \geq 0 \\
+        abz\exp(z), & z < 0
+        \end{cases}
 
     Args:
-        a (float, optional): Scale parameter. Default: 1.0
-        b (float, optional): Regularization parameter. Default: 1.0
+        a (float, optional): scale parameter. Default: ``1.0``
+        b (float, optional): regularization parameter. Default: ``1.0``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/ScaledExponentiallyRegularizedLinearUnit.png
+
     Examples::
 
-        >>> m = ScaledExponentiallyRegularizedLinearUnit(a=1.5, b=0.5)
+        >>> m = torch_activation.ScaledExponentiallyRegularizedLinearUnit(a=1.5, b=0.5)
         >>> x = torch.randn(2)
         >>> output = m(x)
     """
@@ -564,23 +634,29 @@ class ScaledScaledExponentialLinearUnit(BaseActivation):
     r"""
     Applies the Scaled Scaled Exponential Linear Unit activation function:
 
-    :math:`\text{ScaledScaledExponentialLinearUnit}(z) = \begin{cases}
-    az, & z \geq 0 \\
-    ab(\exp(cz) - 1), & z < 0
-    \end{cases}`
+    .. math::
+
+        \text{ScaledScaledExponentialLinearUnit}(z) = \begin{cases}
+        az, & z \geq 0 \\
+        ab(\exp(cz) - 1), & z < 0
+        \end{cases}
 
     Args:
-        a (float, optional): Scale parameter. Default: 1.0
-        b (float, optional): Alpha parameter. Default: 1.0
-        c (float, optional): Exponential scale parameter. Default: 1.0
+        a (float, optional): scale parameter. Default: ``1.0``
+        b (float, optional): alpha parameter. Default: ``1.0``
+        c (float, optional): exponential scale parameter. Default: ``1.0``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/ScaledScaledExponentialLinearUnit.png
+
     Examples::
 
-        >>> m = ScaledScaledExponentialLinearUnit(a=1.5, b=1.0, c=0.5)
+        >>> m = torch_activation.ScaledScaledExponentialLinearUnit(a=1.5, b=1.0, c=0.5)
         >>> x = torch.randn(2)
         >>> output = m(x)
     """
@@ -610,22 +686,28 @@ class RSigELU(BaseActivation):
     r"""
     Applies the RSigELU activation function:
 
-    :math:`\text{RSigELU}(z) = \begin{cases}
-    z \cdot \frac{1}{1 + \exp(-z)} a + z, & 1 < z < \infty \\
-    z, & 0 \geq z \geq 1 \\
-    a(\exp(z) - 1), & -\infty < z < 0
-    \end{cases}`
+    .. math::
+
+        \text{RSigELU}(z) = \begin{cases}
+        z \cdot \sigma(z) \cdot a + z, & z > 1 \\
+        z, & 0 \leq z \leq 1 \\
+        a(\exp(z) - 1), & z < 0
+        \end{cases}
 
     Args:
-        a (float, optional): Scale parameter. Default: 1.0
+        a (float, optional): scale parameter. Default: ``1.0``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/RSigELU.png
+
     Examples::
 
-        >>> m = RSigELU(a=1.5)
+        >>> m = torch_activation.RSigELU(a=1.5)
         >>> x = torch.randn(2)
         >>> output = m(x)
     """
@@ -655,21 +737,27 @@ class HardSReLUE(BaseActivation):
     r"""
     Applies the Hard SReLUE activation function:
 
-    :math:`\text{HardSReLUE}(z) = \begin{cases}
-    az \cdot \max\left(0, \min\left(1, \frac{z+1}{2} + z\right)\right), & z \geq 0 \\
-    a(\exp(z) - 1), & z < 0
-    \end{cases}`
+    .. math::
+
+        \text{HardSReLUE}(z) = \begin{cases}
+        az \cdot \max\!\left(0, \min\!\left(1, \tfrac{z+1}{2}\right)\right) + z, & z \geq 0 \\
+        a(\exp(z) - 1), & z < 0
+        \end{cases}
 
     Args:
-        a (float, optional): Scale parameter. Default: 1.0
+        a (float, optional): scale parameter. Default: ``1.0``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/HardSReLUE.png
+
     Examples::
 
-        >>> m = HardSReLUE(a=1.5)
+        >>> m = torch_activation.HardSReLUE(a=1.5)
         >>> x = torch.randn(2)
         >>> output = m(x)
     """
@@ -700,18 +788,24 @@ class ExponentialLinearSigmoidSquashing(BaseActivation):
     r"""
     Applies the Exponential Linear Sigmoid Squashing activation function:
 
-    :math:`\text{ExponentialLinearSigmoidSquashing}(z) = \begin{cases}
-    \frac{z}{1 + \exp(-z)}, & z \geq 0 \\
-    \frac{\exp(z) - 1}{1 + \exp(-z)}, & z < 0
-    \end{cases}`
+    .. math::
+
+        \text{ExponentialLinearSigmoidSquashing}(z) = \begin{cases}
+        \frac{z}{1 + \exp(-z)}, & z \geq 0 \\
+        \frac{\exp(z) - 1}{1 + \exp(-z)}, & z < 0
+        \end{cases}
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/ExponentialLinearSigmoidSquashing.png
+
     Examples::
 
-        >>> m = ExponentialLinearSigmoidSquashing()
+        >>> m = torch_activation.ExponentialLinearSigmoidSquashing()
         >>> x = torch.randn(2)
         >>> output = m(x)
     """
@@ -741,18 +835,24 @@ class HardExponentialLinearSigmoidSquashing(BaseActivation):
     r"""
     Applies the Hard Exponential Linear Sigmoid Squashing activation function:
 
-    :math:`\text{HardExponentialLinearSigmoidSquashing}(z) = \begin{cases}
-    z \cdot \max\left(0, \min\left(\frac{z+1}{2}, 1\right)\right), & z \geq 0 \\
-    (\exp(z) - 1) \cdot \max\left(0, \min\left(\frac{z+1}{2}, 1\right)\right), & z < 0
-    \end{cases}`
+    .. math::
+
+        \text{HardExponentialLinearSigmoidSquashing}(z) = \begin{cases}
+        z \cdot \max\!\left(0, \min\!\left(\tfrac{z+1}{2}, 1\right)\right), & z \geq 0 \\
+        (\exp(z) - 1) \cdot \max\!\left(0, \min\!\left(\tfrac{z+1}{2}, 1\right)\right), & z < 0
+        \end{cases}
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/HardExponentialLinearSigmoidSquashing.png
+
     Examples::
 
-        >>> m = HardExponentialLinearSigmoidSquashing()
+        >>> m = torch_activation.HardExponentialLinearSigmoidSquashing()
         >>> x = torch.randn(2)
         >>> output = m(x)
     """
@@ -773,23 +873,29 @@ class RSigELUD(BaseActivation):
     r"""
     Applies the RSigELUD activation function:
 
-    :math:`\text{RSigELUD}(z) = \begin{cases}
-    z \cdot \frac{1}{1 + \exp(-z)} a + z, & 1 < z < \infty \\
-    z, & 0 \leq z \leq 1 \\
-    b(\exp(z) - 1), & -\infty < z < 0
-    \end{cases}`
+    .. math::
+
+        \text{RSigELUD}(z) = \begin{cases}
+        z \cdot \sigma(z) \cdot a + z, & z > 1 \\
+        z, & 0 \leq z \leq 1 \\
+        b(\exp(z) - 1), & z < 0
+        \end{cases}
 
     Args:
-        a (float, optional): Scale parameter for z > 1. Default: 1.0
-        b (float, optional): Scale parameter for z < 0. Default: 1.0
+        a (float, optional): scale parameter for :math:`z > 1`. Default: ``1.0``
+        b (float, optional): scale parameter for :math:`z < 0`. Default: ``1.0``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/RSigELUD.png
+
     Examples::
 
-        >>> m = RSigELUD(a=1.5, b=0.8)
+        >>> m = torch_activation.RSigELUD(a=1.5, b=0.8)
         >>> x = torch.randn(2)
         >>> output = m(x)
     """
@@ -820,23 +926,29 @@ class LSReLU(BaseActivation):
     r"""
     Applies the LSReLU activation function:
 
-    :math:`\text{LSReLU}(z) = \begin{cases}
-    \frac{z}{1 + |z|}, & z \leq 0 \\
-    z, & 0 \leq z \leq b \\
-    \log(az + 1) + |\log(ab + 1) - b|, & z \geq b
-    \end{cases}`
+    .. math::
+
+        \text{LSReLU}(z) = \begin{cases}
+        \frac{z}{1 + |z|}, & z \leq 0 \\
+        z, & 0 \leq z \leq b \\
+        \log(az + 1) + |\log(ab + 1) - b|, & z > b
+        \end{cases}
 
     Args:
-        a (float, optional): Scale parameter for z > b. Default: 1.0
-        b (float, optional): Threshold parameter. Default: 1.0
+        a (float, optional): log-region scale parameter. Default: ``1.0``
+        b (float, optional): threshold parameter. Default: ``1.0``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/LSReLU.png
+
     Examples::
 
-        >>> m = LSReLU(a=0.5, b=2.0)
+        >>> m = torch_activation.LSReLU(a=0.5, b=2.0)
         >>> x = torch.randn(2)
         >>> output = m(x)
     """
@@ -867,12 +979,13 @@ class Maxsig(BaseActivation):
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
-    References:
-        .. [1] Activation survey arXiv:2402.09092 Section 3.7.
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/Maxsig.png
 
     Examples::
 
-        >>> m = Maxsig()
+        >>> m = torch_activation.Maxsig()
         >>> x = torch.randn(2)
         >>> output = m(x)
     """

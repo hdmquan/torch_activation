@@ -8,21 +8,29 @@ from torch_activation.base import BaseActivation
 @register_activation
 class MollifiedAbsoluteValue(BaseActivation):
     r"""
-    Applies the Mollified Absolute Value function:
+    Applies the Mollified Absolute Value activation function:
 
-    :math:`|x|_\epsilon = \sqrt{x^2 + \epsilon}`
+    :math:`\text{MollifiedAbsoluteValue}(x) = \sqrt{x^2 + \epsilon}`
 
     Args:
-        epsilon (float, optional): Small constant for numerical stability. Default: 1e-6
+        epsilon (float, optional): Small constant for numerical stability. Default: ``1e-6``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/MollifiedAbsoluteValue.png
+
     Examples::
 
-        >>> m = MollifiedAbsoluteValue()
+        >>> m = torch_activation.MollifiedAbsoluteValue()
         >>> x = torch.randn(2)
+        >>> output = m(x)
+
+        >>> m = torch_activation.MollifiedAbsoluteValue(epsilon=1e-4)
+        >>> x = torch.randn(2, 3, 4)
         >>> output = m(x)
     """
 
@@ -37,21 +45,29 @@ class MollifiedAbsoluteValue(BaseActivation):
 @register_activation
 class SquarePlus(BaseActivation):
     r"""
-    Applies the SquarePlus function:
+    Applies the SquarePlus activation function:
 
-    :math:`\text{SquarePlus}(z) = \frac{1}{2} (z + |z|_\epsilon) = \frac{1}{2} (z + \sqrt{z^2 + \epsilon})` # noqa: E501
+    :math:`\text{SquarePlus}(z) = \frac{1}{2} (z + \sqrt{z^2 + \epsilon})`
 
     Args:
-        epsilon (float, optional): Small constant for numerical stability. Default: 1e-6
+        epsilon (float, optional): Small constant for numerical stability. Default: ``1e-6``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/SquarePlus.png
+
     Examples::
 
-        >>> m = SquarePlus()
+        >>> m = torch_activation.SquarePlus()
         >>> x = torch.randn(2)
+        >>> output = m(x)
+
+        >>> m = torch_activation.SquarePlus(epsilon=1e-4)
+        >>> x = torch.randn(2, 3, 4)
         >>> output = m(x)
     """
 
@@ -66,21 +82,29 @@ class SquarePlus(BaseActivation):
 @register_activation
 class StepPlus(BaseActivation):
     r"""
-    Applies the StepPlus function:
+    Applies the StepPlus activation function:
 
-    :math:`\text{StepPlus}(z) = \frac{1}{2} \left(1 + \frac{z}{|z|_\epsilon}\right)`
+    :math:`\text{StepPlus}(z) = \frac{1}{2} \left(1 + \frac{z}{\sqrt{z^2 + \epsilon}}\right)`
 
     Args:
-        epsilon (float, optional): Small constant for numerical stability. Default: 1e-6
+        epsilon (float, optional): Small constant for numerical stability. Default: ``1e-6``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/StepPlus.png
+
     Examples::
 
-        >>> m = StepPlus()
+        >>> m = torch_activation.StepPlus()
         >>> x = torch.randn(2)
+        >>> output = m(x)
+
+        >>> m = torch_activation.StepPlus(epsilon=1e-4)
+        >>> x = torch.randn(2, 3, 4)
         >>> output = m(x)
     """
 
@@ -96,21 +120,29 @@ class StepPlus(BaseActivation):
 @register_activation
 class BipolarPlus(BaseActivation):
     r"""
-    Applies the BipolarPlus function:
+    Applies the BipolarPlus activation function:
 
-    :math:`\text{BipolarPlus}(z) = \frac{z}{|z|_\epsilon}`
+    :math:`\text{BipolarPlus}(z) = \frac{z}{\sqrt{z^2 + \epsilon}}`
 
     Args:
-        epsilon (float, optional): Small constant for numerical stability. Default: 1e-6
+        epsilon (float, optional): Small constant for numerical stability. Default: ``1e-6``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/BipolarPlus.png
+
     Examples::
 
-        >>> m = BipolarPlus()
+        >>> m = torch_activation.BipolarPlus()
         >>> x = torch.randn(2)
+        >>> output = m(x)
+
+        >>> m = torch_activation.BipolarPlus(epsilon=1e-4)
+        >>> x = torch.randn(2, 3, 4)
         >>> output = m(x)
     """
 
@@ -126,22 +158,30 @@ class BipolarPlus(BaseActivation):
 @register_activation
 class LReLUPlus(BaseActivation):
     r"""
-    Applies the Leaky ReLU Plus function:
+    Applies the Leaky ReLU Plus activation function:
 
-    :math:`\text{LReLUPlus}(z_i) = \frac{1}{2} (z_i + a_i z_i + |(1 - a_i) z_i|_\epsilon)`
+    :math:`\text{LReLUPlus}(z_i) = \frac{1}{2} (z_i + a_i z_i + \sqrt{((1 - a_i) z_i)^2 + \epsilon})`
 
     Args:
-        negative_slope (float or Tensor, optional): Controls the angle of the negative slope. Default: 0.01 # noqa: E501
-        epsilon (float, optional): Small constant for numerical stability. Default: 1e-6
+        negative_slope (float, optional): Controls the angle of the negative slope. Default: ``0.01``
+        epsilon (float, optional): Small constant for numerical stability. Default: ``1e-6``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/LReLUPlus.png
+
     Examples::
 
-        >>> m = LReLUPlus()
+        >>> m = torch_activation.LReLUPlus()
         >>> x = torch.randn(2)
+        >>> output = m(x)
+
+        >>> m = torch_activation.LReLUPlus(negative_slope=0.1)
+        >>> x = torch.randn(2, 3, 4)
         >>> output = m(x)
     """
 
@@ -159,21 +199,29 @@ class LReLUPlus(BaseActivation):
 @register_activation
 class vReLUPlus(BaseActivation):
     r"""
-    Applies the vReLU Plus function:
+    Applies the vReLU Plus activation function:
 
-    :math:`\text{vReLUPlus}(z) = |z|_\epsilon`
+    :math:`\text{vReLUPlus}(z) = \sqrt{z^2 + \epsilon}`
 
     Args:
-        epsilon (float, optional): Small constant for numerical stability. Default: 1e-6
+        epsilon (float, optional): Small constant for numerical stability. Default: ``1e-6``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/vReLUPlus.png
+
     Examples::
 
-        >>> m = vReLUPlus()
+        >>> m = torch_activation.vReLUPlus()
         >>> x = torch.randn(2)
+        >>> output = m(x)
+
+        >>> m = torch_activation.vReLUPlus(epsilon=1e-4)
+        >>> x = torch.randn(2, 3, 4)
         >>> output = m(x)
     """
 
@@ -188,22 +236,30 @@ class vReLUPlus(BaseActivation):
 @register_activation
 class SoftshrinkPlus(BaseActivation):
     r"""
-    Applies the Softshrink Plus function:
+    Applies the Softshrink Plus activation function:
 
-    :math:`\text{SoftshrinkPlus}(z) = z + \frac{1}{2} \left(\sqrt{(z - a)^2 + \epsilon} - \sqrt{(z + a)^2 + \epsilon}\right)` # noqa: E501
+    :math:`\text{SoftshrinkPlus}(z) = z + \frac{1}{2} \left(\sqrt{(z - a)^2 + \epsilon} - \sqrt{(z + a)^2 + \epsilon}\right)`
 
     Args:
-        lambda_val (float, optional): The lambda value for the Softshrink formulation. Default: 0.5
-        epsilon (float, optional): Small constant for numerical stability. Default: 1e-6
+        lambda_val (float, optional): The lambda value for the Softshrink formulation. Default: ``0.5``
+        epsilon (float, optional): Small constant for numerical stability. Default: ``1e-6``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/SoftshrinkPlus.png
+
     Examples::
 
-        >>> m = SoftshrinkPlus()
+        >>> m = torch_activation.SoftshrinkPlus()
         >>> x = torch.randn(2)
+        >>> output = m(x)
+
+        >>> m = torch_activation.SoftshrinkPlus(lambda_val=1.0)
+        >>> x = torch.randn(2, 3, 4)
         >>> output = m(x)
     """
 
@@ -221,22 +277,30 @@ class SoftshrinkPlus(BaseActivation):
 @register_activation
 class PanPlus(BaseActivation):
     r"""
-    Applies the Pan Plus function:
+    Applies the Pan Plus activation function:
 
-    :math:`\text{PanPlus}(z) = -a + \frac{1}{2} \left(\sqrt{(z - a)^2 + \epsilon} + \sqrt{(z + a)^2 + \epsilon}\right)` # noqa: E501
+    :math:`\text{PanPlus}(z) = -a + \frac{1}{2} \left(\sqrt{(z - a)^2 + \epsilon} + \sqrt{(z + a)^2 + \epsilon}\right)`
 
     Args:
-        a (float, optional): The 'a' parameter in the Pan Plus formulation. Default: 0.5
-        epsilon (float, optional): Small constant for numerical stability. Default: 1e-6
+        a (float, optional): The 'a' parameter in the Pan Plus formulation. Default: ``0.5``
+        epsilon (float, optional): Small constant for numerical stability. Default: ``1e-6``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/PanPlus.png
+
     Examples::
 
-        >>> m = PanPlus()
+        >>> m = torch_activation.PanPlus()
         >>> x = torch.randn(2)
+        >>> output = m(x)
+
+        >>> m = torch_activation.PanPlus(a=1.0)
+        >>> x = torch.randn(2, 3, 4)
         >>> output = m(x)
     """
 
@@ -254,21 +318,29 @@ class PanPlus(BaseActivation):
 @register_activation
 class BReLUPlus(BaseActivation):
     r"""
-    Applies the Bounded ReLU Plus function:
+    Applies the Bounded ReLU Plus activation function:
 
-    :math:`\text{BReLUPlus}(z) = \frac{1}{2} (1 + |z|_\epsilon - |z - 1|_\epsilon)`
+    :math:`\text{BReLUPlus}(z) = \frac{1}{2} (1 + \sqrt{z^2 + \epsilon} - \sqrt{(z - 1)^2 + \epsilon})`
 
     Args:
-        epsilon (float, optional): Small constant for numerical stability. Default: 1e-6
+        epsilon (float, optional): Small constant for numerical stability. Default: ``1e-6``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/BReLUPlus.png
+
     Examples::
 
-        >>> m = BReLUPlus()
+        >>> m = torch_activation.BReLUPlus()
         >>> x = torch.randn(2)
+        >>> output = m(x)
+
+        >>> m = torch_activation.BReLUPlus(epsilon=1e-4)
+        >>> x = torch.randn(2, 3, 4)
         >>> output = m(x)
     """
 
@@ -285,23 +357,31 @@ class BReLUPlus(BaseActivation):
 @register_activation
 class SReLUPlus(BaseActivation):
     r"""
-    Applies the S-shaped ReLU Plus function:
+    Applies the S-shaped ReLU Plus activation function:
 
-    :math:`\text{SReLUPlus}(z_i) = a_i z_i + \frac{1}{2} (a_i - 1) (|z_i - t_i|_\epsilon - |z_i + t_i|_\epsilon)` # noqa: E501
+    :math:`\text{SReLUPlus}(z_i) = a_i z_i + \frac{1}{2} (a_i - 1) (\sqrt{(z_i - t_i)^2 + \epsilon} - \sqrt{(z_i + t_i)^2 + \epsilon})`
 
     Args:
-        a (float or Tensor, optional): The 'a' parameter in the SReLU Plus formulation. Default: 0.5
-        t (float or Tensor, optional): The 't' parameter in the SReLU Plus formulation. Default: 1.0
-        epsilon (float, optional): Small constant for numerical stability. Default: 1e-6
+        a (float, optional): The 'a' parameter in the SReLU Plus formulation. Default: ``0.5``
+        t (float, optional): The 't' parameter in the SReLU Plus formulation. Default: ``1.0``
+        epsilon (float, optional): Small constant for numerical stability. Default: ``1e-6``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/SReLUPlus.png
+
     Examples::
 
-        >>> m = SReLUPlus()
+        >>> m = torch_activation.SReLUPlus()
         >>> x = torch.randn(2)
+        >>> output = m(x)
+
+        >>> m = torch_activation.SReLUPlus(a=0.2, t=2.0)
+        >>> x = torch.randn(2, 3, 4)
         >>> output = m(x)
     """
 
@@ -320,21 +400,29 @@ class SReLUPlus(BaseActivation):
 @register_activation
 class HardTanhPlus(BaseActivation):
     r"""
-    Applies the HardTanh Plus function:
+    Applies the HardTanh Plus activation function:
 
-    :math:`\text{HardTanhPlus}(z) = \frac{1}{2} (|z + 1|_\epsilon - |z - 1|_\epsilon)`
+    :math:`\text{HardTanhPlus}(z) = \frac{1}{2} (\sqrt{(z + 1)^2 + \epsilon} - \sqrt{(z - 1)^2 + \epsilon})`
 
     Args:
-        epsilon (float, optional): Small constant for numerical stability. Default: 1e-6
+        epsilon (float, optional): Small constant for numerical stability. Default: ``1e-6``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/HardTanhPlus.png
+
     Examples::
 
-        >>> m = HardTanhPlus()
+        >>> m = torch_activation.HardTanhPlus()
         >>> x = torch.randn(2)
+        >>> output = m(x)
+
+        >>> m = torch_activation.HardTanhPlus(epsilon=1e-4)
+        >>> x = torch.randn(2, 3, 4)
         >>> output = m(x)
     """
 
@@ -351,22 +439,30 @@ class HardTanhPlus(BaseActivation):
 @register_activation
 class HardshrinkPlus(BaseActivation):
     r"""
-    Applies the Hardshrink Plus function:
+    Applies the Hardshrink Plus activation function:
 
-    :math:`\text{HardshrinkPlus}(z) = z \left(1 + \frac{1}{2} \left(\frac{z - a}{\sqrt{(z - a)^2 + \epsilon}} - \frac{z + a}{\sqrt{(z + a)^2 + \epsilon}}\right)\right)` # noqa: E501
+    :math:`\text{HardshrinkPlus}(z) = z \left(1 + \frac{1}{2} \left(\frac{z - a}{\sqrt{(z - a)^2 + \epsilon}} - \frac{z + a}{\sqrt{(z + a)^2 + \epsilon}}\right)\right)`
 
     Args:
-        lambda_val (float, optional): The lambda value for the Hardshrink formulation. Default: 0.5
-        epsilon (float, optional): Small constant for numerical stability. Default: 1e-6
+        lambda_val (float, optional): The lambda value for the Hardshrink formulation. Default: ``0.5``
+        epsilon (float, optional): Small constant for numerical stability. Default: ``1e-6``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/HardshrinkPlus.png
+
     Examples::
 
-        >>> m = HardshrinkPlus()
+        >>> m = torch_activation.HardshrinkPlus()
         >>> x = torch.randn(2)
+        >>> output = m(x)
+
+        >>> m = torch_activation.HardshrinkPlus(lambda_val=1.0)
+        >>> x = torch.randn(2, 3, 4)
         >>> output = m(x)
     """
 
@@ -384,23 +480,31 @@ class HardshrinkPlus(BaseActivation):
 @register_activation
 class MollifiedMeLUComponent(BaseActivation):
     r"""
-    Applies the Mollified MeLU Component function:
+    Applies the Mollified MeLU Component activation function:
 
-    :math:`\phi_{b_j c_j \text{Plus}}(z_i) = \frac{1}{2} \left(c_j - |z_i - b_j|_\epsilon + \sqrt{(c_j - |z_i - b_j|_\epsilon)^2 + \epsilon}\right)` # noqa: E501
+    :math:`\text{MollifiedMeLUComponent}(z_i) = \frac{1}{2} \left(c - \sqrt{(z_i - b)^2 + \epsilon} + \sqrt{\left(c - \sqrt{(z_i - b)^2 + \epsilon}\right)^2 + \epsilon}\right)`
 
     Args:
-        b (float, optional): The 'b' parameter in the MeLU formulation. Default: 0.0
-        c (float, optional): The 'c' parameter in the MeLU formulation. Default: 1.0
-        epsilon (float, optional): Small constant for numerical stability. Default: 1e-6
+        b (float, optional): The 'b' parameter in the MeLU formulation. Default: ``0.0``
+        c (float, optional): The 'c' parameter in the MeLU formulation. Default: ``1.0``
+        epsilon (float, optional): Small constant for numerical stability. Default: ``1e-6``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/MollifiedMeLUComponent.png
+
     Examples::
 
-        >>> m = MollifiedMeLUComponent()
+        >>> m = torch_activation.MollifiedMeLUComponent()
         >>> x = torch.randn(2)
+        >>> output = m(x)
+
+        >>> m = torch_activation.MollifiedMeLUComponent(b=0.5, c=2.0)
+        >>> x = torch.randn(2, 3, 4)
         >>> output = m(x)
     """
 
@@ -419,24 +523,32 @@ class MollifiedMeLUComponent(BaseActivation):
 @register_activation
 class TSAFPlus(BaseActivation):
     r"""
-    Applies the TSAF Plus function:
+    Applies the TSAF Plus activation function:
 
-    :math:`\text{TSAFPlus}(z_i) = \frac{1}{4} \left(|z_i - a_i + c_i|_\epsilon + |z_i - a_i|_\epsilon + |z_i + b_i - c_i|_\epsilon - |z_i - b_i|_\epsilon\right)` # noqa: E501
+    :math:`\text{TSAFPlus}(z_i) = \frac{1}{4} \left(\sqrt{(z_i - a + c)^2 + \epsilon} + \sqrt{(z_i - a)^2 + \epsilon} + \sqrt{(z_i + b - c)^2 + \epsilon} - \sqrt{(z_i - b)^2 + \epsilon}\right)`
 
     Args:
-        a (float, optional): The 'a' parameter in the TSAF formulation. Default: 0.5
-        b (float, optional): The 'b' parameter in the TSAF formulation. Default: 0.5
-        c (float, optional): The 'c' parameter in the TSAF formulation. Default: 1.0
-        epsilon (float, optional): Small constant for numerical stability. Default: 1e-6
+        a (float, optional): The 'a' parameter in the TSAF formulation. Default: ``0.5``
+        b (float, optional): The 'b' parameter in the TSAF formulation. Default: ``0.5``
+        c (float, optional): The 'c' parameter in the TSAF formulation. Default: ``1.0``
+        epsilon (float, optional): Small constant for numerical stability. Default: ``1e-6``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/TSAFPlus.png
+
     Examples::
 
-        >>> m = TSAFPlus()
+        >>> m = torch_activation.TSAFPlus()
         >>> x = torch.randn(2)
+        >>> output = m(x)
+
+        >>> m = torch_activation.TSAFPlus(a=1.0, b=0.5, c=2.0)
+        >>> x = torch.randn(2, 3, 4)
         >>> output = m(x)
     """
 
@@ -458,22 +570,30 @@ class TSAFPlus(BaseActivation):
 @register_activation
 class ELUPlus(BaseActivation):
     r"""
-    Applies the ELU Plus function:
+    Applies the ELU Plus activation function:
 
-    :math:`\text{ELUPlus}(z) = \frac{1}{2} (z + |z|_\epsilon) + \frac{1}{2} \left(\frac{\exp(z) - 1}{a} + \sqrt{\left(\frac{\exp(z) - 1}{a}\right)^2 + \epsilon}\right)` # noqa: E501
+    :math:`\text{ELUPlus}(z) = \frac{1}{2} (z + \sqrt{z^2 + \epsilon}) + \frac{1}{2} \left(\frac{\exp(z) - 1}{a} + \sqrt{\left(\frac{\exp(z) - 1}{a}\right)^2 + \epsilon}\right)`
 
     Args:
-        alpha (float, optional): The alpha value for the ELU formulation. Default: 1.0
-        epsilon (float, optional): Small constant for numerical stability. Default: 1e-6
+        alpha (float, optional): The alpha value for the ELU formulation. Default: ``1.0``
+        epsilon (float, optional): Small constant for numerical stability. Default: ``1e-6``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/ELUPlus.png
+
     Examples::
 
-        >>> m = ELUPlus()
+        >>> m = torch_activation.ELUPlus()
         >>> x = torch.randn(2)
+        >>> output = m(x)
+
+        >>> m = torch_activation.ELUPlus(alpha=0.5)
+        >>> x = torch.randn(2, 3, 4)
         >>> output = m(x)
     """
 
@@ -492,21 +612,29 @@ class ELUPlus(BaseActivation):
 @register_activation
 class SwishPlus(BaseActivation):
     r"""
-    Applies the Swish Plus function:
+    Applies the Swish Plus activation function:
 
-    :math:`\text{SwishPlus}(z) = z \cdot \text{StepPlus}(z) = \frac{1}{2} \left(z + \frac{z^2}{|z|_\epsilon}\right)` # noqa: E501
+    :math:`\text{SwishPlus}(z) = \frac{1}{2} \left(z + \frac{z^2}{\sqrt{z^2 + \epsilon}}\right)`
 
     Args:
-        epsilon (float, optional): Small constant for numerical stability. Default: 1e-6
+        epsilon (float, optional): Small constant for numerical stability. Default: ``1e-6``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/SwishPlus.png
+
     Examples::
 
-        >>> m = SwishPlus()
+        >>> m = torch_activation.SwishPlus()
         >>> x = torch.randn(2)
+        >>> output = m(x)
+
+        >>> m = torch_activation.SwishPlus(epsilon=1e-4)
+        >>> x = torch.randn(2, 3, 4)
         >>> output = m(x)
     """
 
@@ -522,21 +650,29 @@ class SwishPlus(BaseActivation):
 @register_activation
 class MishPlus(BaseActivation):
     r"""
-    Applies the Mish Plus function:
+    Applies the Mish Plus activation function:
 
     :math:`\text{MishPlus}(z) = z \cdot \text{BipolarPlus}(\text{BipolarPlus}(z))`
 
     Args:
-        epsilon (float, optional): Small constant for numerical stability. Default: 1e-6
+        epsilon (float, optional): Small constant for numerical stability. Default: ``1e-6``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/MishPlus.png
+
     Examples::
 
-        >>> m = MishPlus()
+        >>> m = torch_activation.MishPlus()
         >>> x = torch.randn(2)
+        >>> output = m(x)
+
+        >>> m = torch_activation.MishPlus(epsilon=1e-4)
+        >>> x = torch.randn(2, 3, 4)
         >>> output = m(x)
     """
 
@@ -559,21 +695,29 @@ class MishPlus(BaseActivation):
 @register_activation
 class LogishPlus(BaseActivation):
     r"""
-    Applies the Logish Plus function:
+    Applies the Logish Plus activation function:
 
-    :math:`\text{LogishPlus}(z) = z \cdot \ln(1 + \text{StepPlus}(z))`
+    :math:`\text{LogishPlus}(z) = z \cdot \ln\left(1 + \frac{1}{2}\left(1 + \frac{z}{\sqrt{z^2 + \epsilon}}\right)\right)`
 
     Args:
-        epsilon (float, optional): Small constant for numerical stability. Default: 1e-6
+        epsilon (float, optional): Small constant for numerical stability. Default: ``1e-6``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/LogishPlus.png
+
     Examples::
 
-        >>> m = LogishPlus()
+        >>> m = torch_activation.LogishPlus()
         >>> x = torch.randn(2)
+        >>> output = m(x)
+
+        >>> m = torch_activation.LogishPlus(epsilon=1e-4)
+        >>> x = torch.randn(2, 3, 4)
         >>> output = m(x)
     """
 
@@ -590,21 +734,29 @@ class LogishPlus(BaseActivation):
 @register_activation
 class SoftsignPlus(BaseActivation):
     r"""
-    Applies the Softsign Plus function:
+    Applies the Softsign Plus activation function:
 
-    :math:`\text{SoftsignPlus}(z) = \frac{z}{1 + |z|_\epsilon}`
+    :math:`\text{SoftsignPlus}(z) = \frac{z}{1 + \sqrt{z^2 + \epsilon}}`
 
     Args:
-        epsilon (float, optional): Small constant for numerical stability. Default: 1e-6
+        epsilon (float, optional): Small constant for numerical stability. Default: ``1e-6``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/SoftsignPlus.png
+
     Examples::
 
-        >>> m = SoftsignPlus()
+        >>> m = torch_activation.SoftsignPlus()
         >>> x = torch.randn(2)
+        >>> output = m(x)
+
+        >>> m = torch_activation.SoftsignPlus(epsilon=1e-4)
+        >>> x = torch.randn(2, 3, 4)
         >>> output = m(x)
     """
 
@@ -620,21 +772,29 @@ class SoftsignPlus(BaseActivation):
 @register_activation
 class SignReLUPlus(BaseActivation):
     r"""
-    Applies the SignReLU Plus function:
+    Applies the SignReLU Plus activation function:
 
-    :math:`\text{SignReLUPlus}(z) = \frac{1}{2} (z + |z|_\epsilon) + \frac{z - |z|_\epsilon}{2 |1 - z|_\epsilon}` # noqa: E501
+    :math:`\text{SignReLUPlus}(z) = \frac{1}{2} (z + \sqrt{z^2 + \epsilon}) + \frac{z - \sqrt{z^2 + \epsilon}}{2\sqrt{(1 - z)^2 + \epsilon}}`
 
     Args:
-        epsilon (float, optional): Small constant for numerical stability. Default: 1e-6
+        epsilon (float, optional): Small constant for numerical stability. Default: ``1e-6``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/SignReLUPlus.png
+
     Examples::
 
-        >>> m = SignReLUPlus()
+        >>> m = torch_activation.SignReLUPlus()
         >>> x = torch.randn(2)
+        >>> output = m(x)
+
+        >>> m = torch_activation.SignReLUPlus(epsilon=1e-4)
+        >>> x = torch.randn(2, 3, 4)
         >>> output = m(x)
     """
 

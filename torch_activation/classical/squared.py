@@ -11,12 +11,14 @@ class SQNL(BaseActivation):
     r"""
     Applies the SQNL (Square Non-Linear) activation function:
 
-    :math:`\text{SQNL}(z) = \begin{cases}
-    1, & z > 2 \\
-    z - \frac{z^2}{4}, & 0 \leq z \leq 2 \\
-    z + \frac{z^2}{4}, & -2 \leq z < 0 \\
-    -1, & z < -2
-    \end{cases}`
+    .. math::
+
+        \text{SQNL}(z) = \begin{cases}
+        1, & z > 2 \\
+        z - \frac{z^2}{4}, & 0 \leq z \leq 2 \\
+        z + \frac{z^2}{4}, & -2 \leq z < 0 \\
+        -1, & z < -2
+        \end{cases}
 
     Args:
         inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
@@ -25,15 +27,15 @@ class SQNL(BaseActivation):
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/SQNL.png
+
     Examples::
 
-        >>> m = nn.SQNL()
+        >>> m = torch_activation.SQNL()
         >>> x = torch.randn(2)
         >>> output = m(x)
-
-        >>> m = nn.SQNL(inplace=True)
-        >>> x = torch.randn(2)
-        >>> m(x)
     """
 
     def __init__(self, **kwargs):
@@ -72,11 +74,13 @@ class SQLU(BaseActivation):
     r"""
     Applies the SQLU (Square Linear Unit) activation function:
 
-    :math:`\text{SQLU}(z) = \begin{cases}
-    z, & z > 0 \\
-    z + \frac{z^2}{4}, & -2 \leq z \leq 0 \\
-    -1, & z < -2
-    \end{cases}`
+    .. math::
+
+        \text{SQLU}(z) = \begin{cases}
+        z, & z > 0 \\
+        z + \frac{z^2}{4}, & -2 \leq z \leq 0 \\
+        -1, & z < -2
+        \end{cases}
 
     Args:
         inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
@@ -85,15 +89,15 @@ class SQLU(BaseActivation):
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/SQLU.png
+
     Examples::
 
-        >>> m = nn.SQLU()
+        >>> m = torch_activation.SQLU()
         >>> x = torch.randn(2)
         >>> output = m(x)
-
-        >>> m = nn.SQLU(inplace=True)
-        >>> x = torch.randn(2)
-        >>> m(x)
     """
 
     def __init__(self, **kwargs):
@@ -126,11 +130,13 @@ class Squish(BaseActivation):
     r"""
     Applies the Squish activation function:
 
-    :math:`\text{Squish}(z) = \begin{cases}
-    z + \frac{z^2}{32}, & z > 0 \\
-    z + \frac{z^2}{2}, & -2 \leq z \leq 0 \\
-    0, & z < -2
-    \end{cases}`
+    .. math::
+
+        \text{Squish}(z) = \begin{cases}
+        z + \frac{z^2}{32}, & z > 0 \\
+        z + \frac{z^2}{2}, & -2 \leq z \leq 0 \\
+        0, & z < -2
+        \end{cases}
 
     Args:
         inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
@@ -139,15 +145,15 @@ class Squish(BaseActivation):
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/Squish.png
+
     Examples::
 
-        >>> m = nn.Squish()
+        >>> m = torch_activation.Squish()
         >>> x = torch.randn(2)
         >>> output = m(x)
-
-        >>> m = nn.Squish(inplace=True)
-        >>> x = torch.randn(2)
-        >>> m(x)
     """
 
     def __init__(self, **kwargs):
@@ -182,11 +188,13 @@ class SqREU(BaseActivation):
     r"""
     Applies the SqREU (Square Rectified Exponential Unit) activation function:
 
-    :math:`\text{SqREU}(z) = \begin{cases}
-    z, & z > 0 \\
-    z + \frac{z^2}{2}, & -2 \leq z \leq 0 \\
-    0, & z < -2
-    \end{cases}`
+    .. math::
+
+        \text{SqREU}(z) = \begin{cases}
+        z, & z > 0 \\
+        z + \frac{z^2}{2}, & -2 \leq z \leq 0 \\
+        0, & z < -2
+        \end{cases}
 
     Args:
         inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
@@ -195,15 +203,15 @@ class SqREU(BaseActivation):
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/SqREU.png
+
     Examples::
 
-        >>> m = nn.SqREU()
+        >>> m = torch_activation.SqREU()
         >>> x = torch.randn(2)
         >>> output = m(x)
-
-        >>> m = nn.SqREU(inplace=True)
-        >>> x = torch.randn(2)
-        >>> m(x)
     """
 
     def __init__(self, **kwargs):
@@ -236,11 +244,13 @@ class SqSoftplus(BaseActivation):
     r"""
     Applies the SqSoftplus (Square Softplus) activation function:
 
-    :math:`\text{SqSoftplus}(z) = \begin{cases}
-    z, & z > \frac{1}{2} \\
-    z + \frac{(z - \frac{1}{2})^2}{2}, & -\frac{1}{2} \leq z \leq \frac{1}{2} \\
-    0, & z < -\frac{1}{2}
-    \end{cases}`
+    .. math::
+
+        \text{SqSoftplus}(z) = \begin{cases}
+        z, & z > \frac{1}{2} \\
+        z + \frac{(z - \frac{1}{2})^2}{2}, & -\frac{1}{2} \leq z \leq \frac{1}{2} \\
+        0, & z < -\frac{1}{2}
+        \end{cases}
 
     Args:
         inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
@@ -249,15 +259,15 @@ class SqSoftplus(BaseActivation):
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/SqSoftplus.png
+
     Examples::
 
-        >>> m = nn.SqSoftplus()
+        >>> m = torch_activation.SqSoftplus()
         >>> x = torch.randn(2)
         >>> output = m(x)
-
-        >>> m = nn.SqSoftplus(inplace=True)
-        >>> x = torch.randn(2)
-        >>> m(x)
     """
 
     def __init__(self, **kwargs):
@@ -294,12 +304,14 @@ class LogSQNL(BaseActivation):
     r"""
     Applies the LogSQNL (Logarithmic Square Non-Linear) activation function:
 
-    :math:`\text{LogSQNL}(z) = \begin{cases}
-    1, & z > 2 \\
-    \frac{1}{2}(z - \frac{z^2}{4}) + \frac{1}{2}, & 0 \leq z \leq 2 \\
-    \frac{1}{2}(z + \frac{z^2}{4}) + \frac{1}{2}, & -2 \leq z < 0 \\
-    0, & z < -2
-    \end{cases}`
+    .. math::
+
+        \text{LogSQNL}(z) = \begin{cases}
+        1, & z > 2 \\
+        \frac{1}{2}(z - \frac{z^2}{4}) + \frac{1}{2}, & 0 \leq z \leq 2 \\
+        \frac{1}{2}(z + \frac{z^2}{4}) + \frac{1}{2}, & -2 \leq z < 0 \\
+        0, & z < -2
+        \end{cases}
 
     Args:
         inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
@@ -308,15 +320,15 @@ class LogSQNL(BaseActivation):
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/LogSQNL.png
+
     Examples::
 
-        >>> m = nn.LogSQNL()
+        >>> m = torch_activation.LogSQNL()
         >>> x = torch.randn(2)
         >>> output = m(x)
-
-        >>> m = nn.LogSQNL(inplace=True)
-        >>> x = torch.randn(2)
-        >>> m(x)
     """
 
     def __init__(self, **kwargs):
@@ -358,20 +370,20 @@ class SQMAX(BaseActivation):
     :math:`\text{SQMAX}(z_j) = \frac{(z_j + c)^2}{\sum_{k=1}^N (z_k + c)^2}`
 
     Args:
-        c (float, optional): Offset parameter. Default: 0.0
-        dim (int, optional): A dimension along which SQMAX will be computed. Default: -1
+        c (float, optional): offset parameter. Default: ``0.0``
+        dim (int, optional): a dimension along which SQMAX will be computed. Default: ``-1``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/SQMAX.png
+
     Examples::
 
-        >>> m = nn.SQMAX(c=1.0)
-        >>> x = torch.randn(2, 3)
-        >>> output = m(x)
-
-        >>> m = nn.SQMAX(dim=0)
+        >>> m = torch_activation.SQMAX(c=1.0)
         >>> x = torch.randn(2, 3)
         >>> output = m(x)
     """
@@ -393,29 +405,31 @@ class LinQ(BaseActivation):
     r"""
     Applies the LinQ (Linear Quadratic) activation function:
 
-    :math:`\text{LinQ}(z) = \begin{cases}
-    az + 1 - 2z + z^2, & z \geq 2 - 2a \\
-    \frac{1}{4}z(4 - |z|), & -2 + 2a < z < 2 - 2a \\
-    az - 1 + 2z - z^2, & z \leq -2 + 2a
-    \end{cases}`
+    .. math::
+
+        \text{LinQ}(z) = \begin{cases}
+        az + 1 - 2z + z^2, & z \geq 2 - 2a \\
+        \frac{1}{4}z(4 - |z|), & -2 + 2a < z < 2 - 2a \\
+        az - 1 + 2z - z^2, & z \leq -2 + 2a
+        \end{cases}
 
     Args:
-        a (float, optional): Shape parameter. Default: 1.0
+        a (float, optional): shape parameter. Default: ``1.0``
         inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/LinQ.png
+
     Examples::
 
-        >>> m = nn.LinQ(a=0.5)
+        >>> m = torch_activation.LinQ(a=0.5)
         >>> x = torch.randn(2)
         >>> output = m(x)
-
-        >>> m = nn.LinQ(inplace=True)
-        >>> x = torch.randn(2)
-        >>> m(x)
     """
 
     def __init__(self, a: float = 1.0, **kwargs):
@@ -459,28 +473,30 @@ class ISRLU(BaseActivation):
     r"""
     Applies the ISRLU (Inverse Square Root Linear Unit) activation function:
 
-    :math:`\text{ISRLU}(z) = \begin{cases}
-    z, & z \geq 0 \\
-    \frac{z}{\sqrt{1 + az^2}}, & z < 0
-    \end{cases}`
+    .. math::
+
+        \text{ISRLU}(z) = \begin{cases}
+        z, & z \geq 0 \\
+        \frac{z}{\sqrt{1 + az^2}}, & z < 0
+        \end{cases}
 
     Args:
-        a (float, optional): Shape parameter. Default: 1.0
+        a (float, optional): shape parameter. Default: ``1.0``
         inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/ISRLU.png
+
     Examples::
 
-        >>> m = nn.ISRLU(a=0.5)
+        >>> m = torch_activation.ISRLU(a=0.5)
         >>> x = torch.randn(2)
         >>> output = m(x)
-
-        >>> m = nn.ISRLU(inplace=True)
-        >>> x = torch.randn(2)
-        >>> m(x)
     """
 
     def __init__(self, a: float = 1.0, **kwargs):
@@ -511,22 +527,22 @@ class ISRU(BaseActivation):
     :math:`\text{ISRU}(z) = \frac{z}{\sqrt{1 + az^2}}`
 
     Args:
-        a (float, optional): Shape parameter. Default: 1.0
+        a (float, optional): shape parameter. Default: ``1.0``
         inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/ISRU.png
+
     Examples::
 
-        >>> m = nn.ISRU(a=0.5)
+        >>> m = torch_activation.ISRU(a=0.5)
         >>> x = torch.randn(2)
         >>> output = m(x)
-
-        >>> m = nn.ISRU(inplace=True)
-        >>> x = torch.randn(2)
-        >>> m(x)
     """
 
     def __init__(self, a: float = 1.0, **kwargs):
@@ -555,15 +571,15 @@ class MEF(BaseActivation):
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/MEF.png
+
     Examples::
 
-        >>> m = nn.MEF()
+        >>> m = torch_activation.MEF()
         >>> x = torch.randn(2)
         >>> output = m(x)
-
-        >>> m = nn.MEF(inplace=True)
-        >>> x = torch.randn(2)
-        >>> m(x)
     """
 
     def __init__(self, **kwargs):
@@ -583,10 +599,12 @@ class SquaredReLU(BaseActivation):
     r"""
     Applies the SquaredReLU activation function:
 
-    :math:`\text{SquaredReLU}(z) = \begin{cases}
-    z^2, & z > 0 \\
-    0, & z \leq 0
-    \end{cases}`
+    .. math::
+
+        \text{SquaredReLU}(z) = \begin{cases}
+        z^2, & z > 0 \\
+        0, & z \leq 0
+        \end{cases}
 
     Args:
         inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
@@ -595,15 +613,15 @@ class SquaredReLU(BaseActivation):
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/SquaredReLU.png
+
     Examples::
 
-        >>> m = nn.SquaredReLU()
+        >>> m = torch_activation.SquaredReLU()
         >>> x = torch.randn(2)
         >>> output = m(x)
-
-        >>> m = nn.SquaredReLU(inplace=True)
-        >>> x = torch.randn(2)
-        >>> m(x)
     """
 
     def __init__(self, **kwargs):

@@ -10,15 +10,15 @@ from torch_activation.base import BaseActivation
 @register_activation
 class CosLU(BaseActivation):
     r"""
-    Applies the Cosine Linear Unit function:
+    Applies the Cosine Linear Unit activation function:
 
     :math:`\text{CosLU}(x) = (x + a \cdot \cos(b \cdot x)) \cdot \sigma(x)`
 
      See: https://doi.org/10.20944/preprints202301.0463.v1
 
     Args:
-        a (float, optional): Scaling factor for the cosine term. Default is 1.0.
-        b (float, optional): Frequency factor for the cosine term. Default is 1.0.
+        a (float, optional): Scaling factor for the cosine term. Default: ``1.0``
+        b (float, optional): Frequency factor for the cosine term. Default: ``1.0``
         inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
@@ -31,11 +31,11 @@ class CosLU(BaseActivation):
 
     Examples::
 
-        >>> m = CosLU(a=2.0, b=1.0)
+        >>> m = torch_activation.CosLU(a=2.0, b=1.0)
         >>> x = torch.randn(2)
         >>> output = m(x)
 
-        >>> m = CosLU(inplace=True)
+        >>> m = torch_activation.CosLU(inplace=True)
         >>> x = torch.randn(2, 3, 4)
         >>> m(x)
     """
@@ -60,32 +60,36 @@ class CosLU(BaseActivation):
 @register_activation
 class LAAF(BaseActivation):
     r"""
-    Applies the Locally Adaptive Activation Function (LAAF):
+    Applies the Locally Adaptive Activation Function:
 
-    :math:`\text{LAAF}(x) = g(a \cdot x)`
+    :math:`\text{LAAF}(x) = g(n \cdot a \cdot x)`
 
-    where :math:`a` is a trainable parameter for each neuron and :math:`g` is any activation function. # noqa: E501
+    where :math:`a` is a trainable parameter for each neuron and :math:`g` is any activation function.
 
-    See: https://doi.org/10.1016/j.cma.2020.113028
+     See: https://doi.org/10.1016/j.cma.2020.113028
 
     Args:
-        activation (str, optional): The activation function to use. Options: 'sigmoid', 'tanh', 'relu', 'leaky_relu'. Default: 'sigmoid' # noqa: E501
-        a_init (float, optional): Initial value for the trainable parameter a. Default: 1.0
-        leaky_slope (float, optional): Leakiness parameter for LeakyReLU. Default: 0.01
-        fixed_n (float, optional): Fixed parameter to accelerate convergence. If > 1, applies g(n*a*x). Default: 1.0 # noqa: E501
-        inplace (bool, optional): Can optionally do the operation in-place when possible. Default: ``False`` # noqa: E501
+        activation (str, optional): The activation function to use. Options: 'sigmoid', 'tanh', 'relu', 'leaky_relu'. Default: ``'sigmoid'``
+        a_init (float, optional): Initial value for the trainable parameter a. Default: ``1.0``
+        leaky_slope (float, optional): Leakiness parameter for LeakyReLU. Default: ``0.01``
+        fixed_n (float, optional): Fixed scaling factor to accelerate convergence. Default: ``1.0``
+        inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/LAAF.png
+
     Examples::
 
-        >>> m = LAAF(activation='tanh', a_init=2.0)
+        >>> m = torch_activation.LAAF(activation='tanh', a_init=2.0)
         >>> x = torch.randn(2)
         >>> output = m(x)
 
-        >>> m = LAAF(activation='relu', fixed_n=2.0, inplace=True)
+        >>> m = torch_activation.LAAF(activation='relu', fixed_n=2.0, inplace=True)
         >>> x = torch.randn(2, 3, 4)
         >>> m(x)
     """
@@ -125,23 +129,31 @@ class LAAF(BaseActivation):
 @register_activation
 class AdaptiveSlopeTanh(BaseActivation):
     r"""
-    Applies the Adaptive Slope Hyperbolic Tangent function:
+    Applies the Adaptive Slope Hyperbolic Tangent activation function:
 
     :math:`\text{AdaptiveSlopeTanh}(x) = \tanh(a \cdot x)`
 
     where :math:`a` is a trainable parameter.
 
     Args:
-        a_init (float, optional): Initial value for the trainable parameter a. Default: 1.0
+        a_init (float, optional): Initial value for the trainable parameter a. Default: ``1.0``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/AdaptiveSlopeTanh.png
+
     Examples::
 
-        >>> m = AdaptiveSlopeTanh(a_init=2.0)
+        >>> m = torch_activation.AdaptiveSlopeTanh(a_init=2.0)
         >>> x = torch.randn(2)
+        >>> output = m(x)
+
+        >>> m = torch_activation.AdaptiveSlopeTanh()
+        >>> x = torch.randn(2, 3, 4)
         >>> output = m(x)
     """
 
@@ -156,24 +168,32 @@ class AdaptiveSlopeTanh(BaseActivation):
 @register_activation
 class PSTanh(BaseActivation):
     r"""
-    Applies the Parametric Scaled Hyperbolic Tangent function:
+    Applies the Parametric Scaled Hyperbolic Tangent activation function:
 
     :math:`\text{PSTanh}(x) = x \cdot a \cdot (1 + \tanh(b \cdot x))`
 
     where :math:`a` and :math:`b` are trainable parameters.
 
     Args:
-        a_init (float, optional): Initial value for the trainable parameter a. Default: 1.0
-        b_init (float, optional): Initial value for the trainable parameter b. Default: 1.0
+        a_init (float, optional): Initial value for the trainable parameter a. Default: ``1.0``
+        b_init (float, optional): Initial value for the trainable parameter b. Default: ``1.0``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/PSTanh.png
+
     Examples::
 
-        >>> m = PSTanh(a_init=2.0, b_init=1.5)
+        >>> m = torch_activation.PSTanh(a_init=2.0, b_init=1.5)
         >>> x = torch.randn(2)
+        >>> output = m(x)
+
+        >>> m = torch_activation.PSTanh()
+        >>> x = torch.randn(2, 3, 4)
         >>> output = m(x)
     """
 
@@ -189,24 +209,32 @@ class PSTanh(BaseActivation):
 @register_activation
 class SSinH(BaseActivation):
     r"""
-    Applies the Scaled Sine-Hyperbolic function:
+    Applies the Scaled Sine-Hyperbolic activation function:
 
     :math:`\text{SSinH}(x) = a \cdot \sinh(b \cdot x)`
 
     where :math:`a` and :math:`b` are trainable parameters.
 
     Args:
-        a_init (float, optional): Initial value for the trainable parameter a. Default: 1.0
-        b_init (float, optional): Initial value for the trainable parameter b. Default: 1.0
+        a_init (float, optional): Initial value for the trainable parameter a. Default: ``1.0``
+        b_init (float, optional): Initial value for the trainable parameter b. Default: ``1.0``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/SSinH.png
+
     Examples::
 
-        >>> m = SSinH(a_init=2.0, b_init=1.5)
+        >>> m = torch_activation.SSinH(a_init=2.0, b_init=1.5)
         >>> x = torch.randn(2)
+        >>> output = m(x)
+
+        >>> m = torch_activation.SSinH()
+        >>> x = torch.randn(2, 3, 4)
         >>> output = m(x)
     """
 
@@ -222,24 +250,32 @@ class SSinH(BaseActivation):
 @register_activation
 class SExp(BaseActivation):
     r"""
-    Applies the Scaled Exponential function:
+    Applies the Scaled Exponential activation function:
 
     :math:`\text{SExp}(x) = a \cdot (\exp(b \cdot x) - 1)`
 
     where :math:`a` and :math:`b` are trainable parameters.
 
     Args:
-        a_init (float, optional): Initial value for the trainable parameter a. Default: 1.0
-        b_init (float, optional): Initial value for the trainable parameter b. Default: 1.0
+        a_init (float, optional): Initial value for the trainable parameter a. Default: ``1.0``
+        b_init (float, optional): Initial value for the trainable parameter b. Default: ``1.0``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/SExp.png
+
     Examples::
 
-        >>> m = SExp(a_init=2.0, b_init=1.5)
+        >>> m = torch_activation.SExp(a_init=2.0, b_init=1.5)
         >>> x = torch.randn(2)
+        >>> output = m(x)
+
+        >>> m = torch_activation.SExp()
+        >>> x = torch.randn(2, 3, 4)
         >>> output = m(x)
     """
 
@@ -255,24 +291,32 @@ class SExp(BaseActivation):
 @register_activation
 class LAU(BaseActivation):
     r"""
-    Applies the Logmoid Activation Unit function:
+    Applies the Logmoid Activation Unit activation function:
 
     :math:`\text{LAU}(x) = x \cdot \ln(1 + a \cdot \sigma(b \cdot x))`
 
-    where :math:`a` and :math:`b` are trainable parameters and :math:`\sigma` is the sigmoid function. # noqa: E501
+    where :math:`a` and :math:`b` are trainable parameters and :math:`\sigma` is the sigmoid function.
 
     Args:
-        a_init (float, optional): Initial value for the trainable parameter a. Default: 1.0
-        b_init (float, optional): Initial value for the trainable parameter b. Default: 1.0
+        a_init (float, optional): Initial value for the trainable parameter a. Default: ``1.0``
+        b_init (float, optional): Initial value for the trainable parameter b. Default: ``1.0``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/LAU.png
+
     Examples::
 
-        >>> m = LAU(a_init=2.0, b_init=1.5)
+        >>> m = torch_activation.LAU(a_init=2.0, b_init=1.5)
         >>> x = torch.randn(2)
+        >>> output = m(x)
+
+        >>> m = torch_activation.LAU()
+        >>> x = torch.randn(2, 3, 4)
         >>> output = m(x)
     """
 
@@ -288,23 +332,31 @@ class LAU(BaseActivation):
 @register_activation
 class AGumb(BaseActivation):
     r"""
-    Applies the Adaptive Gumbel function:
+    Applies the Adaptive Gumbel activation function:
 
-    :math:`\text{AGumb}(x) = 1 - (1 + a \cdot \exp(x))^{-1}`
+    :math:`\text{AGumb}(x) = 1 - (1 + a \cdot \exp(x))^{-1/a}`
 
     where :math:`a` is a trainable positive parameter.
 
     Args:
-        a_init (float, optional): Initial value for the trainable parameter a. Default: 1.0
+        a_init (float, optional): Initial value for the trainable parameter a. Default: ``1.0``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/AGumb.png
+
     Examples::
 
-        >>> m = AGumb(a_init=2.0)
+        >>> m = torch_activation.AGumb(a_init=2.0)
         >>> x = torch.randn(2)
+        >>> output = m(x)
+
+        >>> m = torch_activation.AGumb()
+        >>> x = torch.randn(2, 3, 4)
         >>> output = m(x)
     """
 

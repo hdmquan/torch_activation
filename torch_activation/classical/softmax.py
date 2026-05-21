@@ -14,20 +14,23 @@ class Softmax(BaseActivation):
 
     :math:`\text{Softmax}(z_j) = \frac{\exp(z_j)}{\sum_{k=1}^{N} \exp(z_k)}`
 
-    where :math:`z_j` is the input of neuron j in a softmax layer consisting of N neurons.
-
     Args:
-        dim (int, optional): A dimension along which Softmax will be computed. Default: -1
+        dim (int, optional): a dimension along which Softmax will be computed. Default: ``-1``
+        inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/Softmax.png
+
     Examples::
 
-        >>> m = Softmax(dim=1)
-        >>> input = torch.randn(2, 3)
-        >>> output = m(input)
+        >>> m = torch_activation.Softmax(dim=1)
+        >>> x = torch.randn(2, 3)
+        >>> output = m(x)
     """
 
     def __init__(self, dim=-1, inplace=False, **kwargs):
@@ -47,28 +50,26 @@ class BetaSoftmax(BaseActivation):
     r"""
     Applies the β-Softmax function:
 
-    :math:`\text{β-Softmax}(z_j) = \frac{\exp(β \cdot z_j)}{\sum_{k=1}^{N} \exp(β \cdot z_k)}`
-
-    where :math:`z_j` is the input of neuron j in a softmax layer consisting of N neurons,
-    and :math:`β` is a trainable or fixed parameter controlling the sharpness of the distribution.
+    :math:`\text{β-Softmax}(z_j) = \frac{\exp(\beta \cdot z_j)}{\sum_{k=1}^{N} \exp(\beta \cdot z_k)}`
 
     Args:
-        beta (float, optional): Initial value for the beta parameter. Default: 1.0
-        trainable (bool, optional): If True, beta is a trainable parameter. Default: False
-        dim (int, optional): A dimension along which Softmax will be computed. Default: -1
+        beta (float, optional): initial value for the beta parameter. Default: ``1.0``
+        trainable (bool, optional): if ``True``, beta is a trainable parameter. Default: ``False``
+        dim (int, optional): a dimension along which Softmax will be computed. Default: ``-1``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
-    References:
-        .. [1] Activation survey arXiv:2402.09092.
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/BetaSoftmax.png
 
     Examples::
 
-        >>> m = BetaSoftmax(beta=2.0, trainable=True)
-        >>> input = torch.randn(2, 3)
-        >>> output = m(input)
+        >>> m = torch_activation.BetaSoftmax(beta=2.0, trainable=True)
+        >>> x = torch.randn(2, 3)
+        >>> output = m(x)
     """
 
     def __init__(self, beta: float = 1.0, trainable: bool = False, dim: int = -1, **kwargs):

@@ -10,10 +10,16 @@ from torch_activation.base import BaseActivation
 @register_activation
 class ReLU(BaseActivation):
     r"""
-    Applies the Rectified Linear Unit activation function.
+    Applies the ReLU activation function:
 
-    .. math::
-        \text{ReLU}(x) = \max(0, x)
+    :math:`\text{ReLU}(x) = \max(0, x)`
+
+    Args:
+        inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
+
+    Shape:
+        - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
+        - Output: :math:`(*)`, same shape as the input.
 
     Here is a plot of the function and its derivative:
 
@@ -43,12 +49,11 @@ class ReLU(BaseActivation):
 @register_activation
 class SReLU(BaseActivation):
     r"""
-    A Shifted ReLU is a simple translation of a ReLU and is defined as:
+    Applies the SReLU activation function:
 
+    :math:`\text{SReLU}(x) = \max(0, x - 1)`
 
-    :math:`\text{SReLU}(x) = \text{max}(0, x - 1)`
-
-    See: http://arxiv.org/abs/1511.07289
+     See: http://arxiv.org/abs/1511.07289
 
     Args:
         inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
@@ -60,6 +65,16 @@ class SReLU(BaseActivation):
     Here is a plot of the function and its derivative:
 
     .. image:: ../images/activation_images/SReLU.png
+
+    Examples::
+
+        >>> m = torch_activation.SReLU()
+        >>> x = torch.randn(2)
+        >>> output = m(x)
+
+        >>> m = torch_activation.SReLU(inplace=True)
+        >>> x = torch.randn(2)
+        >>> m(x)
     """
 
     def __init__(self, **kwargs):
@@ -78,14 +93,17 @@ class SReLU(BaseActivation):
 @register_activation
 class LReLU(BaseActivation):
     r"""
-    Applies the Leaky ReLU activation function.
+    Applies the Leaky ReLU activation function:
 
-    .. math::
-        \text{LReLU}(x) = \max(0, x) + \alpha \min(0, x)
+    :math:`\text{LReLU}(x) = \max(0, x) + \alpha \min(0, x)`
 
     Args:
         alpha (float, optional): The slope for negative inputs. Default: ``0.01``
         inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
+
+    Shape:
+        - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
+        - Output: :math:`(*)`, same shape as the input.
 
     Here is a plot of the function and its derivative:
 
@@ -117,16 +135,17 @@ class LReLU(BaseActivation):
 @register_activation
 class VLReLU(BaseActivation):
     r"""
-    Applies the Very Leaky ReLU activation function.
+    Applies the Very Leaky ReLU activation function:
 
-    .. math::
-        \text{VLReLU}(x) = \max(0, x) + \alpha \min(0, x)
-
-    :note: This is a variant of the LReLU activation function where the slope is fixed at 3.0. While almost identical to the LReLU, but some researchers consider it to be a separate case. # noqa: E501
+    :math:`\text{VLReLU}(x) = \max(0, x) + \alpha \min(0, x)`
 
     Args:
         alpha (float, optional): The slope for negative inputs. Default: ``3.0``
         inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
+
+    Shape:
+        - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
+        - Output: :math:`(*)`, same shape as the input.
 
     Here is a plot of the function and its derivative:
 
@@ -170,16 +189,16 @@ class RReLU(BaseActivation):
     where :math:`a_i` is sampled for each neuron i from the uniform distribution
     :math:`a_i \sim U(l, u)` where :math:`l < u` and :math:`l, u \in (0, \infty)`.
 
-    See: https://arxiv.org/abs/2303.01360
+     See: https://arxiv.org/abs/2303.01360
+
+    Args:
+        lower (float, optional): Lower bound of the uniform distribution. Default: ``0.125``
+        upper (float, optional): Upper bound of the uniform distribution. Default: ``0.333``
+        inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
-
-    Args:
-        lower (float, optional): Lower bound of the uniform distribution (default: 0.125).
-        upper (float, optional): Upper bound of the uniform distribution (default: 1/3).
-        inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Here is a plot of the function and its derivative:
 
@@ -215,7 +234,7 @@ class OLReLU(BaseActivation):
     Applies the Optimized Leaky ReLU (OLReLU) activation function:
 
     .. math::
-        f(z) =
+        \text{OLReLU}(z) =
         \begin{cases}
         z, & z \geq 0, \\
         z \cdot \exp(-\alpha), & z < 0,
@@ -224,14 +243,18 @@ class OLReLU(BaseActivation):
     where :math:`\alpha = \frac{u + l}{u - l}` and :math:`u` and :math:`l` are hyperparameters
     of the bounds of the RReLU.
 
+    Args:
+        lower (float, optional): Lower bound parameter l. Default: ``0.125``
+        upper (float, optional): Upper bound parameter u. Default: ``0.333``
+        inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
+
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
-    Args:
-        lower (float, optional): Lower bound parameter l (default: 0.125).
-        upper (float, optional): Upper bound parameter u (default: 1/3).
-        inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/OLReLU.png
 
     Examples::
 
@@ -263,27 +286,41 @@ class OLReLU(BaseActivation):
 @register_activation
 class SoftsignRReLU(BaseActivation):
     r"""
-    The Softsign Randomized Leaky ReLU (S-RReLU) is defined as:
+    Applies the Softsign Randomized Leaky ReLU (SoftsignRReLU) activation function:
 
     .. math::
-        `\text{S-RReLU}(z_i) =
+        \text{SoftsignRReLU}(z_i) =
         \begin{cases}
-        \frac{1}{(1+z_i)^2} + z_i, &  z_i \geq 0, \\
+        \frac{1}{(1+z_i)^2} + z_i, & z_i \geq 0, \\
         \frac{1}{(1+z_i)^2} + a_i z_i, & z_i < 0,
-        \end{cases}`
+        \end{cases}
 
     where :math:`a_i` is sampled for each epoch and neuron i from the uniform distribution
     :math:`a_i \sim U(l, u)` where :math:`l < u` and :math:`l, u \in (0, \infty)`.
 
-    See: http://dx.doi.org/10.1007/s00521-023-08565-2
+     See: http://dx.doi.org/10.1007/s00521-023-08565-2
+
+    Args:
+        lower (float, optional): Lower bound of the uniform distribution. Default: ``0.125``
+        u (float, optional): Upper bound of the uniform distribution. Default: ``0.333``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
-    Args:
-        l (float, optional): Lower bound of the uniform distribution (default: 1/8).
-        u (float, optional): Upper bound of the uniform distribution (default: 1/3).
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/SoftsignRReLU.png
+
+    Examples::
+
+        >>> m = torch_activation.SoftsignRReLU()
+        >>> x = torch.randn(2)
+        >>> output = m(x)
+
+        >>> m = torch_activation.SoftsignRReLU(lower=0.1, u=0.4)
+        >>> x = torch.randn(2)
+        >>> m(x)
     """
 
     def __init__(self, lower: float = 1 / 8, u: float = 1 / 3, **kwargs):
@@ -306,7 +343,7 @@ class SoftsignRReLU(BaseActivation):
 @register_activation
 class SlReLU(BaseActivation):
     r"""
-    The Sloped ReLU (SlReLU) is defined as:
+    Applies the Sloped ReLU (SlReLU) activation function:
 
     .. math::
         \text{SlReLU}(z_i) =
@@ -315,13 +352,17 @@ class SlReLU(BaseActivation):
         0, & z_i < 0,
         \end{cases}
 
-    where :math:`z_i` is the input to the activation function and :math:`\alpha` is a scaling factor. # noqa: E501
-    This is essentially a scaled ReLU that multiplies positive inputs by alpha.
-
     Args:
         alpha (float, optional): The scaling factor for positive inputs. Default: ``10.0``
         inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
-                                  (Currently not implemented for inplace operations)
+
+    Shape:
+        - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
+        - Output: :math:`(*)`, same shape as the input.
+
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/SlReLU.png
 
     Examples::
 
@@ -329,6 +370,9 @@ class SlReLU(BaseActivation):
         >>> x = torch.randn(2)
         >>> output = m(x)
 
+        >>> m = torch_activation.SlReLU(alpha=5.0, inplace=True)
+        >>> x = torch.randn(2)
+        >>> m(x)
     """
 
     def __init__(self, alpha: float = 10.0, **kwargs):
@@ -344,19 +388,19 @@ class SlReLU(BaseActivation):
 @register_activation
 class CReLU(BaseActivation):
     r"""
-    Applies the Concatenated Rectified Linear Unit activation function.
+    Applies the Concatenated Rectified Linear Unit activation function:
 
     :math:`\text{CReLU}(x) = \text{ReLU}(x) \oplus \text{ReLU}(-x)`
 
      See: https://doi.org/10.48550/arXiv.1603.05201
 
     Args:
-        dim (int, optional): Dimension along which to concatenate in the output tensor. Default: 1
+        dim (int, optional): Dimension along which to concatenate in the output tensor. Default: ``0``
         inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
         - Input: :math:`(*, C, *)` where :math:`*` means any number of additional dimensions
-        - Output: :math:`(*, 2C, *)`
+        - Output: :math:`(*, 2C, *)`, doubles the size of the concatenated dimension.
 
     Here is a plot of the function and its derivative:
 
@@ -385,22 +429,21 @@ class CReLU(BaseActivation):
 @register_activation
 class NCReLU(BaseActivation):
     r"""
-    Applies the Negative Concatenated Rectified Linear Unit activation function.
+    Applies the Negative Concatenated Rectified Linear Unit activation function:
 
     :math:`\text{NCReLU}(x) = \text{ReLU}(x) \oplus -\text{ReLU}(-x)`
 
-
     Args:
-        dim (int, optional): Dimension along which to concatenate in the output tensor. Default: 1
+        dim (int, optional): Dimension along which to concatenate in the output tensor. Default: ``0``
         inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
         - Input: :math:`(*, C, *)` where :math:`*` means any number of additional dimensions
-        - Output: :math:`(*, 2C, *)`
+        - Output: :math:`(*, 2C, *)`, doubles the size of the concatenated dimension.
 
     Here is a plot of the function and its derivative:
 
-    .. image:: ../images/activation_images/CReLU.png
+    .. image:: ../images/activation_images/NCReLU.png
 
     Examples::
 
@@ -423,14 +466,15 @@ class NCReLU(BaseActivation):
 
 @register_activation
 class ReLUN(BaseActivation):
-    r"""Applies the element-wise function:
+    r"""
+    Applies the ReLUN activation function:
 
     :math:`\text{ReLUN}(x) = \min(\text{ReLU}(x), n)`
 
      See: https://doi.org/10.20944/preprints202301.0463.v1
 
     Args:
-        n (float, optional): Upper bound for the function's output. Default is 1.0.
+        n (float, optional): Upper bound for the function's output. Default: ``1.0``
         inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
@@ -443,14 +487,13 @@ class ReLUN(BaseActivation):
 
     Examples::
 
-        >>> m = torch_activation.ReLUN(n=6.0) # ReLU6
+        >>> m = torch_activation.ReLUN(n=6.0)
         >>> x = torch.randn(2)
         >>> output = m(x)
 
         >>> m = torch_activation.ReLUN(inplace=True)
         >>> x = torch.randn(2)
         >>> m(x)
-
     """
 
     # TODO: Default to RELU6
@@ -465,14 +508,14 @@ class ReLUN(BaseActivation):
 @register_activation
 class SquaredReLU(BaseActivation):
     r"""
-    Applies the element-wise function:
+    Applies the Squared ReLU activation function:
 
     :math:`\text{SquaredReLU}(x) = \text{ReLU}(x)^2`
 
+     See: https://arxiv.org/pdf/2109.08668.pdf
+
     Args:
         inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
-
-     See: https://arxiv.org/pdf/2109.08668.pdf
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
@@ -505,15 +548,14 @@ class SquaredReLU(BaseActivation):
 
 @register_activation
 class SineReLU(BaseActivation):
-    r"""SineReLU activation function.
-
-    Proposed by Eloff et al. (2008) [1]_.
+    r"""
+    Applies the SineReLU activation function:
 
     .. math::
         \text{SineReLU}(z) =
         \begin{cases}
-        z, & \text{if } z \geq 0 \\
-        a (\sin(z) - \cos(z)), & \text{if } z < 0
+        z, & z \geq 0, \\
+        a (\sin(z) - \cos(z)), & z < 0,
         \end{cases}
 
     Args:
@@ -524,7 +566,7 @@ class SineReLU(BaseActivation):
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
-    Here is a plot of the function:
+    Here is a plot of the function and its derivative:
 
     .. image:: ../images/activation_images/SineReLU.png
 
@@ -537,11 +579,6 @@ class SineReLU(BaseActivation):
         >>> m = torch_activation.SineReLU(a=0.5)
         >>> x = torch.randn(2)
         >>> m(x)
-
-    References:
-        .. [1] Eloff, J., Coetzer, R. L. F., & Grobler, H. (2008).
-               Sine rectified linear units for artificial neural networks.
-               Electroneurobiología, 16(2), 7–15.
     """
 
     def __init__(self, a: float = 1.0, **kwargs):
@@ -558,27 +595,32 @@ class SineReLU(BaseActivation):
 @register_activation
 class Minsin(BaseActivation):
     r"""
-    Applies the element-wise function:
+    Applies the Minsin activation function:
 
-    .. math::`\text{Minsin}(x) =
+    .. math::
+        \text{Minsin}(x) =
         \begin{cases}
-        \sin(x), & \text{if } x \geq 0 \\
-        x, & \text{if } x < 0
-        \end{cases}`
+        \sin(x), & x \geq 0, \\
+        x, & x < 0,
+        \end{cases}
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
-    Here is a plot of the function:
+    Here is a plot of the function and its derivative:
 
     .. image:: ../images/activation_images/Minsin.png
 
     Examples::
 
-        >>> m = Minsin()
+        >>> m = torch_activation.Minsin()
         >>> x = torch.randn(2)
         >>> output = m(x)
+
+        >>> m = torch_activation.Minsin(inplace=True)
+        >>> x = torch.randn(2)
+        >>> m(x)
     """
 
     def __init__(self, **kwargs):
@@ -594,29 +636,32 @@ class Minsin(BaseActivation):
 @register_activation
 class VLU(BaseActivation):
     r"""
-    Applies the element-wise function:
+    Applies the VLU activation function:
 
     :math:`\text{VLU}(x) = \text{ReLU}(x) + a \sin(bx) = \max(0, x) + a \sin(bx)`
 
     Args:
-        a (float): Scaling factor for the sine component. Default: ``1.0``
-        b (float): Frequency multiplier for the sine component. Default: ``1.0``
+        a (float, optional): Scaling factor for the sine component. Default: ``1.0``
+        b (float, optional): Frequency multiplier for the sine component. Default: ``1.0``
         inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
-    Here is a plot of the function:
+    Here is a plot of the function and its derivative:
 
     .. image:: ../images/activation_images/VLU.png
 
-
     Examples::
 
-        >>> m = VLU(a=1.0, b=1.0)
+        >>> m = torch_activation.VLU()
         >>> x = torch.randn(2)
         >>> output = m(x)
+
+        >>> m = torch_activation.VLU(a=0.5, b=2.0)
+        >>> x = torch.randn(2)
+        >>> m(x)
     """
 
     def __init__(self, a: float = 1.0, b: float = 1.0, **kwargs):
@@ -631,7 +676,7 @@ class VLU(BaseActivation):
 @register_activation
 class LReLU(BaseActivation):  # noqa: F811
     r"""
-    Applies the Leaky ReLU activation function.
+    Applies the Leaky ReLU activation function:
 
     .. math::
         \text{LReLU}(z) =
@@ -678,7 +723,7 @@ class LReLU(BaseActivation):  # noqa: F811
 
 class OLReLU(BaseActivation):  # noqa: F811
     r"""
-    Applies the Optimized Leaky ReLU activation function.
+    Applies the Optimized Leaky ReLU activation function:
 
     .. math::
         \text{OLReLU}(z) =
@@ -690,7 +735,7 @@ class OLReLU(BaseActivation):  # noqa: F811
     where :math:`a = \frac{u+l}{u-l}`.
 
     Args:
-        l (float, optional): Lower bound parameter. Default: ``3.0``
+        lower (float, optional): Lower bound parameter. Default: ``3.0``
         u (float, optional): Upper bound parameter. Default: ``8.0``
         inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
@@ -708,7 +753,7 @@ class OLReLU(BaseActivation):  # noqa: F811
         >>> x = torch.randn(2)
         >>> output = m(x)
 
-        >>> m = torch_activation.OLReLU(l=2.0, u=6.0, inplace=True)
+        >>> m = torch_activation.OLReLU(lower=2.0, u=6.0, inplace=True)
         >>> x = torch.randn(2)
         >>> m(x)
     """
@@ -731,7 +776,7 @@ class OLReLU(BaseActivation):  # noqa: F811
 @register_activation
 class RReLU(BaseActivation):  # noqa: F811
     r"""
-    Applies the Randomized Leaky ReLU activation function.
+    Applies the Randomized Leaky ReLU activation function:
 
     .. math::
         \text{RReLU}(z_i) =
@@ -788,10 +833,10 @@ class RReLU(BaseActivation):  # noqa: F811
 @register_activation
 class SRReLU(BaseActivation):
     r"""
-    The Softsign Randomized Leaky ReLU (S-RReLU) is defined as:
+    Applies the Softsign Randomized Leaky ReLU (SRReLU) activation function:
 
     .. math::
-        \text{S-RReLU}(z_i) =
+        \text{SRReLU}(z_i) =
         \begin{cases}
         \frac{1}{(1+z_i)^2} + z_i, & z_i \geq 0, \\
         \frac{1}{(1+z_i)^2} + a_i z_i, & z_i < 0,
@@ -800,14 +845,14 @@ class SRReLU(BaseActivation):
     where :math:`a_i` is sampled for each epoch and neuron i from the uniform distribution
     :math:`a_i \sim U(l, u)` where :math:`l < u` and :math:`l, u \in (0, \infty)`.
 
+    Args:
+        lower (float, optional): Lower bound of the uniform distribution. Default: ``0.125``
+        u (float, optional): Upper bound of the uniform distribution. Default: ``0.333``
+        inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
+
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
-
-    Args:
-        l (float, optional): Lower bound of the uniform distribution (default: 1/8).
-        u (float, optional): Upper bound of the uniform distribution (default: 1/3).
-        inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Here is a plot of the function and its derivative:
 
@@ -815,11 +860,11 @@ class SRReLU(BaseActivation):
 
     Examples::
 
-        >>> m = nn.SRReLU()
+        >>> m = torch_activation.SRReLU()
         >>> x = torch.randn(2)
         >>> output = m(x)
 
-        >>> m = nn.SRReLU(l=1/4, u=1/2, inplace=True)
+        >>> m = torch_activation.SRReLU(lower=0.25, u=0.5, inplace=True)
         >>> x = torch.randn(2)
         >>> m(x)
     """
@@ -842,16 +887,13 @@ class SRReLU(BaseActivation):
 @register_activation
 class NReLU(BaseActivation):
     r"""
-    Applies the Noisy ReLU (NReLU) activation function as proposed in [221].
+    Applies the Noisy ReLU (NReLU) activation function:
 
-    .. math::
-        \text{NReLU}(z) = \max(0, z + a)
+    :math:`\text{NReLU}(z) = \max(0, z + a)`
 
     where :math:`a \sim N(0, \sigma(z))` is a stochastic parameter sampled from a Gaussian
     distribution with zero mean and variance :math:`\sigma(z)^2`, and :math:`\sigma(z)` is
     the standard deviation of the inputs :math:`z`.
-
-    NReLU was designed for use with Restricted Boltzmann machines.
 
     Args:
         inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
@@ -908,14 +950,22 @@ class SCAA(BaseActivation):
         padding (int, optional): Padding added to all sides of the input. Default: ``1``
 
     Shape:
-        - Input: :math:`(N, C, H, W)` or :math:`(C, H, W)`
-        - Output: Same shape as the input
+        - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
+        - Output: :math:`(*)`, same shape as the input.
+
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/SCAA.png
 
     Examples::
 
         >>> m = torch_activation.SCAA(channels=64)
         >>> x = torch.randn(1, 64, 28, 28)
         >>> output = m(x)
+
+        >>> m = torch_activation.SCAA(channels=32, kernel_size=5, padding=2)
+        >>> x = torch.randn(1, 32, 16, 16)
+        >>> m(x)
     """
 
     def __init__(self, channels: int, kernel_size: int = 3, padding: int = 1, **kwargs):
@@ -991,12 +1041,10 @@ class RTReLU(BaseActivation):
 
 @register_activation
 class NLReLU(BaseActivation):
-    r"""Natural-Logarithm ReLU activation function.
+    r"""
+    Applies the Natural-Logarithm ReLU (NLReLU) activation function:
 
-    Proposed by Carlile et al. (2017) [1]_.
-
-    .. math::
-        \text{NLReLU}(z) = \ln(a \cdot \max(0, z) + 1)
+    :math:`\text{NLReLU}(z) = \ln(a \cdot \max(0, z) + 1)`
 
     Args:
         a (float, optional): scaling factor for the ReLU output. Default: ``1.0``
@@ -1019,11 +1067,6 @@ class NLReLU(BaseActivation):
         >>> m = torch_activation.NLReLU(a=2.0, inplace=True)
         >>> x = torch.randn(2)
         >>> m(x)
-
-    References:
-        .. [1] Carlile, B., Delamarter, G., Kinney, P., Marti, A., &
-               Whitney, B. (2017). Improving Deep Learning by Inverse
-               Square Root Linear Units (ISRLUs). arXiv:1710.09967.
     """
 
     def __init__(self, a: float = 1.0, **kwargs):
@@ -1037,7 +1080,7 @@ class NLReLU(BaseActivation):
 @register_activation
 class SLU(BaseActivation):
     r"""
-    Applies the Softplus Linear Unit activation function:
+    Applies the Softplus Linear Unit (SLU) activation function:
 
     .. math::
         \text{SLU}(z) =
@@ -1056,8 +1099,6 @@ class SLU(BaseActivation):
         \end{cases}
 
     where :math:`a=1, b=2, c=2\ln(2)`.
-
-    :note: Parameter is fixed to ensure that the function is continuous, differentiable at 0 and avoid vanishing or exploding gradients. # noqa: E501
 
     Args:
         inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
@@ -1098,7 +1139,7 @@ class SLU(BaseActivation):
 @register_activation
 class ReSP(BaseActivation):
     r"""
-    Applies the Rectified Softplus activation function:
+    Applies the Rectified Softplus (ReSP) activation function:
 
     .. math::
         \text{ReSP}(z) =
@@ -1106,8 +1147,6 @@ class ReSP(BaseActivation):
         az + \ln(2), & z \geq 0, \\
         \ln(1 + \exp(z)), & z < 0,
         \end{cases}
-
-    :note: Value of :math:`a` between 1.4 and 2.0 is recommended.
 
     Args:
         a (float, optional): Scaling factor for positive inputs. Default: ``1.7``
@@ -1150,7 +1189,7 @@ class ReSP(BaseActivation):
 @register_activation
 class PReNU(BaseActivation):
     r"""
-    Applies the Parametric Rectified Non-linear Unit activation function:
+    Applies the Parametric Rectified Non-linear Unit (PReNU) activation function:
 
     .. math::
         \text{PReNU}(z) =
@@ -1194,9 +1233,8 @@ class PReNU(BaseActivation):
 
 @register_activation
 class BReLU(BaseActivation):
-    r"""Bounded Rectified Linear Unit activation function.
-
-    Proposed by Lu et al. (2020) [1]_.
+    r"""
+    Applies the Bounded Rectified Linear Unit (BReLU) activation function:
 
     .. math::
         \text{BReLU}(z) = \min(\max(0, z), a) =
@@ -1205,8 +1243,6 @@ class BReLU(BaseActivation):
         z, & 0 < z < a, \\
         a, & z \geq a,
         \end{cases}
-
-    :note: This is RELUN, just with a different name.
 
     Args:
         a (float, optional): upper bound for the output. Default: ``1.0``
@@ -1229,11 +1265,6 @@ class BReLU(BaseActivation):
         >>> m = torch_activation.BReLU(a=6.0, inplace=True)
         >>> x = torch.randn(2)
         >>> m(x)
-
-    References:
-        .. [1] Lu, Y., Gao, Y., Xu, J., Hao, Y., & Liu, R. (2020).
-               BReLU: Bounded Rectified Linear Unit for Enhanced Learning.
-               arXiv:2003.06885.
     """
 
     def __init__(self, a: float = 1.0, **kwargs):
@@ -1255,12 +1286,8 @@ class HardSigmoid(BaseActivation):
 
     :math:`\text{HardSigmoid}(z) = \max(0, \min(\frac{z+1}{2}, 1))`
 
-    or alternatively:
-
-    :math:`\text{HardSigmoid}(z) = \max(0, \min(0.2z + 0.5, 1))`
-
     Args:
-        version (str, optional): Version of hard sigmoid to use (1 or 2). Default: ``1``
+        version (int, optional): Version of hard sigmoid to use (``1`` or ``2``). Default: ``1``
         inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
@@ -1314,8 +1341,6 @@ class HardTanh(BaseActivation):
         z, & a \leq z \leq b, \\
         b, & z > b,
         \end{cases}
-
-    :note: This is suppose to approximate the Tanh function. But still, another name for SRELUN11
 
     Args:
         a (float, optional): Lower bound of the linear region. Default: ``-1.0``
@@ -1970,7 +1995,7 @@ class LSPTLU(BaseActivation):
 @register_activation
 class SoftModulusQ(BaseActivation):
     r"""
-    Applies the SoftModulusQ activation function, which is a quadratic approximation of the vReLU:
+    Applies the SoftModulusQ activation function:
 
     .. math::
         \text{SoftModulusQ}(z) =
@@ -1978,6 +2003,9 @@ class SoftModulusQ(BaseActivation):
         z^2 (2 - |z|), & |z| \leq 1, \\
         |z|, & |z| > 1,
         \end{cases}
+
+    Args:
+        inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
@@ -2016,7 +2044,7 @@ class SoftModulusQ(BaseActivation):
 @register_activation
 class SoftModulusT(BaseActivation):
     r"""
-    Applies the SoftModulusT activation function, which is a tanh-based approximation of the vReLU:
+    Applies the SoftModulusT activation function:
 
     .. math::
         \text{SoftModulusT}(z) = z \cdot \tanh\left(\frac{z}{a}\right)
@@ -2062,7 +2090,7 @@ class SoftModulusT(BaseActivation):
 @register_activation
 class SignReLU(BaseActivation):
     r"""
-    Applies the SignReLU activation function, which is a combination of ReLU and softsign:
+    Applies the SignReLU activation function:
 
     .. math::
         \text{SignReLU}(z) =
@@ -2113,7 +2141,7 @@ class SignReLU(BaseActivation):
 @register_activation
 class LiReLU(BaseActivation):
     r"""
-    Applies the Li-ReLU activation function, which is a combination of a linear function and ReLU:
+    Applies the Li-ReLU activation function:
 
     .. math::
         \text{Li-ReLU}(z) =
@@ -2166,10 +2194,7 @@ class LiReLU(BaseActivation):
 # @register_activation
 class DualReLU(BaseActivation):
     r"""
-    Applies the DualReLU activation function. Where CReLU activation functions takes a single value and outputs # noqa: E501
-    a vector of two values, the DualReLU takes two values as an input and outputs a single value. The DualReLU # noqa: E501
-    is a two-dimensional activation function meant as a replacement of the tanh activation function for # noqa: E501
-    Quasi-Recurrent neural networks.
+    Applies the DualReLU activation function:
 
     .. math::
         \text{DualReLU}(z, z') = \max(0, z) - \max(0, z') =
@@ -2187,15 +2212,19 @@ class DualReLU(BaseActivation):
         - Input: :math:`(*, 2, *)` where :math:`*` means any number of dimensions
         - Output: :math:`(*, 1, *)`
 
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/DualReLU.png
+
     Examples::
 
         >>> m = torch_activation.DualReLU()
-        >>> x = torch.randn(2, 2)  # Batch of 2 pairs of inputs
-        >>> output = m(x)  # Shape: (2, 1)
+        >>> x = torch.randn(2, 2)
+        >>> output = m(x)
 
         >>> m = torch_activation.DualReLU(inplace=True)
         >>> x = torch.randn(3, 2, 4)
-        >>> m(x)  # Shape: (3, 1, 4)
+        >>> m(x)
     """
 
     def __init__(self, **kwargs):
@@ -2219,30 +2248,35 @@ class DualReLU(BaseActivation):
 # @register_activation
 class OPLU(BaseActivation):
     r"""
-    Applies the Orthogonal Permutation Liner Unit (OPLU) activation function. The OPLU is not applied # noqa: E501
-    to a single neuron but always to a pair of neurons. First, the neurons are grouped into pairs,
-    and the OPLU takes two inputs and produces two outputs.
+    Applies the Orthogonal Permutation Linear Unit (OPLU) activation function:
 
-    For neuron i:
     .. math::
-        f(z_i, z_j) = \max(z_i, z_j)
-
-    For neuron j:
-    .. math::
-        f(z_i, z_j) = \min(z_i, z_j)
+        \text{OPLU}(z_i, z_j) =
+        \begin{cases}
+        \max(z_i, z_j), & \text{neuron } i, \\
+        \min(z_i, z_j), & \text{neuron } j,
+        \end{cases}
 
     Args:
         inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
-        - Input: :math:`(*, 2n, *)` where :math:`*` means any number of dimensions and n is the number of pairs # noqa: E501
-        - Output: :math:`(*, 2n, *)` same shape as the input
+        - Input: :math:`(*, 2n, *)` where :math:`*` means any number of dimensions and n is the number of pairs
+        - Output: :math:`(*, 2n, *)`, same shape as the input.
+
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/OPLU.png
 
     Examples::
 
         >>> m = torch_activation.OPLU()
-        >>> x = torch.randn(4, 2)  # Batch of 2 pairs of inputs
-        >>> output = m(x)  # Shape: (4, 2)
+        >>> x = torch.randn(4, 2)
+        >>> output = m(x)
+
+        >>> m = torch_activation.OPLU(inplace=True)
+        >>> x = torch.randn(4, 4)
+        >>> m(x)
     """
 
     def __init__(self, **kwargs):
@@ -2267,8 +2301,7 @@ class OPLU(BaseActivation):
 @register_activation
 class EReLU(BaseActivation):
     r"""
-    Applies the Elastic ReLU (EReLU) activation function, which slightly randomly changes the slope
-    of the positive part of the ReLU during training.
+    Applies the Elastic ReLU (EReLU) activation function:
 
     .. math::
         \text{EReLU}(z_i) =
@@ -2281,27 +2314,27 @@ class EReLU(BaseActivation):
     :math:`k_i \sim U(1 - \alpha, 1 + \alpha)` where :math:`\alpha \in (0, 1)` is a parameter
     controlling the degree of response fluctuations.
 
-    During test phase, :math:`k_i` is set to its expected value :math:`E(k_i) = 1`, making
-    the EReLU equivalent to the standard ReLU.
-
     Args:
-        alpha (float, optional): Parameter controlling the degree of response fluctuations. Default: ``0.1`` # noqa: E501
-        training (bool, optional): Whether to use random sampling (training mode) or expected value (test mode). Default: ``True`` # noqa: E501
-        inplace (bool, optional): Can optionally do the operation in-place. Default: ``False``
+        alpha (float, optional): Parameter controlling the degree of response fluctuations. Default: ``0.1``
+        inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/EReLU.png
+
     Examples::
 
         >>> m = torch_activation.EReLU()
         >>> x = torch.randn(2)
-        >>> output = m(x)  # Uses random k_i during training
+        >>> output = m(x)
 
-        >>> m = torch_activation.EReLU(alpha=0.2, training=False)
+        >>> m = torch_activation.EReLU(alpha=0.2, inplace=True)
         >>> x = torch.randn(2)
-        >>> output = m(x)  # Uses k_i = 1 (equivalent to standard ReLU)
+        >>> m(x)
     """
 
     def __init__(self, alpha: float = 0.1, training: bool = True, **kwargs):
@@ -2356,13 +2389,25 @@ class AppReLU(BaseActivation):
     Args:
         a (float, optional): Scale parameter. Default: ``1.0``
         b (float, optional): Power parameter. Default: ``1.0``
+        inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
-    References:
-        .. [1] Activation survey arXiv:2402.09092 Section 3.6.40.
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/AppReLU.png
+
+    Examples::
+
+        >>> m = torch_activation.AppReLU()
+        >>> x = torch.randn(2)
+        >>> output = m(x)
+
+        >>> m = torch_activation.AppReLU(a=0.5, b=2.0)
+        >>> x = torch.randn(2)
+        >>> m(x)
     """
 
     def __init__(self, a: float = 1.0, b: float = 1.0, **kwargs):
@@ -2379,17 +2424,30 @@ class ABReLU(BaseActivation):
     r"""
     Applies the Adaptive Bilateral ReLU (ABReLU) activation function:
 
-    .. math::
-        \text{ABReLU}(z_i) = \max(0, z_i - \bar{z})
+    :math:`\text{ABReLU}(z_i) = \max(0, z_i - \bar{z})`
 
     where :math:`\bar{z}` is the mean of the input tensor.
+
+    Args:
+        inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
-    References:
-        .. [1] Activation survey arXiv:2402.09092 Section 3.6.42.
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/ABReLU.png
+
+    Examples::
+
+        >>> m = torch_activation.ABReLU()
+        >>> x = torch.randn(2)
+        >>> output = m(x)
+
+        >>> m = torch_activation.ABReLU(inplace=True)
+        >>> x = torch.randn(2)
+        >>> m(x)
     """
 
     def __init__(self, **kwargs):
@@ -2404,18 +2462,29 @@ class DelayReLU(BaseActivation):
     r"""
     Applies the Delayed ReLU activation function:
 
-    .. math::
-        \text{DelayReLU}(z) = \max(0, z - a)
+    :math:`\text{DelayReLU}(z) = \max(0, z - a)`
 
     Args:
         a (float, optional): Delay threshold. Default: ``0.5``
+        inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
-    References:
-        .. [1] Activation survey arXiv:2402.09092 Section 3.6.43.
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/DelayReLU.png
+
+    Examples::
+
+        >>> m = torch_activation.DelayReLU()
+        >>> x = torch.randn(2)
+        >>> output = m(x)
+
+        >>> m = torch_activation.DelayReLU(a=1.0)
+        >>> x = torch.randn(2)
+        >>> m(x)
     """
 
     def __init__(self, a: float = 0.5, **kwargs):
@@ -2445,8 +2514,19 @@ class DisReLU(BaseActivation):
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
-    References:
-        .. [1] Activation survey arXiv:2402.09092 Section 3.6.44.
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/DisReLU.png
+
+    Examples::
+
+        >>> m = torch_activation.DisReLU()
+        >>> x = torch.randn(2)
+        >>> output = m(x)
+
+        >>> m = torch_activation.DisReLU(a=1.0)
+        >>> x = torch.randn(2)
+        >>> output = m(x)
     """
 
     def __init__(self, a: float = 0.5, **kwargs):
@@ -2476,8 +2556,19 @@ class ModifiedLReLU(BaseActivation):
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
-    References:
-        .. [1] Activation survey arXiv:2402.09092 Section 3.6.45.
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/ModifiedLReLU.png
+
+    Examples::
+
+        >>> m = torch_activation.ModifiedLReLU()
+        >>> x = torch.randn(2)
+        >>> output = m(x)
+
+        >>> m = torch_activation.ModifiedLReLU(a=0.2)
+        >>> x = torch.randn(2)
+        >>> output = m(x)
     """
 
     def __init__(self, a: float = 0.1, **kwargs):
@@ -2506,8 +2597,19 @@ class FlattedTSwish(BaseActivation):
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
-    References:
-        .. [1] Activation survey arXiv:2402.09092 Section 3.6.46.
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/FlattedTSwish.png
+
+    Examples::
+
+        >>> m = torch_activation.FlattedTSwish()
+        >>> x = torch.randn(2)
+        >>> output = m(x)
+
+        >>> m = torch_activation.FlattedTSwish()
+        >>> x = torch.randn(2, 3)
+        >>> output = m(x)
     """
 
     T: float = -0.20
@@ -2537,8 +2639,19 @@ class OAF(BaseActivation):
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
-    References:
-        .. [1] Activation survey arXiv:2402.09092 Section 3.6.47.
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/OAF.png
+
+    Examples::
+
+        >>> m = torch_activation.OAF()
+        >>> x = torch.randn(2)
+        >>> output = m(x)
+
+        >>> m = torch_activation.OAF()
+        >>> x = torch.randn(2, 3)
+        >>> output = m(x)
     """
 
     def __init__(self, **kwargs):
@@ -2568,8 +2681,19 @@ class SurveyELU(BaseActivation):
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
-    References:
-        .. [1] Activation survey arXiv:2402.09092 Section 3.6.48.
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/SurveyELU.png
+
+    Examples::
+
+        >>> m = torch_activation.SurveyELU()
+        >>> x = torch.randn(2)
+        >>> output = m(x)
+
+        >>> m = torch_activation.SurveyELU(a=2.0)
+        >>> x = torch.randn(2)
+        >>> output = m(x)
     """
 
     def __init__(self, a: float = 1.0, **kwargs):
@@ -2596,8 +2720,19 @@ class REU(BaseActivation):
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
-    References:
-        .. [1] Activation survey arXiv:2402.09092 Section 3.6.49.
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/REU.png
+
+    Examples::
+
+        >>> m = torch_activation.REU()
+        >>> x = torch.randn(2)
+        >>> output = m(x)
+
+        >>> m = torch_activation.REU()
+        >>> x = torch.randn(2, 3)
+        >>> output = m(x)
     """
 
     def __init__(self, **kwargs):
@@ -2627,8 +2762,19 @@ class ADA(BaseActivation):
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
-    References:
-        .. [1] Activation survey arXiv:2402.09092 Section 3.6.50.
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/ADA.png
+
+    Examples::
+
+        >>> m = torch_activation.ADA()
+        >>> x = torch.randn(2)
+        >>> output = m(x)
+
+        >>> m = torch_activation.ADA(a=0.5, b=1.0)
+        >>> x = torch.randn(2)
+        >>> output = m(x)
     """
 
     def __init__(self, a: float = 1.0, b: float = 0.0, **kwargs):
@@ -2661,8 +2807,19 @@ class LADA(BaseActivation):
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
-    References:
-        .. [1] Activation survey arXiv:2402.09092 Section 3.6.51.
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/LADA.png
+
+    Examples::
+
+        >>> m = torch_activation.LADA()
+        >>> x = torch.randn(2)
+        >>> output = m(x)
+
+        >>> m = torch_activation.LADA(a=0.5, b=1.0, c=0.2)
+        >>> x = torch.randn(2)
+        >>> output = m(x)
     """
 
     def __init__(self, a: float = 1.0, b: float = 0.0, c: float = 0.1, **kwargs):
@@ -2691,8 +2848,19 @@ class SigLU(BaseActivation):
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
-    References:
-        .. [1] Activation survey arXiv:2402.09092 Section 3.6.52.
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/SigLU.png
+
+    Examples::
+
+        >>> m = torch_activation.SigLU()
+        >>> x = torch.randn(2)
+        >>> output = m(x)
+
+        >>> m = torch_activation.SigLU()
+        >>> x = torch.randn(2, 3)
+        >>> output = m(x)
     """
 
     def __init__(self, **kwargs):
@@ -2722,8 +2890,19 @@ class SaRa(BaseActivation):
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
-    References:
-        .. [1] Activation survey arXiv:2402.09092 Section 3.6.53.
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/SaRa.png
+
+    Examples::
+
+        >>> m = torch_activation.SaRa()
+        >>> x = torch.randn(2)
+        >>> output = m(x)
+
+        >>> m = torch_activation.SaRa(a=2.0, b=0.5)
+        >>> x = torch.randn(2)
+        >>> output = m(x)
     """
 
     def __init__(self, a: float = 1.0, b: float = 1.0, **kwargs):
@@ -2750,8 +2929,19 @@ class ShiftedReLU(BaseActivation):
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
-    References:
-        .. [1] Activation survey arXiv:2402.09092.
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/ShiftedReLU.png
+
+    Examples::
+
+        >>> m = torch_activation.ShiftedReLU()
+        >>> x = torch.randn(2)
+        >>> output = m(x)
+
+        >>> m = torch_activation.ShiftedReLU(a=-1.0)
+        >>> x = torch.randn(2)
+        >>> output = m(x)
     """
 
     def __init__(self, a: float = -0.5, **kwargs):
@@ -2778,14 +2968,25 @@ class AllReLU(BaseActivation):
 
     Args:
         a (float, optional): Scale for negative part. Default: ``0.1``
-        layer (int, optional): Layer index (parity determines sign of negative response). Default: ``0`` # noqa: E501
+        layer (int, optional): Layer index (parity determines sign of negative response). Default: ``0``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
-    References:
-        .. [1] Activation survey arXiv:2402.09092 Section 4.34.
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/AllReLU.png
+
+    Examples::
+
+        >>> m = torch_activation.AllReLU()
+        >>> x = torch.randn(2)
+        >>> output = m(x)
+
+        >>> m = torch_activation.AllReLU(a=0.2, layer=1)
+        >>> x = torch.randn(2)
+        >>> output = m(x)
     """
 
     def __init__(self, a: float = 0.1, layer: int = 0, **kwargs):

@@ -19,13 +19,17 @@ class Swish(BaseActivation):
     where :math:`\sigma(x)` is the sigmoid function.
 
     Args:
-        a (float, optional): Parameter controlling the shape of the function. Default: 1.0
+        a (float, optional): Parameter controlling the shape of the function. Default: ``1.0``
         learnable (bool, optional): optionally make ``a`` trainable. Default: ``False``
         inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
+
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/Swish.png
 
     Examples::
 
@@ -70,14 +74,18 @@ class AHAF(BaseActivation):
     where :math:`\sigma(x)` is the sigmoid function.
 
     Args:
-        a (float, optional): Scaling parameter. Default: 1.0
-        b (float, optional): Parameter controlling the shape of the function. Default: 1.0
+        a (float, optional): Scaling parameter. Default: ``1.0``
+        b (float, optional): Parameter controlling the shape of the function. Default: ``1.0``
         learnable (bool, optional): optionally make parameters trainable. Default: ``False``
         inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
+
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/AHAF.png
 
     Examples::
 
@@ -120,21 +128,25 @@ class AHAF(BaseActivation):
 @register_activation
 class PSSiLU(BaseActivation):
     r"""
-    Applies the Parametric Shifted SiLU function:
+    Applies the Parametric Shifted SiLU activation function:
 
     :math:`\text{PSSiLU}(x) = x \cdot \frac{\sigma(a \cdot x) - b}{1 - b}`
 
     where :math:`\sigma(x)` is the sigmoid function.
 
     Args:
-        a (float, optional): Parameter controlling the shape of the function. Default: 1.0
-        b (float, optional): Shift parameter. Default: 0.5
+        a (float, optional): Parameter controlling the shape of the function. Default: ``1.0``
+        b (float, optional): Shift parameter. Default: ``0.5``
         learnable (bool, optional): optionally make parameters trainable. Default: ``False``
         inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
+
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/PSSiLU.png
 
     Examples::
 
@@ -187,13 +199,17 @@ class ESwish(BaseActivation):
     where :math:`\sigma(x)` is the sigmoid function.
 
     Args:
-        a (float, optional): Scaling parameter, recommended in range [1, 2]. Default: 1.5
+        a (float, optional): Scaling parameter, recommended in range [1, 2]. Default: ``1.5``
         learnable (bool, optional): optionally make ``a`` trainable. Default: ``False``
         inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
+
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/ESwish.png
 
     Examples::
 
@@ -234,14 +250,18 @@ class ACONB(BaseActivation):
     where :math:`\sigma(x)` is the sigmoid function.
 
     Args:
-        a (float, optional): Parameter controlling the shape of the function. Default: 1.0
-        b (float, optional): Parameter controlling the linear component. Default: 0.25
+        a (float, optional): Parameter controlling the shape of the function. Default: ``1.0``
+        b (float, optional): Parameter controlling the linear component. Default: ``0.25``
         learnable (bool, optional): optionally make parameters trainable. Default: ``False``
         inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
+
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/ACONB.png
 
     Examples::
 
@@ -295,15 +315,19 @@ class ACONC(BaseActivation):
     where :math:`\sigma(x)` is the sigmoid function.
 
     Args:
-        a (float, optional): Parameter controlling the shape of the function. Default: 1.0
-        b (float, optional): Parameter controlling the linear component. Default: 0.0
-        c (float, optional): Parameter controlling the swish component. Default: 1.0
+        a (float, optional): Parameter controlling the shape of the function. Default: ``1.0``
+        b (float, optional): Parameter controlling the linear component. Default: ``0.0``
+        c (float, optional): Parameter controlling the swish component. Default: ``1.0``
         learnable (bool, optional): optionally make parameters trainable. Default: ``False``
         inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
+
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/ACONC.png
 
     Examples::
 
@@ -352,20 +376,24 @@ class ACONC(BaseActivation):
 @register_activation
 class PSGU(BaseActivation):
     r"""
-    Applies the Parameterized Self-Circulating Gating Unit function:
+    Applies the Parameterized Self-Circulating Gating Unit activation function:
 
     :math:`\text{PSGU}(x) = x \cdot \tanh(a \cdot \sigma(x))`
 
     where :math:`\sigma(x)` is the sigmoid function.
 
     Args:
-        a (float, optional): Parameter controlling the shape of the function. Default: 0.5
+        a (float, optional): Parameter controlling the shape of the function. Default: ``0.5``
         learnable (bool, optional): optionally make ``a`` trainable. Default: ``False``
         inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
+
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/PSGU.png
 
     Examples::
 
@@ -399,18 +427,22 @@ class PSGU(BaseActivation):
 @register_activation
 class TBSReLUl(BaseActivation):
     r"""
-    Applies the Tangent-Bipolar-Sigmoid ReLU Learnable function:
+    Applies the Tangent-Bipolar-Sigmoid ReLU Learnable activation function:
 
     :math:`\text{TBSReLUl}(x) = x \cdot \tanh\left(a \cdot \frac{1 - \exp(-x)}{1 + \exp(-x)}\right)`
 
     Args:
-        a (float, optional): Parameter controlling the shape of the function. Default: 0.5
+        a (float, optional): Parameter controlling the shape of the function. Default: ``0.5``
         learnable (bool, optional): optionally make ``a`` trainable. Default: ``False``
         inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
+
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/TBSReLUl.png
 
     Examples::
 
@@ -453,15 +485,19 @@ class PATS(BaseActivation):
     where :math:`\sigma(x)` is the sigmoid function.
 
     Args:
-        a (float, optional): Parameter controlling the shape of the function. Default: 0.625
-        lower_bound (float, optional): Lower bound for sampling a. Default: 0.5
-        upper_bound (float, optional): Upper bound for sampling a. Default: 0.75
+        a (float, optional): Parameter controlling the shape of the function. Default: ``0.625``
+        lower_bound (float, optional): Lower bound for sampling a. Default: ``0.5``
+        upper_bound (float, optional): Upper bound for sampling a. Default: ``0.75``
         learnable (bool, optional): optionally make ``a`` trainable. Default: ``False``
         inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
+
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/PATS.png
 
     Examples::
 
@@ -516,23 +552,29 @@ class PATS(BaseActivation):
 @register_activation
 class AQuLU(BaseActivation):
     r"""
-    Applies the Adaptive Quadratic Linear Unit function:
+    Applies the Adaptive Quadratic Linear Unit activation function:
 
-    :math:`\text{AQuLU}(x) = \begin{cases}
-        x, & x \geq \frac{1 - b}{a} \\
-        a \cdot x^2 + b \cdot x, & -\frac{b}{a} \leq x < \frac{1 - b}{a} \\
-        0, & x < -\frac{b}{a}
-    \end{cases}`
+    .. math::
+
+        \text{AQuLU}(x) = \begin{cases}
+            x, & x \geq \frac{1 - b}{a} \\
+            a \cdot x^2 + b \cdot x, & -\frac{b}{a} \leq x < \frac{1 - b}{a} \\
+            0, & x < -\frac{b}{a}
+        \end{cases}
 
     Args:
-        a (float, optional): Parameter controlling the quadratic component. Default: 0.2
-        b (float, optional): Parameter controlling the linear component. Default: 0.1
+        a (float, optional): Parameter controlling the quadratic component. Default: ``0.2``
+        b (float, optional): Parameter controlling the linear component. Default: ``0.1``
         learnable (bool, optional): optionally make parameters trainable. Default: ``False``
         inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
+
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/AQuLU.png
 
     Examples::
 
@@ -594,21 +636,25 @@ class AQuLU(BaseActivation):
 @register_activation
 class SinLU(BaseActivation):
     r"""
-    Applies the Sinu-Sigmoidal Linear Unit function:
+    Applies the Sinu-Sigmoidal Linear Unit activation function:
 
     :math:`\text{SinLU}(x) = (x + a \cdot \sin(b \cdot x)) \cdot \sigma(x)`
 
     where :math:`\sigma(x)` is the sigmoid function.
 
     Args:
-        a (float, optional): Amplitude parameter for sine component. Default: 0.5
-        b (float, optional): Frequency parameter for sine component. Default: 1.0
+        a (float, optional): Amplitude parameter for sine component. Default: ``0.5``
+        b (float, optional): Frequency parameter for sine component. Default: ``1.0``
         learnable (bool, optional): optionally make parameters trainable. Default: ``False``
         inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
+
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/SinLU.png
 
     Examples::
 
@@ -659,14 +705,18 @@ class ErfAct(BaseActivation):
     where :math:`\text{erf}(x)` is the error function.
 
     Args:
-        a (float, optional): Parameter controlling the shape of the function. Default: 1.0
-        b (float, optional): Parameter controlling the exponential growth. Default: 0.5
+        a (float, optional): Parameter controlling the shape of the function. Default: ``1.0``
+        b (float, optional): Parameter controlling the exponential growth. Default: ``0.5``
         learnable (bool, optional): optionally make parameters trainable. Default: ``False``
         inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
+
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/ErfAct.png
 
     Examples::
 
@@ -718,14 +768,18 @@ class PSerf(BaseActivation):
     where :math:`\text{erf}(x)` is the error function.
 
     Args:
-        a (float, optional): Parameter controlling the shape of the function. Default: 1.0
-        b (float, optional): Parameter controlling the softplus term. Default: 1.0
+        a (float, optional): Parameter controlling the shape of the function. Default: ``1.0``
+        b (float, optional): Parameter controlling the softplus term. Default: ``1.0``
         learnable (bool, optional): optionally make parameters trainable. Default: ``False``
         inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
+
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/PSerf.png
 
     Examples::
 
@@ -775,13 +829,17 @@ class Swim(BaseActivation):
     :math:`\text{Swim}(x) = x \cdot \frac{1}{2} \left(1 + \frac{a \cdot x}{\sqrt{1 + x^2}}\right)`
 
     Args:
-        a (float, optional): Parameter controlling the shape of the function. Default: 0.5
+        a (float, optional): Parameter controlling the shape of the function. Default: ``0.5``
         learnable (bool, optional): optionally make ``a`` trainable. Default: ``False``
         inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
+
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/Swim.png
 
     Examples::
 
@@ -817,50 +875,38 @@ class Swim(BaseActivation):
 @register_activation
 class GPSoftmax(BaseActivation):
     r"""
-    Generalized Power Softmax (gpsoftmax)
+    Applies the Generalized Power Softmax activation function:
 
-    This activation function extends the traditional softmax using a power-based normalization.
-    It includes trainable parameters a, b, c, and d, which influence the transformation.
+    :math:`\text{GPSoftmax}(z_j) = \frac{\exp(\text{PNORM}(z_j))}{\sum_{k=1}^{N} \exp(\text{PNORM}(z_k))}`
 
-    :math:`f(z_j) = \frac{\exp(\text{PNORM}(z_j))}{\sum_{k=1}^{N} \exp(\text{PNORM}(z_k))}`
-
-    where PNORM is a generalized power-based normalization:
-
-    :math:`\text{PNORM}(z_i) = \frac{z_i - M_{a_i, b_i}}{\text{GPM}_{c_i, d_i}(z - M_{a_i, b_i})}`
-
-    :math:`M_{a_i, b_i} = \text{GPM}_{a_i, b_i}(z)`
-
-    :math:`\text{GPM}_{\alpha, \beta}(x) = \frac{\ln\left(\sum_{k=1}^{N} \alpha^{\beta x_k}\right) - \ln(N)}{\beta \ln(\alpha)}` # noqa: E501
-
+    where :math:`\text{PNORM}(z_i) = \frac{z_i - M_{a_i, b_i}}{\text{GPM}_{c_i, d_i}(z - M_{a_i, b_i})}`, :math:`M_{a_i, b_i} = \text{GPM}_{a_i, b_i}(z)`, and :math:`\text{GPM}_{\alpha, \beta}(x) = \frac{\ln\left(\sum_{k=1}^{N} \alpha^{\beta x_k}\right) - \ln(N)}{\beta \ln(\alpha)}`.
 
     Args:
         input_shape (int): The size of the input vector tensor, channel or feature size.
-        a (float, optional): Initial value for parameter `a`. Default is 1.0.
-        b (float, optional): Initial value for parameter `b`. Default is 1.0.
-        c (float, optional): Initial value for parameter `c`. Default is 1.0.
-        d (float, optional): Initial value for parameter `d`. Default is 1.0.
-        learnable (bool, optional): Whether the parameters `a`, `b`, `c`, and `d` are trainable. Default is False. # noqa: E501
-        inplace (bool, optional): Whether to perform operations in-place. Default is False.
-        **kwargs: Additional keyword arguments for the `BaseActivation` superclass.
+        a (float, optional): Initial value for parameter a. Default: ``1.0``
+        b (float, optional): Initial value for parameter b. Default: ``1.0``
+        c (float, optional): Initial value for parameter c. Default: ``1.0``
+        d (float, optional): Initial value for parameter d. Default: ``1.0``
+        learnable (bool, optional): optionally make parameters trainable. Default: ``True``
+        inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
-    Attributes:
-        a (nn.Parameter or Tensor): Trainable parameter `a`.
-        b (nn.Parameter or Tensor): Trainable parameter `b`.
-        c (nn.Parameter or Tensor): Trainable parameter `c`.
-        d (nn.Parameter or Tensor): Trainable parameter `d`.
-        inplace (bool): If True, modifies the input tensor in place.
-        input_shape (int): The size of the input vector tensor, channel or feature size.
+    Shape:
+        - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
+        - Output: :math:`(*)`, same shape as the input.
 
-    Methods:
-        _forward(x: Tensor) -> Tensor:
-            Computes the generalized Lehmer softmax transformation.
+    Here is a plot of the function and its derivative:
 
-        pnorm(x: Tensor, a: Tensor, b: Tensor, c: Tensor, d: Tensor) -> Tensor:
-            Applies Lehmer-based normalization.
+    .. image:: ../images/activation_images/GPSoftmax.png
 
-        gpm_func(x: Tensor, alpha: Tensor, beta: Tensor) -> Tensor:
-            Computes the generalized Lehmer mean function.
+    Examples::
 
+        >>> m = torch_activation.GPSoftmax(input_shape=4)
+        >>> x = torch.randn(2)
+        >>> output = m(x)
+
+        >>> m = torch_activation.GPSoftmax(input_shape=8, learnable=True)
+        >>> x = torch.randn(2, 3, 4)
+        >>> output = m(x)
     """
 
     def __init__(
@@ -944,48 +990,38 @@ class GPSoftmax(BaseActivation):
 @register_activation
 class GLSoftmax(BaseActivation):
     r"""
-    Generalized Lehmer Softmax (glsoftmax).
+    Applies the Generalized Lehmer Softmax activation function:
 
-    This is a softmax variant that applies a generalized Lehmer-based normalization
-    with trainable parameters `a`, `b`, `c`, and `d`.
+    :math:`\text{GLSoftmax}(z_j) = \frac{\exp(\text{LNORM}(z_j))}{\sum_{k=1}^{N} \exp(\text{LNORM}(z_k))}`
 
-    :math:`f(z_j) = \frac{\exp(\text{LNORM}(z_j))}{\sum_{k=1}^{N} \exp(\text{LNORM}(z_k))}`
-
-    where LNORM is a generalized Lehmer-based normalization:
-
-    :math:`\text{LNORM}(z_i) = \frac{z_i - M_{a_i, b_i}}{\text{GLM}_{c_i, d_i}(z - M_{a_i, b_i})}`
-
-    :math:`M_{a_i, b_i} = \text{GLM}_{a_i, b_i}(z)`
-
-    :math:`\text{GLM}_{\alpha, \beta}(x) = \frac{\ln \left( \frac{\sum_{k=1}^{N} \alpha^{(\beta+1)x_k}}{\sum_{k=1}^{N} \alpha^{\beta x_k}} \right)}{\ln(\alpha)}` # noqa: E501
-
+    where :math:`\text{LNORM}(z_i) = \frac{z_i - M_{a_i, b_i}}{\text{GLM}_{c_i, d_i}(z - M_{a_i, b_i})}`, :math:`M_{a_i, b_i} = \text{GLM}_{a_i, b_i}(z)`, and :math:`\text{GLM}_{\alpha, \beta}(x) = \frac{\ln \left( \frac{\sum_{k=1}^{N} \alpha^{(\beta+1)x_k}}{\sum_{k=1}^{N} \alpha^{\beta x_k}} \right)}{\ln(\alpha)}`.
 
     Args:
         input_shape (int): The size of the input vector tensor, channel or feature size.
-        a (float, optional): Initial value for parameter `a`. Default is 1.0.
-        b (float, optional): Initial value for parameter `b`. Default is 1.0.
-        c (float, optional): Initial value for parameter `c`. Default is 1.0.
-        d (float, optional): Initial value for parameter `d`. Default is 1.0.
-        learnable (bool, optional): Whether the parameters `a`, `b`, `c`, and `d` are trainable. Default is False. # noqa: E501
-        inplace (bool, optional): Whether to perform operations in-place. Default is False.
-        **kwargs: Additional keyword arguments for the `BaseActivation` superclass.
+        a (float, optional): Initial value for parameter a. Default: ``1.0``
+        b (float, optional): Initial value for parameter b. Default: ``1.0``
+        c (float, optional): Initial value for parameter c. Default: ``1.0``
+        d (float, optional): Initial value for parameter d. Default: ``1.0``
+        learnable (bool, optional): optionally make parameters trainable. Default: ``True``
+        inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
-    Attributes:
-        a (Union[nn.Parameter, Tensor]): Trainable or fixed parameter `a`.
-        b (Union[nn.Parameter, Tensor]): Trainable or fixed parameter `b`.
-        c (Union[nn.Parameter, Tensor]): Trainable or fixed parameter `c`.
-        d (Union[nn.Parameter, Tensor]): Trainable or fixed parameter `d`.
-        inplace (bool): Flag indicating whether operations are performed in-place.
+    Shape:
+        - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
+        - Output: :math:`(*)`, same shape as the input.
 
-    Methods:
-        _forward(x: Tensor) -> Tensor:
-            Computes the generalized Lehmer softmax transformation.
+    Here is a plot of the function and its derivative:
 
-        lnorm(x: Tensor, a: Tensor, b: Tensor, c: Tensor, d: Tensor) -> Tensor:
-            Applies Lehmer-based normalization.
+    .. image:: ../images/activation_images/GLSoftmax.png
 
-        glm_func(x: Tensor, alpha: Tensor, beta: Tensor) -> Tensor:
-            Computes the generalized Lehmer mean function.
+    Examples::
+
+        >>> m = torch_activation.GLSoftmax(input_shape=4)
+        >>> x = torch.randn(2)
+        >>> output = m(x)
+
+        >>> m = torch_activation.GLSoftmax(input_shape=8, learnable=True)
+        >>> x = torch.randn(2, 3, 4)
+        >>> output = m(x)
     """
 
     def __init__(
@@ -1076,38 +1112,34 @@ class GLSoftmax(BaseActivation):
 @register_activation
 class ARBF(BaseActivation):
     r"""
+    Applies the Adaptive Radial Basis Function activation function:
 
-    Adaptive Radial Basis Function (ARBF) Model.
-
-    This class implements an adaptive radial basis function as described in [499].
-    The function is defined as:
-
-    .. math:: ARBF(z_i) = \exp \left( -\frac{(z_i - a_i)^2}{2b_i^2} \right)
-
-    where:
-    - \( a_i \) is an adaptive parameter controlling the center of the neuron.
-    - \( b_i \) is an adaptive parameter controlling the width* of the neuron.
-    - \( z_i \) is the input variable.
-
+    :math:`\text{ARBF}(z_i) = \exp \left( -\frac{(z_i - a_i)^2}{2b_i^2} \right)`
 
     Args:
         input_shape (int): Size of the input vector tensor (feature size).
-        a (float, optional): Initial value for parameter `a`. Default is 1.0.
-        b (float, optional): Initial value for parameter `b`. Default is 1.0.
-        learnable (bool, optional): Whether `a` and `b` are trainable. Default is True.
-        inplace (bool, optional): Whether to perform operations in-place. Default is False.
-        **kwargs: Additional keyword arguments for BaseActivation.
+        a (float, optional): Initial value for the center parameter. Default: ``1.0``
+        b (float, optional): Initial value for the width parameter. Default: ``1.0``
+        learnable (bool, optional): optionally make parameters trainable. Default: ``True``
+        inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
-    Attributes:
-        a (Tensor or nn.Parameter): Trainable or fixed parameter `a`.
-        b (Tensor or nn.Parameter): Trainable or fixed parameter `b`.
-        inplace (bool): Whether operations are performed in-place.
+    Shape:
+        - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
+        - Output: :math:`(*)`, same shape as the input.
 
-    Methods:
-        _forward(x: Tensor) -> Tensor:
-            Computes the Adaptive Radial Basis Function transformation.
+    Here is a plot of the function and its derivative:
 
+    .. image:: ../images/activation_images/ARBF.png
 
+    Examples::
+
+        >>> m = torch_activation.ARBF(input_shape=4)
+        >>> x = torch.randn(2)
+        >>> output = m(x)
+
+        >>> m = torch_activation.ARBF(input_shape=8, learnable=True)
+        >>> x = torch.randn(2, 3, 4)
+        >>> output = m(x)
     """
 
     def __init__(
@@ -1140,32 +1172,35 @@ class ARBF(BaseActivation):
 @register_activation
 class PGELU(BaseActivation):
     r"""
-    Parametric Gaussian Error Linear Unit (PGELU).
+    Applies the Parametric Gaussian Error Linear Unit activation function:
 
-    PGELU is an adaptive variant of GELU that incorporates noise injection.
-    It is defined as:
+    :math:`\text{PGELU}(z_i) = z \cdot \Phi \left( \frac{z}{a} \right)`
 
-    .. math:: PGELU(z_i) = z \cdot \Phi \left( \frac{z}{a} \right)
-
-    where:
-    - \( \Phi(z) \) is the standard Gaussian cumulative distribution function (CDF).
-    - \( a \) is a learnable parameter representing root mean square (RMS) noise.
+    where :math:`\Phi(z)` is the standard Gaussian cumulative distribution function.
 
     Args:
         input_shape (int): Size of the input vector tensor (feature size).
-        a (float, optional): Initial value for parameter `a`. Default is 1.0.
-        learnable (bool, optional): Whether `a` is trainable. Default is True.
-        inplace (bool, optional): Whether to perform operations in-place. Default is False.
-        **kwargs: Additional keyword arguments for BaseActivation.
+        a (float, optional): Initial value for the RMS noise parameter. Default: ``1.0``
+        learnable (bool, optional): optionally make ``a`` trainable. Default: ``True``
+        inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
-    Attributes:
-        a (Tensor or nn.Parameter): Trainable or fixed parameter `a` (per-feature RMS noise).
-        inplace (bool): Whether operations are performed in-place.
+    Shape:
+        - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
+        - Output: :math:`(*)`, same shape as the input.
 
-    Methods:
-        _forward(x: Tensor) -> Tensor:
-            Computes the Parametric GELU transformation.
+    Here is a plot of the function and its derivative:
 
+    .. image:: ../images/activation_images/PGELU.png
+
+    Examples::
+
+        >>> m = torch_activation.PGELU(input_shape=4)
+        >>> x = torch.randn(2)
+        >>> output = m(x)
+
+        >>> m = torch_activation.PGELU(input_shape=8, learnable=True)
+        >>> x = torch.randn(2, 3, 4)
+        >>> output = m(x)
     """
 
     def __init__(
@@ -1196,38 +1231,40 @@ class PGELU(BaseActivation):
 @register_activation
 class PFTS(BaseActivation):
     r"""
-    Parametric Flatted-T Swish (PFTS).
+    Applies the Parametric Flatted-T Swish activation function:
 
-    PFTS is an adaptive extension of the Flatted-T Swish (FTS). It is identical to FTS except
-    that the parameter T is adaptive.
+    .. math::
 
-    The PFTS activation function is defined as:
+        \text{PFTS}(z_i) = \begin{cases}
+            \frac{z_i}{1+\exp(-z_i)} + T_i, & z_i \geq 0 \\
+            T_i, & z_i < 0
+        \end{cases}
 
-    .. math:: PFTS(z_i) = \text{ReLU}(z_i) \cdot \sigma(z_i) + T_i =
-    \begin{cases}
-    \frac{z_i}{1+\exp(-z_i)} + T_i, & z_i \geq 0, \\
-    T_i, & z_i < 0,
-    \end{cases}
-
-    where:
-    - ReLU(z_i) is the Rectified Linear Unit function applied to z_i.
-    - σ(z_i) is the sigmoid function applied to z_i, i.e., 1 / (1 + exp(-z_i)).
-    - T_i is a trainable parameter for each neuron i.
+    where :math:`T_i` is a trainable parameter.
 
     Args:
         input_shape (int): Size of the input vector tensor (feature size).
-        T_i (float, optional): Initial value for parameter `T_i`. Default is -0.20.
-        learnable (bool, optional): Whether `T_i` is trainable. Default is True.
-        inplace (bool, optional): Whether to perform operations in-place. Default is False.
-        **kwargs: Additional keyword arguments for BaseActivation.
+        T (float, optional): Initial value for the trainable parameter T. Default: ``-0.2``
+        learnable (bool, optional): optionally make ``T`` trainable. Default: ``True``
+        inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
-    Attributes:
-        T_i (Tensor or nn.Parameter): Trainable or fixed parameter `T_i`.
-        inplace (bool): Whether operations are performed in-place.
+    Shape:
+        - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
+        - Output: :math:`(*)`, same shape as the input.
 
-    Methods:
-        _forward(x: Tensor) -> Tensor:
-            Computes the Parametric Flatted-T Swish transformation.
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/PFTS.png
+
+    Examples::
+
+        >>> m = torch_activation.PFTS(input_shape=4)
+        >>> x = torch.randn(2)
+        >>> output = m(x)
+
+        >>> m = torch_activation.PFTS(input_shape=8, learnable=True)
+        >>> x = torch.randn(2, 3, 4)
+        >>> output = m(x)
     """
 
     def __init__(
@@ -1258,36 +1295,40 @@ class PFTS(BaseActivation):
 @register_activation
 class PFPM(BaseActivation):
     r"""
-    Parametric Flatten-p Mish (PFPM).
+    Applies the Parametric Flatten-p Mish activation function:
 
-    PFPM is an Adaptive Activation Function (AAF).
+    .. math::
 
-    The PFPM activation function is defined as:
+        \text{PFPM}(z_i) = \begin{cases}
+            z_i \tanh(\ln(1 + \exp(z_i))) + p_i, & z_i \geq 0 \\
+            p_i, & z_i < 0
+        \end{cases}
 
-    .. math:: PFPM(z_i) =
-    \begin{cases}
-    z_i \tanh(\ln(1 + \exp(z_i))) + p_i, & z_i \geq 0, \\
-    p_i, & z_i < 0,
-    \end{cases}
-
-    where:
-    - z_i is the input to the activation function for neuron i.
-    - p_i is a trainable parameter for neuron i.
+    where :math:`p_i` is a trainable parameter.
 
     Args:
         input_shape (int): Size of the input vector tensor (feature size).
-        p_i (float, optional): Initial value for parameter `p_i`. Default is 0.0.
-        learnable (bool, optional): Whether `p_i` is trainable. Default is True.
-        inplace (bool, optional): Whether to perform operations in-place. Default is False.
-        **kwargs: Additional keyword arguments for BaseActivation.
+        p (float, optional): Initial value for the trainable parameter p. Default: ``1.0``
+        learnable (bool, optional): optionally make ``p`` trainable. Default: ``True``
+        inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
-    Attributes:
-        p_i (Tensor or nn.Parameter): Trainable or fixed parameter `p_i`.
-        inplace (bool): Whether operations are performed in-place.
+    Shape:
+        - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
+        - Output: :math:`(*)`, same shape as the input.
 
-    Methods:
-        _forward(x: Tensor) -> Tensor:
-            Computes the Parametric Flatten-p Mish transformation.
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/PFPM.png
+
+    Examples::
+
+        >>> m = torch_activation.PFPM(input_shape=4)
+        >>> x = torch.randn(2)
+        >>> output = m(x)
+
+        >>> m = torch_activation.PFPM(input_shape=8, learnable=True)
+        >>> x = torch.randn(2, 3, 4)
+        >>> output = m(x)
     """
 
     def __init__(
@@ -1318,41 +1359,42 @@ class PFPM(BaseActivation):
 @register_activation
 class PSIGRAMP(BaseActivation):
     r"""
-    Parametric Sigmoid-Ramp (P-SIG-RAMP).
-
-    P-SIG-RAMP is an Adaptive Activation Function (AAF) that combines the logistic sigmoid and a piecewise linear function. # noqa: E501
-
-    The P-SIG-RAMP activation function is defined as:
+    Applies the Parametric Sigmoid-Ramp activation function:
 
     .. math::
-        f(z_i) = a_i \sigma(z_i) + (1 - a_i) \cdot
-        \begin{cases}
-        1, & z_i \geq \frac{1}{2b_i}, \\
-        b_i z_i + \frac{1}{2}, & -\frac{1}{2b_i} < z_i < \frac{1}{2b_i}, \\
-        0, & z_i \leq -\frac{1}{2b_i},
+
+        \text{PSIGRAMP}(z_i) = a_i \sigma(z_i) + (1 - a_i) \cdot \begin{cases}
+            1, & z_i \geq \frac{1}{2b_i} \\
+            b_i z_i + \frac{1}{2}, & -\frac{1}{2b_i} < z_i < \frac{1}{2b_i} \\
+            0, & z_i \leq -\frac{1}{2b_i}
         \end{cases}
 
-    where:
-    - \( z_i \) is the input to the activation function for neuron \( i \).
-    - \( a_i \) is a trainable parameter constrained to \( [0,1] \).
-    - \( b_i \) is a trainable parameter.
+    where :math:`a_i` is constrained to :math:`[0, 1]`.
 
     Args:
         input_shape (int): Size of the input vector tensor (feature size).
-        a_i (float, optional): Initial value for parameter \( a_i \). Default is 0.5.
-        b_i (float, optional): Initial value for parameter \( b_i \). Default is 1.0.
-        learnable (bool, optional): Whether \( a_i \) and \( b_i \) are trainable. Default is True.
-        inplace (bool, optional): Whether to perform operations in-place. Default is False.
-        **kwargs: Additional keyword arguments for BaseActivation.
+        a (float, optional): Initial value for the sigmoid blend parameter. Default: ``0.5``
+        b (float, optional): Initial value for the ramp slope parameter. Default: ``1.0``
+        learnable (bool, optional): optionally make parameters trainable. Default: ``True``
+        inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
-    Attributes:
-        a_i (Tensor or nn.Parameter): Trainable or fixed parameter \( a_i \).
-        b_i (Tensor or nn.Parameter): Trainable or fixed parameter \( b_i \).
-        inplace (bool): Whether operations are performed in-place.
+    Shape:
+        - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
+        - Output: :math:`(*)`, same shape as the input.
 
-    Methods:
-        _forward(x: Tensor) -> Tensor:
-            Computes the Parametric Sigmoid-Ramp transformation.
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/PSIGRAMP.png
+
+    Examples::
+
+        >>> m = torch_activation.PSIGRAMP(input_shape=4)
+        >>> x = torch.randn(2)
+        >>> output = m(x)
+
+        >>> m = torch_activation.PSIGRAMP(input_shape=8, learnable=True)
+        >>> x = torch.randn(2, 3, 4)
+        >>> output = m(x)
     """
 
     def __init__(
@@ -1391,37 +1433,40 @@ class PSIGRAMP(BaseActivation):
 @register_activation
 class RSIGN(BaseActivation):
     r"""
-    React-Sign (RSign).
-
-    RSign is an Adaptive Activation Function (AAF) that introduces an adaptive threshold to the standard sign function. # noqa: E501
-
-    The RSign activation function is defined as:
+    Applies the React-Sign activation function:
 
     .. math::
-        f(z_i) =
-        \begin{cases}
-        1, & z_i \geq a_c, \\
-        -1, & z_i < a_c,
+
+        \text{RSIGN}(z_i) = \begin{cases}
+            1, & z_i \geq a_c \\
+            -1, & z_i < a_c
         \end{cases}
 
-    where:
-    - \( z_i \) is the input to the activation function for neuron \( i \).
-    - \( a_c \) is an adaptive threshold parameter for each channel.
+    where :math:`a_c` is an adaptive threshold parameter for each channel.
 
     Args:
         input_shape (int): Size of the input vector tensor (feature size).
-        a_c (float, optional): Initial value for threshold \( a_c \). Default is 0.0.
-        learnable (bool, optional): Whether \( a_c \) is trainable. Default is True.
-        inplace (bool, optional): Whether to perform operations in-place. Default is False.
-        **kwargs: Additional keyword arguments for BaseActivation.
+        a (float, optional): Initial value for the adaptive threshold. Default: ``0.5``
+        learnable (bool, optional): optionally make ``a`` trainable. Default: ``True``
+        inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
-    Attributes:
-        a_c (Tensor or nn.Parameter): Trainable or fixed parameter \( a_c \).
-        inplace (bool): Whether operations are performed in-place.
+    Shape:
+        - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
+        - Output: :math:`(*)`, same shape as the input.
 
-    Methods:
-        _forward(x: Tensor) -> Tensor:
-            Computes the React-Sign transformation.
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/RSIGN.png
+
+    Examples::
+
+        >>> m = torch_activation.RSIGN(input_shape=4)
+        >>> x = torch.randn(2)
+        >>> output = m(x)
+
+        >>> m = torch_activation.RSIGN(input_shape=8, learnable=True)
+        >>> x = torch.randn(2, 3, 4)
+        >>> output = m(x)
     """
 
     def __init__(
@@ -1453,36 +1498,34 @@ class RSIGN(BaseActivation):
 @register_activation
 class MAF(BaseActivation):
     r"""
-    Multiquadratic Activation Function (MAF).
+    Applies the Multiquadratic Activation Function:
 
-    MAF is an Adaptive Activation Function (AAF) that introduces trainable parameters to adjust the multiquadratic transformation. # noqa: E501
-
-    The MAF activation function is defined as:
-
-    .. math::
-        f(z_i) = \sqrt{ \|z_i - a_i\|^2 + b_i^2 },
-
-    where:
-    - \( z_i \) is the input to the activation function for neuron \( i \).
-    - \( a_i \) is a trainable slope coefficient.
-    - \( b_i \) is a trainable bias coefficient.
+    :math:`\text{MAF}(z_i) = \sqrt{\|z_i - a_i\|^2 + b_i^2}`
 
     Args:
         input_shape (int): Size of the input vector tensor (feature size).
-        a_i (float, optional): Initial value for the trainable slope coefficient \( a_i \). Default is 0.0. # noqa: E501
-        b_i (float, optional): Initial value for the trainable bias coefficient \( b_i \). Default is 1.0. # noqa: E501
-        learnable (bool, optional): Whether \( a_i \) and \( b_i \) are trainable. Default is True.
-        inplace (bool, optional): Whether to perform operations in-place. Default is False.
-        **kwargs: Additional keyword arguments for BaseActivation.
+        a (float, optional): Initial value for the slope coefficient. Default: ``0.5``
+        b (float, optional): Initial value for the bias coefficient. Default: ``1.0``
+        learnable (bool, optional): optionally make parameters trainable. Default: ``True``
+        inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
-    Attributes:
-        a_i (Tensor or nn.Parameter): Trainable or fixed parameter \( a_i \).
-        b_i (Tensor or nn.Parameter): Trainable or fixed parameter \( b_i \).
-        inplace (bool): Whether operations are performed in-place.
+    Shape:
+        - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
+        - Output: :math:`(*)`, same shape as the input.
 
-    Methods:
-        _forward(x: Tensor) -> Tensor:
-            Computes the Multiquadratic transformation.
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/MAF.png
+
+    Examples::
+
+        >>> m = torch_activation.MAF(input_shape=4)
+        >>> x = torch.randn(2)
+        >>> output = m(x)
+
+        >>> m = torch_activation.MAF(input_shape=8, learnable=True)
+        >>> x = torch.randn(2, 3, 4)
+        >>> output = m(x)
     """
 
     def __init__(
@@ -1515,51 +1558,37 @@ class MAF(BaseActivation):
 @register_activation
 class UAF(BaseActivation):
     r"""
-    Universal Activation Function (UAF).
+    Applies the Universal Activation Function:
 
-    The Universal Activation Function (UAF) is a softplus-based Adaptive Activation Function (AAF)
-    that introduces trainable parameters to flexibly approximate various activation functions.
-
-    The UAF is defined as:
-
-    .. math::
-        f(z_i) = \ln \left(1 + \exp \left( a_i (z_i + b_i) + c_i z_i^2 \right) \right)
-               - \ln \left(1 + \exp \left( d_i (z_i - b_i) \right) \right) + e_i,
-
-    where:
-    - \( z_i \) is the input to the activation function for neuron \( i \).
-    - \( a_i, b_i, c_i, d_i, e_i \) are trainable parameters.
-
-    UAF is designed to approximate multiple well-known activation functions, including:
-    - Step function
-    - Logistic sigmoid
-    - Hyperbolic tangent (tanh)
-    - ReLU (Rectified Linear Unit)
-    - Leaky ReLU (LReLU)
-    - Gaussian function
+    :math:`\text{UAF}(z_i) = \ln(1 + \exp(a_i(z_i + b_i) + c_i z_i^2)) - \ln(1 + \exp(d_i(z_i - b_i))) + e_i`
 
     Args:
         input_shape (int): Size of the input tensor (feature size).
-        a_i (float, optional): Initial value for the trainable parameter \( a_i \). Default is 1.0.
-        b_i (float, optional): Initial value for the trainable parameter \( b_i \). Default is 0.0.
-        c_i (float, optional): Initial value for the trainable parameter \( c_i \). Default is 0.0.
-        d_i (float, optional): Initial value for the trainable parameter \( d_i \). Default is 1.0.
-        e_i (float, optional): Initial value for the trainable parameter \( e_i \). Default is 0.0.
-        learnable (bool, optional): Whether parameters \( a_i, b_i, c_i, d_i, e_i \) are trainable. Default is True. # noqa: E501
-        inplace (bool, optional): Whether to perform operations in-place. Default is False.
-        **kwargs: Additional keyword arguments.
+        a (float, optional): Initial value for parameter a. Default: ``0.5``
+        b (float, optional): Initial value for parameter b. Default: ``1.0``
+        c (float, optional): Initial value for parameter c. Default: ``0.5``
+        d (float, optional): Initial value for parameter d. Default: ``1.0``
+        e (float, optional): Initial value for parameter e. Default: ``0.5``
+        learnable (bool, optional): optionally make parameters trainable. Default: ``True``
+        inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
-    Attributes:
-        a_i (Tensor or nn.Parameter): Trainable or fixed parameter \( a_i \).
-        b_i (Tensor or nn.Parameter): Trainable or fixed parameter \( b_i \).
-        c_i (Tensor or nn.Parameter): Trainable or fixed parameter \( c_i \).
-        d_i (Tensor or nn.Parameter): Trainable or fixed parameter \( d_i \).
-        e_i (Tensor or nn.Parameter): Trainable or fixed parameter \( e_i \).
-        inplace (bool): Whether operations are performed in-place.
+    Shape:
+        - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
+        - Output: :math:`(*)`, same shape as the input.
 
-    Methods:
-        _forward(x: Tensor) -> Tensor:
-            Computes the Universal Activation Function (UAF) transformation.
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/UAF.png
+
+    Examples::
+
+        >>> m = torch_activation.UAF(input_shape=4)
+        >>> x = torch.randn(2)
+        >>> output = m(x)
+
+        >>> m = torch_activation.UAF(input_shape=8, learnable=True)
+        >>> x = torch.randn(2, 3, 4)
+        >>> output = m(x)
     """
 
     def __init__(
@@ -1600,49 +1629,36 @@ class UAF(BaseActivation):
 @register_activation
 class GReLU(BaseActivation):
     r"""
-    Generalized Rectified Linear Unit (GReLU)
+    Applies the Generalized Rectified Linear Unit activation function:
 
-    The Generalized ReLU (GReLU) is a smooth and flexible activation function derived from the
-    Universal Activation Function (UAF) family. It introduces two trainable parameters to generalize
-    and extend the behavior of ReLU and related functions, offering better adaptability during training. # noqa: E501
+    :math:`\text{GReLU}(z_i) = \frac{\ln(1 + a_i^{b_i z_i})}{b_i \ln(a_i)}`
 
-    The GReLU is defined as:
-
-    .. math::
-        f(z_i) = \\frac{\\ln(1 + a_i^{b_i z_i})}{b_i \\ln(a_i)}
-
-    This is equivalent to the logarithmic formulation of:
-
-    .. math::
-        f(z_i) = \\frac{1}{b_i} \\log_{a_i} \\left( 1 + a_i^{b_i z_i} \\right)
-
-    where:
-    - \( z_i \) is the input to the activation function for neuron \( i \).
-    - \( a_i > 1 \) and \( b_i > 0 \) are trainable parameters constrained via softplus.
-
-    GReLU offers enhanced control over the non-linearity and smoothness of the activation, and can approximate # noqa: E501
-    standard activations like:
-    - ReLU
-    - Exponential Linear Units
-    - Parametric ReLU-like curves
-    - Sigmoidal shapes (in shallow regimes)
+    where :math:`a_i > 1` and :math:`b_i > 0` are trainable parameters constrained via softplus.
 
     Args:
         input_shape (int): Size of the input tensor (feature size).
-        a (float, optional): Initial value for the trainable parameter \( a_i \). Default is 1.5.
-        b (float, optional): Initial value for the trainable parameter \( b_i \). Default is 0.5.
-        learnable (bool, optional): Whether parameters \( a_i \) and \( b_i \) are trainable. Default is True. # noqa: E501
-        inplace (bool, optional): Whether to perform operations in-place. Default is False.
-        **kwargs: Additional keyword arguments passed to the base class.
+        a (float, optional): Initial value for parameter a. Default: ``1.5``
+        b (float, optional): Initial value for parameter b. Default: ``0.5``
+        learnable (bool, optional): optionally make parameters trainable. Default: ``True``
+        inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
-    Attributes:
-        a (Tensor or nn.Parameter): Trainable or fixed parameter \( a_i \), transformed with softplus to enforce \( a_i > 1 \). # noqa: E501
-        b (Tensor or nn.Parameter): Trainable or fixed parameter \( b_i \), transformed with softplus to enforce \( b_i > 0 \). # noqa: E501
-        inplace (bool): Whether operations are performed in-place.
+    Shape:
+        - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
+        - Output: :math:`(*)`, same shape as the input.
 
-    Methods:
-        _forward(x: Tensor) -> Tensor:
-            Computes the GReLU activation transformation for the input tensor.
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/GReLU.png
+
+    Examples::
+
+        >>> m = torch_activation.GReLU(input_shape=4)
+        >>> x = torch.randn(2)
+        >>> output = m(x)
+
+        >>> m = torch_activation.GReLU(input_shape=8, learnable=True)
+        >>> x = torch.randn(2, 3, 4)
+        >>> output = m(x)
     """
 
     def __init__(
@@ -1679,45 +1695,36 @@ class GReLU(BaseActivation):
 @register_activation
 class GLN(BaseActivation):
     r"""
-    Global-Local Neuron (GLN)
+    Applies the Global-Local Neuron activation function:
 
-    The Global-Local Neuron (GLN) is an Adaptive Activation Function (AAF) that blends two distinct activation # noqa: E501
-    functions using a convex combination. It is designed to capture both global and local nonlinearities # noqa: E501
-    by mixing their outputs with a learnable gating mechanism.
+    :math:`\text{GLN}(z_l) = \sigma(a_l) \cdot \sin(z_l) + (1 - \sigma(a_l)) \cdot \tanh(z_l) - b_l`
 
-    The GLN is defined as:
-
-    .. math::
-        f(z_l) = \\sigma(a_l) \\cdot \\text{global}(z_l) + (1 - \\sigma(a_l)) \\cdot \\text{local}(z_l) - b_l # noqa: E501
-
-    where:
-    - \( z_l \) is the input to the activation function at layer \( l \),
-    - \( a_l \) and \( b_l \) are trainable parameters specific to layer \( l \),
-    - \( \\sigma(a_l) \) is the sigmoid activation controlling the convex combination,
-    - \( \\text{global}(z_l) \) and \( \\text{local}(z_l) \) are predefined activation functions modeling global and local behavior respectively. # noqa: E501
-
-    Common choices for the internal activations are:
-    - \( \\text{global}(z_l) = \\sin(z_l) \)
-    - \( \\text{local}(z_l) = \\tanh(z_l) \)
-
-    The GLN is especially useful in capturing complex hierarchical patterns by blending multiple activation dynamics. # noqa: E501
+    where :math:`\sigma(a_l)` is the sigmoid gate blending global (sin) and local (tanh) activations.
 
     Args:
         input_shape (int): Size of the input tensor (feature size).
-        a (float, optional): Initial value for the trainable gating parameter \( a_l \). Default is 0.0. # noqa: E501
-        b (float, optional): Initial value for the trainable bias parameter \( b_l \). Default is 0.0. # noqa: E501
-        learnable (bool, optional): Whether parameters \( a_l \) and \( b_l \) are trainable. Default is True. # noqa: E501
-        inplace (bool, optional): Whether to perform operations in-place. Default is False.
-        **kwargs: Additional keyword arguments passed to the base class.
+        a (float, optional): Initial value for the gating parameter. Default: ``1.0``
+        b (float, optional): Initial value for the bias parameter. Default: ``1.0``
+        learnable (bool, optional): optionally make parameters trainable. Default: ``True``
+        inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
-    Attributes:
-        a (Tensor or nn.Parameter): Trainable or fixed gating parameter \( a_l \).
-        b (Tensor or nn.Parameter): Trainable or fixed bias parameter \( b_l \).
-        inplace (bool): Whether operations are performed in-place.
+    Shape:
+        - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
+        - Output: :math:`(*)`, same shape as the input.
 
-    Methods:
-        _forward(x: Tensor) -> Tensor:
-            Computes the GLN activation transformation by blending sin and tanh using a sigmoid gate. # noqa: E501
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/GLN.png
+
+    Examples::
+
+        >>> m = torch_activation.GLN(input_shape=4)
+        >>> x = torch.randn(2)
+        >>> output = m(x)
+
+        >>> m = torch_activation.GLN(input_shape=8, learnable=True)
+        >>> x = torch.randn(2, 3, 4)
+        >>> output = m(x)
     """
 
     def __init__(

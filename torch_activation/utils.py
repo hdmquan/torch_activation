@@ -2,9 +2,6 @@ import math
 import os
 from typing import Tuple
 
-import plotly
-import plotly.graph_objects as go
-import plotly.io as pio
 import torch
 from torch import Tensor
 
@@ -64,7 +61,7 @@ def plot_activation(
     preview=False,
     plot_derivative=True,
     **kwargs,
-):
+) -> None:
     """
     Plot the activation function and optionally its derivative.
 
@@ -93,14 +90,23 @@ def plot_activation(
         >>> plot_activation(torch.nn.Sigmoid(), params)
 
     """
+    try:
+        import plotly
+        import plotly.graph_objects as go
+        import plotly.io as pio
+    except ImportError as e:
+        raise ImportError(
+            "plotly is required for plot_activation. "
+            "Install it with: pip install torch-activation[plot]"
+        ) from e
+
     x = torch.linspace(x_range[0], x_range[1], 1000)
-    x.requires_grad = True  # Enable gradient computation for x
+    x.requires_grad = True
 
     fig = go.Figure()
 
     num_plots = max(len(v) for v in params.values()) if params else 0
 
-    # Color for each param
     colors = plotly.colors.qualitative.D3[: max(1, num_plots)]
 
     if num_plots == 0:

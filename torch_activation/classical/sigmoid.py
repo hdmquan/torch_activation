@@ -24,13 +24,17 @@ class Sigmoid(BaseActivation):
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/Sigmoid.png
+
     Examples::
 
-        >>> m = tac.Sigmoid()
+        >>> m = torch_activation.Sigmoid()
         >>> x = torch.randn(2)
         >>> output = m(x)
 
-        >>> m = tac.Sigmoid(inplace=True)
+        >>> m = torch_activation.Sigmoid(inplace=True)
         >>> x = torch.randn(2)
         >>> m(x)
     """
@@ -60,13 +64,17 @@ class Tanh(BaseActivation):
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/Tanh.png
+
     Examples::
 
-        >>> m = tac.Tanh()
+        >>> m = torch_activation.Tanh()
         >>> x = torch.randn(2)
         >>> output = m(x)
 
-        >>> m = tac.Tanh(inplace=True)
+        >>> m = torch_activation.Tanh(inplace=True)
         >>> x = torch.randn(2)
         >>> m(x)
     """
@@ -90,21 +98,25 @@ class ShiftedScaledSigmoid(BaseActivation):
     :math:`\text{ShiftedScaledSigmoid}(z) = \frac{1}{1 + \exp(-a(z-b))}`
 
     Args:
-        a (float, optional): Scale parameter. Default: 1.0
-        b (float, optional): Shift parameter. Default: 0.0
+        a (float, optional): Scale parameter. Default: ``1.0``
+        b (float, optional): Shift parameter. Default: ``0.0``
         inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/ShiftedScaledSigmoid.png
+
     Examples::
 
-        >>> m = tac.ShiftedScaledSigmoid(a=2.0, b=0.5)
+        >>> m = torch_activation.ShiftedScaledSigmoid(a=2.0, b=0.5)
         >>> x = torch.randn(2)
         >>> output = m(x)
 
-        >>> m = tac.ShiftedScaledSigmoid(inplace=True)
+        >>> m = torch_activation.ShiftedScaledSigmoid(inplace=True)
         >>> x = torch.randn(2)
         >>> m(x)
     """
@@ -131,22 +143,26 @@ class VariantSigmoidFunction(BaseActivation):
     :math:`\text{VariantSigmoidFunction}(z) = \frac{a}{1 + \exp(-bz)} - c`
 
     Args:
-        a (float, optional): Scale parameter. Default: 1.0
-        b (float, optional): Slope parameter. Default: 1.0
-        c (float, optional): Offset parameter. Default: 0.0
+        a (float, optional): Scale parameter. Default: ``1.0``
+        b (float, optional): Slope parameter. Default: ``1.0``
+        c (float, optional): Offset parameter. Default: ``0.0``
         inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/VariantSigmoidFunction.png
+
     Examples::
 
-        >>> m = tac.VariantSigmoidFunction(a=2.0, b=1.5, c=0.5)
+        >>> m = torch_activation.VariantSigmoidFunction(a=2.0, b=1.5, c=0.5)
         >>> x = torch.randn(2)
         >>> output = m(x)
 
-        >>> m = tac.VariantSigmoidFunction(inplace=True)
+        >>> m = torch_activation.VariantSigmoidFunction(inplace=True)
         >>> x = torch.randn(2)
         >>> m(x)
     """
@@ -172,24 +188,26 @@ class STanh(BaseActivation):
 
     :math:`\text{STanh}(z) = a \tanh(bz)`
 
-    :note: Lecun et al. (1998) suggested that the scaling factor \( a \) should be 1.7159 and the slope parameter \( b \) should be 2/3. # noqa: E501
-
     Args:
-        a (float, optional): Scale parameter. Default: 1.7159
-        b (float, optional): Slope parameter. Default: 2/3
+        a (float, optional): Scale parameter. Default: ``1.7159``
+        b (float, optional): Slope parameter. Default: ``0.6667``
         inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/STanh.png
+
     Examples::
 
-        >>> m = tac.STanh(a=1.7, b=0.5)
+        >>> m = torch_activation.STanh(a=1.7, b=0.5)
         >>> x = torch.randn(2)
         >>> output = m(x)
 
-        >>> m = tac.STanh(inplace=True)
+        >>> m = torch_activation.STanh(inplace=True)
         >>> x = torch.randn(2)
         >>> m(x)
     """
@@ -246,19 +264,17 @@ class Arctan(BaseActivation):
 
     :math:`\text{Arctan}(z) = \arctan(z)`
 
-    The arctangent function resembles a logistic sigmoid activation but covers a wider range
-    :math:`[-\frac{\pi}{2}, \frac{\pi}{2}]`. It was initially used as an activation function
-    over twenty years ago and was rediscovered in more recent research where it showed
-    competitive performance compared to tanh, ReLU, leaky ReLU, logistic sigmoid, and swish
-    activation functions.
-
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/Arctan.png
+
     Examples::
 
-        >>> m = tac.Arctan()
+        >>> m = torch_activation.Arctan()
         >>> x = torch.randn(2)
         >>> output = m(x)
     """
@@ -277,28 +293,25 @@ class ArctanGR(BaseActivation):
 
     :math:`\text{ArctanGR}(z) = \frac{\arctan(z)}{\frac{1 + \sqrt{2}}{2}}`
 
-    ArctanGR is a scaled version of the Arctan activation function. The scaling factor
-    :math:`\frac{2}{1 + \sqrt{2}}` was found to be particularly effective in experiments,
-    outperforming other activation functions including the standard Arctan. Other scaling
-    variants such as division by :math:`\pi`, :math:`\frac{1 + \sqrt{5}}{2}` (golden ratio),
-    or the Euler number have also been explored in the literature.
-
     Args:
-        scale_factor (float): The scaling factor for the arctangent output.
-            Default: :math:`\frac{2}{1 + \sqrt{2}} \approx 0.8284`
+        scale_factor (float, optional): The scaling factor for the arctangent output. Default: ``0.8284``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/ArctanGR.png
+
     Examples::
 
-        >>> m = tac.ArctanGR()
+        >>> m = torch_activation.ArctanGR()
         >>> x = torch.randn(2)
         >>> output = m(x)
 
-        >>> # With custom scale factor
-        >>> m = tac.ArctanGR(scale_factor=1/math.pi)
+        >>> m = torch_activation.ArctanGR(scale_factor=0.3183)
+        >>> x = torch.randn(2)
         >>> output = m(x)
     """
 
@@ -315,24 +328,28 @@ class SigmoidAlgebraic(BaseActivation):
     r"""
     Applies the Sigmoid Algebraic activation function:
 
-    :math:`\text{SigmoidAlgebraic}(z) = \frac{1}{1 + \exp\left(-\frac{z(1 + a|z|)}{1 + |z|(1 + a|z|)}\right)}` # noqa: E501
-    :note: \( a > 0 \).
+    :math:`\text{SigmoidAlgebraic}(z) = \frac{1}{1 + \exp\left(-\frac{z(1 + a|z|)}{1 + |z|(1 + a|z|)}\right)}`
+
     Args:
-        a (float, optional): Shape parameter. Default: 1.0
+        a (float, optional): Shape parameter. Must be greater than 0. Default: ``1.0``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/SigmoidAlgebraic.png
+
     Examples::
 
-        >>> m = tac.SigmoidAlgebraic(a=0.5)
+        >>> m = torch_activation.SigmoidAlgebraic(a=0.5)
         >>> x = torch.randn(2)
         >>> output = m(x)
 
-        >>> m = tac.SigmoidAlgebraic(inplace=True)
+        >>> m = torch_activation.SigmoidAlgebraic(a=2.0)
         >>> x = torch.randn(2)
-        >>> m(x)
+        >>> output = m(x)
     """
 
     def __init__(self, a: float = 1.0, **kwargs):
@@ -354,26 +371,29 @@ class TripleStateSigmoid(BaseActivation):
     r"""
     Applies the Triple State Sigmoid activation function:
 
-    :math:`\text{TripleStateSigmoid}(z) = \frac{1}{1 + \exp(-z)} + \frac{1}{1 + \exp(-z+a)} + \frac{1}{1 + \exp(-z+b)}` # noqa: E501
+    :math:`\text{TripleStateSigmoid}(z) = \frac{1}{1 + \exp(-z)} + \frac{1}{1 + \exp(-z+a)} + \frac{1}{1 + \exp(-z+b)}`
 
-    :note: The default values of \( a \) and \( b \) are 20.0 and 40.0, respectively, as suggested in the paper. # noqa: E501
-    (https://www.sciencedirect.com/science/article/abs/pii/S0957417420307557).
+     See: https://www.sciencedirect.com/science/article/abs/pii/S0957417420307557
 
     Args:
-        a (float, optional): First shift parameter. Default: 20.0
-        b (float, optional): Second shift parameter. Default: 40.0
+        a (float, optional): First shift parameter. Default: ``20.0``
+        b (float, optional): Second shift parameter. Default: ``40.0``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/TripleStateSigmoid.png
+
     Examples::
 
-        >>> m = tac.TripleStateSigmoid()  # Uses default values a=20.0, b=40.0 from the paper
+        >>> m = torch_activation.TripleStateSigmoid()
         >>> x = torch.randn(2)
         >>> output = m(x)
 
-        >>> m = tac.TripleStateSigmoid(a=15.0, b=30.0)  # Custom parameters
+        >>> m = torch_activation.TripleStateSigmoid(a=15.0, b=30.0)
         >>> x = torch.randn(2)
         >>> output = m(x)
     """
@@ -392,43 +412,34 @@ class ImprovedLogisticSigmoid(BaseActivation):
     r"""
     Applies the Improved Logistic Sigmoid activation function:
 
-    :math:`\text{ImprovedLogisticSigmoid}(z) = \begin{cases}
-    a(z-b) + \sigma(b), & z \geq b \\
-    \sigma(z), & -b < z < b \\
-    a(z+b) + \sigma(-b), & z \leq -b
-    \end{cases}`
+    .. math::
 
-    This activation function was designed to address the vanishing gradient problem
-    of the standard logistic sigmoid. It behaves like the standard sigmoid in the middle region
-    but has a linear response in the saturation regions, allowing for non-zero gradients
-    even for large input magnitudes.
-
-    The parameter 'a' controls the slope of the linear regions and should satisfy:
-    :math:`a > a_{min} = \frac{\exp(-b)}{(1 + \exp(-b))^2}`
-
-    This ensures the function remains smooth at the transition points.
-
-    The output range is :math:`(-\infty, \infty)`, unlike the standard sigmoid which is bounded
-    to :math:`(0, 1)`. Research has shown this activation function has higher convergence speed
-    than the standard logistic sigmoid.
+        \text{ImprovedLogisticSigmoid}(z) = \begin{cases}
+        a(z-b) + \sigma(b), & z \geq b \\
+        \sigma(z), & -b < z < b \\
+        a(z+b) + \sigma(-b), & z \leq -b
+        \end{cases}
 
     Args:
-        a (float, optional): Slope parameter for the linear regions. Default: 0.2
-        b (float, optional): Threshold parameter defining the transition points. Default: 2.0
-        trainable (bool, optional): Whether parameters a and b should be trainable. Default: False
+        a (float, optional): Slope parameter for the linear regions. Default: ``0.2``
+        b (float, optional): Threshold parameter defining the transition points. Default: ``2.0``
+        trainable (bool, optional): Whether parameters a and b should be trainable. Default: ``False``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/ImprovedLogisticSigmoid.png
+
     Examples::
 
-        >>> m = tac.ImprovedLogisticSigmoid(a=0.1, b=3.0)
+        >>> m = torch_activation.ImprovedLogisticSigmoid(a=0.1, b=3.0)
         >>> x = torch.randn(2)
         >>> output = m(x)
 
-        >>> # With trainable parameters
-        >>> m = tac.ImprovedLogisticSigmoid(trainable=True)
+        >>> m = torch_activation.ImprovedLogisticSigmoid(trainable=True)
         >>> x = torch.randn(2)
         >>> output = m(x)
     """
@@ -474,21 +485,28 @@ class SigLin(BaseActivation):
 
     :math:`\text{SigLin}(z) = \sigma(z) + az`
 
-    :note: The authors of the study (https://link.springer.com/article/10.1007/s13748-020-00218-y) evaluated the SigLin activation function using linear coefficients of 0, 0.05, 0.1, and 0.15. # noqa: E501
+     See: https://link.springer.com/article/10.1007/s13748-020-00218-y
 
     Args:
-        a (float, optional): Linear coefficient. Default: 0.1
+        a (float, optional): Linear coefficient. Default: ``0.1``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/SigLin.png
+
     Examples::
 
-        >>> m = tac.SigLin(a=0.1)
+        >>> m = torch_activation.SigLin(a=0.1)
         >>> x = torch.randn(2)
         >>> output = m(x)
 
+        >>> m = torch_activation.SigLin(a=0.05)
+        >>> x = torch.randn(2)
+        >>> output = m(x)
     """
 
     def __init__(self, a: float = 0.1, **kwargs):
@@ -504,23 +522,31 @@ class PTanh(BaseActivation):
     r"""
     Applies the Penalized Hyperbolic Tangent activation function:
 
-    :math:`\text{PTanh}(z) = \begin{cases}
-    \tanh(z), & z \geq 0 \\
-    \frac{\tanh(z)}{a}, & z < 0
-    \end{cases}`
+    .. math::
 
-    :note: a must be greater than 1.0
+        \text{PTanh}(z) = \begin{cases}
+        \tanh(z), & z \geq 0 \\
+        \frac{\tanh(z)}{a}, & z < 0
+        \end{cases}
 
     Args:
-        a (float, optional): Penalty factor for negative inputs. Default: 2.0
+        a (float, optional): Penalty factor for negative inputs. Must be greater than 1.0. Default: ``2.0``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/PTanh.png
+
     Examples::
 
-        >>> m = tac.PTanh(a=3.0)
+        >>> m = torch_activation.PTanh(a=3.0)
+        >>> x = torch.randn(2)
+        >>> output = m(x)
+
+        >>> m = torch_activation.PTanh(a=5.0)
         >>> x = torch.randn(2)
         >>> output = m(x)
     """
@@ -555,17 +581,25 @@ class SRS(BaseActivation):
     :math:`\text{SRS}(z) = \frac{z}{\frac{z}{a} + \exp\left(-\frac{z}{b}\right)}`
 
     Args:
-        a (float, optional): Root parameter. Default: 2.0
-        b (float, optional): Scale parameter. Default: 3.0
-        learnable (bool, optional): If True, the parameters are learnable. Default: False
+        a (float, optional): Root parameter. Default: ``2.0``
+        b (float, optional): Scale parameter. Default: ``3.0``
+        learnable (bool, optional): If True, the parameters are learnable. Default: ``False``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/SRS.png
+
     Examples::
 
-        >>> m = tac.SRS(a=3.0, b=0.5, learnable=True)
+        >>> m = torch_activation.SRS(a=3.0, b=0.5, learnable=True)
+        >>> x = torch.randn(2)
+        >>> output = m(x)
+
+        >>> m = torch_activation.SRS(a=2.0, b=3.0)
         >>> x = torch.randn(2)
         >>> output = m(x)
     """
@@ -590,18 +624,25 @@ class SC(BaseActivation):
     Applies the Soft Clipping activation function:
 
     :math:`\text{SC}(z) = \frac{1}{a} \ln\left(\frac{1 + \exp(az)}{1 + \exp(a(z-1))}\right)`
-    :note: ReLU1 but soft edges
 
     Args:
-        a (float, optional): Sharpness parameter. Default: 50.0
+        a (float, optional): Sharpness parameter. Default: ``50.0``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/SC.png
+
     Examples::
 
-        >>> m = tac.SC(a=2.0)
+        >>> m = torch_activation.SC(a=2.0)
+        >>> x = torch.randn(2)
+        >>> output = m(x)
+
+        >>> m = torch_activation.SC(a=50.0)
         >>> x = torch.randn(2)
         >>> output = m(x)
     """
@@ -619,27 +660,35 @@ class Hexpo(BaseActivation):
     r"""
     Applies the Hexpo activation function:
 
-    :math:`\text{Hexpo}(z) = \begin{cases}
-    -a\left(\exp\left(-\frac{z}{b}\right) - 1\right), & z \geq 0 \\
-    c\left(\exp\left(-\frac{z}{d}\right) - 1\right), & z < 0
-    \end{cases}`
+    .. math::
 
-    :note: a, b, c and d could be trainable parameters, but could lead to vanishing gradients
+        \text{Hexpo}(z) = \begin{cases}
+        -a\left(\exp\left(-\frac{z}{b}\right) - 1\right), & z \geq 0 \\
+        c\left(\exp\left(-\frac{z}{d}\right) - 1\right), & z < 0
+        \end{cases}
 
     Args:
-        a (float, optional): Positive scale parameter. Default: 1.0
-        b (float, optional): Positive decay parameter. Default: 1.0
-        c (float, optional): Negative scale parameter. Default: 1.0
-        d (float, optional): Negative decay parameter. Default: 1.0
-        learnable (bool, optional): If True, the parameters are learnable. Default: False (recommended) # noqa: E501
+        a (float, optional): Positive scale parameter. Default: ``1.0``
+        b (float, optional): Positive decay parameter. Default: ``1.0``
+        c (float, optional): Negative scale parameter. Default: ``1.0``
+        d (float, optional): Negative decay parameter. Default: ``1.0``
+        learnable (bool, optional): If True, the parameters are learnable. Default: ``False``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/Hexpo.png
+
     Examples::
 
-        >>> m = tac.Hexpo(a=1.5, b=0.5, c=2.0, d=0.7)
+        >>> m = torch_activation.Hexpo(a=1.5, b=0.5, c=2.0, d=0.7)
+        >>> x = torch.randn(2)
+        >>> output = m(x)
+
+        >>> m = torch_activation.Hexpo(learnable=True)
         >>> x = torch.randn(2)
         >>> output = m(x)
     """
@@ -683,9 +732,13 @@ class Softsign(BaseActivation):
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/Softsign.png
+
     Examples::
 
-        >>> m = tac.Softsign()
+        >>> m = torch_activation.Softsign()
         >>> x = torch.randn(2)
         >>> output = m(x)
     """
@@ -702,22 +755,32 @@ class SmoothStep(BaseActivation):
     r"""
     Applies the Smooth Step activation function:
 
-    :math:`\text{SmoothStep}(z) = \begin{cases}
-    1, & z \geq \frac{a}{2} \\
-    -\frac{2}{a^3} z^3 + \frac{3}{2a} z + \frac{1}{2}, & -\frac{a}{2} \leq z \leq \frac{a}{2} \\
-    0, & z \leq -\frac{a}{2}
-    \end{cases}`
+    .. math::
+
+        \text{SmoothStep}(z) = \begin{cases}
+        1, & z \geq \frac{a}{2} \\
+        -\frac{2}{a^3} z^3 + \frac{3}{2a} z + \frac{1}{2}, & -\frac{a}{2} \leq z \leq \frac{a}{2} \\
+        0, & z \leq -\frac{a}{2}
+        \end{cases}
 
     Args:
-        a (float, optional): Width parameter. Default: 1.0
+        a (float, optional): Width parameter. Default: ``1.0``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/SmoothStep.png
+
     Examples::
 
-        >>> m = tac.SmoothStep(a=1.0)
+        >>> m = torch_activation.SmoothStep(a=1.0)
+        >>> x = torch.randn(2)
+        >>> output = m(x)
+
+        >>> m = torch_activation.SmoothStep(a=2.0)
         >>> x = torch.randn(2)
         >>> output = m(x)
     """
@@ -758,15 +821,18 @@ class Elliott(BaseActivation):
     Applies the Elliott Activation Function:
 
     :math:`\text{Elliott}(z) = \frac{0.5z}{1 + |z|} + 0.5`
-    :note: Elliott should be faster than Sigmoid
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/Elliott.png
+
     Examples::
 
-        >>> m = tac.Elliott()
+        >>> m = torch_activation.Elliott()
         >>> x = torch.randn(2)
         >>> output = m(x)
     """
@@ -791,9 +857,13 @@ class SincSigmoid(BaseActivation):
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/SincSigmoid.png
+
     Examples::
 
-        >>> m = tac.SincSigmoid()
+        >>> m = torch_activation.SincSigmoid()
         >>> x = torch.randn(2)
         >>> output = m(x)
     """
@@ -824,9 +894,13 @@ class SigmoidGumbel(BaseActivation):
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/SigmoidGumbel.png
+
     Examples::
 
-        >>> m = tac.SigmoidGumbel()
+        >>> m = torch_activation.SigmoidGumbel()
         >>> x = torch.randn(2)
         >>> output = m(x)
     """
@@ -851,9 +925,13 @@ class NewSigmoid(BaseActivation):
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/NewSigmoid.png
+
     Examples::
 
-        >>> m = tac.NewSigmoid()
+        >>> m = torch_activation.NewSigmoid()
         >>> x = torch.randn(2)
         >>> output = m(x)
     """
@@ -873,15 +951,19 @@ class Root2sigmoid(BaseActivation):
     r"""
     Applies the Root2sigmoid activation function:
 
-    :math:`\text{Root2sigmoid}(z) = \frac{\sqrt{2}^z - \sqrt{2}^{-z}}{2 \cdot \sqrt{2} \cdot \sqrt{2 \cdot (\sqrt{2}^{2z} + \sqrt{2}^{-2z})}}` # noqa: E501
+    :math:`\text{Root2sigmoid}(z) = \frac{\sqrt{2}^z - \sqrt{2}^{-z}}{2 \cdot \sqrt{2} \cdot \sqrt{2 \cdot (\sqrt{2}^{2z} + \sqrt{2}^{-2z})}}`
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/Root2sigmoid.png
+
     Examples::
 
-        >>> m = tac.Root2sigmoid()
+        >>> m = torch_activation.Root2sigmoid()
         >>> x = torch.randn(2)
         >>> output = m(x)
     """
@@ -910,9 +992,13 @@ class LogLog(BaseActivation):
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/LogLog.png
+
     Examples::
 
-        >>> m = tac.LogLog()
+        >>> m = torch_activation.LogLog()
         >>> x = torch.randn(2)
         >>> output = m(x)
     """
@@ -935,9 +1021,13 @@ class cLogLog(BaseActivation):
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/cLogLog.png
+
     Examples::
 
-        >>> m = tac.cLogLog()
+        >>> m = torch_activation.cLogLog()
         >>> x = torch.randn(2)
         >>> output = m(x)
     """
@@ -960,9 +1050,13 @@ class cLogLogm(BaseActivation):
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/cLogLogm.png
+
     Examples::
 
-        >>> m = tac.cLogLogm()
+        >>> m = torch_activation.cLogLogm()
         >>> x = torch.randn(2)
         >>> output = m(x)
     """
@@ -987,9 +1081,13 @@ class SechSig(BaseActivation):
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/SechSig.png
+
     Examples::
 
-        >>> m = tac.SechSig()
+        >>> m = torch_activation.SechSig()
         >>> x = torch.randn(2)
         >>> output = m(x)
     """
@@ -1011,15 +1109,23 @@ class pSechSig(BaseActivation):
     where :math:`\text{sech}(z) = \frac{2}{e^z + e^{-z}}` is the hyperbolic secant.
 
     Args:
-        a (float, optional): Scale parameter. Default: 1.0
+        a (float, optional): Scale parameter. Default: ``1.0``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/pSechSig.png
+
     Examples::
 
-        >>> m = tac.pSechSig(a=0.5)
+        >>> m = torch_activation.pSechSig(a=0.5)
+        >>> x = torch.randn(2)
+        >>> output = m(x)
+
+        >>> m = torch_activation.pSechSig(a=2.0)
         >>> x = torch.randn(2)
         >>> output = m(x)
     """
@@ -1043,9 +1149,13 @@ class TanhSig(BaseActivation):
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/TanhSig.png
+
     Examples::
 
-        >>> m = tac.TanhSig()
+        >>> m = torch_activation.TanhSig()
         >>> x = torch.randn(2)
         >>> output = m(x)
     """
@@ -1065,15 +1175,23 @@ class pTanhSig(BaseActivation):
     :math:`\text{pTanhSig}(z) = (z + a\cdot \tanh(z+a))\sigma(z)`
 
     Args:
-        a (float, optional): Scale parameter. Default: 1.0
+        a (float, optional): Scale parameter. Default: ``1.0``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/pTanhSig.png
+
     Examples::
 
-        >>> m = tac.pTanhSig(a=0.5)
+        >>> m = torch_activation.pTanhSig(a=0.5)
+        >>> x = torch.randn(2)
+        >>> output = m(x)
+
+        >>> m = torch_activation.pTanhSig(a=2.0)
         >>> x = torch.randn(2)
         >>> output = m(x)
     """
@@ -1094,16 +1212,24 @@ class MSAF(BaseActivation):
     :math:`\text{MSAF}(z) = a + \sum_{k=1}^N \frac{1}{1 + \exp(-z+b_k)}`
 
     Args:
-        a (float, optional): Offset parameter. Default: 0.0
-        b (list of float, optional): List of shift parameters. Default: [1.0, 2.0]
+        a (float, optional): Offset parameter. Default: ``0.0``
+        b (list of float, optional): List of shift parameters. Default: ``[1.0, 2.0]``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/MSAF.png
+
     Examples::
 
-        >>> m = tac.MSAF(a=0.5, b=[0.5, 1.5, 2.5])
+        >>> m = torch_activation.MSAF(a=0.5, b=[0.5, 1.5, 2.5])
+        >>> x = torch.randn(2)
+        >>> output = m(x)
+
+        >>> m = torch_activation.MSAF()
         >>> x = torch.randn(2)
         >>> output = m(x)
     """
@@ -1130,15 +1256,23 @@ class SymMSAF(BaseActivation):
     :math:`\text{SymMSAF}(z) = -1 + \frac{1}{1 + \exp(-z)} + \frac{1}{1 + \exp(-z-a)}`
 
     Args:
-        a (float, optional): Shift parameter. Default: 1.0
+        a (float, optional): Shift parameter. Default: ``1.0``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/SymMSAF.png
+
     Examples::
 
-        >>> m = tac.SymMSAF(a=2.0)
+        >>> m = torch_activation.SymMSAF(a=2.0)
+        >>> x = torch.randn(2)
+        >>> output = m(x)
+
+        >>> m = torch_activation.SymMSAF()
         >>> x = torch.randn(2)
         >>> output = m(x)
     """
@@ -1159,15 +1293,23 @@ class Rootsig(BaseActivation):
     :math:`\text{Rootsig}(z) = \frac{az}{1 + \sqrt{1 + a^2z^2}}`
 
     Args:
-        a (float, optional): Scale parameter. Default: 1.0
+        a (float, optional): Scale parameter. Default: ``1.0``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/Rootsig.png
+
     Examples::
 
-        >>> m = tac.Rootsig(a=2.0)
+        >>> m = torch_activation.Rootsig(a=2.0)
+        >>> x = torch.randn(2)
+        >>> output = m(x)
+
+        >>> m = torch_activation.Rootsig()
         >>> x = torch.randn(2)
         >>> output = m(x)
     """
@@ -1220,22 +1362,28 @@ class Rootsig(BaseActivation):
 class RootsigPlus(BaseActivation):
     # TODO: Ask someone about this name.
     r"""
-    :note: The name "RootsigPlus" derived from the second entry in "3.2.25 Rootsig and others" entry, found in the `Estimates of the number of hidden units and variation with respect # noqa: E501
-    to half-spaces` paper. I named it this way because the curve resembles the Tanh but softer and not as soft as Rootsig. # noqa: E501
-    Applies the Radical Tanh activation function:
+    Applies the RootsigPlus activation function:
 
     :math:`\text{RootsigPlus}(z) = \frac{az}{1 + |az|}`
 
     Args:
-        a (float, optional): Scale parameter. Default: 1.0
+        a (float, optional): Scale parameter. Default: ``1.0``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/RootsigPlus.png
+
     Examples::
 
-        >>> m = tac.RootsigPlus(a=2.0)
+        >>> m = torch_activation.RootsigPlus(a=2.0)
+        >>> x = torch.randn(2)
+        >>> output = m(x)
+
+        >>> m = torch_activation.RootsigPlus()
         >>> x = torch.randn(2)
         >>> output = m(x)
     """
@@ -1253,22 +1401,28 @@ class RootsigPlus(BaseActivation):
 class SoftTanh(BaseActivation):
     # TODO: Ask someone about this name.
     r"""
-    :note: The name "RadicalTanh" derived from the third entry in "3.2.25 Rootsig and others" entry, found in the `Estimates of the number of hidden units and variation with respect # noqa: E501
-    to half-spaces` paper. I named it this way because the curve resembles the Tanh but softer and not as soft as RootsigPlus. # noqa: E501
     Applies the SoftTanh activation function:
 
     :math:`\text{SoftTanh}(z) = \frac{az}{\sqrt{1 + a^2z^2}}`
 
     Args:
-        a (float, optional): Shape parameter. Default: 2.0
+        a (float, optional): Shape parameter. Default: ``2.0``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/SoftTanh.png
+
     Examples::
 
-        >>> m = tac.SoftTanh(a=3.0)
+        >>> m = torch_activation.SoftTanh(a=3.0)
+        >>> x = torch.randn(2)
+        >>> output = m(x)
+
+        >>> m = torch_activation.SoftTanh()
         >>> x = torch.randn(2)
         >>> output = m(x)
     """
@@ -1287,30 +1441,36 @@ class SigmoidTanh(BaseActivation):
     r"""
     Applies the Sigmoid-Tanh Combinations activation function:
 
-    :math:`\text{SigmoidTanh}(z) = \begin{cases}
-    g(z), & z \geq 0 \\
-    h(z), & z < 0
-    \end{cases}`
+    .. math::
+
+        \text{SigmoidTanh}(z) = \begin{cases}
+        g(z), & z \geq 0 \\
+        h(z), & z < 0
+        \end{cases}
 
     where g(z) and h(z) are user-defined functions, defaulting to sigmoid and tanh respectively.
 
     Args:
-        g_func (callable, optional): Function to use for positive inputs. Default: torch.sigmoid
-        h_func (callable, optional): Function to use for negative inputs. Default: torch.tanh
+        g_func (callable, optional): Function to use for positive inputs. Default: ``torch.sigmoid``
+        h_func (callable, optional): Function to use for negative inputs. Default: ``torch.tanh``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/SigmoidTanh.png
+
     Examples::
 
-        >>> m = tac.SigmoidTanh()
+        >>> m = torch_activation.SigmoidTanh()
         >>> x = torch.randn(2)
         >>> output = m(x)
 
-        >>> # Custom functions
         >>> import torch.nn.functional as F
-        >>> m = tac.SigmoidTanh(g_func=F.relu, h_func=torch.sigmoid)
+        >>> m = torch_activation.SigmoidTanh(g_func=F.relu, h_func=torch.sigmoid)
+        >>> x = torch.randn(2)
         >>> output = m(x)
     """
 

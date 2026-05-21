@@ -11,16 +11,18 @@ class SGT(BaseActivation):
     r"""
     Applies the SGT activation function:
 
-    :math:`\text{SGT}(x) = \begin{cases} ax^{\alpha}, x < 0 \\bx^{\beta}, x \geq 0 \end{cases}`
+    .. math::
+
+        \text{SGT}(x) = \begin{cases} ax^{\alpha}, & x < 0 \\ bx^{\beta}, & x \geq 0 \end{cases}
 
      See: https://www.nature.com/articles/s41598-022-19020-y
 
     Args:
-        a (float, optional): Scaling factor for the positive part of the input. Default: 1.0.
-        alpha (float, optional): Exponent for the positive part of the input. Default: 1.0.
-        b (float, optional): Scaling factor for the negative part of the input. Default: 1.0.
-        beta (float, optional): Exponent for the negative part of the input. Default: 1.0.
-        learnable (bool, optional): optionally make alpha and beta parameters trainable. Default: ``False`` # noqa: E501
+        a (float, optional): Scaling factor for the negative part of the input. Default: ``0.1``
+        alpha (float, optional): Exponent for the negative part of the input. Default: ``1.0``
+        b (float, optional): Scaling factor for the positive part of the input. Default: ``1.1``
+        beta (float, optional): Exponent for the positive part of the input. Default: ``1.0``
+        learnable (bool, optional): Optionally make alpha and beta parameters trainable. Default: ``False``
         inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
@@ -39,7 +41,7 @@ class SGT(BaseActivation):
 
         >>> m = torch_activation.SGT(learnable=True)
         >>> x = torch.randn(2, 3, 4)
-        >>> m(x)
+        >>> output = m(x)
     """
 
     def __init__(

@@ -16,12 +16,21 @@ class Sine(BaseActivation):
 
     Args:
         omega (float, optional): frequency of the sine wave. Default: ``math.pi``
-        inplace (bool, optional): parameter kept for API consistency, but sine operation
-                                 cannot be done in-place. Default: ``False``
+        inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
+
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/Sine.png
+
+    Examples::
+
+        >>> m = torch_activation.Sine()
+        >>> x = torch.randn(2)
+        >>> output = m(x)
     """
 
     def __init__(self, omega: float = math.pi, **kwargs):
@@ -40,17 +49,23 @@ class CombHSine(BaseActivation):
 
     :math:`\text{CombHSine}(z) = \sinh(az) + \sinh^{-1}(az)`
 
-    where sinh(x) is the hyperbolic sine, sinh^{-1}(x) is its inverse,
-    and a is a predefined hyperparameter.
-
     Args:
         a (float, optional): hyperparameter controlling the scaling. Default: ``1.0``
-        inplace (bool, optional): parameter kept for API consistency, but operation
-                                 cannot be done in-place. Default: ``False``
+        inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
+
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/CombHSine.png
+
+    Examples::
+
+        >>> m = torch_activation.CombHSine()
+        >>> x = torch.randn(2)
+        >>> output = m(x)
     """
 
     def __init__(self, a: float = 1.0, **kwargs):
@@ -71,12 +86,21 @@ class ModifiedArcsinh(BaseActivation):
     :math:`\text{ModifiedArcsinh}(z) = \frac{1}{12} \sinh^{-1}(z) |z|`
 
     Args:
-        inplace (bool, optional): parameter kept for API consistency, but operation
-                                 cannot be done in-place. Default: ``False``
+        inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
+
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/ModifiedArcsinh.png
+
+    Examples::
+
+        >>> m = torch_activation.ModifiedArcsinh()
+        >>> x = torch.randn(2)
+        >>> output = m(x)
     """
 
     def __init__(self, **kwargs):
@@ -92,19 +116,29 @@ class HyperSinh(BaseActivation):
     r"""
     Applies the hyper-sinh activation function:
 
-    :math:`\text{HyperSinh}(z) =
-    \begin{cases}
-    \frac{\sinh(z)}{3}, & \text{if } z > 0 \\
-    \frac{z^3}{4}, & \text{if } z \leq 0
-    \end{cases}`
+    .. math::
+
+        \text{HyperSinh}(z) = \begin{cases}
+        \frac{\sinh(z)}{3}, & z > 0 \\
+        \frac{z^3}{4}, & z \leq 0
+        \end{cases}
 
     Args:
-        inplace (bool, optional): parameter kept for API consistency, but operation
-                                 cannot be done in-place. Default: ``False``
+        inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
+
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/HyperSinh.png
+
+    Examples::
+
+        >>> m = torch_activation.HyperSinh()
+        >>> x = torch.randn(2)
+        >>> output = m(x)
     """
 
     def __init__(self, **kwargs):
@@ -125,12 +159,21 @@ class Arctid(BaseActivation):
     :math:`\text{Arctid}(z) = \tan^{-1}(z) \cdot 2^{-z}`
 
     Args:
-        inplace (bool, optional): parameter kept for API consistency, but operation
-                                 cannot be done in-place. Default: ``False``
+        inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
+
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/Arctid.png
+
+    Examples::
+
+        >>> m = torch_activation.Arctid()
+        >>> x = torch.randn(2)
+        >>> output = m(x)
     """
 
     def __init__(self, **kwargs):
@@ -149,12 +192,21 @@ class Cosine(BaseActivation):
     :math:`\text{Cosine}(z) = 1 - \cos(z)`
 
     Args:
-        inplace (bool, optional): parameter kept for API consistency, but operation
-                                 cannot be done in-place. Default: ``False``
+        inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
+
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/Cosine.png
+
+    Examples::
+
+        >>> m = torch_activation.Cosine()
+        >>> x = torch.randn(2)
+        >>> output = m(x)
     """
 
     def __init__(self, **kwargs):
@@ -173,12 +225,21 @@ class Cosid(BaseActivation):
     :math:`\text{Cosid}(z) = \cos(z) - z`
 
     Args:
-        inplace (bool, optional): parameter kept for API consistency, but operation
-                                 cannot be done in-place. Default: ``False``
+        inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
+
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/Cosid.png
+
+    Examples::
+
+        >>> m = torch_activation.Cosid()
+        >>> x = torch.randn(2)
+        >>> output = m(x)
     """
 
     def __init__(self, **kwargs):
@@ -196,16 +257,23 @@ class Sinp(BaseActivation):
 
     :math:`\text{Sinp}(z) = \sin(z) - az`
 
-    where a is a fixed parameter.
-
     Args:
         a (float, optional): scaling parameter for the linear term. Default: ``1.0``
-        inplace (bool, optional): parameter kept for API consistency, but operation
-                                 cannot be done in-place. Default: ``False``
+        inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
+
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/Sinp.png
+
+    Examples::
+
+        >>> m = torch_activation.Sinp()
+        >>> x = torch.randn(2)
+        >>> output = m(x)
     """
 
     def __init__(self, a: float = 1.0, **kwargs):
@@ -225,12 +293,21 @@ class GCU(BaseActivation):
     :math:`\text{GCU}(z) = z \cdot \cos(z)`
 
     Args:
-        inplace (bool, optional): parameter kept for API consistency, but operation
-                                 cannot be done in-place. Default: ``False``
+        inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
+
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/GCU.png
+
+    Examples::
+
+        >>> m = torch_activation.GCU()
+        >>> x = torch.randn(2)
+        >>> output = m(x)
     """
 
     def __init__(self, **kwargs):
@@ -249,12 +326,21 @@ class ASU(BaseActivation):
     :math:`\text{ASU}(z) = z \cdot \sin(z)`
 
     Args:
-        inplace (bool, optional): parameter kept for API consistency, but operation
-                                 cannot be done in-place. Default: ``False``
+        inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
+
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/ASU.png
+
+    Examples::
+
+        >>> m = torch_activation.ASU()
+        >>> x = torch.randn(2)
+        >>> output = m(x)
     """
 
     def __init__(self, **kwargs):
@@ -270,19 +356,29 @@ class Sinc(BaseActivation):
     r"""
     Applies the Sinc activation function:
 
-    :math:`\text{Sinc}(z) =
-    \begin{cases}
-    \frac{\sin(\pi z)}{\pi z}, & \text{if } z \neq 0 \\
-    1, & \text{if } z = 0
-    \end{cases}`
+    .. math::
+
+        \text{Sinc}(z) = \begin{cases}
+        \frac{\sin(\pi z)}{\pi z}, & z \neq 0 \\
+        1, & z = 0
+        \end{cases}
 
     Args:
-        inplace (bool, optional): parameter kept for API consistency, but operation
-                                 cannot be done in-place. Default: ``False``
+        inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
+
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/Sinc.png
+
+    Examples::
+
+        >>> m = torch_activation.Sinc()
+        >>> x = torch.randn(2)
+        >>> output = m(x)
     """
 
     def __init__(self, **kwargs):
@@ -302,12 +398,21 @@ class SSU(BaseActivation):
     :math:`\text{SSU}(z) = \pi \cdot \text{sinc}(z - \pi)`
 
     Args:
-        inplace (bool, optional): parameter kept for API consistency, but operation
-                                 cannot be done in-place. Default: ``False``
+        inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
+
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/SSU.png
+
+    Examples::
+
+        >>> m = torch_activation.SSU()
+        >>> x = torch.randn(2)
+        >>> output = m(x)
     """
 
     def __init__(self, **kwargs):
@@ -332,12 +437,21 @@ class DSU(BaseActivation):
     :math:`\text{DSU}(z) = \frac{\pi}{2} \cdot (\text{sinc}(z - \pi) - \text{sinc}(z + \pi))`
 
     Args:
-        inplace (bool, optional): parameter kept for API consistency, but operation
-                                 cannot be done in-place. Default: ``False``
+        inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
+
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/DSU.png
+
+    Examples::
+
+        >>> m = torch_activation.DSU()
+        >>> x = torch.randn(2)
+        >>> output = m(x)
     """
 
     def __init__(self, **kwargs):
@@ -369,19 +483,29 @@ class HcLSH(BaseActivation):
     r"""
     Applies the Hyperbolic Cosine Linearized Squashing Function (HcLSH) activation function:
 
-    :math:`\text{HcLSH}(z) =
-    \begin{cases}
-    \ln(\cosh(z)) + \frac{z \cdot \cosh(z)}{2}, & \text{if } z \geq 0 \\
-    \ln(\cosh(z)) + z, & \text{if } z < 0
-    \end{cases}`
+    .. math::
+
+        \text{HcLSH}(z) = \begin{cases}
+        \ln(\cosh(z)) + \frac{z \cdot \cosh(z)}{2}, & z \geq 0 \\
+        \ln(\cosh(z)) + z, & z < 0
+        \end{cases}
 
     Args:
-        inplace (bool, optional): parameter kept for API consistency, but operation
-                                 cannot be done in-place. Default: ``False``
+        inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
+
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/HcLSH.png
+
+    Examples::
+
+        >>> m = torch_activation.HcLSH()
+        >>> x = torch.randn(2)
+        >>> output = m(x)
     """
 
     def __init__(self, **kwargs):

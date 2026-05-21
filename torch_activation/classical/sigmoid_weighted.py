@@ -22,10 +22,16 @@ class SiLU(BaseActivation):
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    .. image:: ../images/activation_images/SiLU.png
+
     Examples::
 
-        >>> m = SiLU()
+        >>> m = torch_activation.SiLU()
         >>> x = torch.randn(2)
+        >>> output = m(x)
+
+        >>> m = torch_activation.SiLU()
+        >>> x = torch.randn(2, 3)
         >>> output = m(x)
     """
 
@@ -52,17 +58,15 @@ class CoLU(BaseActivation):
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
-    Here is a plot of the function and its derivative:
-
     .. image:: ../images/activation_images/CoLU.png
 
     Examples::
 
-        >>> m = nn.CoLU()
+        >>> m = torch_activation.CoLU()
         >>> x = torch.randn(2)
         >>> output = m(x)
 
-        >>> m = nn.CoLU(inplace=True)
+        >>> m = torch_activation.CoLU(inplace=True)
         >>> x = torch.randn(2)
         >>> m(x)
     """
@@ -84,23 +88,23 @@ class Phish(torch.nn.Module):
 
     :math:`\text{Phish}(x) = x \cdot \tanh (\text{GELU} (x))`
 
-     See: `Phish: A Novel Hyper-Optimizable Activation Function`_.
+     See: https://www.semanticscholar.org/paper/Phish%3A-A-Novel-Hyper-Optimizable-Activation-Naveen/43eb5e22da6092d28f0e842fec53ec1a76e1ba6b
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
-    Here is a plot of the function and its derivative:
-
     .. image:: ../images/activation_images/Phish.png
 
-    Examples:
-        >>> m = Phish()
-        >>> x = torch.randn(2, 3)
+    Examples::
+
+        >>> m = torch_activation.Phish()
+        >>> x = torch.randn(2)
         >>> output = m(x)
 
-    .. _`Phish: A Novel Hyper-Optimizable Activation Function`:
-        https://www.semanticscholar.org/paper/Phish%3A-A-Novel-Hyper-Optimizable-Activation-Naveen/43eb5e22da6092d28f0e842fec53ec1a76e1ba6b
+        >>> m = torch_activation.Phish()
+        >>> x = torch.randn(2, 3)
+        >>> output = m(x)
     """
 
     def __init__(self, **kwargs):
@@ -123,22 +127,24 @@ class SinLU(BaseActivation):
      See: https://doi.org/10.3390/math10030337
 
     Args:
-        a (float, optional): Initial value for sine function magnitude. Default: 1.0.
-        b (float, optional): Initial value for sine function period. Default: 1.0.
+        a (float, optional): Initial value for sine function magnitude. Default: ``1.0``
+        b (float, optional): Initial value for sine function period. Default: ``1.0``
         inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
-    Here is a plot of the function and its derivative:
-
     .. image:: ../images/activation_images/SinLU.png
 
     Examples::
 
-        >>> m = nn.SinLU(a=5.0, b=6.0)
+        >>> m = torch_activation.SinLU(a=5.0, b=6.0)
         >>> x = torch.randn(2)
+        >>> output = m(x)
+
+        >>> m = torch_activation.SinLU()
+        >>> x = torch.randn(2, 3)
         >>> output = m(x)
     """
 
@@ -166,16 +172,20 @@ class GELU(BaseActivation):
 
     :math:`\text{GELU}(z) = z \cdot \Phi(z) = z \cdot \frac{1}{2} \left( 1 + \text{erf}\left(\frac{z}{\sqrt{2}}\right) \right)` # noqa: E501
 
-    This is a wrapper around PyTorch's native F.gelu implementation.
-
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    .. image:: ../images/activation_images/GELU.png
+
     Examples::
 
-        >>> m = GaussianErrorLinearUnit()
+        >>> m = torch_activation.GELU()
         >>> x = torch.randn(2)
+        >>> output = m(x)
+
+        >>> m = torch_activation.GELU()
+        >>> x = torch.randn(2, 3)
         >>> output = m(x)
     """
 
@@ -194,16 +204,22 @@ class SGELU(BaseActivation):
     :math:`\text{SGELU}(z) = a \cdot z \cdot \text{erf}\left(\frac{z}{\sqrt{2}}\right)`
 
     Args:
-        a (float, optional): Scale parameter. Default: 1.0
+        a (float, optional): Scale parameter. Default: ``1.0``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    .. image:: ../images/activation_images/SGELU.png
+
     Examples::
 
-        >>> m = SGELU(a=1.5)
+        >>> m = torch_activation.SGELU(a=1.5)
         >>> x = torch.randn(2)
+        >>> output = m(x)
+
+        >>> m = torch_activation.SGELU()
+        >>> x = torch.randn(2, 3)
         >>> output = m(x)
     """
 
@@ -226,10 +242,16 @@ class CaLU(BaseActivation):
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    .. image:: ../images/activation_images/CaLU.png
+
     Examples::
 
-        >>> m = CaLU()
+        >>> m = torch_activation.CaLU()
         >>> x = torch.randn(2)
+        >>> output = m(x)
+
+        >>> m = torch_activation.CaLU()
+        >>> x = torch.randn(2, 3)
         >>> output = m(x)
     """
 
@@ -245,19 +267,27 @@ class LaLU(BaseActivation):
     r"""
     Applies the Laplace Linear Unit activation function:
 
-    :math:`\text{LaLU}(z) = z \cdot \Phi_{\text{Laplace}}(z) = z \cdot \begin{cases}
-    1 - \frac{1}{2} \exp(-z), & z \geq 0 \\
-    \frac{1}{2} \exp(z), & z < 0
-    \end{cases}`
+    .. math::
+
+        \text{LaLU}(z) = z \cdot \Phi_{\text{Laplace}}(z) = z \cdot \begin{cases}
+        1 - \frac{1}{2} \exp(-z), & z \geq 0 \\
+        \frac{1}{2} \exp(z), & z < 0
+        \end{cases}
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    .. image:: ../images/activation_images/LaLU.png
+
     Examples::
 
-        >>> m = LaLU()
+        >>> m = torch_activation.LaLU()
         >>> x = torch.randn(2)
+        >>> output = m(x)
+
+        >>> m = torch_activation.LaLU()
+        >>> x = torch.randn(2, 3)
         >>> output = m(x)
     """
 
@@ -290,13 +320,15 @@ class CoLU(BaseActivation):  # noqa: F811
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    .. image:: ../images/activation_images/CoLU.png
+
     Examples::
 
-        >>> m = CoLU()
+        >>> m = torch_activation.CoLU()
         >>> x = torch.randn(2)
         >>> output = m(x)
 
-        >>> m = CoLU(inplace=True)
+        >>> m = torch_activation.CoLU(inplace=True)
         >>> x = torch.randn(2)
         >>> m(x)
     """
@@ -317,17 +349,23 @@ class TSSwish(BaseActivation):
     :math:`\text{TSS}(z) = z \cdot \frac{1}{1 + \exp(-z)} \left( \frac{1}{1 + \exp(-z)} + \frac{1}{1 + \exp(-z+a)} + \frac{1}{1 + \exp(-z+b)} \right)` # noqa: E501
 
     Args:
-        a (float, optional): First shift parameter. Default: 1.0
-        b (float, optional): Second shift parameter. Default: 2.0
+        a (float, optional): First shift parameter. Default: ``1.0``
+        b (float, optional): Second shift parameter. Default: ``2.0``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    .. image:: ../images/activation_images/TSSwish.png
+
     Examples::
 
-        >>> m = TSSwish(a=1.5, b=2.5)
+        >>> m = torch_activation.TSSwish(a=1.5, b=2.5)
         >>> x = torch.randn(2)
+        >>> output = m(x)
+
+        >>> m = torch_activation.TSSwish()
+        >>> x = torch.randn(2, 3)
         >>> output = m(x)
     """
 
@@ -350,16 +388,20 @@ class GSwish(BaseActivation):
 
     :math:`\text{GSwish}(z) = z \cdot \sigma(\exp(-z))`
 
-    where :math:`\sigma` is the sigmoid function.
-
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    .. image:: ../images/activation_images/GSwish.png
+
     Examples::
 
-        >>> m = GSwish()
+        >>> m = torch_activation.GSwish()
         >>> x = torch.randn(2)
+        >>> output = m(x)
+
+        >>> m = torch_activation.GSwish()
+        >>> x = torch.randn(2, 3)
         >>> output = m(x)
     """
 
@@ -377,16 +419,20 @@ class ESwish(BaseActivation):
 
     :math:`\text{ESwish}(z) = \exp(-z) \cdot \sigma(z)`
 
-    where :math:`\sigma` is the sigmoid function.
-
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    .. image:: ../images/activation_images/ESwish.png
+
     Examples::
 
-        >>> m = ESwish()
+        >>> m = torch_activation.ESwish()
         >>> x = torch.randn(2)
+        >>> output = m(x)
+
+        >>> m = torch_activation.ESwish()
+        >>> x = torch.randn(2, 3)
         >>> output = m(x)
     """
 
@@ -404,16 +450,20 @@ class dSigmoid(BaseActivation):
 
     :math:`\text{dSigmoid}(z) = \exp(-z) \cdot (\sigma(z))^2`
 
-    where :math:`\sigma` is the sigmoid function.
-
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    .. image:: ../images/activation_images/dSigmoid.png
+
     Examples::
 
-        >>> m = dSigmoid()
+        >>> m = torch_activation.dSigmoid()
         >>> x = torch.randn(2)
+        >>> output = m(x)
+
+        >>> m = torch_activation.dSigmoid()
+        >>> x = torch.randn(2, 3)
         >>> output = m(x)
     """
 
@@ -436,10 +486,16 @@ class Gish(BaseActivation):
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    .. image:: ../images/activation_images/Gish.png
+
     Examples::
 
-        >>> m = Gish()
+        >>> m = torch_activation.Gish()
         >>> x = torch.randn(2)
+        >>> output = m(x)
+
+        >>> m = torch_activation.Gish()
+        >>> x = torch.randn(2, 3)
         >>> output = m(x)
     """
 
@@ -457,16 +513,20 @@ class Logish(BaseActivation):
 
     :math:`\text{Logish}(z) = z \cdot \ln(1 + \sigma(z))`
 
-    where :math:`\sigma` is the sigmoid function.
-
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    .. image:: ../images/activation_images/Logish.png
+
     Examples::
 
-        >>> m = Logish()
+        >>> m = torch_activation.Logish()
         >>> x = torch.randn(2)
+        >>> output = m(x)
+
+        >>> m = torch_activation.Logish()
+        >>> x = torch.randn(2, 3)
         >>> output = m(x)
     """
 
@@ -488,10 +548,16 @@ class LogLogish(BaseActivation):
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    .. image:: ../images/activation_images/LogLogish.png
+
     Examples::
 
-        >>> m = LogLogish()
+        >>> m = torch_activation.LogLogish()
         >>> x = torch.randn(2)
+        >>> output = m(x)
+
+        >>> m = torch_activation.LogLogish()
+        >>> x = torch.randn(2, 3)
         >>> output = m(x)
     """
 
@@ -513,10 +579,16 @@ class ExpExpish(BaseActivation):
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    .. image:: ../images/activation_images/ExpExpish.png
+
     Examples::
 
-        >>> m = ExpExpish()
+        >>> m = torch_activation.ExpExpish()
         >>> x = torch.randn(2)
+        >>> output = m(x)
+
+        >>> m = torch_activation.ExpExpish()
+        >>> x = torch.randn(2, 3)
         >>> output = m(x)
     """
 
@@ -538,10 +610,16 @@ class SelfArctan(BaseActivation):
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    .. image:: ../images/activation_images/SelfArctan.png
+
     Examples::
 
-        >>> m = SelfArctan()
+        >>> m = torch_activation.SelfArctan()
         >>> x = torch.randn(2)
+        >>> output = m(x)
+
+        >>> m = torch_activation.SelfArctan()
+        >>> x = torch.randn(2, 3)
         >>> output = m(x)
     """
 
@@ -559,20 +637,24 @@ class pLogish(BaseActivation):
 
     :math:`\text{pLogish}(z_i) = a \cdot z_i \cdot \ln(1 + \sigma(b \cdot z_i))`
 
-    where :math:`\sigma` is the sigmoid function.
-
     Args:
-        a (float, optional): Scale parameter. Default: 1.0
-        b (float, optional): Sigmoid scale parameter. Default: 10.0
+        a (float, optional): Scale parameter. Default: ``1.0``
+        b (float, optional): Sigmoid scale parameter. Default: ``10.0``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    .. image:: ../images/activation_images/pLogish.png
+
     Examples::
 
-        >>> m = pLogish(a=1.5, b=2.0)
+        >>> m = torch_activation.pLogish(a=1.5, b=2.0)
         >>> x = torch.randn(2)
+        >>> output = m(x)
+
+        >>> m = torch_activation.pLogish()
+        >>> x = torch.randn(2, 3)
         >>> output = m(x)
     """
 
@@ -596,10 +678,16 @@ class Phish(BaseActivation):  # noqa: F811
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    .. image:: ../images/activation_images/Phish.png
+
     Examples::
 
-        >>> m = Phish()
+        >>> m = torch_activation.Phish()
         >>> x = torch.randn(2)
+        >>> output = m(x)
+
+        >>> m = torch_activation.Phish()
+        >>> x = torch.randn(2, 3)
         >>> output = m(x)
     """
 
@@ -621,10 +709,16 @@ class Suish(BaseActivation):
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    .. image:: ../images/activation_images/Suish.png
+
     Examples::
 
-        >>> m = Suish()
+        >>> m = torch_activation.Suish()
         >>> x = torch.randn(2)
+        >>> output = m(x)
+
+        >>> m = torch_activation.Suish()
+        >>> x = torch.randn(2, 3)
         >>> output = m(x)
     """
 
@@ -637,21 +731,25 @@ class Suish(BaseActivation):
 
 @register_activation
 class TSReLU(BaseActivation):
-    r"""Tangent Sigmoid ReLU activation function.
+    r"""
+    Applies the Tangent Sigmoid ReLU activation function:
 
-    .. math::
-        \text{TSReLU}(z) = z \cdot \tanh(\sigma(z))
-
-    where :math:`\sigma` is the sigmoid function.
+    :math:`\text{TSReLU}(z) = z \cdot \tanh(\sigma(z))`
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    .. image:: ../images/activation_images/TSReLU.png
+
     Examples::
 
-        >>> m = TSReLU()
+        >>> m = torch_activation.TSReLU()
         >>> x = torch.randn(2)
+        >>> output = m(x)
+
+        >>> m = torch_activation.TSReLU()
+        >>> x = torch.randn(2, 3)
         >>> output = m(x)
     """
 
@@ -673,10 +771,16 @@ class TBSReLU(BaseActivation):
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    .. image:: ../images/activation_images/TBSReLU.png
+
     Examples::
 
-        >>> m = TBSReLU()
+        >>> m = torch_activation.TBSReLU()
         >>> x = torch.randn(2)
+        >>> output = m(x)
+
+        >>> m = torch_activation.TBSReLU()
+        >>> x = torch.randn(2, 3)
         >>> output = m(x)
     """
 
@@ -696,16 +800,20 @@ class LogSigmoid(BaseActivation):
 
     :math:`\text{LogSigmoid}(z) = \ln(\sigma(z)) = \ln\left(\frac{1}{1 + \exp(-z)}\right)`
 
-    This is a wrapper around PyTorch's native F.logsigmoid implementation.
-
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    .. image:: ../images/activation_images/LogSigmoid.png
+
     Examples::
 
-        >>> m = LogSigmoid()
+        >>> m = torch_activation.LogSigmoid()
         >>> x = torch.randn(2)
+        >>> output = m(x)
+
+        >>> m = torch_activation.LogSigmoid()
+        >>> x = torch.randn(2, 3)
         >>> output = m(x)
     """
 
@@ -723,16 +831,20 @@ class dSiLU(BaseActivation):
 
     :math:`\text{dSiLU}(z) = \sigma(z) \cdot (1 + z \cdot (1 - \sigma(z)))`
 
-    where :math:`\sigma` is the sigmoid function.
-
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    .. image:: ../images/activation_images/dSiLU.png
+
     Examples::
 
-        >>> m = dSiLU()
+        >>> m = torch_activation.dSiLU()
         >>> x = torch.randn(2)
+        >>> output = m(x)
+
+        >>> m = torch_activation.dSiLU()
+        >>> x = torch.randn(2, 3)
         >>> output = m(x)
     """
 
@@ -755,10 +867,16 @@ class DoubleSiLU(BaseActivation):
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    .. image:: ../images/activation_images/DoubleSiLU.png
+
     Examples::
 
-        >>> m = DoubleSiLU()
+        >>> m = torch_activation.DoubleSiLU()
         >>> x = torch.randn(2)
+        >>> output = m(x)
+
+        >>> m = torch_activation.DoubleSiLU()
+        >>> x = torch.randn(2, 3)
         >>> output = m(x)
     """
 
@@ -776,16 +894,20 @@ class MSiLU(BaseActivation):
 
     :math:`\text{MSiLU}(z) = z \cdot \sigma(z) + \exp\left(\frac{-z^2 - 1}{4}\right)`
 
-    where :math:`\sigma` is the sigmoid function.
-
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    .. image:: ../images/activation_images/MSiLU.png
+
     Examples::
 
-        >>> m = MSiLU()
+        >>> m = torch_activation.MSiLU()
         >>> x = torch.randn(2)
+        >>> output = m(x)
+
+        >>> m = torch_activation.MSiLU()
+        >>> x = torch.randn(2, 3)
         >>> output = m(x)
     """
 
@@ -807,10 +929,16 @@ class TSiLU(BaseActivation):
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    .. image:: ../images/activation_images/TSiLU.png
+
     Examples::
 
-        >>> m = TSiLU()
+        >>> m = torch_activation.TSiLU()
         >>> x = torch.randn(2)
+        >>> output = m(x)
+
+        >>> m = torch_activation.TSiLU()
+        >>> x = torch.randn(2, 3)
         >>> output = m(x)
     """
 
@@ -834,10 +962,16 @@ class ASiLU(BaseActivation):
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    .. image:: ../images/activation_images/ASiLU.png
+
     Examples::
 
-        >>> m = ASiLU()
+        >>> m = torch_activation.ASiLU()
         >>> x = torch.randn(2)
+        >>> output = m(x)
+
+        >>> m = torch_activation.ASiLU()
+        >>> x = torch.randn(2, 3)
         >>> output = m(x)
     """
 
@@ -857,16 +991,22 @@ class SwAT(BaseActivation):
 
     :math:`\text{SwAT}(z) = z \cdot \frac{1}{1 + \exp(-\arctan(z))}`
 
-    See: `https://drive.google.com/file/d/10g-lrsc4WhxU90zQLaBY9BuYconaj-vD/view?usp=sharing`
+     See: https://drive.google.com/file/d/10g-lrsc4WhxU90zQLaBY9BuYconaj-vD/view?usp=sharing
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    .. image:: ../images/activation_images/SwAT.png
+
     Examples::
 
-        >>> m = SwAT()
+        >>> m = torch_activation.SwAT()
         >>> x = torch.randn(2)
+        >>> output = m(x)
+
+        >>> m = torch_activation.SwAT()
+        >>> x = torch.randn(2, 3)
         >>> output = m(x)
     """
 
@@ -884,16 +1024,20 @@ class ReHSec(BaseActivation):
 
     :math:`\text{ReHSec}(z) = z \cdot \text{sech}(z)`
 
-    where sech is the hyperbolic secant function.
-
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    .. image:: ../images/activation_images/ReHSec.png
+
     Examples::
 
-        >>> m = ReHSec()
+        >>> m = torch_activation.ReHSec()
         >>> x = torch.randn(2)
+        >>> output = m(x)
+
+        >>> m = torch_activation.ReHSec()
+        >>> x = torch.randn(2, 3)
         >>> output = m(x)
     """
 
@@ -915,10 +1059,16 @@ class LiSHT(BaseActivation):
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    .. image:: ../images/activation_images/LiSHT.png
+
     Examples::
 
-        >>> m = LiSHT()
+        >>> m = torch_activation.LiSHT()
         >>> x = torch.randn(2)
+        >>> output = m(x)
+
+        >>> m = torch_activation.LiSHT()
+        >>> x = torch.randn(2, 3)
         >>> output = m(x)
     """
 
@@ -931,26 +1081,28 @@ class LiSHT(BaseActivation):
 
 @register_activation
 class Mish(BaseActivation):
-    r"""Mish activation function.
+    r"""
+    Applies the Mish activation function:
 
-    Proposed by Misra (2019) [1]_.
+    :math:`\text{Mish}(z) = z \cdot \tanh(\text{softplus}(z)) = z \cdot \tanh(\ln(1 + \exp(z)))`
 
-    .. math::
-        \text{Mish}(z) = z \cdot \tanh(\text{softplus}(z)) = z \cdot \tanh(\ln(1 + \exp(z)))
+     See: https://doi.org/10.48550/arXiv.1908.08681
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    .. image:: ../images/activation_images/Mish.png
+
     Examples::
 
-        >>> m = Mish()
+        >>> m = torch_activation.Mish()
         >>> x = torch.randn(2)
         >>> output = m(x)
 
-    References:
-        .. [1] Misra, D. (2019). Mish: A Self Regularized Non-Monotonic
-               Activation Function. arXiv:1908.08681.
+        >>> m = torch_activation.Mish()
+        >>> x = torch.randn(2, 3)
+        >>> output = m(x)
     """
 
     def __init__(self, **kwargs):
@@ -967,23 +1119,25 @@ class Smish(BaseActivation):
 
     :math:`\text{Smish}(z) = a \cdot z \cdot \tanh(\ln(1 + \sigma(b \cdot z)))`
 
-    where :math:`\sigma` is the sigmoid function.
-
-    :note: a = 1.0, b = 1.0 is the recommended through a parameter search. [need citation]
-
     Args:
-        a (float, optional): Scale parameter. Default: 1.0
-        b (float, optional): Sigmoid scale parameter. Default: 1.0
-        learnable (bool, optional): If True, the parameters are learnable. Default: False
+        a (float, optional): Scale parameter. Default: ``1.0``
+        b (float, optional): Sigmoid scale parameter. Default: ``1.0``
+        learnable (bool, optional): If True, the parameters are learnable. Default: ``False``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    .. image:: ../images/activation_images/Smish.png
+
     Examples::
 
-        >>> m = Smish(a=1.5, b=2.0)
+        >>> m = torch_activation.Smish(a=1.5, b=2.0)
         >>> x = torch.randn(2)
+        >>> output = m(x)
+
+        >>> m = torch_activation.Smish()
+        >>> x = torch.randn(2, 3)
         >>> output = m(x)
     """
 
@@ -1011,10 +1165,16 @@ class TanhExp(BaseActivation):
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    .. image:: ../images/activation_images/TanhExp.png
+
     Examples::
 
-        >>> m = TanhExp()
+        >>> m = torch_activation.TanhExp()
         >>> x = torch.randn(2)
+        >>> output = m(x)
+
+        >>> m = torch_activation.TanhExp()
+        >>> x = torch.randn(2, 3)
         >>> output = m(x)
     """
 
@@ -1027,27 +1187,28 @@ class TanhExp(BaseActivation):
 
 @register_activation
 class Serf(BaseActivation):
-    r"""SERF activation function.
+    r"""
+    Applies the SERF activation function:
 
-    Proposed by Nag et al. (2021) [1]_.
+    :math:`\text{Serf}(z) = z \cdot \text{erf}(\ln(1 + \exp(z)))`
 
-    .. math::
-        \text{Serf}(z) = z \cdot \text{erf}(\ln(1 + \exp(z)))
+     See: https://doi.org/10.48550/arXiv.2108.09598
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    .. image:: ../images/activation_images/Serf.png
+
     Examples::
 
-        >>> m = Serf()
+        >>> m = torch_activation.Serf()
         >>> x = torch.randn(2)
         >>> output = m(x)
 
-    References:
-        .. [1] Nag, S., Bhattacharyya, M. N., & Mukherjee, A. (2021).
-               SERF: Towards Better Training of Deep Neural Networks Using
-               Log-Softplus ERror Activation Function. arXiv:2108.09598.
+        >>> m = torch_activation.Serf()
+        >>> x = torch.randn(2, 3)
+        >>> output = m(x)
     """
 
     def __init__(self, **kwargs):
@@ -1070,10 +1231,16 @@ class EANAF(BaseActivation):
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    .. image:: ../images/activation_images/EANAF.png
+
     Examples::
 
-        >>> m = EANAF()
+        >>> m = torch_activation.EANAF()
         >>> x = torch.randn(2)
+        >>> output = m(x)
+
+        >>> m = torch_activation.EANAF()
+        >>> x = torch.randn(2, 3)
         >>> output = m(x)
     """
 
@@ -1092,16 +1259,20 @@ class SinSig(BaseActivation):
 
     :math:`\text{SinSig}(z) = z \cdot \sin\left(\frac{\pi}{2} \sigma(z)\right)`
 
-    where :math:`\sigma` is the sigmoid function.
-
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    .. image:: ../images/activation_images/SinSig.png
+
     Examples::
 
-        >>> m = SinSig()
+        >>> m = torch_activation.SinSig()
         >>> x = torch.randn(2)
+        >>> output = m(x)
+
+        >>> m = torch_activation.SinSig()
+        >>> x = torch.randn(2, 3)
         >>> output = m(x)
     """
 
@@ -1119,16 +1290,20 @@ class SiELU(BaseActivation):
 
     :math:`\text{SiELU}(z) = z \cdot \sigma\!\left(2\sqrt{\frac{2}{\pi}}\left(z + 0.044715\, z^3\right)\right)` # noqa: E501
 
-    where :math:`\sigma` is the sigmoid function.
-
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    .. image:: ../images/activation_images/SiELU.png
+
     Examples::
 
-        >>> m = SiELU()
+        >>> m = torch_activation.SiELU()
         >>> x = torch.randn(2)
+        >>> output = m(x)
+
+        >>> m = torch_activation.SiELU()
+        >>> x = torch.randn(2, 3)
         >>> output = m(x)
     """
 

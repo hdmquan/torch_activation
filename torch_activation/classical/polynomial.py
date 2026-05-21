@@ -11,15 +11,22 @@ class NCU(BaseActivation):
 
     :math:`\text{NCU}(z) = z - z^3`
 
-    A simple activation function based on a third-degree polynomial.
-
     Args:
-        inplace (bool, optional): parameter kept for API consistency, but NCU operation
-                                 cannot be done in-place. Default: ``False``
+        inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
+
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/NCU.png
+
+    Examples::
+
+        >>> m = torch_activation.NCU()
+        >>> x = torch.randn(2)
+        >>> output = m(x)
     """
 
     def __init__(self, **kwargs):
@@ -37,16 +44,23 @@ class Triple(BaseActivation):
 
     :math:`\text{Triple}(z) = a \cdot z^3`
 
-    An activation function based on a third-degree polynomial.
-
     Args:
-        a (float, optional): Parameter for the cubic term. Default: ``1.0``
-        inplace (bool, optional): parameter kept for API consistency, but triple operation
-                                 cannot be done in-place. Default: ``False``
+        a (float, optional): parameter for the cubic term. Default: ``1.0``
+        inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
+
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/Triple.png
+
+    Examples::
+
+        >>> m = torch_activation.Triple()
+        >>> x = torch.randn(2)
+        >>> output = m(x)
     """
 
     def __init__(self, a: float = 1.0, **kwargs):
@@ -65,15 +79,22 @@ class SQU(BaseActivation):
 
     :math:`\text{SQU}(z) = z^2 + z`
 
-    A simple non-monotonic activation function.
-
     Args:
-        inplace (bool, optional): parameter kept for API consistency, but SQU operation
-                                 cannot be done in-place. Default: ``False``
+        inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
+
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/SQU.png
+
+    Examples::
+
+        >>> m = torch_activation.SQU()
+        >>> x = torch.randn(2)
+        >>> output = m(x)
     """
 
     def __init__(self, **kwargs):

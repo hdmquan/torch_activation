@@ -10,28 +10,33 @@ from torch_activation.base import BaseActivation
 @register_activation
 class MeLU(BaseActivation):
     r"""
-    Applies the Mexican ReLU (MeLU) function:
+    Applies the Mexican ReLU activation function:
 
     :math:`\text{MeLU}(z_i) = \text{PReLU}(z_i) + \sum_{j=1}^{k-1} a_{i,j} \phi_{b_j c_j}(z_i)`
 
-    where:
-    :math:`\phi_{b_j c_j}(z_i) = \max(c_j - |z_i - b_j|, 0)`
-
-    and :math:`a_{i,j}` are trainable parameters, :math:`b_j` and :math:`c_j` are fixed constants.
+    where :math:`\phi_{b_j c_j}(z_i) = \max(c_j - |z_i - b_j|, 0)`, :math:`a_{i,j}` are trainable parameters, and :math:`b_j`, :math:`c_j` are fixed constants.
 
     Args:
-        k (int, optional): Number of trainable parameters (k-1 for the sum and one for PReLU). Default: 4 # noqa: E501
-        init_negative_slope (float, optional): Initial value for the PReLU negative slope. Default: 0.01 # noqa: E501
-        init_a (float, optional): Initial value for the trainable parameters a. Default: 0.0
+        k (int, optional): Number of trainable parameters (k-1 for the sum and one for PReLU). Default: ``4``
+        init_negative_slope (float, optional): Initial value for the PReLU negative slope. Default: ``0.01``
+        init_a (float, optional): Initial value for the trainable parameters a. Default: ``0.0``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/MeLU.png
+
     Examples::
 
-        >>> m = MeLU(k=4)
+        >>> m = torch_activation.MeLU(k=4)
         >>> x = torch.randn(2)
+        >>> output = m(x)
+
+        >>> m = torch_activation.MeLU()
+        >>> x = torch.randn(2, 3, 4)
         >>> output = m(x)
     """
 
@@ -70,26 +75,34 @@ class MeLU(BaseActivation):
 @register_activation
 class MMeLU(BaseActivation):
     r"""
-    Applies the Modified Mexican ReLU (MMeLU) function:
+    Applies the Modified Mexican ReLU activation function:
 
-    :math:`\text{MMeLU}(z_i) = a_i \cdot \max(b_i - |z_i - c_i|, 0) + (1 - a_i) \cdot \text{ReLU}(z_i)` # noqa: E501
+    :math:`\text{MMeLU}(z_i) = a_i \cdot \max(b_i - |z_i - c_i|, 0) + (1 - a_i) \cdot \text{ReLU}(z_i)`
 
-    where :math:`a_i \in [0, 1]`, :math:`b_i \in \mathbb{R}^+`, and :math:`c_i \in \mathbb{R}` are trainable parameters. # noqa: E501
+    where :math:`a_i \in [0, 1]`, :math:`b_i \in \mathbb{R}^+`, and :math:`c_i \in \mathbb{R}` are trainable parameters.
 
     Args:
-        init_a (float, optional): Initial value for parameter a. Default: 0.5
-        init_b (float, optional): Initial value for parameter b. Default: 1.0
-        init_c (float, optional): Initial value for parameter c. Default: 0.0
-        inplace (bool, optional): Can optionally do the operation in-place for ReLU. Default: ``False`` # noqa: E501
+        init_a (float, optional): Initial value for parameter a. Default: ``0.5``
+        init_b (float, optional): Initial value for parameter b. Default: ``1.0``
+        init_c (float, optional): Initial value for parameter c. Default: ``0.0``
+        inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/MMeLU.png
+
     Examples::
 
-        >>> m = MMeLU(init_a=0.5, init_b=1.0, init_c=0.0)
+        >>> m = torch_activation.MMeLU(init_a=0.5, init_b=1.0, init_c=0.0)
         >>> x = torch.randn(2)
+        >>> output = m(x)
+
+        >>> m = torch_activation.MMeLU()
+        >>> x = torch.randn(2, 3, 4)
         >>> output = m(x)
     """
 
@@ -118,28 +131,33 @@ class MMeLU(BaseActivation):
 @register_activation
 class GaLU(BaseActivation):
     r"""
-    Applies the Gaussian ReLU (GaLU) function:
+    Applies the Gaussian ReLU activation function:
 
     :math:`\text{GaLU}(z_i) = \text{PReLU}(z_i) + \sum_{j=1}^{k-1} a_{i,j} \phi_{b_j c_j}(z_i)`
 
-    where:
-    :math:`\phi_{b_j c_j}(z_i) = \max(c_j - |z_i - b_j|, 0) + \min(|z - b_j - 2c_j| - c_j, 0)`
-
-    and :math:`a_{i,j}` are trainable parameters, :math:`b_j` and :math:`c_j` are fixed constants.
+    where :math:`\phi_{b_j c_j}(z_i) = \max(c_j - |z_i - b_j|, 0) + \min(|z - b_j - 2c_j| - c_j, 0)`, :math:`a_{i,j}` are trainable parameters, and :math:`b_j`, :math:`c_j` are fixed constants.
 
     Args:
-        k (int, optional): Number of trainable parameters (k-1 for the sum and one for PReLU). Default: 4 # noqa: E501
-        init_negative_slope (float, optional): Initial value for the PReLU negative slope. Default: 0.01 # noqa: E501
-        init_a (float, optional): Initial value for the trainable parameters a. Default: 0.0
+        k (int, optional): Number of trainable parameters (k-1 for the sum and one for PReLU). Default: ``4``
+        init_negative_slope (float, optional): Initial value for the PReLU negative slope. Default: ``0.01``
+        init_a (float, optional): Initial value for the trainable parameters a. Default: ``0.0``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/GaLU.png
+
     Examples::
 
-        >>> m = GaLU(k=4)
+        >>> m = torch_activation.GaLU(k=4)
         >>> x = torch.randn(2)
+        >>> output = m(x)
+
+        >>> m = torch_activation.GaLU()
+        >>> x = torch.randn(2, 3, 4)
         >>> output = m(x)
     """
 
@@ -177,24 +195,32 @@ class GaLU(BaseActivation):
 @register_activation
 class HardSwish(BaseActivation):
     r"""
-    Applies the Hard-Swish function:
+    Applies the Hard-Swish activation function:
 
     :math:`\text{HardSwish}(z_i) = 2z_i \cdot \max(0, \min(0.2b_i z_i + 0.5, 1))`
 
     where :math:`b_i` is a trainable parameter.
 
     Args:
-        b_init (float, optional): Initial value for the trainable parameter b. Default: 1.0
-        inplace (bool, optional): Can optionally do the operation in-place. Default: ``False``
+        b_init (float, optional): Initial value for the trainable parameter b. Default: ``1.0``
+        inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/HardSwish.png
+
     Examples::
 
-        >>> m = HardSwish(b_init=1.0)
+        >>> m = torch_activation.HardSwish(b_init=1.0)
         >>> x = torch.randn(2)
+        >>> output = m(x)
+
+        >>> m = torch_activation.HardSwish()
+        >>> x = torch.randn(2, 3, 4)
         >>> output = m(x)
     """
 

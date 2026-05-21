@@ -16,19 +16,21 @@ class TAAF(BaseActivation):
 
     :math:`\text{TAAF}(x) = \alpha \cdot f(\beta \cdot x + \gamma) + \delta`
 
-    where :math:`f` is a base activation function (default: tanh), and
-    :math:`\alpha, \beta, \gamma, \delta` are learnable parameters.
-
-    Args:
-        base (str): base activation function name. Default: ``'tanh'``
+    where :math:`f` is tanh and :math:`\alpha, \beta, \gamma, \delta` are learnable parameters.
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
-    References:
-        .. [1] Kunc, V. & Kléma, J. *On transformative adaptive activation functions in
-               neural networks for gene expression inference*. PLOS One, 2021.
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/TAAF.png
+
+    Examples::
+
+        >>> m = torch_activation.TAAF()
+        >>> x = torch.randn(2)
+        >>> output = m(x)
     """
 
     def __init__(self, **kwargs):
@@ -52,15 +54,22 @@ class tSoftmax(BaseActivation):
     where :math:`t` is a learnable temperature parameter.
 
     Args:
-        dim (int): dimension along which softmax is applied. Default: ``-1``
-        init_t (float): initial temperature value. Default: ``1.0``
+        dim (int, optional): dimension along which softmax is applied. Default: ``-1``
+        init_t (float, optional): initial temperature value. Default: ``1.0``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
-    References:
-        .. [1] Hinton, G. et al. *Distilling the Knowledge in a Neural Network*. NeurIPS Workshop, 2015. # noqa: E501
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/tSoftmax.png
+
+    Examples::
+
+        >>> m = torch_activation.tSoftmax()
+        >>> x = torch.randn(2, 3)
+        >>> output = m(x)
     """
 
     def __init__(self, dim: int = -1, init_t: float = 1.0, **kwargs):
@@ -80,18 +89,24 @@ class GEU(BaseActivation):
 
     :math:`\text{GEU}(x) = x \cdot \Phi(\alpha \cdot x)`
 
-    where :math:`\Phi` is the standard Gaussian CDF and :math:`\alpha` is a
-    learnable scaling parameter.
+    where :math:`\Phi` is the standard Gaussian CDF and :math:`\alpha` is a learnable scaling parameter.
 
     Args:
-        alpha (float): initial value for learnable scale. Default: ``1.0``
+        alpha (float, optional): initial value for learnable scale. Default: ``1.0``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
-    References:
-        .. [1] Hendrycks, D. & Gimpel, K. *Gaussian Error Linear Units (GELUs)*. arXiv:1606.08415, 2016. # noqa: E501
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/GEU.png
+
+    Examples::
+
+        >>> m = torch_activation.GEU()
+        >>> x = torch.randn(2)
+        >>> output = m(x)
     """
 
     def __init__(self, **kwargs):
@@ -109,21 +124,26 @@ class SAAAF(BaseActivation):
 
     :math:`\text{SAAAF}(x) = \sum_{k} w_k \cdot b_k(x)`
 
-    where :math:`b_k(x)` are piecewise polynomial basis functions (hat functions) and
-    :math:`w_k` are learnable weights.
+    where :math:`b_k(x)` are piecewise polynomial basis functions (hat functions) and :math:`w_k` are learnable weights.
 
     Args:
-        n_segments (int): number of piecewise segments. Default: ``8``
-        x_min (float): lower bound of the input range. Default: ``-4.0``
-        x_max (float): upper bound of the input range. Default: ``4.0``
+        n_segments (int, optional): number of piecewise segments. Default: ``8``
+        x_min (float, optional): lower bound of the input range. Default: ``-4.0``
+        x_max (float, optional): upper bound of the input range. Default: ``4.0``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
-    References:
-        .. [1] Hou, L. et al. *Neural Networks with Smooth Adaptive Activation Functions
-               for Regression*. AISTATS, 2017. arXiv:1608.06557.
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/SAAAF.png
+
+    Examples::
+
+        >>> m = torch_activation.SAAAF()
+        >>> x = torch.randn(2)
+        >>> output = m(x)
     """
 
     def __init__(self, n_segments: int = 8, x_min: float = -4.0, x_max: float = 4.0, **kwargs):
@@ -155,14 +175,21 @@ class ScaledSoftsign(BaseActivation):
     where :math:`\alpha` is a learnable scaling parameter.
 
     Args:
-        alpha (float): initial value of scaling parameter. Default: ``1.0``
+        alpha (float, optional): initial value of scaling parameter. Default: ``1.0``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
-    References:
-        .. [1] Glorot, X. et al. *Deep Sparse Rectifier Neural Networks*. AISTATS, 2011.
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/ScaledSoftsign.png
+
+    Examples::
+
+        >>> m = torch_activation.ScaledSoftsign()
+        >>> x = torch.randn(2)
+        >>> output = m(x)
     """
 
     def __init__(self, alpha: float = 1.0, **kwargs):
@@ -182,13 +209,22 @@ class pSoftplus(BaseActivation):
 
     where :math:`\beta` is a learnable parameter controlling the sharpness.
 
+    Args:
+        beta (float, optional): initial value of learnable sharpness parameter. Default: ``1.0``
+
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
-    References:
-        .. [1] Dugas, C. et al. *Incorporating Second-Order Functional Knowledge
-               for Better Option Pricing*. NeurIPS, 2001.
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/pSoftplus.png
+
+    Examples::
+
+        >>> m = torch_activation.pSoftplus()
+        >>> x = torch.randn(2)
+        >>> output = m(x)
     """
 
     def __init__(self, beta: float = 1.0, **kwargs):
@@ -205,7 +241,7 @@ class LEAF(BaseActivation):
     r"""
     Applies the Learnable Extended Activation Function (LEAF):
 
-    :math:`\text{LEAF}(x) = \alpha \cdot \max(x, 0) + \beta \cdot \min(x, 0) \cdot \sigma(\gamma \cdot x)` # noqa: E501
+    :math:`\text{LEAF}(x) = \alpha \cdot \max(x, 0) + \beta \cdot \min(x, 0) \cdot \sigma(\gamma \cdot x)`
 
     where :math:`\alpha, \beta, \gamma` are learnable parameters.
 
@@ -213,9 +249,15 @@ class LEAF(BaseActivation):
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
-    References:
-        .. [1] Bodyanskiy, Y. & Kostiuk, S. *Learnable Extended Activation Function
-               for Deep Neural Networks*. International Journal of Computing, 2023.
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/LEAF.png
+
+    Examples::
+
+        >>> m = torch_activation.LEAF()
+        >>> x = torch.randn(2)
+        >>> output = m(x)
     """
 
     def __init__(self, **kwargs):
@@ -235,22 +277,30 @@ class ELUpSoftplus(BaseActivation):
     r"""
     Applies the ELU-Softplus activation function:
 
-    :math:`\text{ELUpSoftplus}(x) = \begin{cases}
-    x, & x \geq 0 \\
-    \alpha(\exp(x) - 1) + \ln(1 + \exp(\beta \cdot x)), & x < 0
-    \end{cases}`
+    .. math::
+
+        \text{ELUpSoftplus}(x) = \begin{cases}
+        x, & x \geq 0 \\
+        \alpha(\exp(x) - 1) + \ln(1 + \exp(\beta \cdot x)), & x < 0
+        \end{cases}
 
     Args:
-        alpha (float): ELU scale for negative inputs. Default: ``1.0``
-        beta (float): Softplus sharpness for negative inputs. Default: ``1.0``
+        alpha (float, optional): ELU scale for negative inputs. Default: ``1.0``
+        beta (float, optional): Softplus sharpness for negative inputs. Default: ``1.0``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
-    References:
-        .. [1] Clevert, D. et al. *Fast and Accurate Deep Network Learning by
-               Exponential Linear Units (ELUs)*. ICLR, 2016. arXiv:1511.07289.
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/ELUpSoftplus.png
+
+    Examples::
+
+        >>> m = torch_activation.ELUpSoftplus()
+        >>> x = torch.randn(2)
+        >>> output = m(x)
     """
 
     def __init__(self, alpha: float = 1.0, beta: float = 1.0, **kwargs):
@@ -275,15 +325,21 @@ class APLU(BaseActivation):
     where :math:`a^s` and :math:`b^s` are learnable parameters for each hinge.
 
     Args:
-        n_hinges (int): number of hinge functions S. Default: ``2``
+        n_hinges (int, optional): number of hinge functions S. Default: ``2``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
-    References:
-        .. [1] Agostinelli, F. et al. *Learning Activation Functions to Improve Deep
-               Neural Networks*. ICLR Workshop, 2015. arXiv:1412.6830.
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/APLU.png
+
+    Examples::
+
+        >>> m = torch_activation.APLU()
+        >>> x = torch.randn(2)
+        >>> output = m(x)
     """
 
     def __init__(self, n_hinges: int = 2, **kwargs):
@@ -305,21 +361,25 @@ class SPLASH(BaseActivation):
 
     :math:`\text{SPLASH}(x) = \sum_{s=1}^{S} a_s \cdot h(x; c_s)`
 
-    where :math:`h(x; c) = \max(0, x - c) + \max(0, -x - c)` is a symmetric hinge
-    and :math:`c_s` are fixed hinge locations derived from the data.
+    where :math:`h(x; c) = \max(0, x - c) + \max(0, -x - c)` is a symmetric hinge and :math:`c_s` are fixed hinge locations.
 
     Args:
-        n_hinges (int): number of symmetric hinges S. Default: ``4``
-        hinge_range (float): range for hinge location initialization. Default: ``2.0``
+        n_hinges (int, optional): number of symmetric hinges S. Default: ``4``
+        hinge_range (float, optional): range for hinge location initialization. Default: ``2.0``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
-    References:
-        .. [1] Tavakoli, H. R. et al. *SPLASH: Learnable Activation Functions for
-               Improving Accuracy and Adversarial Robustness*. Neural Networks, 2021.
-               arXiv:2006.08947.
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/SPLASH.png
+
+    Examples::
+
+        >>> m = torch_activation.SPLASH()
+        >>> x = torch.randn(2)
+        >>> output = m(x)
     """
 
     def __init__(self, n_hinges: int = 4, hinge_range: float = 2.0, **kwargs):
@@ -343,19 +403,24 @@ class MBA(BaseActivation):
 
     :math:`\text{MBA}(x) = \sum_{k=1}^{K} w_k \cdot f_k(x)`
 
-    where :math:`f_k` are fixed basis activations (ReLU, tanh, sigmoid) and
-    :math:`w_k` are learnable mixture weights.
+    where :math:`f_k` are fixed basis activations (ReLU, tanh, sigmoid) and :math:`w_k` are learnable mixture weights.
 
     Args:
-        n_bases (int): number of basis functions. Default: ``3``
+        n_bases (int, optional): number of basis functions. Default: ``3``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
-    References:
-        .. [1] Manessi, F. & Rozza, A. *Learning Combinations of Activation Functions*.
-               ICPR, 2018. arXiv:1801.09403.
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/MBA.png
+
+    Examples::
+
+        >>> m = torch_activation.MBA()
+        >>> x = torch.randn(2)
+        >>> output = m(x)
     """
 
     def __init__(self, n_bases: int = 3, **kwargs):
@@ -378,10 +443,12 @@ class AdaLU(BaseActivation):
     r"""
     Applies the Adaptive Linear Unit (AdaLU):
 
-    :math:`\text{AdaLU}(x) = \begin{cases}
-    \alpha \cdot x, & x \geq 0 \\
-    \beta \cdot x, & x < 0
-    \end{cases}`
+    .. math::
+
+        \text{AdaLU}(x) = \begin{cases}
+        \alpha \cdot x, & x \geq 0 \\
+        \beta \cdot x, & x < 0
+        \end{cases}
 
     where :math:`\alpha` and :math:`\beta` are learnable parameters.
 
@@ -389,9 +456,15 @@ class AdaLU(BaseActivation):
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
-    References:
-        .. [1] Kunc, V. & Kléma, J. *Exploring the Relationship: Transformative Adaptive
-               Activation Functions*. arXiv:2402.09249, 2024.
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/AdaLU.png
+
+    Examples::
+
+        >>> m = torch_activation.AdaLU()
+        >>> x = torch.randn(2)
+        >>> output = m(x)
     """
 
     def __init__(self, **kwargs):
@@ -412,12 +485,22 @@ class TSAF(BaseActivation):
 
     where :math:`t` is a learnable temperature parameter.
 
+    Args:
+        init_t (float, optional): initial temperature value. Default: ``1.0``
+
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
-    References:
-        .. [1] LeCun, Y. et al. *Efficient BackProp*. Neural Networks: Tricks of the Trade, 1998.
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/TSAF.png
+
+    Examples::
+
+        >>> m = torch_activation.TSAF()
+        >>> x = torch.randn(2)
+        >>> output = m(x)
     """
 
     def __init__(self, init_t: float = 1.0, **kwargs):
@@ -435,21 +518,25 @@ class ARiA(BaseActivation):
 
     :math:`\text{ARiA}(x) = x \cdot \sigma(\beta \cdot x)^{1/\nu}`
 
-    where :math:`\beta` controls the curve steepness and :math:`\nu` controls
-    non-monotonicity. When :math:`\nu=1` and :math:`\beta=1` this reduces to Swish.
+    where :math:`\beta` controls the curve steepness and :math:`\nu` controls non-monotonicity.
 
     Args:
-        beta (float): steepness parameter. Default: ``1.0``
-        nu (float): non-monotonicity control. Default: ``1.0``
+        beta (float, optional): steepness parameter. Default: ``1.0``
+        nu (float, optional): non-monotonicity control. Default: ``1.0``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
-    References:
-        .. [1] Khalid, S. et al. *ARiA: Utilizing Richard's Curve for Controlling the
-               Non-monotonicity of the Activation Function in Deep Neural Nets*.
-               arXiv:1805.08878, 2018.
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/ARiA.png
+
+    Examples::
+
+        >>> m = torch_activation.ARiA()
+        >>> x = torch.randn(2)
+        >>> output = m(x)
     """
 
     def __init__(self, beta: float = 1.0, nu: float = 1.0, **kwargs):
@@ -468,21 +555,26 @@ class MWF(BaseActivation):
 
     :math:`\text{MWF}(x) = a \cdot x \cdot \exp(-b \cdot x^2) + c \cdot \tanh(x)`
 
-    where :math:`a, b, c` are learnable parameters combining a Morlet-like wavelet
-    component with a tanh component.
+    where :math:`a, b, c` are learnable parameters.
 
     Args:
-        a (float): amplitude of wavelet component. Default: ``1.0``
-        b (float): width of wavelet component. Default: ``1.0``
-        c (float): weight of tanh component. Default: ``0.5``
+        a (float, optional): amplitude of wavelet component. Default: ``1.0``
+        b (float, optional): width of wavelet component. Default: ``1.0``
+        c (float, optional): weight of tanh component. Default: ``0.5``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
-    References:
-        .. [1] Wang, G. et al. *Wavelet Neural Network Using Multiple Wavelet Functions
-               in Target Threat Assessment*. The Scientific World Journal, 2013.
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/MWF.png
+
+    Examples::
+
+        >>> m = torch_activation.MWF()
+        >>> x = torch.randn(2)
+        >>> output = m(x)
     """
 
     def __init__(self, a: float = 1.0, b: float = 1.0, c: float = 0.5, **kwargs):
@@ -503,15 +595,19 @@ class Sincos(BaseActivation):
 
     :math:`\text{Sincos}(x) = \sin(x) + \cos(x)`
 
-    A periodic activation function combining sine and cosine components.
-
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
-    References:
-        .. [1] Parascandolo, G. et al. *Taming the Waves: Sine as Activation Function
-               in Deep Neural Networks*. ICLR, 2017.
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/Sincos.png
+
+    Examples::
+
+        >>> m = torch_activation.Sincos()
+        >>> x = torch.randn(2)
+        >>> output = m(x)
     """
 
     def __init__(self, **kwargs):
@@ -534,10 +630,15 @@ class CSS(BaseActivation):
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
-    References:
-        .. [1] Noel, M. M. et al. *A growing cosine unit: A novel oscillatory activation
-               function that can speedup training and reduce parameters in convolutional
-               neural networks*. arXiv:2108.12943, 2021.
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/CSS.png
+
+    Examples::
+
+        >>> m = torch_activation.CSS()
+        >>> x = torch.randn(2)
+        >>> output = m(x)
     """
 
     def __init__(self, **kwargs):
@@ -560,9 +661,15 @@ class CatAF(BaseActivation):
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
-    References:
-        .. [1] Manessi, F. & Rozza, A. *Learning Combinations of Activation Functions*.
-               ICPR, 2018. arXiv:1801.09403.
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/CatAF.png
+
+    Examples::
+
+        >>> m = torch_activation.CatAF()
+        >>> x = torch.randn(2)
+        >>> output = m(x)
     """
 
     def __init__(self, **kwargs):
@@ -585,9 +692,15 @@ class Expcos(BaseActivation):
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
-    References:
-        .. [1] Bingham, G. & Miikkulainen, R. *Discovering Parametric Activation Functions*.
-               Neural Networks, 2022. arXiv:2006.03179.
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/Expcos.png
+
+    Examples::
+
+        >>> m = torch_activation.Expcos()
+        >>> x = torch.randn(2)
+        >>> output = m(x)
     """
 
     def __init__(self, **kwargs):
@@ -607,15 +720,21 @@ class MTLU(BaseActivation):
     implemented as a sum of S linear segments with learnable slopes and breakpoints.
 
     Args:
-        n_bins (int): number of linear segments. Default: ``4``
+        n_bins (int, optional): number of linear segments. Default: ``4``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
-    References:
-        .. [1] Jin, X. et al. *Deep Learning with S-shaped Rectified Linear Activation Units*.
-               AAAI, 2016.
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/MTLU.png
+
+    Examples::
+
+        >>> m = torch_activation.MTLU()
+        >>> x = torch.randn(2)
+        >>> output = m(x)
     """
 
     def __init__(self, n_bins: int = 4, **kwargs):
@@ -641,15 +760,21 @@ class CPN(BaseActivation):
     where :math:`a_k` are learnable Fourier-like coefficients.
 
     Args:
-        n_terms (int): number of cosine terms K+1. Default: ``4``
+        n_terms (int, optional): number of cosine terms K+1. Default: ``4``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
-    References:
-        .. [1] Parascandolo, G. et al. *Taming the Waves: Sine as Activation Function
-               in Deep Neural Networks*. ICLR, 2017.
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/CPN.png
+
+    Examples::
+
+        >>> m = torch_activation.CPN()
+        >>> x = torch.randn(2)
+        >>> output = m(x)
     """
 
     def __init__(self, n_terms: int = 4, **kwargs):
@@ -671,20 +796,26 @@ class LuTU(BaseActivation):
 
     :math:`\text{LuTU}(x) = \sum_{k} v_k \cdot h\!\left(\frac{x - c_k}{\delta}\right)`
 
-    where :math:`h(t) = 0.5(1 + \cos(\pi \cdot \text{clip}(t, -1, 1)))` is a cosine
-    hat basis, :math:`c_k` are fixed anchor points and :math:`v_k` are learnable values.
+    where :math:`h(t) = 0.5(1 + \cos(\pi \cdot \text{clip}(t, -1, 1)))` is a cosine hat basis, :math:`c_k` are fixed anchor points and :math:`v_k` are learnable values.
 
     Args:
-        n_anchors (int): number of anchor points. Default: ``16``
-        x_min (float): minimum anchor. Default: ``-4.0``
-        x_max (float): maximum anchor. Default: ``4.0``
+        n_anchors (int, optional): number of anchor points. Default: ``16``
+        x_min (float, optional): minimum anchor. Default: ``-4.0``
+        x_max (float, optional): maximum anchor. Default: ``4.0``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
-    References:
-        .. [1] Activation Functions in Deep Learning: A Comprehensive Survey. arXiv:2109.14545, 2021. # noqa: E501
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/LuTU.png
+
+    Examples::
+
+        >>> m = torch_activation.LuTU()
+        >>> x = torch.randn(2)
+        >>> output = m(x)
     """
 
     def __init__(self, n_anchors: int = 16, x_min: float = -4.0, x_max: float = 4.0, **kwargs):
@@ -710,17 +841,24 @@ class Maxout(BaseActivation):
 
     :math:`\text{Maxout}(x) = \max_{k \in [1,K]} (w_k \cdot x + b_k)`
 
-    Each neuron learns K affine functions and takes the maximum.
+    where each neuron learns K affine functions and takes the maximum.
 
     Args:
-        n_pieces (int): number of linear pieces K. Default: ``2``
+        n_pieces (int, optional): number of linear pieces K. Default: ``2``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
-    References:
-        .. [1] Goodfellow, I. J. et al. *Maxout Networks*. ICML, 2013. arXiv:1302.4389.
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/Maxout.png
+
+    Examples::
+
+        >>> m = torch_activation.Maxout()
+        >>> x = torch.randn(2)
+        >>> output = m(x)
     """
 
     def __init__(self, n_pieces: int = 2, **kwargs):
@@ -740,21 +878,27 @@ class PAU(BaseActivation):
     r"""
     Applies the Padé Activation Unit (PAU):
 
-    :math:`\text{PAU}(x) = \frac{P(x)}{Q(x)} = \frac{\sum_{i=0}^{m} a_i x^i}{1 + \sum_{j=1}^{n} |b_j| x^{2j}}` # noqa: E501
+    :math:`\text{PAU}(x) = \frac{\sum_{i=0}^{m} a_i x^i}{1 + \sum_{j=1}^{n} |b_j| x^{2j}}`
 
     where the denominator uses absolute values to avoid poles.
 
     Args:
-        m (int): numerator degree. Default: ``5``
-        n (int): denominator degree. Default: ``4``
+        m (int, optional): numerator degree. Default: ``5``
+        n (int, optional): denominator degree. Default: ``4``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
-    References:
-        .. [1] Molina, A. et al. *Padé Activation Units: End-to-end Learning of Flexible
-               Activation Functions in Deep Networks*. ICLR, 2020. arXiv:1907.06732.
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/PAU.png
+
+    Examples::
+
+        >>> m = torch_activation.PAU()
+        >>> x = torch.randn(2)
+        >>> output = m(x)
     """
 
     def __init__(self, m: int = 5, n: int = 4, **kwargs):
@@ -788,16 +932,22 @@ class RPAU(BaseActivation):
     Uses absolute values in the denominator for improved numerical stability.
 
     Args:
-        m (int): numerator degree. Default: ``5``
-        n (int): denominator degree. Default: ``4``
+        m (int, optional): numerator degree. Default: ``5``
+        n (int, optional): denominator degree. Default: ``4``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
-    References:
-        .. [1] Molina, A. et al. *Padé Activation Units: End-to-end Learning of Flexible
-               Activation Functions in Deep Networks*. ICLR, 2020. arXiv:1907.06732.
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/RPAU.png
+
+    Examples::
+
+        >>> m = torch_activation.RPAU()
+        >>> x = torch.randn(2)
+        >>> output = m(x)
     """
 
     def __init__(self, m: int = 5, n: int = 4, **kwargs):
@@ -824,18 +974,24 @@ class ERA(BaseActivation):
 
     :math:`\text{ERA}(x) = \frac{P(x)}{Q(x)}`
 
-    where P and Q are learnable polynomials initialized to approximate ReLU,
-    with the denominator constrained to be positive.
+    where P and Q are learnable polynomials initialized to approximate ReLU, with the denominator constrained to be positive.
 
     Args:
-        degree (int): polynomial degree for numerator and denominator. Default: ``3``
+        degree (int, optional): polynomial degree for numerator and denominator. Default: ``3``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
-    References:
-        .. [1] Delfosse, Q. et al. *ERA: Enhanced Rational Activations*. ECCV Workshops, 2022.
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/ERA.png
+
+    Examples::
+
+        >>> m = torch_activation.ERA()
+        >>> x = torch.randn(2)
+        >>> output = m(x)
     """
 
     def __init__(self, degree: int = 3, **kwargs):
@@ -866,17 +1022,22 @@ class OPAU(BaseActivation):
     where :math:`H_i` are Hermite polynomials as orthogonal basis functions.
 
     Args:
-        k (int): numerator degree. Default: ``3``
-        l (int): denominator degree. Default: ``2``
+        k (int, optional): numerator degree. Default: ``3``
+        denom_deg (int, optional): denominator degree. Default: ``2``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
-    References:
-        .. [1] Goyal, A. et al. *Orthogonal-Padé Activation Functions: Trainable Activation
-               Functions for Smooth and Faster Convergence in Deep Networks*.
-               arXiv:2106.09693, 2021.
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/OPAU.png
+
+    Examples::
+
+        >>> m = torch_activation.OPAU()
+        >>> x = torch.randn(2)
+        >>> output = m(x)
     """
 
     def __init__(self, k: int = 3, denom_deg: int = 2, **kwargs):
@@ -922,9 +1083,15 @@ class SAF(BaseActivation):
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
-    References:
-        .. [1] Kunc, V. & Kléma, J. *Exploring the Relationship: Transformative Adaptive
-               Activation Functions*. arXiv:2402.09249, 2024.
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/SAF.png
+
+    Examples::
+
+        >>> m = torch_activation.SAF()
+        >>> x = torch.randn(2)
+        >>> output = m(x)
     """
 
     def __init__(self, **kwargs):
@@ -946,15 +1113,21 @@ class TruG(BaseActivation):
     where :math:`\sigma` is a learnable width parameter.
 
     Args:
-        sigma (float): initial width parameter. Default: ``1.0``
+        sigma (float, optional): initial width parameter. Default: ``1.0``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
-    References:
-        .. [1] Activation Functions in Artificial Neural Networks: A Systematic Overview.
-               arXiv:2101.09957, 2021.
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/TruG.png
+
+    Examples::
+
+        >>> m = torch_activation.TruG()
+        >>> x = torch.randn(2)
+        >>> output = m(x)
     """
 
     def __init__(self, sigma: float = 1.0, **kwargs):
@@ -979,8 +1152,15 @@ class NIN(BaseActivation):
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
-    References:
-        .. [1] Lin, M. et al. *Network In Network*. ICLR, 2014. arXiv:1312.4400.
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/NIN.png
+
+    Examples::
+
+        >>> m = torch_activation.NIN()
+        >>> x = torch.randn(2)
+        >>> output = m(x)
     """
 
     def __init__(self, **kwargs):
@@ -1002,19 +1182,25 @@ class SAVEBased(BaseActivation):
 
     :math:`\text{SAVE}(x) = \alpha \cdot x + \beta \cdot \sin(x)`
 
-    A combination of identity and sinusoidal components with learnable weights,
-    inspired by the Sine Activation Value Encoder (SAVE) approach.
+    A combination of identity and sinusoidal components with learnable weights.
 
     Args:
-        alpha (float): initial weight for linear component. Default: ``1.0``
-        beta (float): initial weight for sinusoidal component. Default: ``0.5``
+        alpha (float, optional): initial weight for linear component. Default: ``1.0``
+        beta (float, optional): initial weight for sinusoidal component. Default: ``0.5``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
-    References:
-        .. [1] Noel, M. M. et al. *A growing cosine unit*. arXiv:2108.12943, 2021.
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/SAVEBased.png
+
+    Examples::
+
+        >>> m = torch_activation.SAVEBased()
+        >>> x = torch.randn(2)
+        >>> output = m(x)
     """
 
     def __init__(self, alpha: float = 1.0, beta: float = 0.5, **kwargs):
@@ -1036,14 +1222,21 @@ class GRA(BaseActivation):
     where :math:`a_i, b_i, c_i` are learnable per-element parameters.
 
     Args:
-        num_parameters (int): number of learnable parameter sets. Default: ``1``
+        num_parameters (int, optional): number of learnable parameter sets. Default: ``1``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
-    References:
-        .. [1] Activation survey arXiv:2402.09092 Section 4.3.9.
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/GRA.png
+
+    Examples::
+
+        >>> m = torch_activation.GRA()
+        >>> x = torch.randn(2)
+        >>> output = m(x)
     """
 
     def __init__(self, num_parameters: int = 1, **kwargs):
@@ -1067,14 +1260,21 @@ class EIS(BaseActivation):
     where :math:`d_i, e_i` are learnable per-element parameters.
 
     Args:
-        num_parameters (int): number of learnable parameter sets. Default: ``1``
+        num_parameters (int, optional): number of learnable parameter sets. Default: ``1``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
-    References:
-        .. [1] Activation survey arXiv:2402.09092 Section 4.26.
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/EIS.png
+
+    Examples::
+
+        >>> m = torch_activation.EIS()
+        >>> x = torch.randn(2)
+        >>> output = m(x)
     """
 
     def __init__(self, num_parameters: int = 1, **kwargs):
@@ -1096,14 +1296,21 @@ class ScaledLogisticSigmoid(BaseActivation):
     where :math:`a_i, b_i` are learnable per-element parameters.
 
     Args:
-        num_parameters (int): number of learnable parameter sets. Default: ``1``
+        num_parameters (int, optional): number of learnable parameter sets. Default: ``1``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
-    References:
-        .. [1] Activation survey arXiv:2402.09092 Section 4.28.1.
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/ScaledLogisticSigmoid.png
+
+    Examples::
+
+        >>> m = torch_activation.ScaledLogisticSigmoid()
+        >>> x = torch.randn(2)
+        >>> output = m(x)
     """
 
     def __init__(self, num_parameters: int = 1, **kwargs):
@@ -1125,15 +1332,22 @@ class PLU(BaseActivation):
     where :math:`a_i` are learnable parameters and :math:`b` is a fixed bound.
 
     Args:
-        num_parameters (int): number of learnable a parameters. Default: ``1``
-        b (float): fixed bound parameter. Default: ``1.0``
+        num_parameters (int, optional): number of learnable a parameters. Default: ``1``
+        b (float, optional): fixed bound parameter. Default: ``1.0``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
-    References:
-        .. [1] Activation survey arXiv:2402.09092 Section 4.35.
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/PLU.png
+
+    Examples::
+
+        >>> m = torch_activation.PLU()
+        >>> x = torch.randn(2)
+        >>> output = m(x)
     """
 
     def __init__(self, num_parameters: int = 1, b: float = 1.0, **kwargs):
@@ -1153,17 +1367,24 @@ class VAF(BaseActivation):
 
     :math:`\text{VAF}(z_l) = \sum_{j=1}^{J} a_{l,j} \cdot g(b_{l,j} z_l + c_{l,j}) + a_{l,0}`
 
-    where :math:`g` is a base activation (tanh by default) and all coefficients are learnable.
+    where :math:`g` is tanh and all coefficients are learnable.
 
     Args:
-        J (int): number of basis functions. Default: ``3``
+        J (int, optional): number of basis functions. Default: ``3``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
-    References:
-        .. [1] Activation survey arXiv:2402.09092 Section 4.56.1.
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/VAF.png
+
+    Examples::
+
+        >>> m = torch_activation.VAF()
+        >>> x = torch.randn(2)
+        >>> output = m(x)
     """
 
     def __init__(self, J: int = 3, **kwargs):
@@ -1189,15 +1410,21 @@ class FAB(BaseActivation):
 
     :math:`\text{FAB}(z) = \sum_{k} w_k \cdot f_k(z)`
 
-    where :math:`f_k` are fixed basis activations (relu, tanh, sigmoid, identity) and
-    :math:`w_k` are learnable weights.
+    where :math:`f_k` are fixed basis activations (relu, tanh, sigmoid, identity) and :math:`w_k` are learnable weights.
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
-    References:
-        .. [1] Activation survey arXiv:2402.09092 Section 4.56.2.
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/FAB.png
+
+    Examples::
+
+        >>> m = torch_activation.FAB()
+        >>> x = torch.randn(2)
+        >>> output = m(x)
     """
 
     def __init__(self, **kwargs):
@@ -1216,21 +1443,26 @@ class KAF(BaseActivation):
 
     :math:`\text{KAF}(z_i) = \sum_{j=1}^{D} a_{i,j} \exp\!\left(-\gamma (z_i - d_j)^2\right)`
 
-    where :math:`d_j` is a fixed grid, :math:`\gamma` is a fixed bandwidth, and
-    :math:`a_{i,j}` are learnable mixing coefficients.
+    where :math:`d_j` is a fixed grid, :math:`\gamma` is a fixed bandwidth, and :math:`a_{i,j}` are learnable mixing coefficients.
 
     Args:
-        D (int): number of dictionary elements. Default: ``20``
-        gamma (float): Gaussian bandwidth. Default: ``1.0``
-        bound (float): grid spans [-bound, bound]. Default: ``3.0``
+        D (int, optional): number of dictionary elements. Default: ``20``
+        gamma (float, optional): Gaussian bandwidth. Default: ``1.0``
+        bound (float, optional): grid spans [-bound, bound]. Default: ``3.0``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
-    References:
-        .. [1] Scardapane et al. *Kafnets: kernel-based non-parametric activation functions*.
-               Neural Networks, 2019. arXiv:1707.04035.
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/KAF.png
+
+    Examples::
+
+        >>> m = torch_activation.KAF()
+        >>> x = torch.randn(2)
+        >>> output = m(x)
     """
 
     def __init__(self, D: int = 20, gamma: float = 1.0, bound: float = 3.0, **kwargs):
@@ -1256,22 +1488,27 @@ class RTPReLU(BaseActivation):
     r"""
     Applies the Random Threshold PReLU (RTPReLU):
 
-    During training, each element uses a stochastic threshold :math:`b_i \sim \mathcal{N}(0, \sigma^2)`: # noqa: E501
-
     :math:`\text{RTPReLU}(z_i) = z_i \text{ if } z_i + b_i \geq 0,\; \text{else } z_i / a`
 
-    During eval the threshold is zero (standard PReLU).
+    where :math:`b_i \sim \mathcal{N}(0, \sigma^2)` during training, and the threshold is zero at eval time.
 
     Args:
-        a (float): learnable slope for negative part. Default: ``4.0``
-        sigma (float): std of the threshold noise during training. Default: ``0.5``
+        a (float, optional): learnable slope for negative part. Default: ``4.0``
+        sigma (float, optional): std of the threshold noise during training. Default: ``0.5``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
-    References:
-        .. [1] Activation survey arXiv:2402.09092 Section 4.2.10.
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/RTPReLU.png
+
+    Examples::
+
+        >>> m = torch_activation.RTPReLU()
+        >>> x = torch.randn(2)
+        >>> output = m(x)
     """
 
     def __init__(self, a: float = 4.0, sigma: float = 0.5, **kwargs):
@@ -1299,14 +1536,21 @@ class DYReLU(BaseActivation):
     where the K linear functions are parameterized by learnable coefficients.
 
     Args:
-        K (int): number of linear pieces. Default: ``2``
+        K (int, optional): number of linear pieces. Default: ``2``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
-    References:
-        .. [1] Chen et al. *Dynamic ReLU*. ECCV 2020. arXiv:2003.10027.
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/DYReLU.png
+
+    Examples::
+
+        >>> m = torch_activation.DYReLU()
+        >>> x = torch.randn(2)
+        >>> output = m(x)
     """
 
     def __init__(self, K: int = 2, **kwargs):
@@ -1325,22 +1569,29 @@ class DYReLU(BaseActivation):
 @register_activation
 class FunPReLU(BaseActivation):
     r"""
-    Applies the Functional Parametric ReLU (FunPReLU) — a simplified 1-D version:
+    Applies the Functional Parametric ReLU (FunPReLU):
 
     :math:`\text{FunPReLU}(z) = \max(z, t(z))`
 
     where :math:`t(z) = w z + c` is a learnable linear threshold function.
 
     Args:
-        init_w (float): initial slope for t. Default: ``0.25``
-        init_c (float): initial bias for t. Default: ``0.0``
+        init_w (float, optional): initial slope for t. Default: ``0.25``
+        init_c (float, optional): initial bias for t. Default: ``0.0``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
-    References:
-        .. [1] Activation survey arXiv:2402.09092 Section 4.2.4.
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/FunPReLU.png
+
+    Examples::
+
+        >>> m = torch_activation.FunPReLU()
+        >>> x = torch.randn(2)
+        >>> output = m(x)
     """
 
     def __init__(self, init_w: float = 0.25, init_c: float = 0.0, **kwargs):
@@ -1357,21 +1608,30 @@ class PLAF(BaseActivation):
     r"""
     Applies the Piecewise Linear Approximation Function (PLAF):
 
-    :math:`\text{PLAF}(z) = \begin{cases}
-    z - (1 - 1/d), & z \geq 1, \\
-    (1/d)|z|^d \cdot \text{sign}(z), & -1 \leq z < 1, \\
-    z + (1 - 1/d), & z < -1,
-    \end{cases}`
+    .. math::
+
+        \text{PLAF}(z) = \begin{cases}
+        z - (1 - 1/d), & z \geq 1 \\
+        (1/d)|z|^d \cdot \text{sign}(z), & -1 \leq z < 1 \\
+        z + (1 - 1/d), & z < -1
+        \end{cases}
 
     Args:
-        d (float): shaping parameter. Default: ``2.0``
+        d (float, optional): shaping parameter. Default: ``2.0``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
-    References:
-        .. [1] Activation survey arXiv:2402.09092 Section 3.6.41.
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/PLAF.png
+
+    Examples::
+
+        >>> m = torch_activation.PLAF()
+        >>> x = torch.randn(2)
+        >>> output = m(x)
     """
 
     def __init__(self, d: float = 2.0, **kwargs):
@@ -1388,20 +1648,26 @@ class PLAF(BaseActivation):
 @register_activation
 class HybridChaoticAF(BaseActivation):
     r"""
-    Applies the Hybrid Chaotic Activation Function (HybridChaoticAF) — a simplified
-    deterministic version using a saturating sine:
+    Applies the Hybrid Chaotic Activation Function (HybridChaoticAF):
 
     :math:`\text{HybridChaoticAF}(z) = \tanh(z) + a \sin(\pi z)`
 
     Args:
-        a (float): amplitude of chaotic perturbation. Default: ``0.1``
+        a (float, optional): amplitude of chaotic perturbation. Default: ``0.1``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
-    References:
-        .. [1] Activation survey arXiv:2402.09092 Section 3.48.1.
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/HybridChaoticAF.png
+
+    Examples::
+
+        >>> m = torch_activation.HybridChaoticAF()
+        >>> x = torch.randn(2)
+        >>> output = m(x)
     """
 
     def __init__(self, a: float = 0.1, **kwargs):

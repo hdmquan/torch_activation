@@ -10,17 +10,29 @@ class SQRT(BaseActivation):
     r"""
     Applies the Square-root-based activation function (SQRT):
 
-    :math:`\text{SQRT}(z) = \begin{cases}
-    \sqrt{z}, & z \geq 0 \\
-    -\sqrt{-z}, & z < 0
-    \end{cases}`
+    .. math::
+
+        \text{SQRT}(z) = \begin{cases}
+        \sqrt{z}, & z \geq 0 \\
+        -\sqrt{-z}, & z < 0
+        \end{cases}
+
+    Args:
+        inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
-    References:
-        - Noel et al. "Square-root-based activation functions for deep learning." (2021)
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/SQRT.png
+
+    Examples::
+
+        >>> m = torch_activation.SQRT()
+        >>> x = torch.randn(2)
+        >>> output = m(x)
     """
 
     def __init__(self, **kwargs):
@@ -35,24 +47,32 @@ class SQRT(BaseActivation):
 @register_activation
 class SSAF(BaseActivation):
     r"""
-    Applies the S-shaped activation function (SSAF), a parametric variant of SQRT:
+    Applies the S-shaped activation function (SSAF):
 
-    :math:`\text{SSAF}(z) = \begin{cases}
-    \sqrt{2az}, & z \geq 0 \\
-    -\sqrt{-2az}, & z < 0
-    \end{cases}`
+    .. math::
 
-    where :math:`a` is a fixed parameter.
+        \text{SSAF}(z) = \begin{cases}
+        \sqrt{2az}, & z \geq 0 \\
+        -\sqrt{-2az}, & z < 0
+        \end{cases}
 
     Args:
-        a (float, optional): The scaling parameter. Default: ``1.0``
+        a (float, optional): scaling parameter. Default: ``1.0``
+        inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
-    References:
-        - Proposed independently as "S-shaped activation function" (SSAF)
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/SSAF.png
+
+    Examples::
+
+        >>> m = torch_activation.SSAF()
+        >>> x = torch.randn(2)
+        >>> output = m(x)
     """
 
     def __init__(self, a: float = 1.0, **kwargs):

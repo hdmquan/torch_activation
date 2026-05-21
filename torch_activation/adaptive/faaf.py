@@ -14,16 +14,14 @@ from torch_activation.base import BaseActivation
 
 class FAAF(BaseActivation):
     r"""
-    Applies the Fractional Adaptive Activation Function (FAAF):
+    Applies the Fractional Adaptive Activation Function (base class):
 
     :math:`\text{FAAF}(z) = D^a f(z)`
 
     where :math:`D^a` is the a-th fractional derivative of function f.
 
-    This is a base class for fractional activation functions.
-
     Args:
-        a_init (float, optional): Initial value for the fractional order parameter a. Default: 0.5
+        a_init (float, optional): Initial value for the fractional order parameter a. Default: ``0.5``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
@@ -41,24 +39,32 @@ class FAAF(BaseActivation):
 @register_activation
 class FracReLU(BaseActivation):
     r"""
-    Applies the Fractional ReLU function:
+    Applies the Fractional ReLU activation function:
 
     :math:`\text{FracReLU}(z_i) = \frac{z_i^{1 - a_i}}{\Gamma(2 - a_i)}`
 
     where :math:`\Gamma` is the Gamma function and :math:`a_i` is a trainable parameter.
 
     Args:
-        a_init (float, optional): Initial value for the trainable parameter a. Default: 0.5
-        eps (float, optional): Small constant for numerical stability. Default: 1e-6
+        a_init (float, optional): Initial value for the trainable parameter a. Default: ``0.5``
+        eps (float, optional): Small constant for numerical stability. Default: ``1e-6``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/FracReLU.png
+
     Examples::
 
-        >>> m = FracReLU(a_init=0.3)
+        >>> m = torch_activation.FracReLU(a_init=0.3)
         >>> x = torch.randn(2)
+        >>> output = m(x)
+
+        >>> m = torch_activation.FracReLU()
+        >>> x = torch.randn(2, 3, 4)
         >>> output = m(x)
     """
 
@@ -77,29 +83,33 @@ class FracReLU(BaseActivation):
 @register_activation
 class FracSoftplus(BaseActivation):
     r"""
-    Applies the Fractional Softplus function:
+    Applies the Fractional Softplus activation function:
 
-    :math:`\text{FracSoftplus}(z_i) = D^{a_i} \ln(1 + \exp(z_i))`
-
-    Approximated using a finite sum:
-
-    :math:`\text{FracSoftplus}(z_i) \approx \frac{1}{h^{a_i}} \sum_{n=0}^{N} \frac{(-1)^n \Gamma(a_i + 1) \ln(1 + \exp(z_i - nh))}{\Gamma(n + 1) \Gamma(1 - n + a_i)}` # noqa: E501
+    :math:`\text{FracSoftplus}(z_i) \approx \frac{1}{h^{a_i}} \sum_{n=0}^{N} \frac{(-1)^n \Gamma(a_i + 1) \ln(1 + \exp(z_i - nh))}{\Gamma(n + 1) \Gamma(1 - n + a_i)}`
 
     where :math:`a_i` is a trainable parameter.
 
     Args:
-        a_init (float, optional): Initial value for the trainable parameter a. Default: 0.5
-        h (float, optional): Step size for approximation. Default: 0.1
-        n_terms (int, optional): Number of terms in the approximation sum. Default: 5
+        a_init (float, optional): Initial value for the trainable parameter a. Default: ``0.5``
+        h (float, optional): Step size for approximation. Default: ``0.1``
+        n_terms (int, optional): Number of terms in the approximation sum. Default: ``5``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/FracSoftplus.png
+
     Examples::
 
-        >>> m = FracSoftplus(a_init=0.3)
+        >>> m = torch_activation.FracSoftplus(a_init=0.3)
         >>> x = torch.randn(2)
+        >>> output = m(x)
+
+        >>> m = torch_activation.FracSoftplus()
+        >>> x = torch.randn(2, 3, 4)
         >>> output = m(x)
     """
 
@@ -139,29 +149,33 @@ class FracSoftplus(BaseActivation):
 @register_activation
 class FracTanh(BaseActivation):
     r"""
-    Applies the Fractional Hyperbolic Tangent function:
+    Applies the Fractional Hyperbolic Tangent activation function:
 
-    :math:`\text{FracTanh}(z_i) = D^{a_i} \tanh(z_i)`
-
-    Approximated using a finite sum:
-
-    :math:`\text{FracTanh}(z_i) \approx \frac{1}{h^{a_i}} \sum_{n=0}^{N} \frac{(-1)^n \Gamma(a_i + 1) \tanh(z_i - nh)}{\Gamma(n + 1) \Gamma(1 - n + a_i)}` # noqa: E501
+    :math:`\text{FracTanh}(z_i) \approx \frac{1}{h^{a_i}} \sum_{n=0}^{N} \frac{(-1)^n \Gamma(a_i + 1) \tanh(z_i - nh)}{\Gamma(n + 1) \Gamma(1 - n + a_i)}`
 
     where :math:`a_i` is a trainable parameter.
 
     Args:
-        a_init (float, optional): Initial value for the trainable parameter a. Default: 0.5
-        h (float, optional): Step size for approximation. Default: 0.1
-        n_terms (int, optional): Number of terms in the approximation sum. Default: 5
+        a_init (float, optional): Initial value for the trainable parameter a. Default: ``0.5``
+        h (float, optional): Step size for approximation. Default: ``0.1``
+        n_terms (int, optional): Number of terms in the approximation sum. Default: ``5``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/FracTanh.png
+
     Examples::
 
-        >>> m = FracTanh(a_init=0.3)
+        >>> m = torch_activation.FracTanh(a_init=0.3)
         >>> x = torch.randn(2)
+        >>> output = m(x)
+
+        >>> m = torch_activation.FracTanh()
+        >>> x = torch.randn(2, 3, 4)
         >>> output = m(x)
     """
 
@@ -198,35 +212,37 @@ class FracTanh(BaseActivation):
 @register_activation
 class FALU(BaseActivation):
     r"""
-    Applies the Fractional Adaptive Linear Unit (FALU):
+    Applies the Fractional Adaptive Linear Unit activation function:
 
-    :math:`\text{FALU}(z_i) = D^{a_i} z_i \sigma(b_i z_i)`
+    .. math::
 
-    where :math:`\sigma` is the sigmoid function, and :math:`a_i` and :math:`b_i` are trainable parameters. # noqa: E501
+        \text{FALU}(z_i) \approx \begin{cases}
+            g(z_i, b_i) + a_i \sigma(b_i z_i)(1 - g(z_i, b_i)), & a_i \in [0, 1] \\
+            g(z_i, b_i) + a_i \sigma(b_i z_i)(1 - 2h(z_i, b_i)), & a_i \in (1, 2]
+        \end{cases}
 
-    For computational efficiency, an approximation is used:
-
-    :math:`\text{FALU}(z_i) \approx \begin{cases}
-    g(z_i, b_i) + a_i \sigma(b_i z_i) (1 - g(z_i, b_i)), & a_i \in [0, 1] \\
-    g(z_i, b_i) + a_i \sigma(b_i z_i) (1 - 2h(z_i, b_i)), & a_i \in (1, 2]
-    \end{cases}`
-
-    where:
-    :math:`g(z_i, b_i) = z_i \sigma(b_i z_i)`
-    :math:`h(z_i, b_i) = g(z_i, b_i) + \sigma(z_i) (1 - g(z_i, b_i))`
+    where :math:`g(z_i, b_i) = z_i \sigma(b_i z_i)` and :math:`h(z_i, b_i) = g(z_i, b_i) + \sigma(z_i)(1 - g(z_i, b_i))`.
 
     Args:
-        a_init (float, optional): Initial value for the trainable parameter a. Default: 0.5
-        b_init (float, optional): Initial value for the trainable parameter b. Default: 1.0
+        a_init (float, optional): Initial value for the trainable parameter a. Default: ``0.5``
+        b_init (float, optional): Initial value for the trainable parameter b. Default: ``1.0``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/FALU.png
+
     Examples::
 
-        >>> m = FALU(a_init=0.3, b_init=2.0)
+        >>> m = torch_activation.FALU(a_init=0.3, b_init=2.0)
         >>> x = torch.randn(2)
+        >>> output = m(x)
+
+        >>> m = torch_activation.FALU()
+        >>> x = torch.randn(2, 3, 4)
         >>> output = m(x)
     """
 
@@ -251,28 +267,38 @@ class FALU(BaseActivation):
 @register_activation
 class FracLReLU(BaseActivation):
     r"""
-    Applies the Fractional Leaky ReLU function:
+    Applies the Fractional Leaky ReLU activation function:
 
-    :math:`\text{FracLReLU}(z_i) = \begin{cases}
-    \frac{z_i^{1 - a_i}}{\Gamma(2 - a_i)}, & z_i \geq 0 \\
-    \frac{0.1 \cdot z_i^{1 - a_i}}{\Gamma(2 - a_i)}, & z_i < 0
-    \end{cases}`
+    .. math::
+
+        \text{FracLReLU}(z_i) = \begin{cases}
+            \frac{z_i^{1 - a_i}}{\Gamma(2 - a_i)}, & z_i \geq 0 \\
+            \frac{0.1 \cdot z_i^{1 - a_i}}{\Gamma(2 - a_i)}, & z_i < 0
+        \end{cases}
 
     where :math:`\Gamma` is the Gamma function and :math:`a_i` is a trainable parameter.
 
     Args:
-        a_init (float, optional): Initial value for the trainable parameter a. Default: 0.5
-        negative_slope (float, optional): Controls the angle of the negative slope. Default: 0.1
-        eps (float, optional): Small constant for numerical stability. Default: 1e-6
+        a_init (float, optional): Initial value for the trainable parameter a. Default: ``0.5``
+        negative_slope (float, optional): Controls the angle of the negative slope. Default: ``0.1``
+        eps (float, optional): Small constant for numerical stability. Default: ``1e-6``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/FracLReLU.png
+
     Examples::
 
-        >>> m = FracLReLU(a_init=0.3)
+        >>> m = torch_activation.FracLReLU(a_init=0.3)
         >>> x = torch.randn(2)
+        >>> output = m(x)
+
+        >>> m = torch_activation.FracLReLU()
+        >>> x = torch.randn(2, 3, 4)
         >>> output = m(x)
     """
 
@@ -299,28 +325,38 @@ class FracLReLU(BaseActivation):
 @register_activation
 class FracPReLU(BaseActivation):
     r"""
-    Applies the Fractional Parametric ReLU function:
+    Applies the Fractional Parametric ReLU activation function:
 
-    :math:`\text{FracPReLU}(z_i) = \begin{cases}
-    \frac{z_i^{1 - a_i}}{\Gamma(2 - a_i)}, & z_i \geq 0 \\
-    \frac{b_i \cdot z_i^{1 - a_i}}{\Gamma(2 - a_i)}, & z_i < 0
-    \end{cases}`
+    .. math::
 
-    where :math:`\Gamma` is the Gamma function, :math:`a_i` is a fixed parameter, and :math:`b_i` is a trainable parameter. # noqa: E501
+        \text{FracPReLU}(z_i) = \begin{cases}
+            \frac{z_i^{1 - a_i}}{\Gamma(2 - a_i)}, & z_i \geq 0 \\
+            \frac{b_i \cdot z_i^{1 - a_i}}{\Gamma(2 - a_i)}, & z_i < 0
+        \end{cases}
+
+    where :math:`\Gamma` is the Gamma function, :math:`a_i` is a fixed parameter, and :math:`b_i` is a trainable parameter.
 
     Args:
-        a_init (float, optional): Initial value for the parameter a. Default: 0.5
-        b_init (float, optional): Initial value for the trainable parameter b. Default: 0.25
-        eps (float, optional): Small constant for numerical stability. Default: 1e-6
+        a_init (float, optional): Initial value for the parameter a. Default: ``0.5``
+        b_init (float, optional): Initial value for the trainable parameter b. Default: ``0.25``
+        eps (float, optional): Small constant for numerical stability. Default: ``1e-6``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/FracPReLU.png
+
     Examples::
 
-        >>> m = FracPReLU(a_init=0.3, b_init=0.2)
+        >>> m = torch_activation.FracPReLU(a_init=0.3, b_init=0.2)
         >>> x = torch.randn(2)
+        >>> output = m(x)
+
+        >>> m = torch_activation.FracPReLU()
+        >>> x = torch.randn(2, 3, 4)
         >>> output = m(x)
     """
 
@@ -346,29 +382,39 @@ class FracPReLU(BaseActivation):
 @register_activation
 class FracELU(BaseActivation):
     r"""
-    Applies the Fractional Exponential Linear Unit function:
+    Applies the Fractional Exponential Linear Unit activation function:
 
-    :math:`\text{FracELU}(z_i) = \begin{cases}
-    \frac{z_i^{1 - a_i}}{\Gamma(2 - a_i)}, & z_i \geq 0 \\
-    b \sum_{k=0}^{N} \frac{1}{\Gamma(k + 1)} \frac{\Gamma(k + 1 - a_i)}{\Gamma(k + 1)} z_i^{k - a_i} - \frac{b}{\Gamma(1 - a_i)} z_i^{-a_i}, & z_i < 0 # noqa: E501
-    \end{cases}`
+    .. math::
 
-    where :math:`\Gamma` is the Gamma function, :math:`a_i` is a trainable parameter, and :math:`b` is a fixed parameter. # noqa: E501
+        \text{FracELU}(z_i) = \begin{cases}
+            \frac{z_i^{1 - a_i}}{\Gamma(2 - a_i)}, & z_i \geq 0 \\
+            b \sum_{k=0}^{N} \frac{\Gamma(k + 1 - a_i)}{\Gamma(k + 1)^2} z_i^{k - a_i} - \frac{b}{\Gamma(1 - a_i)} z_i^{-a_i}, & z_i < 0
+        \end{cases}
+
+    where :math:`\Gamma` is the Gamma function, :math:`a_i` is a trainable parameter, and :math:`b` is a fixed parameter.
 
     Args:
-        a_init (float, optional): Initial value for the trainable parameter a. Default: 0.5
-        alpha (float, optional): The alpha parameter for ELU. Default: 1.0
-        n_terms (int, optional): Number of terms in the approximation sum. Default: 5
-        eps (float, optional): Small constant for numerical stability. Default: 1e-6
+        a_init (float, optional): Initial value for the trainable parameter a. Default: ``0.5``
+        alpha (float, optional): The alpha parameter for ELU. Default: ``1.0``
+        n_terms (int, optional): Number of terms in the approximation sum. Default: ``5``
+        eps (float, optional): Small constant for numerical stability. Default: ``1e-6``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/FracELU.png
+
     Examples::
 
-        >>> m = FracELU(a_init=0.3, alpha=1.0)
+        >>> m = torch_activation.FracELU(a_init=0.3, alpha=1.0)
         >>> x = torch.randn(2)
+        >>> output = m(x)
+
+        >>> m = torch_activation.FracELU()
+        >>> x = torch.randn(2, 3, 4)
         >>> output = m(x)
     """
 
@@ -406,19 +452,21 @@ class FracELU(BaseActivation):
 # @register_activation
 class FracSiLU1(BaseActivation):
     r"""
-    Applies the Fractional SiLU Variant 1 function:
+    Applies the Fractional SiLU Variant 1 activation function:
 
-    :math:`\text{FracSiLU1}(z_i) = \begin{cases}
-    \frac{z_i^{1 - a_i}}{\Gamma(2 - a_i)}, & z_i \geq 0 \\
-    \sum_{k=0}^{N} \frac{(-1)^k + (2^{k+1} - 1) B_{k+1} \Gamma(k + 2)}{\Gamma(k + 2 - a_i) (k + 1)!} z_i^{k+1 - a_i}, & z_i < 0 # noqa: E501
-    \end{cases}`
+    .. math::
 
-    where :math:`\Gamma` is the Gamma function, :math:`B_n` is the n-th Bernoulli number, and :math:`a_i` is a trainable parameter. # noqa: E501
+        \text{FracSiLU1}(z_i) = \begin{cases}
+            \frac{z_i^{1 - a_i}}{\Gamma(2 - a_i)}, & z_i \geq 0 \\
+            \sum_{k=0}^{N} \frac{((-1)^k + (2^{k+1} - 1) B_{k+1}) \Gamma(k + 2)}{\Gamma(k + 2 - a_i) (k + 1)!} z_i^{k+1 - a_i}, & z_i < 0
+        \end{cases}
+
+    where :math:`\Gamma` is the Gamma function, :math:`B_n` is the n-th Bernoulli number, and :math:`a_i` is a trainable parameter.
 
     Args:
-        a_init (float, optional): Initial value for the trainable parameter a. Default: 0.5
-        n_terms (int, optional): Number of terms in the approximation sum. Default: 5
-        eps (float, optional): Small constant for numerical stability. Default: 1e-6
+        a_init (float, optional): Initial value for the trainable parameter a. Default: ``0.5``
+        n_terms (int, optional): Number of terms in the approximation sum. Default: ``5``
+        eps (float, optional): Small constant for numerical stability. Default: ``1e-6``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
@@ -428,6 +476,10 @@ class FracSiLU1(BaseActivation):
 
         >>> m = FracSiLU1(a_init=0.3)
         >>> x = torch.randn(2)
+        >>> output = m(x)
+
+        >>> m = FracSiLU1()
+        >>> x = torch.randn(2, 3, 4)
         >>> output = m(x)
     """
 
@@ -490,16 +542,16 @@ class FracSiLU1(BaseActivation):
 # @register_activation
 class FracSiLU2(BaseActivation):
     r"""
-    Applies the Fractional SiLU Variant 2 function:
+    Applies the Fractional SiLU Variant 2 activation function:
 
-    :math:`\text{FracSiLU2}(z_i) = \sum_{k=0}^{N} \frac{(-1)^k + (2^{k+1} - 1) B_{k+1} \Gamma(k + 2)}{\Gamma(k + 2 - a_i) (k + 1)!} z_i^{k+1 - a_i}` # noqa: E501
+    :math:`\text{FracSiLU2}(z_i) = \sum_{k=0}^{N} \frac{((-1)^k + (2^{k+1} - 1) B_{k+1}) \Gamma(k + 2)}{\Gamma(k + 2 - a_i) (k + 1)!} z_i^{k+1 - a_i}`
 
-    where :math:`\Gamma` is the Gamma function, :math:`B_n` is the n-th Bernoulli number, and :math:`a_i` is a trainable parameter. # noqa: E501
+    where :math:`\Gamma` is the Gamma function, :math:`B_n` is the n-th Bernoulli number, and :math:`a_i` is a trainable parameter.
 
     Args:
-        a_init (float, optional): Initial value for the trainable parameter a. Default: 0.5
-        n_terms (int, optional): Number of terms in the approximation sum. Default: 5
-        eps (float, optional): Small constant for numerical stability. Default: 1e-6
+        a_init (float, optional): Initial value for the trainable parameter a. Default: ``0.5``
+        n_terms (int, optional): Number of terms in the approximation sum. Default: ``5``
+        eps (float, optional): Small constant for numerical stability. Default: ``1e-6``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
@@ -509,6 +561,10 @@ class FracSiLU2(BaseActivation):
 
         >>> m = FracSiLU2(a_init=0.3)
         >>> x = torch.randn(2)
+        >>> output = m(x)
+
+        >>> m = FracSiLU2()
+        >>> x = torch.randn(2, 3, 4)
         >>> output = m(x)
     """
 
@@ -550,28 +606,38 @@ class FracSiLU2(BaseActivation):
 @register_activation
 class FracGELU1(BaseActivation):
     r"""
-    Applies the Fractional GELU Variant 1 function:
+    Applies the Fractional GELU Variant 1 activation function:
 
-    :math:`\text{FracGELU1}(z_i) = \begin{cases}
-    \frac{z_i^{1 - a_i}}{\Gamma(2 - a_i)}, & z_i \geq 0 \\
-    \frac{0.5 z_i^{1 - a_i}}{\Gamma(2 - a_i)} - \frac{1}{\sqrt{2\pi}} \sum_{k=0}^{N} \frac{1}{k!} \left(-\frac{1}{2}\right)^k \frac{\Gamma(2k + 3)}{\Gamma(2k + 3 - a_i)} z_i^{2k+1 - a_i}, & z_i < 0 # noqa: E501
-    \end{cases}`
+    .. math::
+
+        \text{FracGELU1}(z_i) = \begin{cases}
+            \frac{z_i^{1 - a_i}}{\Gamma(2 - a_i)}, & z_i \geq 0 \\
+            \frac{0.5 z_i^{1 - a_i}}{\Gamma(2 - a_i)} - \frac{1}{\sqrt{2\pi}} \sum_{k=0}^{N} \frac{1}{k!} \left(-\frac{1}{2}\right)^k \frac{\Gamma(2k + 3)}{\Gamma(2k + 3 - a_i)} z_i^{2k+1 - a_i}, & z_i < 0
+        \end{cases}
 
     where :math:`\Gamma` is the Gamma function and :math:`a_i` is a trainable parameter.
 
     Args:
-        a_init (float, optional): Initial value for the trainable parameter a. Default: 0.5
-        n_terms (int, optional): Number of terms in the approximation sum. Default: 5
-        eps (float, optional): Small constant for numerical stability. Default: 1e-6
+        a_init (float, optional): Initial value for the trainable parameter a. Default: ``0.5``
+        n_terms (int, optional): Number of terms in the approximation sum. Default: ``5``
+        eps (float, optional): Small constant for numerical stability. Default: ``1e-6``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/FracGELU1.png
+
     Examples::
 
-        >>> m = FracGELU1(a_init=0.3)
+        >>> m = torch_activation.FracGELU1(a_init=0.3)
         >>> x = torch.randn(2)
+        >>> output = m(x)
+
+        >>> m = torch_activation.FracGELU1()
+        >>> x = torch.randn(2, 3, 4)
         >>> output = m(x)
     """
 
@@ -630,25 +696,33 @@ class FracGELU1(BaseActivation):
 @register_activation
 class FracGELU2(BaseActivation):
     r"""
-    Applies the Fractional GELU Variant 2 function:
+    Applies the Fractional GELU Variant 2 activation function:
 
-    :math:`\text{FracGELU2}(z_i) = \frac{0.5 z_i^{1 - a_i}}{\Gamma(2 - a_i)} - \frac{1}{\sqrt{2\pi}} \sum_{k=0}^{N} \frac{1}{k!} \left(-\frac{1}{2}\right)^k \frac{\Gamma(2k + 3)}{\Gamma(2k + 3 - a_i)} z_i^{2k+1 - a_i}` # noqa: E501
+    :math:`\text{FracGELU2}(z_i) = \frac{0.5 z_i^{1 - a_i}}{\Gamma(2 - a_i)} - \frac{1}{\sqrt{2\pi}} \sum_{k=0}^{N} \frac{1}{k!} \left(-\frac{1}{2}\right)^k \frac{\Gamma(2k + 3)}{\Gamma(2k + 3 - a_i)} z_i^{2k+1 - a_i}`
 
     where :math:`\Gamma` is the Gamma function and :math:`a_i` is a trainable parameter.
 
     Args:
-        a_init (float, optional): Initial value for the trainable parameter a. Default: 0.5
-        n_terms (int, optional): Number of terms in the approximation sum. Default: 5
-        eps (float, optional): Small constant for numerical stability. Default: 1e-6
+        a_init (float, optional): Initial value for the trainable parameter a. Default: ``0.5``
+        n_terms (int, optional): Number of terms in the approximation sum. Default: ``5``
+        eps (float, optional): Small constant for numerical stability. Default: ``1e-6``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/FracGELU2.png
+
     Examples::
 
-        >>> m = FracGELU2(a_init=0.3)
+        >>> m = torch_activation.FracGELU2(a_init=0.3)
         >>> x = torch.randn(2)
+        >>> output = m(x)
+
+        >>> m = torch_activation.FracGELU2()
+        >>> x = torch.randn(2, 3, 4)
         >>> output = m(x)
     """
 

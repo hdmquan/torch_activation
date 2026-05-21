@@ -10,18 +10,29 @@ class ETanh(BaseActivation):
     r"""
     Applies the E-Tanh activation function:
 
-    :math:`\text{E-Tanh}(z) = a \cdot \exp(z) \cdot \tanh(z)`
-
-    An activation function combining the exponential and tanh functions.
+    :math:`\text{ETanh}(z) = a \cdot \exp(z) \cdot \tanh(z)`
 
     Args:
         a (float, optional): Scaling parameter. Default: ``1.0``
-        inplace (bool, optional): parameter kept for API consistency, but E-Tanh operation
-                                 cannot be done in-place. Default: ``False``
+        inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
+
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/ETanh.png
+
+    Examples::
+
+        >>> m = torch_activation.ETanh()
+        >>> x = torch.randn(2)
+        >>> output = m(x)
+
+        >>> m = torch_activation.ETanh(a=2.0)
+        >>> x = torch.randn(2)
+        >>> output = m(x)
     """
 
     def __init__(self, a: float = 1.0, **kwargs):
@@ -39,17 +50,27 @@ class EvolvedTanhReLU(BaseActivation):
 
     :math:`\text{EvolvedTanhReLU}(z) = a \cdot \tanh(z^2) + \text{ReLU}(z)`
 
-    This activation function was found using neuroevolution and showed the best performance
-    on the HAR dataset using LSTM units.
-
     Args:
         a (float, optional): Scaling parameter. Default: ``1.0``
-        inplace (bool, optional): parameter kept for API consistency, but this operation
-                                 cannot be done in-place. Default: ``False``
+        inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
+
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/EvolvedTanhReLU.png
+
+    Examples::
+
+        >>> m = torch_activation.EvolvedTanhReLU()
+        >>> x = torch.randn(2)
+        >>> output = m(x)
+
+        >>> m = torch_activation.EvolvedTanhReLU(a=2.0)
+        >>> x = torch.randn(2)
+        >>> output = m(x)
     """
 
     def __init__(self, a: float = 1.0, **kwargs):
@@ -67,15 +88,22 @@ class EvolvedTanhLogReLU(BaseActivation):
 
     :math:`\text{EvolvedTanhLogReLU}(z) = \max(\tanh(\log(z)), \text{ReLU}(z))`
 
-    This activation function was found using neuroevolution.
-
     Args:
-        inplace (bool, optional): parameter kept for API consistency, but this operation
-                                 cannot be done in-place. Default: ``False``
+        inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
+
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/EvolvedTanhLogReLU.png
+
+    Examples::
+
+        >>> m = torch_activation.EvolvedTanhLogReLU()
+        >>> x = torch.randn(2)
+        >>> output = m(x)
     """
 
     def __init__(self, **kwargs):

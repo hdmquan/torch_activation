@@ -11,29 +11,26 @@ class HCAF(BaseActivation):
     Applies the Hybrid Chaotic Activation Function:
 
     .. math::
-        a_i = \sigma(z_i)
 
-        c_{i,1} = ra_i(1 - a_i)
+        a_i = \sigma(z_i), \quad c_{i,1} = r a_i(1 - a_i), \quad c_{i,j} = r c_{i,j-1}(1 - c_{i,j-1})
 
-        c_{i,j} = rc_{i,j-1}(1 - c_{i,j-1})
-
-    where :math:`\sigma(z_i)` is the logistic sigmoid and :math:`r = 4` by default.
+    where :math:`\sigma(z_i)` is the logistic sigmoid.
 
     Args:
-        r (float, optional): Chaotic parameter. Default: ``4.0``
-        iterations (int, optional): Number of iterations for the chaotic map. Default: ``3``
+        r (float, optional): chaotic parameter. Default: ``4.0``
+        iterations (int, optional): number of iterations for the chaotic map. Default: ``3``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/HCAF.png
+
     Examples::
 
         >>> m = torch_activation.HCAF()
-        >>> x = torch.randn(2)
-        >>> output = m(x)
-
-        >>> m = torch_activation.HCAF(r=3.9, iterations=5)
         >>> x = torch.randn(2)
         >>> output = m(x)
     """
@@ -63,27 +60,26 @@ class FCAF_Hidden(BaseActivation):
     Applies the Fusion of Chaotic Activation Function for hidden units:
 
     .. math::
-        z_i = \sigma(x_i)
 
-        f(z_{i+1}) = rz_i(1 - z_i) + z_i + a - \frac{b}{2\pi} \sin(2\pi z_i)
+        z_i = \sigma(x_i), \quad f(z_{i+1}) = rz_i(1 - z_i) + z_i + a - \frac{b}{2\pi} \sin(2\pi z_i)
 
     Args:
-        r (float, optional): Chaotic parameter. Default: ``4.0``
-        a (float, optional): Linear shift parameter. Default: ``0.0``
-        b (float, optional): Sinusoidal amplitude parameter. Default: ``0.5``
-        iterations (int, optional): Number of iterations for the chaotic map. Default: ``1``
+        r (float, optional): chaotic parameter. Default: ``4.0``
+        a (float, optional): linear shift parameter. Default: ``0.0``
+        b (float, optional): sinusoidal amplitude parameter. Default: ``0.5``
+        iterations (int, optional): number of iterations for the chaotic map. Default: ``1``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/FCAF_Hidden.png
+
     Examples::
 
         >>> m = torch_activation.FCAF_Hidden()
-        >>> x = torch.randn(2)
-        >>> output = m(x)
-
-        >>> m = torch_activation.FCAF_Hidden(r=3.9, a=0.1, b=0.3, iterations=2)
         >>> x = torch.randn(2)
         >>> output = m(x)
     """
@@ -119,29 +115,28 @@ class FCAF_Output(BaseActivation):
     Applies the Fusion of Chaotic Activation Function for output units:
 
     .. math::
-        z_i = \sigma(x_i)
 
-        f(z_{i+1}) = rz_i(1 - z_i) + z_i + a - \frac{b}{2\pi} \sin(2\pi z_i) + \exp(-cz_i^2) + d
+        z_i = \sigma(x_i), \quad f(z_{i+1}) = rz_i(1 - z_i) + z_i + a - \frac{b}{2\pi} \sin(2\pi z_i) + \exp(-cz_i^2) + d
 
     Args:
-        r (float, optional): Chaotic parameter. Default: ``4.0``
-        a (float, optional): Linear shift parameter. Default: ``0.0``
-        b (float, optional): Sinusoidal amplitude parameter. Default: ``0.5``
+        r (float, optional): chaotic parameter. Default: ``4.0``
+        a (float, optional): linear shift parameter. Default: ``0.0``
+        b (float, optional): sinusoidal amplitude parameter. Default: ``0.5``
         c (float, optional): Gaussian width parameter. Default: ``1.0``
-        d (float, optional): Constant shift parameter. Default: ``0.0``
-        iterations (int, optional): Number of iterations for the chaotic map. Default: ``1``
+        d (float, optional): constant shift parameter. Default: ``0.0``
+        iterations (int, optional): number of iterations for the chaotic map. Default: ``1``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/FCAF_Output.png
+
     Examples::
 
         >>> m = torch_activation.FCAF_Output()
-        >>> x = torch.randn(2)
-        >>> output = m(x)
-
-        >>> m = torch_activation.FCAF_Output(r=3.9, a=0.1, b=0.3, c=2.0, d=0.1, iterations=2)
         >>> x = torch.randn(2)
         >>> output = m(x)
     """
@@ -188,28 +183,27 @@ class CCAF(BaseActivation):
     Applies the Cascade Chaotic Activation Function:
 
     .. math::
-        \tilde{z}_i = \tanh(z_i)
 
-        f(\tilde{z}_{i+1}) = a \cdot \sin(\pi \cdot b \cdot \sin(\pi \tilde{z}_i))
+        \tilde{z}_i = \tanh(z_i), \quad f(\tilde{z}_{i+1}) = a \cdot \sin(\pi \cdot b \cdot \sin(\pi \tilde{z}_i))
 
-    where the input is normalized via tanh before applying the map, and :math:`a, b \in [0, 1]`.
+    where :math:`a, b \in [0, 1]`.
 
     Args:
-        a (float, optional): Amplitude parameter. Default: ``0.5``
-        b (float, optional): Inner sine scaling parameter. Default: ``0.5``
-        iterations (int, optional): Number of iterations for the chaotic map. Default: ``1``
+        a (float, optional): amplitude parameter. Default: ``0.5``
+        b (float, optional): inner sine scaling parameter. Default: ``0.5``
+        iterations (int, optional): number of iterations for the chaotic map. Default: ``1``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/CCAF.png
+
     Examples::
 
         >>> m = torch_activation.CCAF()
-        >>> x = torch.randn(2)
-        >>> output = m(x)
-
-        >>> m = torch_activation.CCAF(a=0.8, b=0.7, iterations=3)
         >>> x = torch.randn(2)
         >>> output = m(x)
     """

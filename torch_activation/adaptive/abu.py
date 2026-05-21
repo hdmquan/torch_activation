@@ -12,31 +12,35 @@ from torch_activation.base import BaseActivation
 @register_activation
 class ABU(BaseActivation):
     r"""
-    Applies the Adaptive Blending Unit (ABU) function:
+    Applies the Adaptive Blending Unit activation function:
 
     :math:`\text{ABU}(z_l) = \sum_{j=0}^{n} a_{j,l} \cdot g_j(z_l) + b`
 
-    where :math:`g_j(z_l)` is an activation function from a pool of n activation functions,
-    :math:`a_{j,l}` is a trainable weighting parameter for each layer l and activation function g_j,
-    and :math:`b` is an optional trainable bias term.
+    where :math:`g_j(z_l)` is an activation function from a pool, :math:`a_{j,l}` is a trainable weighting parameter, and :math:`b` is an optional trainable bias term.
 
     Args:
-        activation_pool (list, optional): List of activation functions to blend.
-            Default: [nn.Tanh(), nn.ELU(), nn.ReLU(), nn.SiLU(), nn.Identity()]
-        constrain_weights (str, optional): Method to constrain weights. Options: 'none', 'sum_to_one', # noqa: E501
-            'abs_sum_to_one', 'clip_and_normalize', 'softmax'. Default: 'none'
-        init_weights (list, optional): Initial weights for each activation. If None, initialized to 1/n. Default: None # noqa: E501
-        bias (bool, optional): If True, adds a learnable bias term. Default: False
-        init_bias (float, optional): Initial value for the bias term. Default: 0.0
+        activation_pool (list, optional): List of activation functions to blend. Default: ``[nn.Tanh(), nn.ELU(), nn.ReLU(), nn.SiLU(), nn.Identity()]``
+        constrain_weights (str, optional): Method to constrain weights. Options: 'none', 'sum_to_one', 'abs_sum_to_one', 'clip_and_normalize', 'softmax'. Default: ``'none'``
+        init_weights (list, optional): Initial weights for each activation. If None, initialized to 1/n. Default: ``None``
+        bias (bool, optional): If True, adds a learnable bias term. Default: ``False``
+        init_bias (float, optional): Initial value for the bias term. Default: ``0.0``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/ABU.png
+
     Examples::
 
-        >>> m = ABU()
+        >>> m = torch_activation.ABU()
         >>> x = torch.randn(2)
+        >>> output = m(x)
+
+        >>> m = torch_activation.ABU(constrain_weights='softmax')
+        >>> x = torch.randn(2, 3, 4)
         >>> output = m(x)
     """
 
@@ -103,26 +107,34 @@ class ABU(BaseActivation):
 @register_activation
 class MoGU(BaseActivation):
     r"""
-    Applies the Mixture of Gaussian Unit (MoGU) function:
+    Applies the Mixture of Gaussian Unit activation function:
 
-    :math:`\text{MoGU}(z_i) = \sum_{j=0}^{n} a_{i,j} \frac{1}{\sqrt{2\pi\sigma_{i,j}^2}} \exp\left(-\frac{(z_i-\mu_{i,j})^2}{2\sigma_{i,j}^2}\right)` # noqa: E501
+    :math:`\text{MoGU}(z_i) = \sum_{j=0}^{n} a_{i,j} \frac{1}{\sqrt{2\pi\sigma_{i,j}^2}} \exp\left(-\frac{(z_i-\mu_{i,j})^2}{2\sigma_{i,j}^2}\right)`
 
     where :math:`a_{i,j}`, :math:`\sigma_{i,j}`, and :math:`\mu_{i,j}` are trainable parameters.
 
     Args:
-        n_gaussians (int, optional): Number of Gaussian components in the mixture. Default: 3
-        init_a (float, optional): Initial value for the scale parameters a. Default: 1.0
-        init_sigma (float, optional): Initial value for the standard deviation parameters sigma. Default: 1.0 # noqa: E501
-        init_mu_spread (float, optional): Spread for initializing the mean parameters mu. Default: 2.0 # noqa: E501
+        n_gaussians (int, optional): Number of Gaussian components in the mixture. Default: ``3``
+        init_a (float, optional): Initial value for the scale parameters a. Default: ``1.0``
+        init_sigma (float, optional): Initial value for the standard deviation parameters sigma. Default: ``1.0``
+        init_mu_spread (float, optional): Spread for initializing the mean parameters mu. Default: ``2.0``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/MoGU.png
+
     Examples::
 
-        >>> m = MoGU(n_gaussians=3)
+        >>> m = torch_activation.MoGU(n_gaussians=3)
         >>> x = torch.randn(2)
+        >>> output = m(x)
+
+        >>> m = torch_activation.MoGU(n_gaussians=5)
+        >>> x = torch.randn(2, 3, 4)
         >>> output = m(x)
     """
 
@@ -161,7 +173,7 @@ class MoGU(BaseActivation):
 @register_activation
 class FSA(BaseActivation):
     r"""
-    Applies the Fourier Series Activation (FSA) function:
+    Applies the Fourier Series Activation function:
 
     :math:`\text{FSA}(z_i) = a_i + \sum_{j=1}^{r} (b_{i,j} \cos(jd_i z_i) + c_{i,j} \sin(jd_i z_i))`
 
@@ -169,20 +181,28 @@ class FSA(BaseActivation):
     and :math:`r` is a fixed hyperparameter denoting the rank of the Fourier series.
 
     Args:
-        rank (int, optional): Rank of the Fourier series (r). Default: 5
-        init_a (float, optional): Initial value for the bias parameter a. Default: 0.0
-        init_b (float, optional): Initial value for the cosine coefficients b. Default: 0.1
-        init_c (float, optional): Initial value for the sine coefficients c. Default: 0.1
-        init_d (float, optional): Initial value for the frequency parameter d. Default: 1.0
+        rank (int, optional): Rank of the Fourier series (r). Default: ``5``
+        init_a (float, optional): Initial value for the bias parameter a. Default: ``0.0``
+        init_b (float, optional): Initial value for the cosine coefficients b. Default: ``0.1``
+        init_c (float, optional): Initial value for the sine coefficients c. Default: ``0.1``
+        init_d (float, optional): Initial value for the frequency parameter d. Default: ``1.0``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/FSA.png
+
     Examples::
 
-        >>> m = FSA(rank=5)
+        >>> m = torch_activation.FSA(rank=5)
         >>> x = torch.randn(2)
+        >>> output = m(x)
+
+        >>> m = torch_activation.FSA(rank=10)
+        >>> x = torch.randn(2, 3, 4)
         >>> output = m(x)
     """
 
@@ -212,7 +232,7 @@ class FSA(BaseActivation):
 @register_activation
 class TCA(BaseActivation):
     r"""
-    Applies the Trainable Compound Activation (TCA) function:
+    Applies the Trainable Compound Activation function:
 
     :math:`\text{TCA}(z_i) = \frac{1}{k} \sum_{j=1}^{k} f_j(\exp(a_{i,j}) z_i + b_{i,j})`
 
@@ -220,19 +240,26 @@ class TCA(BaseActivation):
     are scaling and translation trainable parameters.
 
     Args:
-        activation_pool (list, optional): List of activation functions to mix.
-            Default: [nn.Tanh(), nn.ReLU(), nn.SiLU(), nn.Identity()]
-        init_a (float, optional): Initial value for the scaling parameters a. Default: 0.0
-        init_b (float, optional): Initial value for the translation parameters b. Default: 0.0
+        activation_pool (list, optional): List of activation functions to mix. Default: ``[nn.Tanh(), nn.ReLU(), nn.SiLU(), nn.Identity()]``
+        init_a (float, optional): Initial value for the scaling parameters a. Default: ``0.0``
+        init_b (float, optional): Initial value for the translation parameters b. Default: ``0.0``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/TCA.png
+
     Examples::
 
-        >>> m = TCA()
+        >>> m = torch_activation.TCA()
         >>> x = torch.randn(2)
+        >>> output = m(x)
+
+        >>> m = torch_activation.TCA(init_a=0.5)
+        >>> x = torch.randn(2, 3, 4)
         >>> output = m(x)
     """
 
@@ -266,28 +293,35 @@ class TCA(BaseActivation):
 @register_activation
 class TCAv2(BaseActivation):
     r"""
-    Applies the Trainable Compound Activation Variant 2 (TCAv2) function:
+    Applies the Trainable Compound Activation Variant 2 activation function:
 
-    :math:`\text{TCAv2}(z_i) = \frac{\sum_{j=1}^{k} \exp(a_{i,j}) f_j(\exp(b_{i,j}) z_i + c_{i,j})}{\sum_{j=1}^{k} \exp(a_{i,j})}` # noqa: E501
+    :math:`\text{TCAv2}(z_i) = \frac{\sum_{j=1}^{k} \exp(a_{i,j}) f_j(\exp(b_{i,j}) z_i + c_{i,j})}{\sum_{j=1}^{k} \exp(a_{i,j})}`
 
-    where :math:`k` is the number of mixed functions, and :math:`a_{i,j}`, :math:`b_{i,j}`, and :math:`c_{i,j}` # noqa: E501
+    where :math:`k` is the number of mixed functions, and :math:`a_{i,j}`, :math:`b_{i,j}`, and :math:`c_{i,j}`
     are scaling and translation trainable parameters.
 
     Args:
-        activation_pool (list, optional): List of activation functions to mix.
-            Default: [nn.Tanh(), nn.ReLU(), nn.SiLU(), nn.Identity()]
-        init_a (float, optional): Initial value for the vertical scaling parameters a. Default: 0.0
-        init_b (float, optional): Initial value for the horizontal scaling parameters b. Default: 0.0 # noqa: E501
-        init_c (float, optional): Initial value for the translation parameters c. Default: 0.0
+        activation_pool (list, optional): List of activation functions to mix. Default: ``[nn.Tanh(), nn.ReLU(), nn.SiLU(), nn.Identity()]``
+        init_a (float, optional): Initial value for the vertical scaling parameters a. Default: ``0.0``
+        init_b (float, optional): Initial value for the horizontal scaling parameters b. Default: ``0.0``
+        init_c (float, optional): Initial value for the translation parameters c. Default: ``0.0``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/TCAv2.png
+
     Examples::
 
-        >>> m = TCAv2()
+        >>> m = torch_activation.TCAv2()
         >>> x = torch.randn(2)
+        >>> output = m(x)
+
+        >>> m = torch_activation.TCAv2(init_a=0.5)
+        >>> x = torch.randn(2, 3, 4)
         >>> output = m(x)
     """
 
@@ -324,25 +358,32 @@ class TCAv2(BaseActivation):
 @register_activation
 class APAF(BaseActivation):
     r"""
-    Applies the Average of a Pool of Activation Functions (APAF):
+    Applies the Average of a Pool of Activation Functions activation function:
 
     :math:`\text{APAF}(z_i) = \frac{\sum_{j=0}^{n} a_{j,i} h_j(z_i)}{\sum_{j=0}^{n} a_{j,i}}`
 
-    where :math:`h_j` are activation functions from a pool and :math:`a_{j,i}` are trainable parameters. # noqa: E501
+    where :math:`h_j` are activation functions from a pool and :math:`a_{j,i}` are trainable parameters.
 
     Args:
-        activation_pool (list, optional): List of activation functions to average.
-            Default: [nn.ReLU(), nn.Sigmoid(), nn.Tanh(), nn.Identity()]
-        init_weights (float, optional): Initial value for the weights. Default: 1.0
+        activation_pool (list, optional): List of activation functions to average. Default: ``[nn.ReLU(), nn.Sigmoid(), nn.Tanh(), nn.Identity()]``
+        init_weights (float, optional): Initial value for the weights. Default: ``1.0``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/APAF.png
+
     Examples::
 
-        >>> m = APAF()
+        >>> m = torch_activation.APAF()
         >>> x = torch.randn(2)
+        >>> output = m(x)
+
+        >>> m = torch_activation.APAF(init_weights=0.5)
+        >>> x = torch.randn(2, 3, 4)
         >>> output = m(x)
     """
 
@@ -374,26 +415,33 @@ class APAF(BaseActivation):
 @register_activation
 class GABU(BaseActivation):
     r"""
-    Applies the Gating Adaptive Blending Unit (GABU) function:
+    Applies the Gating Adaptive Blending Unit activation function:
 
     :math:`\text{GABU}(z_i) = \sum_{j=0}^{n} \sigma(a_{j,i}) g_j(z_i)`
 
-    where :math:`g_j` are activation functions from a pool, :math:`\sigma` is the logistic sigmoid function, # noqa: E501
+    where :math:`g_j` are activation functions from a pool, :math:`\sigma` is the logistic sigmoid function,
     and :math:`a_{j,i}` are trainable parameters controlling the weight of each activation function.
 
     Args:
-        activation_pool (list, optional): List of activation functions to blend.
-            Default: [nn.Tanh(), nn.ReLU(), nn.SiLU(), nn.Identity()]
-        init_gates (float, optional): Initial value for the gating parameters. Default: 0.0
+        activation_pool (list, optional): List of activation functions to blend. Default: ``[nn.Tanh(), nn.ReLU(), nn.SiLU(), nn.Identity()]``
+        init_gates (float, optional): Initial value for the gating parameters. Default: ``0.0``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/GABU.png
+
     Examples::
 
-        >>> m = GABU()
+        >>> m = torch_activation.GABU()
         >>> x = torch.randn(2)
+        >>> output = m(x)
+
+        >>> m = torch_activation.GABU(init_gates=0.5)
+        >>> x = torch.randn(2, 3, 4)
         >>> output = m(x)
     """
 
@@ -424,7 +472,7 @@ class GABU(BaseActivation):
 @register_activation
 class DKNN(BaseActivation):
     r"""
-    Applies the Deep Kronecker Neural Network (DKNN) activation function:
+    Applies the Deep Kronecker Neural Network activation function:
 
     :math:`\text{DKNN}(z_l) = \sum_{j=0}^{n} a_{l,j} g_j(b_{l,j} z_l)`
 
@@ -432,19 +480,26 @@ class DKNN(BaseActivation):
     are trainable parameters.
 
     Args:
-        activation_pool (list, optional): List of activation functions to use.
-            Default: [nn.Tanh(), nn.ReLU(), nn.SiLU(), nn.Identity()]
-        init_a (float, optional): Initial value for the vertical scaling parameters a. Default: 1.0
-        init_b (float, optional): Initial value for the horizontal scaling parameters b. Default: 1.0 # noqa: E501
+        activation_pool (list, optional): List of activation functions to use. Default: ``[nn.Tanh(), nn.ReLU(), nn.SiLU(), nn.Identity()]``
+        init_a (float, optional): Initial value for the vertical scaling parameters a. Default: ``1.0``
+        init_b (float, optional): Initial value for the horizontal scaling parameters b. Default: ``1.0``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/DKNN.png
+
     Examples::
 
-        >>> m = DKNN()
+        >>> m = torch_activation.DKNN()
         >>> x = torch.randn(2)
+        >>> output = m(x)
+
+        >>> m = torch_activation.DKNN(init_a=0.5, init_b=2.0)
+        >>> x = torch.randn(2, 3, 4)
         >>> output = m(x)
     """
 
@@ -475,7 +530,7 @@ class DKNN(BaseActivation):
 @register_activation
 class RowdyActivation(BaseActivation):
     r"""
-    Applies the Rowdy Activation function, a special case of DKNN:
+    Applies the Rowdy Activation function:
 
     :math:`\text{Rowdy}(z_l) = g_0(z_l) + \sum_{j=1}^{n} a_j \cdot c \cdot \sin(jcz_l)`
 
@@ -483,20 +538,28 @@ class RowdyActivation(BaseActivation):
     and :math:`a_j` are trainable parameters.
 
     Args:
-        base_activation (nn.Module, optional): Base activation function g_0. Default: nn.ReLU()
-        n_terms (int, optional): Number of sine terms to use. Default: 5
-        scaling_factor (float, optional): Fixed scaling factor c. Default: 1.0
-        init_a (float, optional): Initial value for the scaling parameters a. Default: 0.1
-        use_cos (bool, optional): If True, uses cosine instead of sine. Default: False
+        base_activation (nn.Module, optional): Base activation function g_0. Default: ``nn.ReLU()``
+        n_terms (int, optional): Number of sine terms to use. Default: ``5``
+        scaling_factor (float, optional): Fixed scaling factor c. Default: ``1.0``
+        init_a (float, optional): Initial value for the scaling parameters a. Default: ``0.1``
+        use_cos (bool, optional): If True, uses cosine instead of sine. Default: ``False``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/RowdyActivation.png
+
     Examples::
 
-        >>> m = RowdyActivation(n_terms=3)
+        >>> m = torch_activation.RowdyActivation(n_terms=3)
         >>> x = torch.randn(2)
+        >>> output = m(x)
+
+        >>> m = torch_activation.RowdyActivation(n_terms=5, use_cos=True)
+        >>> x = torch.randn(2, 3, 4)
         >>> output = m(x)
     """
 
@@ -538,7 +601,7 @@ class RowdyActivation(BaseActivation):
 @register_activation
 class SLAF(BaseActivation):
     r"""
-    Applies the Self-Learnable Activation Function (SLAF):
+    Applies the Self-Learnable Activation Function:
 
     :math:`\text{SLAF}(z_i) = \sum_{j=0}^{k-1} a_{i,j} z_i^j`
 
@@ -546,17 +609,25 @@ class SLAF(BaseActivation):
     defining the number of elements in the polynomial expression.
 
     Args:
-        k (int, optional): Number of terms in the polynomial. Default: 6
-        init_a (float, optional): Initial value for the coefficients. Default: 0.1
+        k (int, optional): Number of terms in the polynomial. Default: ``6``
+        init_a (float, optional): Initial value for the coefficients. Default: ``0.1``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/SLAF.png
+
     Examples::
 
-        >>> m = SLAF(k=4)
+        >>> m = torch_activation.SLAF(k=4)
         >>> x = torch.randn(2)
+        >>> output = m(x)
+
+        >>> m = torch_activation.SLAF(k=6)
+        >>> x = torch.randn(2, 3, 4)
         >>> output = m(x)
     """
 
@@ -582,25 +653,33 @@ class SLAF(BaseActivation):
 @register_activation
 class ChPAF(BaseActivation):
     r"""
-    Applies the Chebyshev Polynomial-based Activation Function (ChPAF):
+    Applies the Chebyshev Polynomial-based Activation Function:
 
     :math:`\text{ChPAF}(z) = \sum_{j=0}^{k} a_j C_j(z)`
 
     where :math:`a_j` are learnable parameters, :math:`k` is a fixed hyperparameter denoting the
-    maximum order of used Chebyshev polynomials, and :math:`C_j(z)` is a Chebyshev polynomial of order j. # noqa: E501
+    maximum order of used Chebyshev polynomials, and :math:`C_j(z)` is a Chebyshev polynomial of order j.
 
     Args:
-        k (int, optional): Maximum order of Chebyshev polynomials. Default: 3
-        init_a (float, optional): Initial value for the coefficients. Default: 0.1
+        k (int, optional): Maximum order of Chebyshev polynomials. Default: ``3``
+        init_a (float, optional): Initial value for the coefficients. Default: ``0.1``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/ChPAF.png
+
     Examples::
 
-        >>> m = ChPAF(k=3)
+        >>> m = torch_activation.ChPAF(k=3)
         >>> x = torch.randn(2)
+        >>> output = m(x)
+
+        >>> m = torch_activation.ChPAF(k=5)
+        >>> x = torch.randn(2, 3, 4)
         >>> output = m(x)
     """
 
@@ -633,25 +712,33 @@ class ChPAF(BaseActivation):
 @register_activation
 class LPAF(BaseActivation):
     r"""
-    Applies the Legendre Polynomial-based Activation Function (LPAF):
+    Applies the Legendre Polynomial-based Activation Function:
 
     :math:`\text{LPAF}(z) = \sum_{j=0}^{k} a_j G_j(z)`
 
     where :math:`a_j` are learnable parameters, :math:`k` is a fixed hyperparameter denoting the
-    maximum order of used Legendre polynomials, and :math:`G_j(z)` is a Legendre polynomial of order j. # noqa: E501
+    maximum order of used Legendre polynomials, and :math:`G_j(z)` is a Legendre polynomial of order j.
 
     Args:
-        k (int, optional): Maximum order of Legendre polynomials. Default: 3
-        init_a (float, optional): Initial value for the coefficients. Default: 0.1
+        k (int, optional): Maximum order of Legendre polynomials. Default: ``3``
+        init_a (float, optional): Initial value for the coefficients. Default: ``0.1``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/LPAF.png
+
     Examples::
 
-        >>> m = LPAF(k=3)
+        >>> m = torch_activation.LPAF(k=3)
         >>> x = torch.randn(2)
+        >>> output = m(x)
+
+        >>> m = torch_activation.LPAF(k=5)
+        >>> x = torch.randn(2, 3, 4)
         >>> output = m(x)
     """
 
@@ -686,25 +773,33 @@ class LPAF(BaseActivation):
 @register_activation
 class HPAF(BaseActivation):
     r"""
-    Applies the Hermite Polynomial-based Activation Function (HPAF):
+    Applies the Hermite Polynomial-based Activation Function:
 
     :math:`\text{HPAF}(z) = \sum_{j=0}^{k} a_j H_j(z)`
 
     where :math:`a_j` are learnable parameters, :math:`k` is a fixed hyperparameter denoting the
-    maximum order of used Hermite polynomials, and :math:`H_j(z)` is a Hermite polynomial of order j. # noqa: E501
+    maximum order of used Hermite polynomials, and :math:`H_j(z)` is a Hermite polynomial of order j.
 
     Args:
-        order (int, optional): Maximum order of Hermite polynomials. Default: 5
-        init_a (float, optional): Initial value for the coefficients. Default: 0.1
+        order (int, optional): Maximum order of Hermite polynomials. Default: ``5``
+        init_a (float, optional): Initial value for the coefficients. Default: ``0.1``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/HPAF.png
+
     Examples::
 
-        >>> m = HPAF(order=5)
+        >>> m = torch_activation.HPAF(order=5)
         >>> x = torch.randn(2)
+        >>> output = m(x)
+
+        >>> m = torch_activation.HPAF(order=3)
+        >>> x = torch.randn(2, 3, 4)
         >>> output = m(x)
     """
 

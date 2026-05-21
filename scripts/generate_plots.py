@@ -1,26 +1,43 @@
-import argparse
-
-import torch_activation as ta
+import torch
+import torch_activation
 from torch_activation.utils import plot_activation
 
-parser = argparse.ArgumentParser()
-parser.add_argument("--output-dir", default="images/activation_images")
-parser.add_argument("--format", choices=["png", "svg"], default="png")
-args = parser.parse_args()
+NEEDS_INPUT_SHAPE = {
+    "GPSoftmax",
+    "GLSoftmax",
+    "ARBF",
+    "PGELU",
+    "PFTS",
+    "PFPM",
+    "PSIGRAMP",
+    "RSIGN",
+    "MAF",
+    "UAF",
+    "GReLU",
+    "GLN",
+}
 
-names = ta.get_all_activations()
-generated = []
-skipped = []
+DOUBLES_FIRST_DIM = {"CReLU", "NCReLU"}
+DOUBLES_LAST_DIM = {"PairedReLU"}
+SKIP = {"BaseActivation"}
 
-for name in names:
-    cls = ta._ACTIVATIONS[name]["class"]
+names = [n for n in torch_activation._ACTIVATIONS.keys() if n not in SKIP]
+total = len(names)
+generated = 0
+failed = 0
+
+for i, name in enumerate(names, 1):
+    cls = torch_activation._ACTIVATIONS[name]["class"]
+    print(f"[{i}/{total}] {cls.__name__}")
     try:
-        plot_activation(cls, params={}, save_dir=args.output_dir, fmt=args.format)
-        generated.append(name)
+        if name in NEEDS_INPUT_SHAPE:
+            m = cls(input_shape=4)
+        else:
+            m = cls()
+        plot_activation(m, params={})
+        generated += 1
     except Exception as e:
-        print(f"Warning: skipping {name}: {e}")
-        skipped.append(name)
+        print(f"  WARNING: {name} failed: {e}")
+        failed += 1
 
-print(f"\n{len(generated)} generated, {len(skipped)} skipped")
-if skipped:
-    print("Skipped:", ", ".join(skipped))
+print(f"\nGenerated: {generated}, Failed: {failed}")

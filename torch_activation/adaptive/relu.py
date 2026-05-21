@@ -60,12 +60,10 @@ class ShiLU(BaseActivation):
 
 @register_activation
 class StarReLU(BaseActivation):
-    r"""StarReLU activation function.
+    r"""
+    Applies the StarReLU activation function:
 
-    Proposed by Yu et al. (2022) [1]_.
-
-    .. math::
-        \text{StarReLU}(x) = s \cdot \text{ReLU}(x)^2 + b
+    :math:`\text{StarReLU}(x) = s \cdot \text{ReLU}(x)^2 + b`
 
     Args:
         s (float, optional): scale factor, shared across channels. Default: ``0.8944``
@@ -76,6 +74,8 @@ class StarReLU(BaseActivation):
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
+
+    Here is a plot of the function and its derivative:
 
     .. image:: ../images/activation_images/StarReLU.png
 
@@ -88,11 +88,6 @@ class StarReLU(BaseActivation):
         >>> m = torch_activation.StarReLU(learnable=True, inplace=True)
         >>> x = torch.randn(3, 384, 384)
         >>> m(x)
-
-    References:
-        .. [1] Yu, W., Si, C., Zhou, P., Luo, M., Zhou, D., Feng, J.,
-               Yan, S., & Wang, X. (2022). MetaFormer Baselines for Vision.
-               arXiv:2210.13452.
     """
 
     def __init__(
@@ -126,11 +121,10 @@ class DELU(BaseActivation):
 
     :math:`\text{DELU}(x) = \begin{cases} \text{SiLU}(x), & x \leq 0 \\ (n + 0.5) \cdot x + |\exp(-x) - 1|, & x > 0 \end{cases}` # noqa: E501
 
-
      See: https://doi.org/10.20944/preprints202301.0463.v1
 
     Args:
-        n (float, optional): Scaling factor for the positive part of the input. Default: 1.0.
+        n (float, optional): Scaling factor for the positive part of the input. Default: ``1.0``
         inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
@@ -141,12 +135,13 @@ class DELU(BaseActivation):
 
     .. image:: ../images/activation_images/DELU.png
 
-    Examples:
-        >>> m = nn.DELU()
+    Examples::
+
+        >>> m = torch_activation.DELU()
         >>> x = torch.randn(2)
         >>> output = m(x)
 
-        >>> m = nn.DELU(inplace=True)
+        >>> m = torch_activation.DELU(inplace=True)
         >>> x = torch.randn(2)
         >>> m(x)
     """
@@ -166,12 +161,10 @@ class DELU(BaseActivation):
 
 @register_activation
 class PReLU(BaseActivation):
-    r"""Parametric Rectified Linear Unit activation function.
+    r"""
+    Applies the PReLU activation function:
 
-    Proposed by He et al. (2015) [1]_.
-
-    .. math::
-        \text{PReLU}(x) = \begin{cases} x, & x \geq 0 \\ \frac{x}{a}, & x < 0 \end{cases}
+    :math:`\text{PReLU}(x) = \begin{cases} x, & x \geq 0 \\ \frac{x}{a}, & x < 0 \end{cases}`
 
     Args:
         a (float, optional): slope for negative inputs. Default: ``1.0``
@@ -182,6 +175,10 @@ class PReLU(BaseActivation):
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/PReLU.png
+
     Examples::
 
         >>> m = torch_activation.PReLU(a=0.1)
@@ -191,11 +188,6 @@ class PReLU(BaseActivation):
         >>> m = torch_activation.PReLU(learnable=True, inplace=True)
         >>> x = torch.randn(2, 3, 4)
         >>> m(x)
-
-    References:
-        .. [1] He, K., Zhang, X., Ren, S., & Sun, J. (2015). Delving Deep into
-               Rectifiers: Surpassing Human-Level Performance on ImageNet
-               Classification. ICCV 2015. arXiv:1502.01852.
     """
 
     def __init__(self, a: float = 1.0, learnable: bool = False, **kwargs):
@@ -227,13 +219,17 @@ class PReLUPlus(BaseActivation):
     :math:`\text{PReLU+}(x) = \begin{cases} a \cdot x, & x \geq 0 \\ 0, & x < 0 \end{cases}`
 
     Args:
-        a (float, optional): Scaling factor for the positive part of the input. Default: 1.0
+        a (float, optional): Scaling factor for the positive part of the input. Default: ``1.0``
         learnable (bool, optional): optionally make ``a`` trainable. Default: ``False``
         inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
+
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/PReLUPlus.png
 
     Examples::
 
@@ -272,13 +268,17 @@ class MarReLU(BaseActivation):
     :math:`\text{MarReLU}(x) = \max(x, a) = \begin{cases} x, & x - a \geq 0 \\ a, & x - a < 0 \end{cases}` # noqa: E501
 
     Args:
-        a (float, optional): Margin threshold. Default: 0.0
+        a (float, optional): Margin threshold. Default: ``0.0``
         learnable (bool, optional): optionally make ``a`` trainable. Default: ``False``
         inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
+
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/MarReLU.png
 
     Examples::
 
@@ -316,15 +316,19 @@ class RPReLU(BaseActivation):
     :math:`\text{RPReLU}(x) = \begin{cases} x - a + b, & x \geq a \\ c(x - a) + b, & x < a \end{cases}` # noqa: E501
 
     Args:
-        a (float, optional): Threshold parameter. Default: 0.0
-        b (float, optional): Bias parameter. Default: 0.0
-        c (float, optional): Scaling factor for the negative part. Default: 1.0
+        a (float, optional): Threshold parameter. Default: ``0.0``
+        b (float, optional): Bias parameter. Default: ``0.0``
+        c (float, optional): Scaling factor for the negative part. Default: ``1.0``
         learnable (bool, optional): optionally make parameters trainable. Default: ``False``
         inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
+
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/RPReLU.png
 
     Examples::
 
@@ -377,14 +381,18 @@ class LeLeLU(BaseActivation):
     :math:`\text{LeLeLU}(x) = \begin{cases} a \cdot x, & x \geq 0 \\ 0.01 \cdot a \cdot x, & x < 0 \end{cases}` # noqa: E501
 
     Args:
-        a (float, optional): Scaling factor. Default: 1.0
-        negative_slope (float, optional): Controls the slope of the negative part. Default: 0.01
+        a (float, optional): Scaling factor. Default: ``1.0``
+        negative_slope (float, optional): Controls the slope of the negative part. Default: ``0.01``
         learnable (bool, optional): optionally make ``a`` trainable. Default: ``False``
         inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
+
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/LeLeLU.png
 
     Examples::
 
@@ -431,14 +439,18 @@ class PREU(BaseActivation):
     :math:`\text{PREU}(x) = \begin{cases} a \cdot x, & x \geq 0 \\ a \cdot x \cdot \exp(b \cdot x), & x < 0 \end{cases}` # noqa: E501
 
     Args:
-        a (float, optional): Scaling factor. Default: 1.0
-        b (float, optional): Exponential factor for negative values. Default: 1.0
+        a (float, optional): Scaling factor. Default: ``1.0``
+        b (float, optional): Exponential factor for negative values. Default: ``1.0``
         learnable (bool, optional): optionally make parameters trainable. Default: ``False``
         inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
+
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/PREU.png
 
     Examples::
 
@@ -488,14 +500,18 @@ class RTReLU(BaseActivation):
     where :math:`b \sim N(0, \sigma^2)`
 
     Args:
-        a (float, optional): Scaling factor for the negative part. Default: 1.0
-        sigma (float, optional): Standard deviation for random translation. Default: 0.75
+        a (float, optional): Scaling factor for the negative part. Default: ``1.0``
+        sigma (float, optional): Standard deviation for random translation. Default: ``0.75``
         learnable (bool, optional): optionally make ``a`` trainable. Default: ``False``
         inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
+
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/RTReLU.png
 
     Examples::
 
@@ -542,14 +558,18 @@ class SMU(BaseActivation):
     :math:`\text{SMU}(x) = \frac{(1 + a)x + (1 - a)x \cdot \text{erf}(b (1 - a)x)}{2}`
 
     Args:
-        a (float, optional): Shape parameter. Default: 0.25
-        b (float, optional): Smoothing parameter. Default: 25.0
+        a (float, optional): Shape parameter. Default: ``0.25``
+        b (float, optional): Smoothing parameter. Default: ``25.0``
         learnable (bool, optional): optionally make parameters trainable. Default: ``False``
         inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
+
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/SMU.png
 
     Examples::
 
@@ -600,13 +620,17 @@ class SAU(BaseActivation):
     where :math:`\Phi(z) = \frac{1 + \text{erf}(z/\sqrt{2})}{2}` is the standard normal CDF.
 
     Args:
-        a (float, optional): PReLU parameter. Default: 1.0
-        b (float, optional): Smoothing parameter. Default: 1.0
+        a (float, optional): PReLU parameter. Default: ``1.0``
+        b (float, optional): Smoothing parameter. Default: ``1.0``
         learnable (bool, optional): optionally make parameters trainable. Default: ``False``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
+
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/SAU.png
 
     Examples::
 
@@ -645,13 +669,17 @@ class ProbAct(BaseActivation):
 
     Args:
         base_activation (callable, optional): Base activation function. Default: ``torch.nn.functional.relu`` # noqa: E501
-        sigma (float, optional): Standard deviation of the noise. Default: 0.1
+        sigma (float, optional): Standard deviation of the noise. Default: ``0.1``
         learnable (bool, optional): optionally make ``sigma`` trainable. Default: ``False``
         inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
+
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/ProbAct.png
 
     Examples::
 
@@ -701,13 +729,17 @@ class ReLUProbAct(BaseActivation):
     where :math:`e \sim N(0, 1)`
 
     Args:
-        sigma (float, optional): Standard deviation of the noise. Default: 0.1
+        sigma (float, optional): Standard deviation of the noise. Default: ``0.1``
         learnable (bool, optional): optionally make ``sigma`` trainable. Default: ``False``
         inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
+
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/ReLUProbAct.png
 
     Examples::
 
@@ -747,15 +779,19 @@ class AOAF(BaseActivation):
     :math:`\text{AOAF}(x) = \max(0, x - b \cdot a) + c \cdot a`
 
     Args:
-        a (float, optional): Adaptive parameter. Default: 0.1
-        b (float, optional): Offset scaling parameter. Default: 0.17
-        c (float, optional): Bias scaling parameter. Default: 0.17
+        a (float, optional): Adaptive parameter. Default: ``0.1``
+        b (float, optional): Offset scaling parameter. Default: ``0.17``
+        c (float, optional): Bias scaling parameter. Default: ``0.17``
         learnable (bool, optional): optionally make ``a`` trainable. Default: ``False``
         inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
+
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/AOAF.png
 
     Examples::
 
@@ -807,14 +843,18 @@ class DLReLU(BaseActivation):
     where :math:`b_t = \text{MSE}_{t-1}` is the mean squared error from the previous iteration.
 
     Args:
-        a (float, optional): Scaling factor. Default: 0.01
-        mse (float, optional): Initial MSE value. Default: 1.0
+        a (float, optional): Scaling factor. Default: ``0.01``
+        mse (float, optional): Initial MSE value. Default: ``1.0``
         learnable (bool, optional): optionally make ``a`` trainable. Default: ``False``
         inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
+
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/DLReLU.png
 
     Examples::
 
@@ -869,14 +909,18 @@ class ExpDLReLU(BaseActivation):
     where :math:`c_t = \exp(-\text{MSE}_{t-1})` is the exponential of the negative mean squared error from the previous iteration. # noqa: E501
 
     Args:
-        a (float, optional): Scaling factor. Default: 0.01
-        mse (float, optional): Initial MSE value. Default: 0.0
+        a (float, optional): Scaling factor. Default: ``0.01``
+        mse (float, optional): Initial MSE value. Default: ``0.0``
         learnable (bool, optional): optionally make ``a`` trainable. Default: ``False``
         inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
+
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/ExpDLReLU.png
 
     Examples::
 
@@ -929,13 +973,17 @@ class DReLU(BaseActivation):
     :math:`\text{DReLU}(x) = \begin{cases} x, & x - a \geq 0 \\ a, & x - a < 0 \end{cases}`
 
     Args:
-        a (float, optional): Threshold parameter. Default: 0.0
+        a (float, optional): Threshold parameter. Default: ``0.0``
         learnable (bool, optional): optionally make ``a`` trainable. Default: ``False``
         inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
+
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/DReLU.png
 
     Examples::
 
@@ -973,13 +1021,17 @@ class FReLU(BaseActivation):
     :math:`\text{FReLU}(x) = \text{ReLU}(x) + b = \begin{cases} x + b, & x \geq 0 \\ b, & x < 0 \end{cases}` # noqa: E501
 
     Args:
-        b (float, optional): Bias parameter. Default: 0.0
+        b (float, optional): Bias parameter. Default: ``0.0``
         learnable (bool, optional): optionally make ``b`` trainable. Default: ``False``
         inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
+
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/FReLU.png
 
     Examples::
 
@@ -1018,16 +1070,20 @@ class AdaptiveHardTanh(BaseActivation):
     :math:`\text{AdaptiveHardTanh}(x) = \text{HardTanh}(a_t \cdot (x - b))`
 
     Args:
-        a (float, optional): Scaling parameter. Default: 1.0
-        b (float, optional): Shift parameter. Default: 0.0
-        min_val (float, optional): Minimum value of the HardTanh. Default: -1.0
-        max_val (float, optional): Maximum value of the HardTanh. Default: 1.0
+        a (float, optional): Scaling parameter. Default: ``1.0``
+        b (float, optional): Shift parameter. Default: ``0.0``
+        min_val (float, optional): Minimum value of the HardTanh. Default: ``-1.0``
+        max_val (float, optional): Maximum value of the HardTanh. Default: ``1.0``
         learnable (bool, optional): optionally make parameters trainable. Default: ``False``
         inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
+
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/AdaptiveHardTanh.png
 
     Examples::
 
@@ -1081,14 +1137,18 @@ class AReLU(BaseActivation):
     where :math:`\sigma` is the sigmoid function and :math:`C(a)` is a function of parameter :math:`a`. # noqa: E501
 
     Args:
-        a (float, optional): Parameter for negative slope. Default: 0.9
-        b (float, optional): Parameter for positive slope. Default: 2.0
+        a (float, optional): Parameter for negative slope. Default: ``0.9``
+        b (float, optional): Parameter for positive slope. Default: ``2.0``
         learnable (bool, optional): optionally make parameters trainable. Default: ``False``
         inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
+
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/AReLU.png
 
     Examples::
 
@@ -1139,14 +1199,18 @@ class DPReLU(BaseActivation):
     :math:`\text{DPReLU}(x) = \begin{cases} a \cdot x, & x \geq 0 \\ b \cdot x, & x < 0 \end{cases}`
 
     Args:
-        a (float, optional): Scaling factor for positive values. Default: 1.0
-        b (float, optional): Scaling factor for negative values. Default: 0.01
+        a (float, optional): Scaling factor for positive values. Default: ``1.0``
+        b (float, optional): Scaling factor for negative values. Default: ``0.01``
         learnable (bool, optional): optionally make parameters trainable. Default: ``False``
         inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
+
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/DPReLU.png
 
     Examples::
 
@@ -1194,15 +1258,19 @@ class DualLine(BaseActivation):
     :math:`\text{DualLine}(x) = \begin{cases} a \cdot x + m, & x \geq 0 \\ b \cdot x + m, & x < 0 \end{cases}` # noqa: E501
 
     Args:
-        a (float, optional): Slope for positive values. Default: 1.0
-        b (float, optional): Slope for negative values. Default: 0.01
-        m (float, optional): Bias term. Default: -0.22
+        a (float, optional): Slope for positive values. Default: ``1.0``
+        b (float, optional): Slope for negative values. Default: ``0.01``
+        m (float, optional): Bias term. Default: ``-0.22``
         learnable (bool, optional): optionally make parameters trainable. Default: ``False``
         inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
+
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/DualLine.png
 
     Examples::
 
@@ -1253,15 +1321,19 @@ class PiLU(BaseActivation):
     :math:`\text{PiLU}(x) = \begin{cases} a \cdot x + c(1 - a), & x \geq c \\ b \cdot x + c(1 - b), & x < c \end{cases}` # noqa: E501
 
     Args:
-        a (float, optional): Slope for values above threshold. Default: 1.0
-        b (float, optional): Slope for values below threshold. Default: 0.01
-        c (float, optional): Threshold parameter. Default: 0.0
+        a (float, optional): Slope for values above threshold. Default: ``1.0``
+        b (float, optional): Slope for values below threshold. Default: ``0.01``
+        c (float, optional): Threshold parameter. Default: ``0.0``
         learnable (bool, optional): optionally make parameters trainable. Default: ``False``
         inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
+
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/PiLU.png
 
     Examples::
 
@@ -1317,8 +1389,8 @@ class DPAF(BaseActivation):
     where :math:`g(x)` is a base activation function.
 
     Args:
-        a (float, optional): Scaling factor for positive values. Default: 1.0
-        m (float, optional): Bias term. Default: 0.0
+        a (float, optional): Scaling factor for positive values. Default: ``1.0``
+        m (float, optional): Bias term. Default: ``0.0``
         base_activation (callable, optional): Base activation function. Default: ``torch.nn.functional.relu`` # noqa: E501
         learnable (bool, optional): optionally make parameters trainable. Default: ``False``
         inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
@@ -1326,6 +1398,10 @@ class DPAF(BaseActivation):
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
+
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/DPAF.png
 
     Examples::
 
@@ -1379,8 +1455,8 @@ class FPAF(BaseActivation):
     where :math:`g_1(x)` and :math:`g_2(x)` are base activation functions.
 
     Args:
-        a (float, optional): Scaling factor for positive values. Default: 1.0
-        b (float, optional): Scaling factor for negative values. Default: 1.0
+        a (float, optional): Scaling factor for positive values. Default: ``1.0``
+        b (float, optional): Scaling factor for negative values. Default: ``1.0``
         pos_activation (callable, optional): Activation for positive values. Default: ``torch.nn.functional.relu`` # noqa: E501
         neg_activation (callable, optional): Activation for negative values. Default: ``torch.nn.functional.relu`` # noqa: E501
         learnable (bool, optional): optionally make parameters trainable. Default: ``False``
@@ -1388,6 +1464,10 @@ class FPAF(BaseActivation):
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
+
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/FPAF.png
 
     Examples::
 
@@ -1433,14 +1513,18 @@ class EPReLU(BaseActivation):
     where :math:`k \sim U(1 - \alpha, 1 + \alpha)` is sampled from a uniform distribution.
 
     Args:
-        a (float, optional): Scaling factor for negative values. Default: 1.0
-        alpha (float, optional): Range parameter for the uniform distribution. Default: 0.1
+        a (float, optional): Scaling factor for negative values. Default: ``1.0``
+        alpha (float, optional): Range parameter for the uniform distribution. Default: ``0.1``
         learnable (bool, optional): optionally make ``a`` trainable. Default: ``False``
         inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
+
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/EPReLU.png
 
     Examples::
 
@@ -1490,15 +1574,19 @@ class PairedReLU(BaseActivation):
     :math:`\text{PairedReLU}(x) = \begin{pmatrix} \max(a \cdot x - b, 0) \\ \max(c \cdot x - d, 0) \end{pmatrix}` # noqa: E501
 
     Args:
-        a (float, optional): Scaling factor for first component. Default: 0.5
-        b (float, optional): Bias for first component. Default: 0.0
-        c (float, optional): Scaling factor for second component. Default: -0.5
-        d (float, optional): Bias for second component. Default: 0.0
+        a (float, optional): Scaling factor for first component. Default: ``0.5``
+        b (float, optional): Bias for first component. Default: ``0.0``
+        c (float, optional): Scaling factor for second component. Default: ``-0.5``
+        d (float, optional): Bias for second component. Default: ``0.0``
         learnable (bool, optional): optionally make parameters trainable. Default: ``False``
 
     Shape:
         - Input: :math:`(N, C, *)`, where :math:`*` means any number of dimensions.
-        - Output: :math:`(N, 2*C, *)`, doubling the channel dimension.
+        - Output: :math:`(N, 2C, *)`, doubling the last dimension.
+
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/PairedReLU.png
 
     Examples::
 
@@ -1554,13 +1642,17 @@ class Tent(BaseActivation):
     :math:`\text{Tent}(x) = \max(0, a - |x|)`
 
     Args:
-        a (float, optional): Width parameter of the tent. Default: 1.0
+        a (float, optional): Width parameter of the tent. Default: ``1.0``
         learnable (bool, optional): optionally make ``a`` trainable. Default: ``False``
         inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
+
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/Tent.png
 
     Examples::
 
@@ -1602,13 +1694,17 @@ class Hat(BaseActivation):
     \end{cases}`
 
     Args:
-        a (float, optional): Width parameter of the hat. Default: 2.0
+        a (float, optional): Width parameter of the hat. Default: ``2.0``
         learnable (bool, optional): optionally make ``a`` trainable. Default: ``False``
         inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
+
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/Hat.png
 
     Examples::
 
@@ -1663,15 +1759,19 @@ class RMAF(BaseActivation):
     :math:`\text{RMAF}(x) = b \left(\frac{1}{0.25(1 + \exp(-x)) + 0.75}\right)^c a \cdot x`
 
     Args:
-        a (float, optional): Scaling parameter. Default: 1.0
-        b (float, optional): Scaling parameter. Default: 1.0
-        c (float, optional): Exponent parameter. Default: 1.0
+        a (float, optional): Scaling parameter. Default: ``1.0``
+        b (float, optional): Scaling parameter. Default: ``1.0``
+        c (float, optional): Exponent parameter. Default: ``1.0``
         learnable (bool, optional): optionally make parameters trainable. Default: ``False``
         inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
+
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/RMAF.png
 
     Examples::
 
@@ -1726,14 +1826,18 @@ class PTELU(BaseActivation):
     :math:`\text{PTELU}(x) = \begin{cases} x, & x \geq 0 \\ a \cdot \tanh(b \cdot x), & x < 0 \end{cases}` # noqa: E501
 
     Args:
-        a (float, optional): Scaling factor for negative values. Default: 1.0
-        b (float, optional): Scaling factor inside tanh for negative values. Default: 1.0
+        a (float, optional): Scaling factor for negative values. Default: ``1.0``
+        b (float, optional): Scaling factor inside tanh for negative values. Default: ``1.0``
         learnable (bool, optional): optionally make parameters trainable. Default: ``False``
         inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
+
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/PTELU.png
 
     Examples::
 
@@ -1784,13 +1888,17 @@ class TaLU(BaseActivation):
     \end{cases}`
 
     Args:
-        a (float, optional): Lower threshold parameter. Default: -1.0
+        a (float, optional): Lower threshold parameter. Default: ``-1.0``
         learnable (bool, optional): optionally make ``a`` trainable. Default: ``False``
         inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
+
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/TaLU.png
 
     Examples::
 
@@ -1851,14 +1959,18 @@ class PTaLU(BaseActivation):
     \end{cases}`
 
     Args:
-        a (float, optional): Lower threshold parameter. Default: -0.75
-        b (float, optional): Upper threshold parameter. Default: 1.0
+        a (float, optional): Lower threshold parameter. Default: ``-0.75``
+        b (float, optional): Upper threshold parameter. Default: ``1.0``
         learnable (bool, optional): optionally make parameters trainable. Default: ``False``
         inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
+
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/PTaLU.png
 
     Examples::
 
@@ -1905,15 +2017,19 @@ class TanhLU(BaseActivation):
     :math:`\text{TanhLU}(x) = a \cdot \tanh(b \cdot x) + c \cdot x`
 
     Args:
-        a (float, optional): Scaling factor for tanh component. Default: 1.0
-        b (float, optional): Scaling factor inside tanh. Default: 1.0
-        c (float, optional): Scaling factor for linear component. Default: 1.0
+        a (float, optional): Scaling factor for tanh component. Default: ``1.0``
+        b (float, optional): Scaling factor inside tanh. Default: ``1.0``
+        c (float, optional): Scaling factor for linear component. Default: ``1.0``
         learnable (bool, optional): optionally make parameters trainable. Default: ``False``
         inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
+
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/TanhLU.png
 
     Examples::
 
@@ -1966,13 +2082,17 @@ class TeLU(BaseActivation):
     where ELU is the Exponential Linear Unit.
 
     Args:
-        a (float, optional): Scaling factor inside ELU. Default: 1.0
+        a (float, optional): Scaling factor inside ELU. Default: ``1.0``
         learnable (bool, optional): optionally make ``a`` trainable. Default: ``False``
         inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
+
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/TeLU.png
 
     Examples::
 
@@ -2015,13 +2135,17 @@ class TReLU(BaseActivation):
     :math:`\text{TReLU}(x) = \begin{cases} x, & x \geq 0 \\ \tanh(b \cdot x), & x < 0 \end{cases}`
 
     Args:
-        b (float, optional): Scaling factor inside tanh for negative values. Default: 1.0
+        b (float, optional): Scaling factor inside tanh for negative values. Default: ``1.0``
         learnable (bool, optional): optionally make ``b`` trainable. Default: ``False``
         inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
+
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/TReLU.png
 
     Examples::
 
@@ -2059,13 +2183,17 @@ class TReLU2(BaseActivation):
     :math:`\text{TReLU2}(x) = \begin{cases} x, & x \geq 0 \\ a \cdot \tanh(x), & x < 0 \end{cases}`
 
     Args:
-        a (float, optional): Scaling factor for tanh component. Default: 1.0
+        a (float, optional): Scaling factor for tanh component. Default: ``1.0``
         learnable (bool, optional): optionally make ``a`` trainable. Default: ``False``
         inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
+
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/TReLU2.png
 
     Examples::
 
@@ -2109,14 +2237,18 @@ class ReLTanh(BaseActivation):
     where :math:`\tanh'(x) = \frac{4}{(\exp(x) + \exp(-x))^2}` is the derivative of tanh.
 
     Args:
-        a (float, optional): Lower threshold parameter. Default: -1.5
-        b (float, optional): Upper threshold parameter. Default: 0.0
+        a (float, optional): Lower threshold parameter. Default: ``-1.5``
+        b (float, optional): Upper threshold parameter. Default: ``0.0``
         learnable (bool, optional): optionally make parameters trainable. Default: ``False``
         inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
+
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/ReLTanh.png
 
     Examples::
 
@@ -2198,13 +2330,17 @@ class BLU(BaseActivation):
     where :math:`a \in [-1, 1]` controls the bendability.
 
     Args:
-        a (float, optional): Bendability parameter. Default: 0.0
+        a (float, optional): Bendability parameter. Default: ``0.0``
         learnable (bool, optional): optionally make ``a`` trainable. Default: ``False``
         inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
+
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/BLU.png
 
     Examples::
 
@@ -2249,13 +2385,17 @@ class ReBLU(BaseActivation):
     where :math:`a \in [-1, 1]` controls the bendability.
 
     Args:
-        a (float, optional): Bendability parameter. Default: 0.0
+        a (float, optional): Bendability parameter. Default: ``0.0``
         learnable (bool, optional): optionally make ``a`` trainable. Default: ``False``
         inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
+
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/ReBLU.png
 
     Examples::
 
@@ -2301,13 +2441,17 @@ class DELU(BaseActivation):  # noqa: F811
     where :math:`\sigma(x)` is the sigmoid function.
 
     Args:
-        a (float, optional): Scaling parameter. Default: 0.0
+        a (float, optional): Scaling parameter. Default: ``0.0``
         learnable (bool, optional): optionally make ``a`` trainable. Default: ``False``
         inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
+
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/DELU.png
 
     Examples::
 
@@ -2352,7 +2496,7 @@ class SCMish(BaseActivation):
     :math:`\text{SC-mish}(x) = \max(0, x \cdot \tanh(\text{softplus}(a \cdot x)))`
 
     Args:
-        a (float, optional): Scaling parameter. Default: 1.0
+        a (float, optional): Scaling parameter. Default: ``1.0``
         learnable (bool, optional): optionally make ``a`` trainable. Default: ``False``
         inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
@@ -2360,13 +2504,13 @@ class SCMish(BaseActivation):
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/SCMish.png
+
     Examples::
 
         >>> m = torch_activation.SCMish(a=1.0)
-        >>> x = torch.randn(2)
-        >>> output = m(x)
-
-        >>> m = torch_activation.SCMish(a=0.25)  # SCL-mish variant
         >>> x = torch.randn(2)
         >>> output = m(x)
 
@@ -2416,6 +2560,10 @@ class SCSwish(BaseActivation):
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
 
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/SCSwish.png
+
     Examples::
 
         >>> m = torch_activation.SCSwish()
@@ -2456,15 +2604,19 @@ class PSwish(BaseActivation):
     where :math:`\sigma(x)` is the sigmoid function.
 
     Args:
-        a (float, optional): Scaling parameter. Default: 1.0
-        b (float, optional): Sigmoid scaling parameter. Default: 1.0
-        c (float, optional): Threshold parameter. Default: 0.0
+        a (float, optional): Scaling parameter. Default: ``1.0``
+        b (float, optional): Sigmoid scaling parameter. Default: ``1.0``
+        c (float, optional): Threshold parameter. Default: ``0.0``
         learnable (bool, optional): optionally make parameters trainable. Default: ``False``
         inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
+
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/PSwish.png
 
     Examples::
 
@@ -2520,14 +2672,18 @@ class PELU(BaseActivation):
     \end{cases}`
 
     Args:
-        a (float, optional): Scaling parameter. Default: 1.0
-        b (float, optional): Exponential parameter. Default: 1.0
+        a (float, optional): Scaling parameter. Default: ``1.0``
+        b (float, optional): Exponential parameter. Default: ``1.0``
         learnable (bool, optional): optionally make parameters trainable. Default: ``False``
         inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
+
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/PELU.png
 
     Examples::
 
@@ -2587,14 +2743,18 @@ class EDELU(BaseActivation):
     where :math:`b \cdot c = \exp(a \cdot c) - 1` to ensure continuity at :math:`x = c`.
 
     Args:
-        a (float, optional): Exponential parameter. Default: 1.0
-        c (float, optional): Threshold parameter. Default: 0.0
+        a (float, optional): Exponential parameter. Default: ``1.0``
+        c (float, optional): Threshold parameter. Default: ``0.0``
         learnable (bool, optional): optionally make parameters trainable. Default: ``False``
         inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
+
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/EDELU.png
 
     Examples::
 
@@ -2640,21 +2800,24 @@ class EDELU(BaseActivation):
 class AdaptiveCombination1(BaseActivation):
     # TODO: Naming
     r"""
-    :note: This is a temporary naming.
     Applies an adaptive combination of activation functions:
 
     :math:`\text{AdaptiveCombination1}(x) = a \cdot \text{LReLU}(x) + (1 - a) \cdot \text{ELU}(x)`
 
     Args:
-        a (float, optional): Mixing parameter. Default: 0.5
-        lrelu_slope (float, optional): Negative slope for LReLU. Default: 0.01
-        elu_alpha (float, optional): Alpha parameter for ELU. Default: 1.0
+        a (float, optional): Mixing parameter. Default: ``0.5``
+        lrelu_slope (float, optional): Negative slope for LReLU. Default: ``0.01``
+        elu_alpha (float, optional): Alpha parameter for ELU. Default: ``1.0``
         learnable (bool, optional): optionally make parameters trainable. Default: ``False``
         inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
+
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/AdaptiveCombination1.png
 
     Examples::
 
@@ -2706,7 +2869,6 @@ class AdaptiveCombination1(BaseActivation):
 @register_activation
 class AdaptiveCombination2(BaseActivation):
     r"""
-    :note: This is a temporary naming.
     Applies an adaptive combination of activation functions with sigmoid gating:
 
     :math:`\text{AdaptiveCombination2}(x) = \sigma(a \cdot x) \cdot \text{PReLU}(x) + (1 - \sigma(a \cdot x)) \cdot \text{PELU}(x)` # noqa: E501
@@ -2714,16 +2876,20 @@ class AdaptiveCombination2(BaseActivation):
     where :math:`\sigma(x)` is the sigmoid function.
 
     Args:
-        a (float, optional): Gating parameter. Default: 1.0
-        prelu_slope (float, optional): Negative slope for PReLU. Default: 0.01
-        pelu_alpha (float, optional): Alpha parameter for PELU. Default: 1.0
-        pelu_beta (float, optional): Beta parameter for PELU. Default: 1.0
+        a (float, optional): Gating parameter. Default: ``1.0``
+        prelu_slope (float, optional): Negative slope for PReLU. Default: ``0.01``
+        pelu_alpha (float, optional): Alpha parameter for PELU. Default: ``1.0``
+        pelu_beta (float, optional): Beta parameter for PELU. Default: ``1.0``
         learnable (bool, optional): optionally make parameters trainable. Default: ``False``
         inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
+
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/AdaptiveCombination2.png
 
     Examples::
 
@@ -2789,13 +2955,17 @@ class FELU(BaseActivation):
     \end{cases}`
 
     Args:
-        a (float, optional): Scale parameter for negative values. Default: 1.0
+        a (float, optional): Scale parameter for negative values. Default: ``1.0``
         learnable (bool, optional): optionally make ``a`` trainable. Default: ``False``
         inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
+
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/FELU.png
 
     Examples::
 
@@ -2838,14 +3008,18 @@ class PFELU(BaseActivation):
     \end{cases}`
 
     Args:
-        a (float, optional): Scale parameter for negative values. Default: 1.0
-        b (float, optional): Bias parameter. Default: 0.0
+        a (float, optional): Scale parameter for negative values. Default: ``1.0``
+        b (float, optional): Bias parameter. Default: ``0.0``
         learnable (bool, optional): optionally make parameters trainable. Default: ``False``
         inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
+
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/PFELU.png
 
     Examples::
 
@@ -2900,14 +3074,18 @@ class MPELU(BaseActivation):
     \end{cases}`
 
     Args:
-        a (float, optional): Scale parameter for negative values. Default: 1.0
-        b (float, optional): Exponential parameter for negative values. Default: 1.0
+        a (float, optional): Scale parameter for negative values. Default: ``1.0``
+        b (float, optional): Exponential parameter for negative values. Default: ``1.0``
         learnable (bool, optional): optionally make parameters trainable. Default: ``False``
         inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
+
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/MPELU.png
 
     Examples::
 
@@ -2954,15 +3132,19 @@ class PE2ReLU(BaseActivation):
     :math:`\text{P-E2-ReLU}(x) = a \cdot \text{ReLU}(x) + b \cdot \text{ELU}(x) + (1 - a - b) \cdot (-\text{ELU}(-x))` # noqa: E501
 
     Args:
-        a (float, optional): Weight for ReLU component. Default: 0.4
-        b (float, optional): Weight for ELU component. Default: 0.3
-        elu_alpha (float, optional): Alpha parameter for ELU. Default: 1.0
+        a (float, optional): Weight for ReLU component. Default: ``0.4``
+        b (float, optional): Weight for ELU component. Default: ``0.3``
+        elu_alpha (float, optional): Alpha parameter for ELU. Default: ``1.0``
         learnable (bool, optional): optionally make parameters trainable. Default: ``False``
         inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
+
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/PE2ReLU.png
 
     Examples::
 
@@ -3022,14 +3204,18 @@ class PE2Id(BaseActivation):
     :math:`\text{P-E2-Id}(x) = a \cdot x + (1 - a) \cdot (\text{ELU}(x) - \text{ELU}(-x))`
 
     Args:
-        a (float, optional): Weight for identity component. Default: 0.5
-        elu_alpha (float, optional): Alpha parameter for ELU. Default: 1.0
+        a (float, optional): Weight for identity component. Default: ``0.5``
+        elu_alpha (float, optional): Alpha parameter for ELU. Default: ``1.0``
         learnable (bool, optional): optionally make ``a`` trainable. Default: ``False``
         inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
+
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/PE2Id.png
 
     Examples::
 
@@ -3077,26 +3263,27 @@ class PE2Id(BaseActivation):
 
 @register_activation
 class SoftExponential(BaseActivation):
-    r"""Soft Exponential activation function.
+    r"""
+    Applies the Soft Exponential activation function:
 
-    Proposed by Barron (2017) [1]_.
-
-    .. math::
-        \text{SoftExponential}(x) = \begin{cases}
-            \frac{\exp(a \cdot x) - 1}{a} + a, & a > 0 \\
-            x, & a = 0 \\
-            \frac{\ln(1 - a(x + a))}{-a}, & a < 0
-        \end{cases}
+    :math:`\text{SoftExponential}(x) = \begin{cases}
+        \frac{\exp(a \cdot x) - 1}{a} + a, & a > 0 \\
+        x, & a = 0 \\
+        \frac{\ln(1 - a(x + a))}{-a}, & a < 0
+    \end{cases}`
 
     Args:
-        a (float, optional): shape parameter controlling exponential/logarithmic
-            behaviour. Default: ``0.0``
+        a (float, optional): shape parameter controlling exponential/logarithmic behaviour. Default: ``0.0``
         learnable (bool, optional): optionally make ``a`` trainable. Default: ``False``
         inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
+
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/SoftExponential.png
 
     Examples::
 
@@ -3107,10 +3294,6 @@ class SoftExponential(BaseActivation):
         >>> m = torch_activation.SoftExponential(learnable=True, inplace=True)
         >>> x = torch.randn(2, 3, 4)
         >>> m(x)
-
-    References:
-        .. [1] Barron, J. T. (2017). Continuously Differentiable Exponential
-               Linear Units. arXiv:1704.07483.
     """
 
     def __init__(self, a: float = 0.0, learnable: bool = False, inplace: bool = False, **kwargs):
@@ -3152,13 +3335,17 @@ class CELU(BaseActivation):
     \end{cases}`
 
     Args:
-        a (float, optional): Scale parameter for negative values. Default: 1.0
+        a (float, optional): Scale parameter for negative values. Default: ``1.0``
         learnable (bool, optional): optionally make ``a`` trainable. Default: ``False``
         inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
+
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/CELU.png
 
     Examples::
 
@@ -3201,13 +3388,17 @@ class ErfReLU(BaseActivation):
     where :math:`\text{erf}(x)` is the error function.
 
     Args:
-        a (float, optional): Scale parameter for negative values. Default: 1.0
+        a (float, optional): Scale parameter for negative values. Default: ``1.0``
         learnable (bool, optional): optionally make ``a`` trainable. Default: ``False``
         inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
+
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/ErfReLU.png
 
     Examples::
 
@@ -3248,14 +3439,18 @@ class PSELU(BaseActivation):
     \end{cases}`
 
     Args:
-        a (float, optional): Scale parameter. Default: 1.0
-        b (float, optional): Scale parameter for negative values. Default: 1.0
+        a (float, optional): Scale parameter. Default: ``1.0``
+        b (float, optional): Scale parameter for negative values. Default: ``1.0``
         learnable (bool, optional): optionally make parameters trainable. Default: ``False``
         inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
+
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/PSELU.png
 
     Examples::
 
@@ -3308,15 +3503,19 @@ class LPSELU(BaseActivation):
     \end{cases}`
 
     Args:
-        a (float, optional): Scale parameter. Default: 1.0
-        b (float, optional): Scale parameter for exponential term. Default: 1.0
-        c (float, optional): Scale parameter for linear term in negative region. Default: 0.01
+        a (float, optional): Scale parameter. Default: ``1.0``
+        b (float, optional): Scale parameter for exponential term. Default: ``1.0``
+        c (float, optional): Scale parameter for linear term in negative region. Default: ``0.01``
         learnable (bool, optional): optionally make parameters trainable. Default: ``False``
         inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
+
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/LPSELU.png
 
     Examples::
 
@@ -3372,16 +3571,20 @@ class LPSELU_RP(BaseActivation):
     \end{cases}`
 
     Args:
-        a (float, optional): Scale parameter. Default: 1.0
-        b (float, optional): Scale parameter for exponential term. Default: 1.0
-        c (float, optional): Scale parameter for linear term in negative region. Default: 0.01
-        m (float, optional): Reposition parameter. Default: 0.0
+        a (float, optional): Scale parameter. Default: ``1.0``
+        b (float, optional): Scale parameter for exponential term. Default: ``1.0``
+        c (float, optional): Scale parameter for linear term in negative region. Default: ``0.01``
+        m (float, optional): Reposition parameter. Default: ``0.0``
         learnable (bool, optional): optionally make parameters trainable. Default: ``False``
         inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
+
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/LPSELU_RP.png
 
     Examples::
 
@@ -3440,14 +3643,18 @@ class ShELU(BaseActivation):
     \end{cases}`
 
     Args:
-        a (float, optional): Scale parameter for negative values. Default: 1.0
-        b (float, optional): Horizontal shift parameter. Default: 0.0
+        a (float, optional): Scale parameter for negative values. Default: ``1.0``
+        b (float, optional): Horizontal shift parameter. Default: ``0.0``
         learnable (bool, optional): optionally make parameters trainable. Default: ``False``
         inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
+
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/ShELU.png
 
     Examples::
 
@@ -3500,14 +3707,18 @@ class SvELU(BaseActivation):
     \end{cases}`
 
     Args:
-        a (float, optional): Scale parameter for negative values. Default: 1.0
-        b (float, optional): Vertical shift parameter. Default: 0.0
+        a (float, optional): Scale parameter for negative values. Default: ``1.0``
+        b (float, optional): Vertical shift parameter. Default: ``0.0``
         learnable (bool, optional): optionally make parameters trainable. Default: ``False``
         inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
+
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/SvELU.png
 
     Examples::
 
@@ -3560,15 +3771,19 @@ class PShELU(BaseActivation):
     \end{cases}`
 
     Args:
-        a (float, optional): Scale parameter. Default: 1.0
-        b (float, optional): Divisive parameter. Default: 1.0
-        c (float, optional): Horizontal shift parameter. Default: 0.0
+        a (float, optional): Scale parameter. Default: ``1.0``
+        b (float, optional): Divisive parameter. Default: ``1.0``
+        c (float, optional): Horizontal shift parameter. Default: ``0.0``
         learnable (bool, optional): optionally make parameters trainable. Default: ``False``
         inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
+
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/PShELU.png
 
     Examples::
 
@@ -3626,15 +3841,19 @@ class PSvELU(BaseActivation):
     \end{cases}`
 
     Args:
-        a (float, optional): Scale parameter. Default: 1.0
-        b (float, optional): Divisive parameter. Default: 1.0
-        c (float, optional): Vertical shift parameter. Default: 0.0
+        a (float, optional): Scale parameter. Default: ``1.0``
+        b (float, optional): Divisive parameter. Default: ``1.0``
+        c (float, optional): Vertical shift parameter. Default: ``0.0``
         learnable (bool, optional): optionally make parameters trainable. Default: ``False``
         inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
+
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/PSvELU.png
 
     Examples::
 
@@ -3692,15 +3911,19 @@ class TSwish(BaseActivation):
     where :math:`\sigma(x)` is the sigmoid function.
 
     Args:
-        a (float, optional): Scale parameter. Default: 1.0
-        b (float, optional): Sigmoid parameter. Default: 1.0
-        c (float, optional): Threshold parameter. Default: 0.0
+        a (float, optional): Scale parameter. Default: ``1.0``
+        b (float, optional): Sigmoid parameter. Default: ``1.0``
+        c (float, optional): Threshold parameter. Default: ``0.0``
         learnable (bool, optional): optionally make parameters trainable. Default: ``False``
         inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
+
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/TSwish.png
 
     Examples::
 
@@ -3763,17 +3986,21 @@ class RePSU(BaseActivation):
     \end{cases}`
 
     Args:
-        a (float, optional): Mixing parameter. Default: 0.5
-        b (float, optional): Threshold parameter. Default: 0.0
-        c (float, optional): Shift parameter. Default: 0.0
-        d (float, optional): Power parameter. Default: 1.0
-        e (float, optional): Scale parameter. Default: 1.0
+        a (float, optional): Mixing parameter. Default: ``0.5``
+        b (float, optional): Threshold parameter. Default: ``0.0``
+        c (float, optional): Shift parameter. Default: ``0.0``
+        d (float, optional): Power parameter. Default: ``1.0``
+        e (float, optional): Scale parameter. Default: ``1.0``
         learnable (bool, optional): optionally make parameters trainable. Default: ``False``
         inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
+
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/RePSU.png
 
     Examples::
 
@@ -3840,14 +4067,18 @@ class PDELU(BaseActivation):
     \end{cases}`
 
     Args:
-        a (float, optional): Scale parameter. Default: 1.0
-        b (float, optional): Deformation parameter. Default: 0.9
+        a (float, optional): Scale parameter. Default: ``1.0``
+        b (float, optional): Deformation parameter. Default: ``0.9``
         learnable (bool, optional): optionally make parameters trainable. Default: ``False``
         inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
+
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/PDELU.png
 
     Examples::
 
@@ -3911,15 +4142,19 @@ class EELU(BaseActivation):
     where :math:`k \sim \text{truncated } N(1, \sigma^2)` and :math:`\sigma \sim U(0, \epsilon)`.
 
     Args:
-        a (float, optional): Scale parameter for negative values. Default: 1.0
-        b (float, optional): Exponential parameter for negative values. Default: 1.0
-        epsilon (float, optional): Upper bound for uniform distribution. Default: 0.5
+        a (float, optional): Scale parameter for negative values. Default: ``1.0``
+        b (float, optional): Exponential parameter for negative values. Default: ``1.0``
+        epsilon (float, optional): Upper bound for uniform distribution. Default: ``0.5``
         learnable (bool, optional): optionally make parameters trainable. Default: ``False``
         inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
+
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/EELU.png
 
     Examples::
 
@@ -3981,14 +4216,18 @@ class PFPLUS(BaseActivation):
     where :math:`H(x) = \begin{cases} 1, & x \geq 0 \\ 0, & x < 0 \end{cases}` is the Heaviside step function. # noqa: E501
 
     Args:
-        a (float, optional): Scale parameter. Default: 1.0
-        b (float, optional): Shape parameter. Default: 0.1
+        a (float, optional): Scale parameter. Default: ``1.0``
+        b (float, optional): Shape parameter. Default: ``0.1``
         learnable (bool, optional): optionally make parameters trainable. Default: ``False``
         inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
+
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/PFPLUS.png
 
     Examples::
 
@@ -4046,14 +4285,18 @@ class PVLU(BaseActivation):
     :math:`\text{PVLU}(x) = \max(0, x) + a \cdot \sin(b \cdot x)`
 
     Args:
-        a (float, optional): Amplitude parameter for sine term. Default: 0.1
-        b (float, optional): Frequency parameter for sine term. Default: 1.0
+        a (float, optional): Amplitude parameter for sine term. Default: ``0.1``
+        b (float, optional): Frequency parameter for sine term. Default: ``1.0``
         learnable (bool, optional): optionally make parameters trainable. Default: ``False``
         inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
+
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/PVLU.png
 
     Examples::
 

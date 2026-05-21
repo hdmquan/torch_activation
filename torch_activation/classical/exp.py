@@ -12,19 +12,26 @@ class Polyexp(BaseActivation):
 
     :math:`\text{Polyexp}(z) = a \cdot z^2 + b \cdot z + c \cdot \exp(-d \cdot z^2)`
 
-    An activation function combining quadratic function and an exponential function.
-
     Args:
-        a (float, optional): Parameter for the quadratic term. Default: ``1.0``
-        b (float, optional): Parameter for the linear term. Default: ``1.0``
-        c (float, optional): Parameter for the exponential term. Default: ``1.0``
-        d (float, optional): Parameter for the exponential decay. Default: ``1.0``
-        inplace (bool, optional): parameter kept for API consistency, but polyexp operation
-                                 cannot be done in-place. Default: ``False``
+        a (float, optional): parameter for the quadratic term. Default: ``1.0``
+        b (float, optional): parameter for the linear term. Default: ``1.0``
+        c (float, optional): parameter for the exponential term. Default: ``1.0``
+        d (float, optional): parameter for the exponential decay. Default: ``1.0``
+        inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
+
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/Polyexp.png
+
+    Examples::
+
+        >>> m = torch_activation.Polyexp()
+        >>> x = torch.randn(2)
+        >>> output = m(x)
     """
 
     def __init__(self, a: float = 1.0, b: float = 1.0, c: float = 1.0, d: float = 1.0, **kwargs):
@@ -47,12 +54,21 @@ class Exponential(BaseActivation):
     :math:`\text{Exponential}(z) = \exp(-z)`
 
     Args:
-        inplace (bool, optional): parameter kept for API consistency, but exponential operation
-                                 cannot be done in-place. Default: ``False``
+        inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
+
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/Exponential.png
+
+    Examples::
+
+        >>> m = torch_activation.Exponential()
+        >>> x = torch.randn(2)
+        >>> output = m(x)
     """
 
     def __init__(self, **kwargs):
@@ -70,15 +86,22 @@ class Symexp(BaseActivation):
 
     :math:`\text{Symexp}(z) = \text{sgn}(z) \cdot (\exp(|z|) - 1)`
 
-    Inverse of the logmoid activation unit (LAU).
-
     Args:
-        inplace (bool, optional): parameter kept for API consistency, but symexp operation
-                                 cannot be done in-place. Default: ``False``
+        inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
+
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/Symexp.png
+
+    Examples::
+
+        >>> m = torch_activation.Symexp()
+        >>> x = torch.randn(2)
+        >>> output = m(x)
     """
 
     def __init__(self, **kwargs):
@@ -96,16 +119,23 @@ class Wave(BaseActivation):
 
     :math:`\text{Wave}(z) = 1 - z^2 \cdot \exp(-a \cdot z^2)`
 
-    An activation function combining quadratic function and an exponential function.
-
     Args:
-        a (float, optional): Parameter for the exponential decay. Default: ``1.0``
-        inplace (bool, optional): parameter kept for API consistency, but wave operation
-                                 cannot be done in-place. Default: ``False``
+        a (float, optional): parameter for the exponential decay. Default: ``1.0``
+        inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.
+
+    Here is a plot of the function and its derivative:
+
+    .. image:: ../images/activation_images/Wave.png
+
+    Examples::
+
+        >>> m = torch_activation.Wave()
+        >>> x = torch.randn(2)
+        >>> output = m(x)
     """
 
     def __init__(self, a: float = 1.0, **kwargs):
