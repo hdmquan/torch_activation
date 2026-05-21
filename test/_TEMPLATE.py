@@ -5,6 +5,11 @@ Copy to test/test_<name>.py and fill in the three marked sections.
 1. Set ACTIVATION_NAME to the class name.
 2. Implement scalar_ref with the paper formula.
 3. Add the name to NONSMOOTH_ACTIVATIONS if the activation has discontinuous derivatives.
+
+Standard property tests (shape, dtype, gradient correctness, eval determinism,
+parameter gradient flow, numerical stability, inplace consistency) are handled
+automatically by test/test_standard_properties.py for every registered activation.
+Individual test files only need to implement scalar_ref for the formula check.
 """
 
 import math
