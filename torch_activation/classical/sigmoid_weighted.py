@@ -993,8 +993,8 @@ class Smish(BaseActivation):
             self.a = nn.Parameter(torch.tensor(float(a)))
             self.b = nn.Parameter(torch.tensor(float(b)))
         else:
-            self.register_buffer('a', torch.tensor(float(a)))
-            self.register_buffer('b', torch.tensor(float(b)))
+            self.register_buffer("a", torch.tensor(float(a)))
+            self.register_buffer("b", torch.tensor(float(b)))
 
     def _forward(self, x) -> Tensor:
         return self.a * x * torch.tanh(torch.log(1 + torch.sigmoid(self.b * x)))

@@ -577,8 +577,8 @@ class SRS(BaseActivation):
             self.a = nn.Parameter(torch.tensor([a]))
             self.b = nn.Parameter(torch.tensor([b]))
         else:
-            self.register_buffer('a', torch.tensor([a]))
-            self.register_buffer('b', torch.tensor([b]))
+            self.register_buffer("a", torch.tensor([a]))
+            self.register_buffer("b", torch.tensor([b]))
 
     def _forward(self, z) -> Tensor:
         denominator = torch.pow(1 + torch.exp(-z / self.b), 1 / self.a)
@@ -662,10 +662,10 @@ class Hexpo(BaseActivation):
             self.c = nn.Parameter(torch.tensor([c]))
             self.d = nn.Parameter(torch.tensor([d]))
         else:
-            self.register_buffer('a', torch.tensor([a]))
-            self.register_buffer('b', torch.tensor([b]))
-            self.register_buffer('c', torch.tensor([c]))
-            self.register_buffer('d', torch.tensor([d]))
+            self.register_buffer("a", torch.tensor([a]))
+            self.register_buffer("b", torch.tensor([b]))
+            self.register_buffer("c", torch.tensor([c]))
+            self.register_buffer("d", torch.tensor([d]))
 
     def _forward(self, z) -> Tensor:
         pos_val = -self.a * torch.exp((-z / self.b).clamp(max=88.0)) - 1

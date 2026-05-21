@@ -77,7 +77,7 @@ class BetaSoftmax(BaseActivation):
         if trainable:
             self.beta = nn.Parameter(torch.tensor(float(beta)))
         else:
-            self.register_buffer('beta', torch.tensor(float(beta)))
+            self.register_buffer("beta", torch.tensor(float(beta)))
 
     def _forward(self, x: Tensor) -> Tensor:
         return F.softmax(self.beta * x, dim=self.dim)

@@ -6,60 +6,261 @@ import torch
 import torch_activation
 
 NEEDS_INPUT_SHAPE = {
-    'GPSoftmax', 'GLSoftmax', 'ARBF', 'PGELU', 'PFTS', 'PFPM',
-    'PSIGRAMP', 'RSIGN', 'MAF', 'UAF', 'GReLU', 'GLN',
+    "GPSoftmax",
+    "GLSoftmax",
+    "ARBF",
+    "PGELU",
+    "PFTS",
+    "PFPM",
+    "PSIGRAMP",
+    "RSIGN",
+    "MAF",
+    "UAF",
+    "GReLU",
+    "GLN",
 }
 
-DOUBLES_FIRST_DIM = {'CReLU', 'NCReLU'}
-DOUBLES_LAST_DIM = {'PairedReLU'}
-SKIP_SHAPE = {'VBAF'}
+DOUBLES_FIRST_DIM = {"CReLU", "NCReLU"}
+DOUBLES_LAST_DIM = {"PairedReLU"}
+SKIP_SHAPE = {"VBAF"}
 
-STOCHASTIC = {'NReLU', 'RTReLU', 'RTPReLU', 'EELU', 'ProbAct', 'ReLUProbAct', 'RReLU', 'EPReLU', 'EReLU'}
+STOCHASTIC = {
+    "NReLU",
+    "RTReLU",
+    "RTPReLU",
+    "EELU",
+    "ProbAct",
+    "ReLUProbAct",
+    "RReLU",
+    "EPReLU",
+    "EReLU",
+}
 
 NONSMOOTH = {
-    'ReLU', 'LReLU', 'HardTanh', 'HardSigmoid', 'HardSwish', 'SQNL',
-    'SReLU', 'BReLU', 'CReLU', 'mReLU', 'LSPTLU', 'LinQ', 'BiFiring',
-    'BoundedBiFiring', 'NActivation', 'ALiSA', 'LiSA', 'MeLU', 'MMeLU',
-    'AllReLU', 'StarReLU', 'DReLU', 'PTaLU', 'TaLU', 'PLAF',
-    'ShiLU', 'DYReLU', 'MarReLU', 'DelayReLU', 'DisReLU',
-    'Maxout', 'Tent', 'Hat', 'PiecewiseMexicanHat', 'PFPM', 'FPAF', 'DPAF',
-    'SmoothStep', 'KWTA', 'Binary', 'Hardshrink', 'Softshrink',
-    'HardSReLUE', 'LSReLU', 'SRReLU', 'SoftsignRReLU', 'TanhLinearUnit', 'TripleStateSigmoid',
-    'ImprovedLogisticSigmoid', 'SigmoidTanh', 'PSTanh', 'PTanh',
-    'FCAF_Hidden', 'FCAF_Output', 'CCAF', 'HCAF',
-    'NCReLU', 'PairedReLU', 'SignReLU', 'SignReLUPlus', 'ShiftedReLU',
-    'ReLUN', 'ABReLU', 'BLReLU',
+    "ReLU",
+    "LReLU",
+    "HardTanh",
+    "HardSigmoid",
+    "HardSwish",
+    "SQNL",
+    "SReLU",
+    "BReLU",
+    "CReLU",
+    "mReLU",
+    "LSPTLU",
+    "LinQ",
+    "BiFiring",
+    "BoundedBiFiring",
+    "NActivation",
+    "ALiSA",
+    "LiSA",
+    "MeLU",
+    "MMeLU",
+    "AllReLU",
+    "StarReLU",
+    "DReLU",
+    "PTaLU",
+    "TaLU",
+    "PLAF",
+    "ShiLU",
+    "DYReLU",
+    "MarReLU",
+    "DelayReLU",
+    "DisReLU",
+    "Maxout",
+    "Tent",
+    "Hat",
+    "PiecewiseMexicanHat",
+    "PFPM",
+    "FPAF",
+    "DPAF",
+    "SmoothStep",
+    "KWTA",
+    "Binary",
+    "Hardshrink",
+    "Softshrink",
+    "HardSReLUE",
+    "LSReLU",
+    "SRReLU",
+    "SoftsignRReLU",
+    "TanhLinearUnit",
+    "TripleStateSigmoid",
+    "ImprovedLogisticSigmoid",
+    "SigmoidTanh",
+    "PSTanh",
+    "PTanh",
+    "FCAF_Hidden",
+    "FCAF_Output",
+    "CCAF",
+    "HCAF",
+    "NCReLU",
+    "PairedReLU",
+    "SignReLU",
+    "SignReLUPlus",
+    "ShiftedReLU",
+    "ReLUN",
+    "ABReLU",
+    "BLReLU",
 }
 
-SKIP_NONDEGEN = {'VBAF', 'Maxout', 'KWTA', 'AllReLU'}
+SKIP_NONDEGEN = {"VBAF", "Maxout", "KWTA", "AllReLU"}
 
-SKIP_DTYPE = {'BaseActivation'}
+SKIP_DTYPE = {"BaseActivation"}
 
 UPCAST_DTYPE = {
-    'SinLU', 'ESwish', 'TAAF', 'GEU', 'LEAF', 'AdaLU', 'SAF', 'NIN', 'GRA', 'EIS',
-    'ScaledLogisticSigmoid', 'PLU', 'VAF', 'KAF', 'Binary', 'SReLU', 'RTReLU',
-    'HardSwish', 'SQMAX', 'VariantSigmoidFunction', 'STanh', 'SigmoidAlgebraic',
-    'TripleStateSigmoid', 'ImprovedLogisticSigmoid', 'SigLin', 'SRS', 'SC', 'Hexpo',
-    'pSechSig', 'pTanhSig', 'MSAF', 'SymMSAF', 'RootsigPlus', 'FracReLU', 'FracSoftplus',
-    'FracTanh', 'FALU', 'FracLReLU', 'FracPReLU', 'FracELU', 'FracGELU2',
-    'Swish', 'AHAF', 'PSSiLU', 'ACONB', 'ACONC', 'PSGU', 'TBSReLUl', 'PATS',
-    'ErfAct', 'PSerf', 'Swim', 'GPSoftmax', 'GLSoftmax', 'ARBF', 'PGELU', 'PFTS',
-    'PFPM', 'PSIGRAMP', 'RSIGN', 'MAF', 'UAF', 'GReLU', 'GLN', 'NActivation', 'ALiSA',
-    'MMeLU', 'FSA', 'ShiLU', 'StarReLU', 'DELU', 'PReLU', 'PReLUPlus', 'MarReLU',
-    'RPReLU', 'LeLeLU', 'PREU', 'SMU', 'SAU', 'ProbAct', 'ReLUProbAct', 'AOAF',
-    'DLReLU', 'ExpDLReLU', 'DReLU', 'FReLU', 'AdaptiveHardTanh', 'AReLU', 'DPReLU',
-    'DualLine', 'PiLU', 'DPAF', 'FPAF', 'EPReLU', 'PairedReLU', 'Tent', 'RMAF',
-    'PTELU', 'PTaLU', 'TanhLU', 'TeLU', 'TReLU', 'TReLU2', 'BLU', 'ReBLU', 'SCMish',
-    'PSwish', 'PELU', 'EDELU', 'AdaptiveCombination1', 'AdaptiveCombination2', 'FELU',
-    'PFELU', 'MPELU', 'PE2ReLU', 'PE2Id', 'CELU', 'ErfReLU', 'PSELU', 'LPSELU',
-    'LPSELU_RP', 'ShELU', 'SvELU', 'PShELU', 'PSvELU', 'TSwish', 'RePSU', 'EELU',
-    'PFPLUS', 'PVLU', 'CosLU', 'LAAF', 'AdaptiveSlopeTanh', 'PSTanh', 'SSinH', 'SExp',
-    'LAU', 'AGumb', 'AdaptiveSigmoid', 'GeneralizedHyperbolicTangent', 'TrainableAmplitude',
-    'ASSF', 'SVAF', 'TanhSoft', 'TanhSoft1', 'TanhSoft2', 'TanhSoft3', 'PSigmoid', 'PSF',
-    'ReLUN',
+    "SinLU",
+    "ESwish",
+    "TAAF",
+    "GEU",
+    "LEAF",
+    "AdaLU",
+    "SAF",
+    "NIN",
+    "GRA",
+    "EIS",
+    "ScaledLogisticSigmoid",
+    "PLU",
+    "VAF",
+    "KAF",
+    "Binary",
+    "SReLU",
+    "RTReLU",
+    "HardSwish",
+    "SQMAX",
+    "VariantSigmoidFunction",
+    "STanh",
+    "SigmoidAlgebraic",
+    "TripleStateSigmoid",
+    "ImprovedLogisticSigmoid",
+    "SigLin",
+    "SRS",
+    "SC",
+    "Hexpo",
+    "pSechSig",
+    "pTanhSig",
+    "MSAF",
+    "SymMSAF",
+    "RootsigPlus",
+    "FracReLU",
+    "FracSoftplus",
+    "FracTanh",
+    "FALU",
+    "FracLReLU",
+    "FracPReLU",
+    "FracELU",
+    "FracGELU2",
+    "Swish",
+    "AHAF",
+    "PSSiLU",
+    "ACONB",
+    "ACONC",
+    "PSGU",
+    "TBSReLUl",
+    "PATS",
+    "ErfAct",
+    "PSerf",
+    "Swim",
+    "GPSoftmax",
+    "GLSoftmax",
+    "ARBF",
+    "PGELU",
+    "PFTS",
+    "PFPM",
+    "PSIGRAMP",
+    "RSIGN",
+    "MAF",
+    "UAF",
+    "GReLU",
+    "GLN",
+    "NActivation",
+    "ALiSA",
+    "MMeLU",
+    "FSA",
+    "ShiLU",
+    "StarReLU",
+    "DELU",
+    "PReLU",
+    "PReLUPlus",
+    "MarReLU",
+    "RPReLU",
+    "LeLeLU",
+    "PREU",
+    "SMU",
+    "SAU",
+    "ProbAct",
+    "ReLUProbAct",
+    "AOAF",
+    "DLReLU",
+    "ExpDLReLU",
+    "DReLU",
+    "FReLU",
+    "AdaptiveHardTanh",
+    "AReLU",
+    "DPReLU",
+    "DualLine",
+    "PiLU",
+    "DPAF",
+    "FPAF",
+    "EPReLU",
+    "PairedReLU",
+    "Tent",
+    "RMAF",
+    "PTELU",
+    "PTaLU",
+    "TanhLU",
+    "TeLU",
+    "TReLU",
+    "TReLU2",
+    "BLU",
+    "ReBLU",
+    "SCMish",
+    "PSwish",
+    "PELU",
+    "EDELU",
+    "AdaptiveCombination1",
+    "AdaptiveCombination2",
+    "FELU",
+    "PFELU",
+    "MPELU",
+    "PE2ReLU",
+    "PE2Id",
+    "CELU",
+    "ErfReLU",
+    "PSELU",
+    "LPSELU",
+    "LPSELU_RP",
+    "ShELU",
+    "SvELU",
+    "PShELU",
+    "PSvELU",
+    "TSwish",
+    "RePSU",
+    "EELU",
+    "PFPLUS",
+    "PVLU",
+    "CosLU",
+    "LAAF",
+    "AdaptiveSlopeTanh",
+    "PSTanh",
+    "SSinH",
+    "SExp",
+    "LAU",
+    "AGumb",
+    "AdaptiveSigmoid",
+    "GeneralizedHyperbolicTangent",
+    "TrainableAmplitude",
+    "ASSF",
+    "SVAF",
+    "TanhSoft",
+    "TanhSoft1",
+    "TanhSoft2",
+    "TanhSoft3",
+    "PSigmoid",
+    "PSF",
+    "ReLUN",
 }
 
-SKIP_ALL = {'BaseActivation'}
+SKIP_ALL = {"BaseActivation"}
 
 
 def get_all_names():
@@ -67,30 +268,39 @@ def get_all_names():
 
 
 def make_module_and_input(name, dtype=torch.float32):
-    cls = torch_activation._ACTIVATIONS[name]['class']
+    cls = torch_activation._ACTIVATIONS[name]["class"]
 
     if name in NEEDS_INPUT_SHAPE:
         m = cls(input_shape=4)
+
         def x_fn(scale=1.0):
             x = torch.randn(2, 4) if scale == 1.0 else torch.full((2, 4), float(scale))
             return x.to(dtype)
+
     elif name in DOUBLES_FIRST_DIM:
         m = cls()
+
         def x_fn(scale=1.0):
             x = torch.randn(2, 4) if scale == 1.0 else torch.full((2, 4), float(scale))
             return x.to(dtype)
+
     elif name in DOUBLES_LAST_DIM:
         m = cls()
+
         def x_fn(scale=1.0):
             x = torch.randn(2, 4) if scale == 1.0 else torch.full((2, 4), float(scale))
             return x.to(dtype)
+
     elif name in SKIP_SHAPE:
         m = cls()
+
         def x_fn(scale=1.0):
             x = torch.randn(2, 4) if scale == 1.0 else torch.full((2, 4), float(scale))
             return x.to(dtype)
+
     else:
         m = cls()
+
         def x_fn(scale=1.0):
             x = torch.randn(4) if scale == 1.0 else torch.full((4,), float(scale))
             return x.to(dtype)
@@ -109,10 +319,9 @@ def test_numerical_stability(name):
         assert not torch.isinf(y).any(), f"{name}: Inf at x~{scale}"
 
 
-@pytest.mark.parametrize("name,dtype", [
-    (n, d) for n in get_all_names()
-    for d in [torch.float32, torch.float16]
-])
+@pytest.mark.parametrize(
+    "name,dtype", [(n, d) for n in get_all_names() for d in [torch.float32, torch.float16]]
+)
 def test_dtype_preserved(name, dtype):
     if name in SKIP_DTYPE:
         pytest.skip("skip dtype check")
@@ -207,8 +416,8 @@ def test_nondegenerate_init(name):
 def test_inplace_matches_outofplace(name):
     if name in STOCHASTIC:
         pytest.skip("stochastic")
-    cls = torch_activation._ACTIVATIONS[name]['class']
-    if 'inplace' not in inspect.signature(cls.__init__).parameters:
+    cls = torch_activation._ACTIVATIONS[name]["class"]
+    if "inplace" not in inspect.signature(cls.__init__).parameters:
         pytest.skip("no inplace")
     try:
         if name in NEEDS_INPUT_SHAPE:
@@ -226,5 +435,4 @@ def test_inplace_matches_outofplace(name):
         out_ip = m_ip(x.clone())
     except NotImplementedError:
         pytest.skip("inplace not implemented")
-    assert torch.allclose(out_safe, out_ip, atol=1e-5), \
-        f"{name}: inplace/out-of-place mismatch"
+    assert torch.allclose(out_safe, out_ip, atol=1e-5), f"{name}: inplace/out-of-place mismatch"
