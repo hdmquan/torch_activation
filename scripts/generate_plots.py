@@ -31,10 +31,12 @@ for i, name in enumerate(names, 1):
     print(f"[{i}/{total}] {cls.__name__}")
     try:
         if name in NEEDS_INPUT_SHAPE:
-            m = cls(input_shape=4)
+            def _factory(c=cls):
+                return c(input_shape=1000)
+            _factory.__name__ = cls.__name__
+            plot_activation(_factory, params={})
         else:
-            m = cls()
-        plot_activation(m, params={})
+            plot_activation(cls, params={})
         generated += 1
     except Exception as e:
         print(f"  WARNING: {name} failed: {e}")
