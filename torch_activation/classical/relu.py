@@ -231,10 +231,14 @@ class RReLU(BaseActivation):
         self.upper = upper
 
     def _forward(self, x: Tensor) -> Tensor:
-        return F.leaky_relu_(x, negative_slope=torch.rand(x.shape).uniform_(self.lower, self.upper))
+        slopes = x.new_empty(x.shape).uniform_(self.lower, self.upper)
+        return torch.where(x >= 0, x, slopes * x)
 
     def _forward_inplace(self, x: Tensor) -> Tensor:
-        return F.leaky_relu_(x, negative_slope=torch.rand(x.shape).uniform_(self.lower, self.upper))
+        slopes = x.new_empty(x.shape).uniform_(self.lower, self.upper)
+        neg = x < 0
+        x[neg] *= slopes[neg]
+        return x
 
 
 @register_activation

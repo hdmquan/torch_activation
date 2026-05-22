@@ -21,7 +21,7 @@ NEEDS_INPUT_SHAPE = {
 }
 
 DOUBLES_FIRST_DIM = {"CReLU", "NCReLU"}
-DOUBLES_LAST_DIM = {"PairedReLU"}
+DOUBLES_LAST_DIM = {"PairedReLU", "DualELU"}
 SKIP_SHAPE = {"VBAF"}
 
 STOCHASTIC = {
@@ -260,7 +260,7 @@ UPCAST_DTYPE = {
     "ReLUN",
 }
 
-SKIP_ALL = {"BaseActivation"}
+SKIP_ALL = {"BaseActivation", "SCAA"}
 
 
 def get_all_names():

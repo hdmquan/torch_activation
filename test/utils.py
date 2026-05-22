@@ -4,7 +4,7 @@ from loguru import logger
 
 def check_forward_pass(act_fn, device="cpu"):
     try:
-        inp = torch.rand(3, 3).to(device)
+        inp = torch.rand(4, 4).to(device)
         _ = act_fn(inp)
 
         # logger.debug(_.shape)
@@ -17,7 +17,7 @@ def check_forward_pass(act_fn, device="cpu"):
 
 def check_backward_pass(act_fn, device="cpu"):
     try:
-        inp = torch.rand(3, 3).to(device)
+        inp = torch.rand(4, 4).to(device)
         inp.requires_grad = True
         output = act_fn(inp)
         output.sum().backward()
@@ -28,7 +28,7 @@ def check_backward_pass(act_fn, device="cpu"):
 
 
 def check_gradient(act_fn, epsilon=1e-5, device="cpu"):
-    inp = torch.rand(3, 3).to(device)
+    inp = torch.rand(4, 4).to(device)
     inp.requires_grad = True
 
     # Compute gradient using autograd
