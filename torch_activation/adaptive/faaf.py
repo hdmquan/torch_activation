@@ -612,7 +612,7 @@ class FracGELU1(BaseActivation):
 
         \text{FracGELU1}(z_i) = \begin{cases}
             \frac{z_i^{1 - a_i}}{\Gamma(2 - a_i)}, & z_i \geq 0 \\
-            \frac{0.5 z_i^{1 - a_i}}{\Gamma(2 - a_i)} - \frac{1}{\sqrt{2\pi}} \sum_{k=0}^{N} \frac{1}{k!} \left(-\frac{1}{2}\right)^k \frac{\Gamma(2k + 3)}{\Gamma(2k + 3 - a_i)} z_i^{2(k+1) - a_i}, & z_i < 0
+            \frac{0.5 z_i^{1 - a_i}}{\Gamma(2 - a_i)} - \frac{1}{\sqrt{2\pi}} \sum_{k=0}^{N} \frac{1}{k!} \left(-\frac{1}{2}\right)^k \frac{\Gamma(2k + 3)}{(2k+1)\,\Gamma(2k + 3 - a_i)} z_i^{2(k+1) - a_i}, & z_i < 0
         \end{cases}
 
     where :math:`\Gamma` is the Gamma function and :math:`a_i` is a trainable parameter.
@@ -698,7 +698,7 @@ class FracGELU2(BaseActivation):
     r"""
     Applies the Fractional GELU Variant 2 activation function:
 
-    :math:`\text{FracGELU2}(z_i) = \frac{0.5 z_i^{1 - a_i}}{\Gamma(2 - a_i)} - \frac{1}{\sqrt{2\pi}} \sum_{k=0}^{N} \frac{1}{k!} \left(-\frac{1}{2}\right)^k \frac{\Gamma(2k + 3)}{\Gamma(2k + 3 - a_i)} z_i^{2(k+1) - a_i}`
+    :math:`\text{FracGELU2}(z_i) = \frac{0.5 z_i^{1 - a_i}}{\Gamma(2 - a_i)} - \frac{1}{\sqrt{2\pi}} \sum_{k=0}^{N} \frac{1}{k!} \left(-\frac{1}{2}\right)^k \frac{\Gamma(2k + 3)}{(2k+1)\,\Gamma(2k + 3 - a_i)} z_i^{2(k+1) - a_i}`
 
     where :math:`\Gamma` is the Gamma function and :math:`a_i` is a trainable parameter.
 

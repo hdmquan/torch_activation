@@ -49,14 +49,26 @@ class ReLU(BaseActivation):
 @register_activation
 class SReLU(BaseActivation):
     r"""
-    Applies the SReLU activation function:
+    Applies the S-shaped Rectified Linear Unit (SReLU) activation function:
 
-    :math:`\text{SReLU}(x) = \max(0, x - 1)`
+    .. math::
 
-     See: http://arxiv.org/abs/1511.07289
+        \text{SReLU}(z_i) = \begin{cases}
+        t_i^r + a_i^r (z_i - t_i^r), & z_i > t_i^r \\
+        z_i, & t_i^l \leq z_i \leq t_i^r \\
+        t_i^l + a_i^l (z_i - t_i^l), & z_i < t_i^l
+        \end{cases}
+
+    where :math:`t_i^l`, :math:`t_i^r`, :math:`a_i^l`, :math:`a_i^r` are trainable parameters
+    with :math:`t_i^l < 0 < t_i^r` and :math:`a_i^l, a_i^r \geq 0`.
+
+    See: http://arxiv.org/abs/1511.07289
 
     Args:
-        inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
+        tl (float, optional): Left threshold. Default: ``-1.0``
+        tr (float, optional): Right threshold. Default: ``1.0``
+        al (float, optional): Left slope. Default: ``0.1``
+        ar (float, optional): Right slope. Default: ``0.1``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
@@ -71,23 +83,21 @@ class SReLU(BaseActivation):
         >>> m = torch_activation.SReLU()
         >>> x = torch.randn(2)
         >>> output = m(x)
-
-        >>> m = torch_activation.SReLU(inplace=True)
-        >>> x = torch.randn(2)
-        >>> m(x)
     """
 
-    def __init__(self, **kwargs):
+    def __init__(self, tl: float = -1.0, tr: float = 1.0, al: float = 0.1, ar: float = 0.1, **kwargs):
         super().__init__(**kwargs)
-
-    def extra_repr(self):
-        return "shift=1.0"
+        self.tl = nn.Parameter(torch.tensor(tl))
+        self.tr = nn.Parameter(torch.tensor(tr))
+        self.al = nn.Parameter(torch.tensor(al))
+        self.ar = nn.Parameter(torch.tensor(ar))
 
     def _forward(self, x: Tensor) -> Tensor:
-        return F.relu(x - 1.0)
-
-    def _forward_inplace(self, x: Tensor) -> Tensor:
-        return x.sub_(1.0).clamp_(min=0)
+        al = torch.clamp(self.al, min=0)
+        ar = torch.clamp(self.ar, min=0)
+        left = self.tl + al * (x - self.tl)
+        right = self.tr + ar * (x - self.tr)
+        return torch.where(x > self.tr, right, torch.where(x < self.tl, left, x))
 
 
 @register_activation
@@ -2920,10 +2930,10 @@ class ShiftedReLU(BaseActivation):
     Applies the Shifted ReLU activation function:
 
     .. math::
-        \text{ShiftedReLU}(z) = \max(0, z + a)
+        \text{ShiftedReLU}(z) = \max(a, z)
 
     Args:
-        a (float, optional): Shift parameter. Default: ``-0.5``
+        a (float, optional): Lower bound (shift). Default: ``-1.0``
 
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
@@ -2939,17 +2949,17 @@ class ShiftedReLU(BaseActivation):
         >>> x = torch.randn(2)
         >>> output = m(x)
 
-        >>> m = torch_activation.ShiftedReLU(a=-1.0)
+        >>> m = torch_activation.ShiftedReLU(a=-2.0)
         >>> x = torch.randn(2)
         >>> output = m(x)
     """
 
-    def __init__(self, a: float = -0.5, **kwargs):
+    def __init__(self, a: float = -1.0, **kwargs):
         super().__init__(**kwargs)
         self.a = a
 
     def _forward(self, x: Tensor) -> Tensor:
-        return F.relu(x + self.a)
+        return torch.clamp(x, min=self.a)
 
 
 @register_activation

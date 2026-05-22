@@ -10,8 +10,8 @@ ACTIVATION_NAME = "ShiftedReLU"
 
 
 def scalar_ref(x: float) -> float:
-    a = -0.5
-    return max(0.0, x + a)
+    a = -1.0
+    return max(a, x)
 
 
 def _get_module(**kw):

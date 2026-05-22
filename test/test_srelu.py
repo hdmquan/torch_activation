@@ -9,8 +9,13 @@ NONSMOOTH_ACTIVATIONS: list[str] = ["SReLU"]
 ACTIVATION_NAME = "SReLU"
 
 
-def scalar_ref(x: float) -> float:
-    return max(0.0, x - 1.0)
+def scalar_ref(x: float, tl: float = -1.0, tr: float = 1.0, al: float = 0.1, ar: float = 0.1) -> float:
+    if x > tr:
+        return tr + ar * (x - tr)
+    elif x < tl:
+        return tl + al * (x - tl)
+    else:
+        return x
 
 
 def _get_module(**kwargs):
