@@ -237,62 +237,6 @@ class RReLU(BaseActivation):
         return F.leaky_relu_(x, negative_slope=torch.rand(x.shape).uniform_(self.lower, self.upper))
 
 
-# FIXME: Does not pass test
-@register_activation
-class OLReLU(BaseActivation):
-    r"""
-    Applies the Optimized Leaky ReLU (OLReLU) activation function:
-
-    .. math::
-        \text{OLReLU}(z) =
-        \begin{cases}
-        z, & z \geq 0, \\
-        z \cdot \exp(-\alpha), & z < 0,
-        \end{cases}
-
-    where :math:`\alpha = \frac{u + l}{u - l}` and :math:`u` and :math:`l` are hyperparameters
-    of the bounds of the RReLU.
-
-    Args:
-        lower (float, optional): Lower bound parameter l. Default: ``0.125``
-        upper (float, optional): Upper bound parameter u. Default: ``0.333``
-        inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
-
-    Shape:
-        - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
-        - Output: :math:`(*)`, same shape as the input.
-
-    Here is a plot of the function and its derivative:
-
-    .. image:: ../images/activation_images/OLReLU.png
-
-    Examples::
-
-        >>> m = torch_activation.OLReLU()
-        >>> x = torch.randn(2)
-        >>> output = m(x)
-
-        >>> m = torch_activation.OLReLU(lower=0.1, upper=0.5, inplace=True)
-        >>> x = torch.randn(2)
-        >>> m(x)
-    """
-
-    def __init__(self, lower: float = 0.125, upper: float = 0.333, **kwargs):
-        super().__init__(**kwargs)
-        self.lower = lower
-        self.upper = upper
-
-        # Calculate alpha according to the formula in the paper
-        self.alpha = (upper + lower) / (upper - lower)
-        self.negative_slope = float(torch.exp(torch.tensor(-self.alpha)))
-
-    def _forward(self, x: Tensor) -> Tensor:
-        return F.leaky_relu(x, negative_slope=self.negative_slope)
-
-    def _forward_inplace(self, x: Tensor) -> Tensor:
-        return F.leaky_relu_(x, negative_slope=self.negative_slope)
-
-
 @register_activation
 class SoftsignRReLU(BaseActivation):
     r"""
@@ -684,54 +628,7 @@ class VLU(BaseActivation):
 
 
 @register_activation
-class LReLU(BaseActivation):  # noqa: F811
-    r"""
-    Applies the Leaky ReLU activation function:
-
-    .. math::
-        \text{LReLU}(z) =
-        \begin{cases}
-        z, & z \geq 0, \\
-        \frac{z}{a}, & z < 0,
-        \end{cases}
-
-    where :math:`a` is recommended to be 100.
-
-    Args:
-        a (float, optional): The denominator for negative inputs. Default: ``100.0``
-        inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
-
-    Shape:
-        - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
-        - Output: :math:`(*)`, same shape as the input.
-
-    Here is a plot of the function and its derivative:
-
-    .. image:: ../images/activation_images/LReLU.png
-
-    Examples::
-
-        >>> m = torch_activation.LReLU()
-        >>> x = torch.randn(2)
-        >>> output = m(x)
-
-        >>> m = torch_activation.LReLU(a=50.0, inplace=True)
-        >>> x = torch.randn(2)
-        >>> m(x)
-    """
-
-    def __init__(self, a: float = 100.0, **kwargs):
-        super().__init__(**kwargs)
-        self.a = a
-
-    def _forward(self, x: Tensor) -> Tensor:
-        if self.inplace:
-            return x.where(x >= 0, x.div_(self.a))
-        else:
-            return torch.where(x >= 0, x, x / self.a)
-
-
-class OLReLU(BaseActivation):  # noqa: F811
+class OLReLU(BaseActivation):
     r"""
     Applies the Optimized Leaky ReLU activation function:
 
@@ -781,63 +678,6 @@ class OLReLU(BaseActivation):  # noqa: F811
             return x.where(x >= 0, x.mul_(neg_slope))
         else:
             return torch.where(x >= 0, x, x * neg_slope)
-
-
-@register_activation
-class RReLU(BaseActivation):  # noqa: F811
-    r"""
-    Applies the Randomized Leaky ReLU activation function:
-
-    .. math::
-        \text{RReLU}(z_i) =
-        \begin{cases}
-        z_i, & z_i \geq 0, \\
-        z_i a_i, & z_i < 0,
-        \end{cases}
-
-    where the negative slope :math:`1/a_i` is derived from :math:`a_i` sampled from
-    a uniform distribution :math:`U(l, u)`, with recommended values :math:`U(3, 8)`.
-
-    Args:
-        l (float, optional): Lower bound of the uniform distribution. Default: ``3.0``
-        u (float, optional): Upper bound of the uniform distribution. Default: ``8.0``
-        inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
-
-    Shape:
-        - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
-        - Output: :math:`(*)`, same shape as the input.
-
-    Here is a plot of the function and its derivative:
-
-    .. image:: ../images/activation_images/RReLU.png
-
-    Examples::
-
-        >>> m = torch_activation.RReLU()
-        >>> x = torch.randn(2)
-        >>> output = m(x)
-
-        >>> m = torch_activation.RReLU(l=2.0, u=6.0, inplace=True)
-        >>> x = torch.randn(2)
-        >>> m(x)
-    """
-
-    def __init__(self, lower: float = 3.0, u: float = 8.0, **kwargs):
-        super().__init__(**kwargs)
-        assert 0 < lower < u, "Ensure 0 < l < u for the uniform distribution bounds."
-        self.lower = lower
-        self.u = u
-
-    def _forward(self, x: Tensor) -> Tensor:
-        if self.training:
-            a = torch.empty_like(x).uniform_(self.lower, self.u)
-        else:
-            a = torch.full_like(x, (self.lower + self.u) / 2)
-
-        if self.inplace:
-            return x.where(x >= 0, x.div_(a))
-        else:
-            return torch.where(x >= 0, x, x / a)
 
 
 @register_activation
@@ -946,6 +786,7 @@ class NReLU(BaseActivation):
 
 
 # TODO: Really really check this again. Should be correct, but I'm not sure.
+@register_activation
 class SCAA(BaseActivation):
     r"""
     Applies the Spatial Context-Aware Activation function:

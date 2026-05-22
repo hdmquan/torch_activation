@@ -572,7 +572,7 @@ class ELUPlus(BaseActivation):
     r"""
     Applies the ELU Plus activation function:
 
-    :math:`\text{ELUPlus}(z) = \frac{1}{2} (z + \sqrt{z^2 + \epsilon}) + \frac{1}{2} \left(\frac{\exp(z) - 1}{a} + \sqrt{\left(\frac{\exp(z) - 1}{a}\right)^2 + \epsilon}\right)`
+    :math:`\text{ELUPlus}(z) = \frac{1}{2} (z + \sqrt{z^2 + \epsilon}) + \frac{1}{2} \left(\frac{\exp(z) - 1}{\alpha} + \sqrt{\left(\frac{\exp(z) - 1}{\alpha}\right)^2 + \epsilon}\right)`
 
     Args:
         alpha (float, optional): The alpha value for the ELU formulation. Default: ``1.0``

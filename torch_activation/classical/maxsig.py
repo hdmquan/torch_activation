@@ -50,6 +50,7 @@ class TanhLinearUnit(BaseActivation):
         return result
 
 
+@register_activation
 class DualELU(BaseActivation):
     r"""
     Applies the Dual ELU activation function:

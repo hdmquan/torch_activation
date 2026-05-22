@@ -334,7 +334,7 @@ class FracPReLU(BaseActivation):
             \frac{b_i \cdot z_i^{1 - a_i}}{\Gamma(2 - a_i)}, & z_i < 0
         \end{cases}
 
-    where :math:`\Gamma` is the Gamma function, :math:`a_i` is a fixed parameter, and :math:`b_i` is a trainable parameter.
+    where :math:`\Gamma` is the Gamma function, :math:`a_i` is a trainable parameter, and :math:`b_i` is a trainable parameter.
 
     Args:
         a_init (float, optional): Initial value for the parameter a. Default: ``0.5``
@@ -388,10 +388,10 @@ class FracELU(BaseActivation):
 
         \text{FracELU}(z_i) = \begin{cases}
             \frac{z_i^{1 - a_i}}{\Gamma(2 - a_i)}, & z_i \geq 0 \\
-            b \sum_{k=0}^{N} \frac{1}{\Gamma(k + 1 - a_i)} z_i^{k - a_i} - \frac{b}{\Gamma(1 - a_i)} z_i^{-a_i}, & z_i < 0
+            \alpha \sum_{k=0}^{N} \frac{1}{\Gamma(k + 1 - a_i)} z_i^{k - a_i} - \frac{\alpha}{\Gamma(1 - a_i)} z_i^{-a_i}, & z_i < 0
         \end{cases}
 
-    where :math:`\Gamma` is the Gamma function, :math:`a_i` is a trainable parameter, and :math:`b` is a fixed parameter.
+    where :math:`\Gamma` is the Gamma function, :math:`a_i` is a trainable parameter, and :math:`\alpha` is a fixed parameter.
 
     Args:
         a_init (float, optional): Initial value for the trainable parameter a. Default: ``0.5``

@@ -43,81 +43,6 @@ class SiLU(BaseActivation):
 
 
 @register_activation
-class CoLU(BaseActivation):
-    r"""
-    Applies the Collapsing Linear Unit activation function:
-
-    :math:`\text{CoLU}(x) = \frac{x}{1-x \cdot e^{-(x + e^x)}}`
-
-     See: https://doi.org/10.48550/arXiv.2112.12078
-
-    Args:
-        inplace (bool, optional): can optionally do the operation in-place. Default: ``False``
-
-    Shape:
-        - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
-        - Output: :math:`(*)`, same shape as the input.
-
-    .. image:: ../images/activation_images/CoLU.png
-
-    Examples::
-
-        >>> m = torch_activation.CoLU()
-        >>> x = torch.randn(2)
-        >>> output = m(x)
-
-        >>> m = torch_activation.CoLU(inplace=True)
-        >>> x = torch.randn(2)
-        >>> m(x)
-    """
-
-    def __init__(self, inplace=False, **kwargs):
-        super().__init__(inplace=inplace, **kwargs)
-
-    def _forward(self, x: Tensor) -> Tensor:
-        if self.inplace:
-            return x.div_(1 - x * torch.exp(-1 * (x + torch.exp(x))))
-        else:
-            return x / (1 - x * torch.exp(-1 * (x + torch.exp(x))))
-
-
-@register_activation
-class Phish(torch.nn.Module):
-    r"""
-    Applies the Phish activation function:
-
-    :math:`\text{Phish}(x) = x \cdot \tanh (\text{GELU} (x))`
-
-     See: https://www.semanticscholar.org/paper/Phish%3A-A-Novel-Hyper-Optimizable-Activation-Naveen/43eb5e22da6092d28f0e842fec53ec1a76e1ba6b
-
-    Shape:
-        - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
-        - Output: :math:`(*)`, same shape as the input.
-
-    .. image:: ../images/activation_images/Phish.png
-
-    Examples::
-
-        >>> m = torch_activation.Phish()
-        >>> x = torch.randn(2)
-        >>> output = m(x)
-
-        >>> m = torch_activation.Phish()
-        >>> x = torch.randn(2, 3)
-        >>> output = m(x)
-    """
-
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-
-    def _forward(self, x: Tensor) -> Tensor:
-        output = F.gelu(x)
-        output = F.tanh(output)
-        output = x * output
-        return output
-
-
-@register_activation
 class SinLU(BaseActivation):
     r"""
     Applies the Sinu-sigmoidal Linear Unit activation function:
@@ -307,7 +232,7 @@ class LaLU(BaseActivation):
 
 # TODO: The paper mis-typed it as LaLU. Contact the author about it.
 @register_activation
-class CoLU(BaseActivation):  # noqa: F811
+class CoLU(BaseActivation):
     r"""
     Applies the Collapsing Linear Unit activation function:
 
@@ -668,7 +593,7 @@ class pLogish(BaseActivation):
 
 
 @register_activation
-class Phish(BaseActivation):  # noqa: F811
+class Phish(BaseActivation):
     r"""
     Applies the Phish activation function:
 

@@ -387,9 +387,9 @@ class KDAC(BaseActivation):
     r"""
     Applies the Knowledge Discovery Activation Function (KDAC):
 
-    :math:`\text{KDAC}(z) = p \cdot (1 - h_{max}(p, r)) + r \cdot h_{max}(p, r) + k \cdot h_{max}(p, r) \cdot (1 - h_{max}(p, r))`
+    :math:`\text{KDAC}(z) = p \cdot (1 - h_{max}(p, r)) + r \cdot h_{max}(p, r) + a \cdot h_{max}(p, r) \cdot (1 - h_{max}(p, r))`
 
-    where :math:`h_{max}(x, y) = \text{clip}\!\left(\frac{1}{2} - \frac{x - y}{2c}\right)`, :math:`p = az`, :math:`s = \tanh(z)`, and :math:`r = p` if :math:`z > 0`, else :math:`bz(1-q) + s \cdot h_{min}(q,s) + kq(1-q)` with :math:`q = h_{min}(bz, s)`.
+    where :math:`h_{max}(x, y) = \text{clip}\!\left(\frac{1}{2} - \frac{x - y}{2c}\right)`, :math:`p = az`, :math:`s = \tanh(z)`, and :math:`r = p` if :math:`z > 0`, else :math:`bz(1-q) + s \cdot h_{min}(q,s) + aq(1-q)` with :math:`q = h_{min}(bz, s)`.
 
     Args:
         a (float, optional): trainable parameter, must be positive. Default: ``0.1``

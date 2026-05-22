@@ -91,9 +91,6 @@ class GEU(BaseActivation):
 
     where :math:`\Phi` is the standard Gaussian CDF and :math:`\alpha` is a learnable scaling parameter.
 
-    Args:
-        alpha (float, optional): initial value for learnable scale. Default: ``1.0``
-
     Shape:
         - Input: :math:`(*)`, where :math:`*` means any number of dimensions.
         - Output: :math:`(*)`, same shape as the input.

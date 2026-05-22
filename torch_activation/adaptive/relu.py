@@ -378,7 +378,7 @@ class LeLeLU(BaseActivation):
     r"""
     Applies the Leaky Learnable ReLU activation function:
 
-    :math:`\text{LeLeLU}(x) = \begin{cases} a \cdot x, & x \geq 0 \\ 0.01 \cdot a \cdot x, & x < 0 \end{cases}` # noqa: E501
+    :math:`\text{LeLeLU}(x) = \begin{cases} a \cdot x, & x \geq 0 \\ \text{negative\_slope} \cdot a \cdot x, & x < 0 \end{cases}` # noqa: E501
 
     Args:
         a (float, optional): Scaling factor. Default: ``1.0``
