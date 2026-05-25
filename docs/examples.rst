@@ -3,7 +3,7 @@ Examples
 
 .. code-block:: python
     :caption: Example
-    
+
     import torch
     import torch_activation as tac
 
@@ -12,7 +12,6 @@ Examples
 
     y_ = m(x)
 
-    
 
 .. code-block:: python
     :caption: Example when using in nn.Sequential
@@ -24,7 +23,7 @@ Examples
     class Net(nn.Module):
         def __init__(self):
             super(Net, self).__init__()
-            
+
             self.net = nn.Sequential(
                 nn.Conv2d(64, 32, 2),
                 tac.DELU(),

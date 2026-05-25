@@ -17,12 +17,12 @@ Alternatively, you can install directly from GitHub:
 
 2. Change into the cloned repository's directory:
 
-.. code-block:: bash 
+.. code-block:: bash
 
     $ cd torch_activation
 
 3. Install the package using pip:
 
 .. code-block:: bash
-    
+
     $ pip install -e .

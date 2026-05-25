@@ -55,7 +55,6 @@ class TestNumerical:
         assert torch.allclose(out, torch.full((8,), scalar_ref(0.0)), atol=1e-6)
 
 
-
 class TestGradients:
     def test_gradcheck(self):
         m = _get_module()

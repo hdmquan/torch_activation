@@ -9,7 +9,9 @@ NONSMOOTH_ACTIVATIONS: list[str] = ["SReLU"]
 ACTIVATION_NAME = "SReLU"
 
 
-def scalar_ref(x: float, tl: float = -1.0, tr: float = 1.0, al: float = 0.1, ar: float = 0.1) -> float:
+def scalar_ref(
+    x: float, tl: float = -1.0, tr: float = 1.0, al: float = 0.1, ar: float = 0.1
+) -> float:
     if x > tr:
         return tr + ar * (x - tr)
     elif x < tl:

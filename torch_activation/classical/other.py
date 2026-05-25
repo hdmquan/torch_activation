@@ -129,7 +129,7 @@ class Mishra(BaseActivation):
     def _forward(self, z) -> Tensor:
         abs_z = torch.abs(z)
         softsign = z / (1 + abs_z)
-        return 0.5 * softsign ** 2 + 0.5 * softsign
+        return 0.5 * softsign**2 + 0.5 * softsign
 
 
 @register_activation

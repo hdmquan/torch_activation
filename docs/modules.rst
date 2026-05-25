@@ -1,5 +1,5 @@
 Modules
-=================
+=======
 
 All Available Functions
 -----------------------------------------------------------
@@ -13,7 +13,7 @@ Classical Activation Functions
 
 .. automodule:: torch_activation.classical
    :noindex:
-   :members: 
+   :members:
    :undoc-members:
    :imported-members:
    :show-inheritance:
@@ -43,23 +43,23 @@ Max Sigmoid-based
    :undoc-members:
 
 Chaotic Activation Functions
-~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 .. automodule:: torch_activation.classical.caf
    :members:
    :undoc-members:
 
 Gated Linear Units
-~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~
 .. automodule:: torch_activation.classical.glus
    :members:
    :undoc-members:
 
 Squared Linear Units
-~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~
 .. automodule:: torch_activation.classical.squared
    :members:
    :undoc-members:
-   
+
 
 Utilities
 -----------------------------------------------------------
@@ -68,4 +68,3 @@ Utilities
    :members:
    :undoc-members:
    :exclude-members: test_inplace
-   

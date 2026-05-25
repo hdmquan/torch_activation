@@ -15,7 +15,7 @@ def scalar_ref(x: float) -> float:
     a = 4.0
     const = (2.0 / math.sqrt(3.0)) * math.pi ** (-0.25)
     sz = x + a if x < 0 else x - a
-    return const * (1 - sz**2) * math.exp(-sz**2 / 2)
+    return const * (1 - sz**2) * math.exp(-(sz**2) / 2)
 
 
 def _get_module(**kwargs):

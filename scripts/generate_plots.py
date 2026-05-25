@@ -1,4 +1,5 @@
 import torch
+
 import torch_activation
 from torch_activation.utils import plot_activation
 
@@ -31,8 +32,10 @@ for i, name in enumerate(names, 1):
     print(f"[{i}/{total}] {cls.__name__}")
     try:
         if name in NEEDS_INPUT_SHAPE:
+
             def _factory(c=cls):
                 return c(input_shape=1000)
+
             _factory.__name__ = cls.__name__
             plot_activation(_factory, params={})
         else:

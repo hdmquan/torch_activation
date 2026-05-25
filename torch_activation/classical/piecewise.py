@@ -164,7 +164,7 @@ class PiecewiseMexicanHat(BaseActivation):
         super().__init__(**kwargs)
         self.a = a
         # Unused
-        self.const_term = 2 / (math.sqrt(3) * math.pi ** 0.25)
+        self.const_term = 2 / (math.sqrt(3) * math.pi**0.25)
 
     def _forward(self, z) -> Tensor:
         shifted_neg = z + self.a

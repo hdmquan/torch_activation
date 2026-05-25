@@ -10,7 +10,6 @@ ACTIVATION_NAME = "ShHardTanh"
 
 
 def scalar_ref(x: float) -> float:
-    a = 0.0
     if x > 1:
         return 1.0
     elif x < -1:

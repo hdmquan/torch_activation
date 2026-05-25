@@ -43,9 +43,6 @@ class TestShape:
 
 class TestNumerical:
     def test_allclose_ref(self):
-        m = _get_module()
-        x = torch.linspace(-3, 3, 50)
-        expected = _ref_tensor(x)
         pytest.skip("RTReLU is stochastic; deterministic ref check not applicable")
 
 

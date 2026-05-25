@@ -437,7 +437,6 @@ class FracELU(BaseActivation):
         first_term = -self.alpha / gamma_term_1 * torch.pow(abs_x, -a_clamped)
         second_term = torch.zeros_like(x)
         for k in range(self.n_terms):
-            gamma_k_plus_1 = math.factorial(k)
             gamma_k_plus_1_minus_a = torch.exp(
                 torch.lgamma(torch.tensor(k + 1, dtype=x.dtype, device=x.device) - a_clamped)
             )

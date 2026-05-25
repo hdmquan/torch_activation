@@ -1,4 +1,5 @@
 import pytest
+
 import torch_activation
 
 SKIP_ALL = {"BaseActivation"}

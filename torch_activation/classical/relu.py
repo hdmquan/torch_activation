@@ -85,7 +85,9 @@ class SReLU(BaseActivation):
         >>> output = m(x)
     """
 
-    def __init__(self, tl: float = -1.0, tr: float = 1.0, al: float = 0.1, ar: float = 0.1, **kwargs):
+    def __init__(
+        self, tl: float = -1.0, tr: float = 1.0, al: float = 0.1, ar: float = 0.1, **kwargs
+    ):
         super().__init__(**kwargs)
         self.tl = nn.Parameter(torch.tensor(tl))
         self.tr = nn.Parameter(torch.tensor(tr))
@@ -1323,8 +1325,9 @@ class ShHardTanh(BaseActivation):
 
     def _forward(self, x: Tensor) -> Tensor:
         lo, hi = -(1.0 + self.a), 1.0 - self.a
-        return torch.where(x < lo, torch.full_like(x, -1.0),
-                           torch.where(x > hi, torch.ones_like(x), x))
+        return torch.where(
+            x < lo, torch.full_like(x, -1.0), torch.where(x > hi, torch.ones_like(x), x)
+        )
 
 
 @register_activation
