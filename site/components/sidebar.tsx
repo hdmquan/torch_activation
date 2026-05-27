@@ -1,10 +1,8 @@
 "use client";
-import { useState } from "react";
-import { ChevronDown, ChevronRight } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { SearchBar } from "./search-bar";
-import { getHeadline, getAll } from "@/lib/families";
+import { getAll } from "@/lib/families";
 import { filterActivations } from "@/lib/data";
 import type { SiteData, Tag } from "@/lib/types";
 
@@ -21,7 +19,7 @@ export function Sidebar({
 }) {
   const [activeTags, setActiveTags] = useState<Tag[]>([]);
   const [query, setQuery] = useState("");
-  const [expanded, setExpanded] = useState<Set<string>>(new Set());
+  const selectedRef = useRef<HTMLButtonElement>(null);
 
   function toggleTag(tag: Tag) {
     setActiveTags((prev) =>
@@ -29,17 +27,31 @@ export function Sidebar({
     );
   }
 
-  function toggleExpand(id: string) {
-    setExpanded((prev) => {
-      const next = new Set(prev);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
-      return next;
-    });
-  }
-
   const filtered = filterActivations(data, activeTags, query);
-  const filteredNames = new Set(filtered.map((a) => a.name));
+  const filteredNames = useMemo(() => new Set(filtered.map((a) => a.name)), [filtered]);
+
+  const groups = useMemo(
+    () =>
+      data.families
+        .map((family) => ({
+          family,
+          items: getAll(family, data.activations).filter((a) =>
+            filteredNames.has(a.name)
+          ),
+        }))
+        .filter((g) => g.items.length > 0),
+    [data, filteredNames]
+  );
+
+  // Scroll selected row into view on initial render.
+  useEffect(() => {
+    if (selectedRef.current) {
+      selectedRef.current.scrollIntoView({ block: "center", behavior: "auto" });
+    }
+    // Only run once on mount; subsequent selections happen on user click and
+    // don't need to recenter the sidebar.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <div className="flex h-full flex-col bg-sidebar">
@@ -71,67 +83,48 @@ export function Sidebar({
       </div>
 
       <ScrollArea className="min-h-0 flex-1 overscroll-contain">
-        <div className="space-y-5 p-3 pr-2">
-          {data.families.map((family) => {
-            const all = getAll(family, data.activations).filter((a) =>
-              filteredNames.has(a.name)
-            );
-            if (all.length === 0) return null;
-            const headline = getHeadline(family, filtered);
-            const isExpanded = expanded.has(family.id);
-            const shown = isExpanded ? all : headline;
-            const hasMore = all.length > headline.length;
-
-            return (
-              <div key={family.id}>
-                <div className="mb-1.5 flex items-center justify-between px-2">
+        <div className="pb-6">
+          {groups.length === 0 ? (
+            <p className="px-4 py-8 text-center text-sm text-muted-foreground">
+              No matches
+            </p>
+          ) : (
+            groups.map(({ family, items }) => (
+              <section key={family.id}>
+                <div className="sticky top-0 z-10 flex items-center justify-between border-b border-border/60 bg-sidebar/95 px-3 py-1.5 backdrop-blur supports-[backdrop-filter]:bg-sidebar/80">
                   <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
                     {family.label}
                   </p>
-                  <Badge
-                    variant="secondary"
-                    className="h-4 px-1.5 text-[10px] font-normal"
-                  >
-                    {all.length}
-                  </Badge>
+                  <span className="font-mono text-[10px] text-muted-foreground/70">
+                    {items.length}
+                  </span>
                 </div>
-                <div className="space-y-px">
-                  {shown.map((act) => {
+                <ul className="space-y-px px-2 py-1.5">
+                  {items.map((act) => {
                     const isSelected = selected === act.name;
                     return (
-                      <button
-                        key={act.name}
-                        onClick={() => onSelect(act.name)}
-                        className={`group relative flex w-full items-center rounded-md py-1.5 pl-3 pr-2 text-left font-mono text-[13px] transition-colors ${
-                          isSelected
-                            ? "bg-accent text-accent-foreground"
-                            : "text-foreground/80 hover:bg-accent/50 hover:text-foreground"
-                        }`}
-                      >
-                        {isSelected && (
-                          <span className="absolute left-0 top-1/2 h-4 w-0.5 -translate-y-1/2 rounded-full bg-foreground" />
-                        )}
-                        {act.name}
-                      </button>
+                      <li key={act.name}>
+                        <button
+                          ref={isSelected ? selectedRef : null}
+                          onClick={() => onSelect(act.name)}
+                          className={`relative flex w-full items-center rounded-md py-1 pl-3 pr-2 text-left font-mono text-[13px] transition-colors ${
+                            isSelected
+                              ? "bg-accent text-accent-foreground"
+                              : "text-foreground/80 hover:bg-accent/50 hover:text-foreground"
+                          }`}
+                        >
+                          {isSelected && (
+                            <span className="absolute left-0 top-1/2 h-4 w-0.5 -translate-y-1/2 rounded-full bg-foreground" />
+                          )}
+                          {act.name}
+                        </button>
+                      </li>
                     );
                   })}
-                  {hasMore && (
-                    <button
-                      onClick={() => toggleExpand(family.id)}
-                      className="flex w-full items-center gap-1 rounded-md px-3 py-1.5 text-left text-[11px] text-muted-foreground transition-colors hover:bg-accent/40 hover:text-foreground"
-                    >
-                      {isExpanded ? (
-                        <ChevronDown className="h-3 w-3" />
-                      ) : (
-                        <ChevronRight className="h-3 w-3" />
-                      )}
-                      {isExpanded ? "Show less" : `${all.length - headline.length} more`}
-                    </button>
-                  )}
-                </div>
-              </div>
-            );
-          })}
+                </ul>
+              </section>
+            ))
+          )}
         </div>
       </ScrollArea>
     </div>
