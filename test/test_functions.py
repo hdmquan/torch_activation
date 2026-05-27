@@ -14,8 +14,8 @@ from utils import (
 import torch_activation
 
 
-def test_activations(dev="cpu"):
-    """Test all registered activation functions."""
+def _run_activations(dev="cpu"):
+    """Run forward/backward checks for all registered activation functions."""
     passed_tests = 0
     failed_tests = 0
     tested_count = 0
@@ -83,7 +83,7 @@ def find_unregistered_activations():
 
 def test_all_acts():
     dev = "cpu"
-    passed, failed, tested, skipped = test_activations(dev)
+    passed, failed, tested, skipped = _run_activations(dev)
     total_activations = len(torch_activation.get_all_activations())
 
     # Find unregistered activation functions

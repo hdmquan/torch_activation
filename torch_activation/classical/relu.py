@@ -777,7 +777,7 @@ class NReLU(BaseActivation):
         super().__init__(**kwargs)
 
     def _forward(self, x: Tensor) -> Tensor:
-        if self.training:
+        if self.training and x.numel() > 1:
             with torch.no_grad():
                 std = torch.std(x)
             noise = torch.randn_like(x) * std
