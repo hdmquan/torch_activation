@@ -35,5 +35,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Basic test infrastructure
 - Documentation structure with Sphinx
 
-[1.0.0]: https://github.com/hdmquan/torch_activation/releases/tag/1.0.0
-[0.4.0]: https://github.com/hdmquan/torch_activation/releases/tag/0.4.0
+[1.0.0]: https://github.com/hdmquan/torch_activation/releases/tag/v1.0.0
+[0.4.0]: https://github.com/hdmquan/torch_activation/releases/tag/v0.4.0

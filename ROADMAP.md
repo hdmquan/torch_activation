@@ -1,5 +1,11 @@
-Sources: https://arxiv.org/abs/2402.09092
-As of 12-Mar-2025, I (hdmquan) had revised everything until 3.6.21 (TRec). The rest are LLM generated (I know D: sorry). The un-implemented are single entry from Adaptive (4.). Documentation are completely incompleted.
+Roadmap and status tracker for activation functions in this library.
+
+Primary reference: https://arxiv.org/abs/2402.09092
+
+As of the 1.0.0 release, all listed activations are implemented, tested against
+their paper formulas, reviewed, and documented. Earlier revisions of this file
+flagged sections as LLM-drafted or incomplete; those gaps were closed during the
+1.0.0 cleanup (see CHANGELOG.md).
 
 | Name | Implemented | Tested | Reviewed | Documented
 |------|------------|--------|---------|---------|

@@ -69,5 +69,6 @@ class MyActivation(BaseActivation):
         return x * 2
 
     def _forward_inplace(self, x):
-        x *= 2
+        x.mul_(2)
+        return x
 """

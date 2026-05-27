@@ -33,4 +33,4 @@ jobs:
       run: poetry run pip install torch==${{ matrix.torch-version }} --index-url https://download.pytorch.org/whl/cpu
 
     - name: Run tests
-      run: poetry run pytest test/test_functions.py::test_all_acts -v
+      run: poetry run pytest test/ -v

@@ -1,10 +1,27 @@
 [tool.poetry]
 name = "torch-activation"
 version = "1.0.0"
-description = "Activation functions for PyTorch"
+description = "A comprehensive collection of activation functions for PyTorch"
 authors = ["Alan Huynh <hdmquan@outlook.com>"]
 license = "MIT"
 readme = "README.md"
+homepage = "https://github.com/hdmquan/torch_activation"
+repository = "https://github.com/hdmquan/torch_activation"
+documentation = "https://torch-activation.readthedocs.io"
+keywords = ["pytorch", "activation", "activation-functions", "deep-learning", "neural-networks", "machine-learning"]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
 packages = [{include = "torch_activation"}]
 
 [tool.poetry.dependencies]
