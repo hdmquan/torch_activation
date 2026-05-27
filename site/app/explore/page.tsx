@@ -21,7 +21,7 @@ export default function ExplorePage() {
   const activation = data.activations.find((a) => a.name === selected);
 
   return (
-    <div className="flex h-[calc(100vh-56px)]">
+    <div className="flex h-[calc(100vh-56px)] overflow-hidden">
       <aside className="hidden w-72 shrink-0 border-r md:block">
         <Sidebar data={data} selected={selected} onSelect={setSelected} />
       </aside>

@@ -70,7 +70,7 @@ export function Sidebar({
         </p>
       </div>
 
-      <ScrollArea className="flex-1">
+      <ScrollArea className="min-h-0 flex-1 overscroll-contain">
         <div className="space-y-5 p-3 pr-2">
           {data.families.map((family) => {
             const all = getAll(family, data.activations).filter((a) =>
