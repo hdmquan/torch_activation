@@ -16,13 +16,13 @@ export default function ExplorePage() {
     });
   }, []);
 
-  if (!data) return <div className="flex h-[calc(100vh-57px)] items-center justify-center text-muted-foreground">Loading...</div>;
+  if (!data) return <div className="flex h-[calc(100vh-56px)] items-center justify-center text-muted-foreground">Loading...</div>;
 
   const activation = data.activations.find((a) => a.name === selected);
 
   return (
-    <div className="flex h-[calc(100vh-57px)]">
-      <aside className="w-64 shrink-0 border-r">
+    <div className="flex h-[calc(100vh-56px)]">
+      <aside className="hidden w-72 shrink-0 border-r md:block">
         <Sidebar data={data} selected={selected} onSelect={setSelected} />
       </aside>
       <main className="flex-1 overflow-auto">

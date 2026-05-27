@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
+import { Check, Copy } from "lucide-react";
 
 export function CodeSnippet({ name }: { name: string }) {
   const [copied, setCopied] = useState(false);
@@ -13,16 +13,32 @@ export function CodeSnippet({ name }: { name: string }) {
   }
 
   return (
-    <div className="relative rounded-md bg-muted p-4 font-mono text-sm">
-      <pre>{code}</pre>
-      <Button
-        size="sm"
-        variant="ghost"
-        className="absolute right-2 top-2 h-7 text-xs"
-        onClick={copy}
-      >
-        {copied ? "Copied" : "Copy"}
-      </Button>
+    <div className="overflow-hidden rounded-xl border bg-card">
+      <div className="flex items-center justify-between border-b bg-muted/40 px-4 py-2">
+        <span className="font-mono text-[11px] uppercase tracking-wider text-muted-foreground">
+          python
+        </span>
+        <button
+          onClick={copy}
+          aria-label={copied ? "Copied" : "Copy code"}
+          className="flex items-center gap-1.5 rounded-md px-2 py-1 text-xs text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+        >
+          {copied ? (
+            <>
+              <Check className="h-3 w-3" />
+              Copied
+            </>
+          ) : (
+            <>
+              <Copy className="h-3 w-3" />
+              Copy
+            </>
+          )}
+        </button>
+      </div>
+      <pre className="overflow-x-auto p-4 font-mono text-[13px] leading-relaxed">
+        {code}
+      </pre>
     </div>
   );
 }

@@ -1,10 +1,8 @@
 "use client";
 import { useState } from "react";
-import Link from "next/link";
+import { ChevronDown, ChevronRight } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Separator } from "@/components/ui/separator";
 import { SearchBar } from "./search-bar";
 import { getHeadline, getAll } from "@/lib/families";
 import { filterActivations } from "@/lib/data";
@@ -34,7 +32,8 @@ export function Sidebar({
   function toggleExpand(id: string) {
     setExpanded((prev) => {
       const next = new Set(prev);
-      next.has(id) ? next.delete(id) : next.add(id);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
       return next;
     });
   }
@@ -43,26 +42,36 @@ export function Sidebar({
   const filteredNames = new Set(filtered.map((a) => a.name));
 
   return (
-    <div className="flex h-full flex-col gap-3 p-3">
-      <SearchBar value={query} onChange={setQuery} />
+    <div className="flex h-full flex-col bg-sidebar">
+      <div className="space-y-3 border-b px-3 py-3">
+        <SearchBar value={query} onChange={setQuery} />
 
-      <div className="flex flex-wrap gap-1">
-        {ALL_TAGS.map((tag) => (
-          <Badge
-            key={tag}
-            variant={activeTags.includes(tag) ? "default" : "outline"}
-            className="cursor-pointer text-xs"
-            onClick={() => toggleTag(tag)}
-          >
-            {tag}
-          </Badge>
-        ))}
+        <div className="flex flex-wrap gap-1.5">
+          {ALL_TAGS.map((tag) => {
+            const active = activeTags.includes(tag);
+            return (
+              <button
+                key={tag}
+                onClick={() => toggleTag(tag)}
+                className={`cursor-pointer rounded-full px-2.5 py-0.5 text-[11px] font-medium transition-colors ${
+                  active
+                    ? "bg-foreground text-background"
+                    : "border border-border bg-transparent text-muted-foreground hover:border-foreground/40 hover:text-foreground"
+                }`}
+              >
+                {tag}
+              </button>
+            );
+          })}
+        </div>
+
+        <p className="text-[11px] text-muted-foreground">
+          {filtered.length} of {data.activations.length} activations
+        </p>
       </div>
 
-      <Separator />
-
       <ScrollArea className="flex-1">
-        <div className="space-y-4 pr-2">
+        <div className="space-y-5 p-3 pr-2">
           {data.families.map((family) => {
             const all = getAll(family, data.activations).filter((a) =>
               filteredNames.has(a.name)
@@ -71,33 +80,53 @@ export function Sidebar({
             const headline = getHeadline(family, filtered);
             const isExpanded = expanded.has(family.id);
             const shown = isExpanded ? all : headline;
+            const hasMore = all.length > headline.length;
 
             return (
               <div key={family.id}>
-                <p className="mb-1 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                  {family.label}
-                </p>
-                <div className="space-y-0.5">
-                  {shown.map((act) => (
+                <div className="mb-1.5 flex items-center justify-between px-2">
+                  <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+                    {family.label}
+                  </p>
+                  <Badge
+                    variant="secondary"
+                    className="h-4 px-1.5 text-[10px] font-normal"
+                  >
+                    {all.length}
+                  </Badge>
+                </div>
+                <div className="space-y-px">
+                  {shown.map((act) => {
+                    const isSelected = selected === act.name;
+                    return (
+                      <button
+                        key={act.name}
+                        onClick={() => onSelect(act.name)}
+                        className={`group relative flex w-full items-center rounded-md py-1.5 pl-3 pr-2 text-left font-mono text-[13px] transition-colors ${
+                          isSelected
+                            ? "bg-accent text-accent-foreground"
+                            : "text-foreground/80 hover:bg-accent/50 hover:text-foreground"
+                        }`}
+                      >
+                        {isSelected && (
+                          <span className="absolute left-0 top-1/2 h-4 w-0.5 -translate-y-1/2 rounded-full bg-foreground" />
+                        )}
+                        {act.name}
+                      </button>
+                    );
+                  })}
+                  {hasMore && (
                     <button
-                      key={act.name}
-                      onClick={() => onSelect(act.name)}
-                      className={`w-full rounded px-2 py-1 text-left text-sm transition-colors hover:bg-accent ${
-                        selected === act.name ? "bg-accent font-medium" : ""
-                      }`}
-                    >
-                      {act.name}
-                    </button>
-                  ))}
-                  {all.length > headline.length && (
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="h-6 w-full text-xs text-muted-foreground"
                       onClick={() => toggleExpand(family.id)}
+                      className="flex w-full items-center gap-1 rounded-md px-3 py-1.5 text-left text-[11px] text-muted-foreground transition-colors hover:bg-accent/40 hover:text-foreground"
                     >
-                      {isExpanded ? "Show less" : `Show all ${all.length}`}
-                    </Button>
+                      {isExpanded ? (
+                        <ChevronDown className="h-3 w-3" />
+                      ) : (
+                        <ChevronRight className="h-3 w-3" />
+                      )}
+                      {isExpanded ? "Show less" : `${all.length - headline.length} more`}
+                    </button>
                   )}
                 </div>
               </div>

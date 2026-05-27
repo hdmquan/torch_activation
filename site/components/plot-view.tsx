@@ -1,32 +1,26 @@
 "use client";
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
 
 export function PlotView({ src, name }: { src: string; name: string }) {
-  const [showDerivative, setShowDerivative] = useState(true);
   const base = process.env.NEXT_PUBLIC_BASE_PATH || "";
 
   return (
-    <div className="space-y-2">
-      <div className="flex items-center gap-2">
-        <Button
-          size="sm"
-          variant={showDerivative ? "default" : "outline"}
-          onClick={() => setShowDerivative((v) => !v)}
-        >
-          Derivative
-        </Button>
-      </div>
-      <div className="relative overflow-hidden rounded-lg border bg-background">
-        <img
-          src={`${base}${src}`}
-          alt={`${name} activation plot`}
-          className="w-full"
-          onError={(e) => {
-            (e.target as HTMLImageElement).style.display = "none";
-          }}
-        />
-      </div>
-    </div>
+    <figure className="overflow-hidden rounded-xl border bg-card">
+      <figcaption className="flex items-center justify-between border-b bg-muted/40 px-4 py-2">
+        <span className="text-xs font-medium text-muted-foreground">
+          f(x) and f&apos;(x)
+        </span>
+        <span className="font-mono text-[10px] text-muted-foreground">
+          x ∈ [−5, 5]
+        </span>
+      </figcaption>
+      <img
+        src={`${base}${src}`}
+        alt={`${name} activation and its derivative`}
+        className="w-full bg-white"
+        onError={(e) => {
+          (e.target as HTMLImageElement).style.display = "none";
+        }}
+      />
+    </figure>
   );
 }
